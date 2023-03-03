@@ -531,6 +531,7 @@ fi
 if echo $filenameblock | grep -E "(sn|an)[0-9]{0,2}.[0-9]{0,3}-[0-9]{0,3}" >/dev/null || echo $filenameblock | grep -E "dhp[0-9]{0,3}-[0-9]{0,3}" >/dev/null
 then 
 suttanumber=`nice -$nicevalue grep -E -Ei $filenameblock $basefile | awk '{print $2}' | awk -F':' '{print $1}' | sort | uniq `
+forbwranges=$suttanumber 
 else 
 suttanumber=$filenameblock
 fi 
