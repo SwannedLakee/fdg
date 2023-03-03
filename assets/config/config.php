@@ -1,8 +1,6 @@
 <?php
 
 $uname = shell_exec("uname -a"); 
-
-  
       if ( preg_match('/Linux/', $uname)  ) {
     $mode = 'offline';
 //$mode = 'online';
@@ -28,7 +26,7 @@ $locationru = $basedir. "/assets/offline/theravada.ru/Teaching/Canon/Suttanta/Te
 $adapterscriptlocation = '/data/data/com.termux/files/home/aksharamukha/bin/python3 /data/data/com.termux/files/usr/share/apache2/default-site/htdocs/scripts/aksharamukha-adapter.py';
 
 //api-emulator
-$scroottextlocation = "/storage/emulated/0/Dhamma/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms";
+$scroottextlocation = "/var/www/html/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms";
 
       } else {
   //preg_match('/rym.from.sh/', $uname) 

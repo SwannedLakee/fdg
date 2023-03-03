@@ -10,12 +10,12 @@
 # suparicitaṁ hoti.
 ########## an9.25 ##############
 
-if [[ "`uname -a`" == *"Android"* ]]; then 
+if [[ "`uname -a`" == *"Linux"* ]]; then 
 
 sitename=http://localhost:8080
 nicevalue=1
 mode=offline
-apachesitepath=/data/data/com.termux/files/usr/share/apache2/default-site/htdocs
+apachesitepath=/var/www/html
 rootpath=$apachesitepath/scripts
 suttapath=$apachesitepath/suttacentral.net/
 output=$apachesitepath/result/
