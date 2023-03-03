@@ -3,11 +3,11 @@
 $uname = shell_exec("uname -a"); 
 
   
-      if ( preg_match('/Android/', $uname)  ) {
+      if ( preg_match('/Linux/', $uname)  ) {
     $mode = 'offline';
 //$mode = 'online';
 //translator-lookup.php
-$basedir = "/data/data/com.termux/files/usr/share/apache2/default-site/htdocs";
+$basedir = "/var/www/html/";
 $translatorlocation = $basedir. '/o/';
 
 //opentexts.php

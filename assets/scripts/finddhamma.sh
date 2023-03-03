@@ -11,8 +11,8 @@
 ########## sn35.238 ##########
 
 if [[ "`uname -a`" == *"rym.from.sh"* ]]; then
-source /home/a0092061/domains/find.dhamma.gift/public_html/config/script_config.sh --source-only
-elif [[ "`uname -a`" == *"Android"* ]]; then 
+source /var/www/html/config/script_config.sh --source-only
+elif [[ "`uname -a`" == *"Linux"* ]]; then 
 source /data/data/com.termux/files/usr/share/apache2/default-site/htdocs/config/script_config.sh --source-only
 #elif [[ "`uname -a`" == *"CYGWIN"* ]]; then
 #source=/home/mobaxterm/scripts/script_config_moba.sh
