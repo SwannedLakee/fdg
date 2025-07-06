@@ -90,7 +90,7 @@
             "origin": "*.dict.dhamma.gift"
         }
     ],
-    "start_url": "/ru/?source=pwa&q=n%C4%81mar%C5%ABpapaccay%C4%81+vi%C3%B1%C3%B1%C4%81%E1%B9%87a&p=-kn",
+    "start_url": "/ru/?source=pwa",
     "scope": "/",
     "display": "minimal-ui",
     "background_color": "#2E3E50",
