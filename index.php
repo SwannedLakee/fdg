@@ -42,7 +42,10 @@ include 'scripts/search-handler.php';
 
   <!-- PWA-метатеги -->
   <meta name="theme-color" content="#ffffff">
-<link rel="manifest" href="<?php echo $mainpagenoslash ;?>/manifest.php">
+<link rel="manifest" href="<?php echo $manifest; ?>">
+
+<!-- <link rel="manifest" href="<?php echo $mainpagenoslash ;?>/manifest.php">-->
+
 <link rel="canonical" href="<?php echo $canonicalPage;?>">
 <link rel="alternate" href="https://dhamma.gift/ru/" hreflang="ru">
 <link rel="alternate" href="https://dhamma.gift/" hreflang="en">
