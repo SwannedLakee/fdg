@@ -26,7 +26,7 @@ if (isset($_GET['ml']) && $_GET['ml'] === 'on') {
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 <meta name="keywords" content="<?php echo $metakeywords;?>">
 <meta name="description" content="<?php echo $metadesc;?>" />
-<meta name="author" content="" />
+<meta name="author" content="o" />
 <link rel="canonical" href="<?php echo $canonicalPage;?>read.php">
 <link rel="alternate" href="https://dhamma.gift/ru/read.php" hreflang="ru">
 <link rel="alternate" href="https://dhamma.gift/read.php" hreflang="en">
