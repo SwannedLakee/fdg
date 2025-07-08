@@ -7,10 +7,9 @@ function openDictionaries(event) {
     {
       name: 'PTS',
       method: 'GET',
-      base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=',
+      base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=',
       fallback: 'https://dsal.uchicago.edu/dictionaries/pali/'
     },
-       
     {
       name: 'CPD', 
       method: 'POST', // POST-поиск: CPD доделать 
@@ -22,7 +21,8 @@ function openDictionaries(event) {
         
     {
       name: 'Gandhari', // Нет поддержки поиска извне
-      method: 'NONE',
+      method: 'GET',
+      base: 'https://gandhari.org/dop?query=',
       fallback: 'https://gandhari.org/dop'
     },
 
