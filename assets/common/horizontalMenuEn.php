@@ -216,15 +216,10 @@ echo '<!--
 
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
-
-<li><a class="dropdown-item" href="#" onclick="event.preventDefault(); [
-\'https://dsal.uchicago.edu/dictionaries/pali/\', 
-\'https://gandhari.org/dop\', 
-\'https://cpd.uni-koeln.de/search\', 
-\'https://dharmamitra.org/?target_lang=english-explained\', 
-\'https://sambhasha.ksu.ac.in/CompLing/pcl_1/html/pali_dict.html\', 
-\'https://www.wisdomlib.org/\'
-].forEach(url => window.open(url));">Open PTS, Cone, CPD, Mitra, Wisdomlib, Pi-Skr</a></li>		 		 
+<li>
+  <a class="dropdown-item" href="#" onclick="openDictionaries()">Open PTS, Cone, CPD, DPD, Mitra, Skr, Wisdomlib</a>
+<script src="/assets/js/openDicts.js"></script>
+</li>	 		 
 
 </ul>
 
