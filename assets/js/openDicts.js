@@ -103,7 +103,7 @@ function openDictionaries(event) {
   });
 }
 
-function convertText(target = 'Devanagari') {
+function convertText(event, target = 'Devanagari') {
   event.preventDefault();
   const query = document.getElementById('paliauto')?.value.trim();
 
