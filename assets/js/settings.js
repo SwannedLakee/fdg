@@ -811,6 +811,8 @@ document.addEventListener('keydown', function(event) {
     event.preventDefault();
 
     const currentUrl = window.location.href;
+    const currentParams = window.location.search; // включает всё после '?', включая '?'
+
     let targetUrl;
 
     if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) {
@@ -819,9 +821,15 @@ document.addEventListener('keydown', function(event) {
       targetUrl = 'https://dict.dhamma.gift/';
     }
 
+    // Добавляем параметры, если есть
+    if (currentParams) {
+      targetUrl += currentParams;
+    }
+
     window.location.href = targetUrl;
   }
 });
+
 
 
 document.addEventListener("keydown", function (event) {
