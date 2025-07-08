@@ -225,7 +225,7 @@ echo '<!--
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
 <li>
-  <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i>  Open PTS, Cone, CPD, DPD, Mitra, Skr+, Wisdomlib</a>
+  <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i>  Open PTS/Cone/CPD/DPD, Mitra, Skr+, Wisdomlib</a>
 <script src="/assets/js/openDicts.js"></script>
 </li>	 		 
 
