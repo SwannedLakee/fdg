@@ -103,3 +103,14 @@ function openDictionaries(event) {
   });
 }
 
+function convertText(target = 'Devanagari') {
+  event.preventDefault();
+  const query = document.getElementById('paliauto')?.value.trim();
+
+  const base = 'https://www.aksharamukha.com/converter';
+  const url = query
+    ? `${base}?target=${encodeURIComponent(target)}&text=${encodeURIComponent(query)}`
+    : base;
+
+  window.open(url, '_blank');
+}

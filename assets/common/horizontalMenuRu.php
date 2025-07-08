@@ -241,7 +241,7 @@ echo '<!--
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
 <li>
-  <a class="dropdown-item" href="#" onclick="openDictionaries(event)">Открыть PTS, Cone, CPD, DPD, Mitra, Skr, Wisdomlib</a>
+  <i class="' . $iconimportant . '"></i> <a class="dropdown-item" href="#" onclick="openDictionaries(event)">Открыть PTS, Cone, CPD, DPD, Mitra, Skr, Wisdomlib</a>
 </li>  
 <script src="/assets/js/openDicts.js"></script>
 
@@ -359,7 +359,13 @@ echo '<!--
 
 
    <li><a class="dropdown-item" target="_blank" href="/assets/common/lunarRu.html"> <i class="' . $iconimportant . '"></i> Дни Упосаттхи по Суттам</a></li>
-   <li><a class="dropdown-item" target="_blank" href="https://www.aksharamukha.com/converter"> <i class="' . $iconimportant . '"></i> Aksharamukha текстовый конвертер</a></li>
+<li>
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="convertText(event)">
+    <i class="' . $iconimportant . '"></i> Aksharamukha текстовый конвертер
+  </a>
+</li>
+
+
    <li><a class="dropdown-item" target="_blank" href="/cse.php">Google Custom Search</a></li>
 
 

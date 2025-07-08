@@ -224,7 +224,7 @@ echo '<!--
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
 <li>
-  <a class="dropdown-item" href="#" onclick="openDictionaries(event)">Open PTS, Cone, CPD, DPD, Mitra, Skr, Wisdomlib</a>
+  <i class="' . $iconimportant . '"></i> <a class="dropdown-item" href="#" onclick="openDictionaries(event)">Open PTS, Cone, CPD, DPD, Mitra, Skr, Wisdomlib</a>
 <script src="/assets/js/openDicts.js"></script>
 </li>	 		 
 
@@ -350,10 +350,14 @@ echo '<!--
          </li>   
      
    <li><a class="dropdown-item" target="" href="/assets/common/lunar.html"> <i class="' . $iconimportant . '"></i> Sutta based Uposattha days</a></li>
-   
-   <li><a class="dropdown-item" target="_blank" href="https://www.aksharamukha.com/converter"> <i class="' . $iconimportant . '"></i> Aksharamukha script converter</a></li>
-   
-    
+     
+    <li>
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="convertText(event)">
+    <i class="' . $iconimportant . '"></i> Aksharamukha script converter
+  </a>
+</li>
+
+
    <li><a class="dropdown-item" target="_blank" href="/cse.php">Google Custom Search</a></li>
    
               <li>
