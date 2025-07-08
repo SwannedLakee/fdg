@@ -872,14 +872,14 @@ document.addEventListener("keydown", function (event) {
   }
 
   // === Ctrl + 1: Переход на домашнюю страницу ===
-  if (isCtrlPressed && event.code === "1") {
+  if (isCtrlPressed && event.key === "1") {
     event.preventDefault();
     const targetUrl = determineTargetUrl(true);
     window.location.href = targetUrl;
   }
 
   // === Ctrl + 2: Переход на read.php ===
-  if (isCtrlPressed && event.code === "2") {
+  if (isCtrlPressed && event.key === "2") {
     event.preventDefault();
     const targetUrl = determineTargetUrl(false);
     window.location.href = targetUrl;
