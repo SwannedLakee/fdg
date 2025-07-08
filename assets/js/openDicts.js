@@ -1,6 +1,17 @@
+
+//  <a href="#" onclick="openDictionaries(event)">Dict</a>
+
 function openDictionaries(event) {
   event.preventDefault();
   const query = document.getElementById('paliauto')?.value.trim();
+
+
+ // Копирование в буфер обмена
+  if (query) {
+    navigator.clipboard.writeText(query).catch(err => {
+      console.warn('Clipboard copy failed:', err);
+    });
+  }
 
   const dictionaries = [
     // GET-поиск
