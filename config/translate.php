@@ -138,6 +138,7 @@ $tooltipsearchbar = '
 <strong>Ctrl + 3</strong> Открыть Dict.Dhamma.Gift.
 <br>
 <strong>Alt + 1</strong> Интерфейс для чтения Рус / Англ.
+<br>
 <strong>Alt + Q</strong> Открыть слово в нескольких словарях.
 
 ';
@@ -918,8 +919,8 @@ $tooltipsearchbar = '<strong>Autosuggestions</strong>: Start typing at least 3 c
 <strong>Ctrl + 3</strong> Open Dict.Dhamma.Gift.
 <br>
 <strong>Alt + 1</strong> Reading Interface (En / Ru).
+<br>
 <strong>Alt + Q</strong> Search current word in many dictionaries.
-
 ';
 
 $tooltiptextype = '<strong>Pāḷi*</strong> - 4 Nikayas + 6 KN books: Udana (Ud), Dhammapada (Dhp), Itivuttaka (Iti), Suttanipāta (Snp), Theragāthā (Thag), Therigatha (Thig)<br><br>
