@@ -242,11 +242,7 @@ echo '<!--
            </div>
          </li>
   
-
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
-
- 
-
 </ul>    
     
 <a title="Материалы для обучения и сайты" class="dropdown text-decoration-none mx-1 d-md-inline-block" id="materials" data-bs-toggle="dropdown" aria-expanded="false" href="#">
