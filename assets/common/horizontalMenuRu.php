@@ -189,9 +189,6 @@ echo '<!--
 </a>
 
 <ul class="dropdown-menu" aria-labelledby="MenuDict">
-
-         <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
-
                <li>
          <div class="dropdown-item ">
                       <i class="' . $iconimportant . '"></i>        <a class="text-reset" target="_blank"  href="https://dict.dhamma.gift/ru/">Digital Pāḷi Dict</a> 
@@ -204,7 +201,9 @@ echo '<!--
    <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/DPD/Cone/CPD, Skr+, Wisdomlib</a>
    <script src="/assets/js/openDicts.js"></script>
 
-</li>   
+</li>  
+         <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
+ 
    
    <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Cловарь Critical Pali Dict CPD</a></li>   
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">Cловарь M. Cone Gandhari.org</a></li>   

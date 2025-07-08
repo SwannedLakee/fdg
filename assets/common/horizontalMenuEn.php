@@ -173,7 +173,6 @@ echo '<!--
 
 <ul class="dropdown-menu" aria-labelledby="MenuDict">
 
-         <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
 
                <li>
          <div class="dropdown-item ">
@@ -188,6 +187,9 @@ echo '<!--
 <script src="/assets/js/openDicts.js"></script>
 </li>  
 
+         <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
+
+         
       <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Critical Pali Dictionary CPD</a></li>   	  
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">M. Cone dictionary Gandhari.org </a></li>   
    <li><a class="dropdown-item" target="_blank" href="https://dsal.uchicago.edu/dictionaries/pali/">R. Davids, W. Stede dictionary PTS</a></li> 
