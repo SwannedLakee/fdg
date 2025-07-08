@@ -211,11 +211,11 @@ echo '<!--
 		<a class="text-reset" target="_blank"  href="https://www.learnsanskrit.cc/translate?search=&dir=au">Learnskr</a>  
        </div>
          </li> 
-
      <li>
          <div class="dropdown-item "> Pali-Skr
+        <a class="text-reset" target="_blank"   href="https://glosbe.com/pi/sa/sukha">Glosbe</a>
         <a class="text-reset" target="_blank"   href="https://sambhasha.ksu.ac.in/CompLing/pcl_1/html/Application%20home.html">Sambhasha Pali Tools</a>
-    <a class="text-reset" target="_blank" href="https://rephrasely.com/translate/translate-pali-to-sanskrit">Pl to SA AI</a>
+        <a class="text-reset" target="_blank" href="https://rephrasely.com/translate/translate-pali-to-sanskrit">Pl to SA AI</a>
        </div>
          </li>
 
