@@ -198,7 +198,13 @@ echo '<!--
          <a class="text-reset" target="_blank"   href="https://devamitta.github.io/dpd.rus/">Оффлайн</a>
        <a class="text-reset" target="_blank"  href="https://github.com/o28o/dictPlugin/tree/main?tab=readme-ov-file#for-end-users-requires-installing-browser-extention-orand-setup">Расширения</a>     
        </div>
-         </li>   
+         </li> 
+
+         <li>
+   <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/DPD/Cone/CPD, Skr+, Wisdomlib</a>
+   <script src="/assets/js/openDicts.js"></script>
+
+</li>   
    
    <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Cловарь Critical Pali Dict CPD</a></li>   
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">Cловарь M. Cone Gandhari.org</a></li>   
@@ -240,10 +246,7 @@ echo '<!--
 
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
-<li>
-   <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/DPD/Cone/CPD, Skr+, Wisdomlib</a>
-</li>  
-<script src="/assets/js/openDicts.js"></script>
+ 
 
 </ul>    
     

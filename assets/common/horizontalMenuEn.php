@@ -183,7 +183,11 @@ echo '<!--
        </div>
          </li>   
    
-   
+   <li>
+  <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS/DPD/Cone/CPD, Skr+, Wisdomlib</a>
+<script src="/assets/js/openDicts.js"></script>
+</li>  
+
       <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Critical Pali Dictionary CPD</a></li>   	  
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">M. Cone dictionary Gandhari.org </a></li>   
    <li><a class="dropdown-item" target="_blank" href="https://dsal.uchicago.edu/dictionaries/pali/">R. Davids, W. Stede dictionary PTS</a></li> 
@@ -224,10 +228,7 @@ echo '<!--
 
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
-<li>
-  <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS/DPD/Cone/CPD, Skr+, Wisdomlib</a>
-<script src="/assets/js/openDicts.js"></script>
-</li>	 		 
+		 
 
 </ul>
 
