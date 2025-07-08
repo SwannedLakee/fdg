@@ -189,7 +189,7 @@ echo '<!--
 
          <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
 
-         
+
       <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Critical Pali Dictionary CPD</a></li>   	  
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">M. Cone dictionary Gandhari.org </a></li>   
    <li><a class="dropdown-item" target="_blank" href="https://dsal.uchicago.edu/dictionaries/pali/">R. Davids, W. Stede dictionary PTS</a></li> 
@@ -224,7 +224,7 @@ echo '<!--
          <a class="text-reset" target="_blank" href="https://dictionary.sutta.org/">Sutta.org</a>
          <a class="text-reset" target="_blank" href="  https://buddhistuniversity.net/content/reference/pali-thai-english-sanskrit-dictionary
 ">Buddhist University</a>
-        <a target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Eng-Pali</a>
+        <a class="text-reset"  target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Eng-Pali</a>
            </div>
          </li>
 

@@ -203,7 +203,7 @@ echo '<!--
 
 </li>  
          <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
- 
+
    
    <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Cловарь Critical Pali Dict CPD</a></li>   
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">Cловарь M. Cone Gandhari.org</a></li>   
@@ -238,7 +238,7 @@ echo '<!--
          <a class="text-reset" target="_blank" href="https://dictionary.sutta.org/">Sutta.org</a>
          <a class="text-reset" target="_blank" href="  https://buddhistuniversity.net/content/reference/pali-thai-english-sanskrit-dictionary
 ">Buddhist University</a>
-        <a target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
+        <a class="text-reset"  target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
            </div>
          </li>
   
