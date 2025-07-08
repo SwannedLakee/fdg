@@ -783,7 +783,6 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-
 document.addEventListener('keydown', (event) => {
   // Для отладки: смотри, что нажимается
 //  console.log('Pressed:', event.code);
@@ -795,6 +794,15 @@ document.addEventListener('keydown', (event) => {
     localStorage.setItem("removePunct", currentValue ? "false" : "true");
 
     location.reload();
+  }
+});
+
+
+document.addEventListener('keydown', (event) => {
+  if (event.altKey && (event.code === 'Period' || event.code === 'KeyQ')) {
+    event.preventDefault();
+
+openDictionaries(event);
   }
 });
 
@@ -856,14 +864,14 @@ document.addEventListener("keydown", function (event) {
   }
 
   // === Ctrl + 1: Переход на домашнюю страницу ===
-  if (isCtrlPressed && event.key === "1") {
+  if (isCtrlPressed && event.code === "1") {
     event.preventDefault();
     const targetUrl = determineTargetUrl(true);
     window.location.href = targetUrl;
   }
 
   // === Ctrl + 2: Переход на read.php ===
-  if (isCtrlPressed && event.key === "2") {
+  if (isCtrlPressed && event.code === "2") {
     event.preventDefault();
     const targetUrl = determineTargetUrl(false);
     window.location.href = targetUrl;
