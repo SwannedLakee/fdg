@@ -292,6 +292,8 @@ $(document).ready(function() {
 
     <select class="dropdown droponmain rounded-pill text-muted border-2 border-primary text-center input-group-append" id="extraOptions" name="extra">
         <option value="" <?php if (isset($extra) && $p == "") echo "selected";?> ><?php echo "$liststd";?></option>
+                <option value="dictLookup" <?php if (isset($extra) && $extra == "dictLookup") echo "selected";?> ><?php echo "$dictLookup";?></option>
+
            <option value="wordRep" <?php if (isset($extra) && $extra == "wordRep") echo "selected";?> ><?php echo "$listwords";?></option>
       
         <option value="-def" <?php if (isset($extra) && $extra == "-def") echo "selected";?> ><?php echo "$listdef";?></option>
