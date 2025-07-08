@@ -178,7 +178,7 @@ echo '<!--
          <div class="dropdown-item ">
                       <i class="' . $iconimportant . '"></i>        <a class="text-reset" target="_blank"  href="https://dict.dhamma.gift/">Digital Pāḷi Dict</a> 
          <a class="text-reset" target="_blank"   href="https://digitalpalidictionary.github.io/">Offline</a>
-       <a class="text-reset" target="_blank"  href="#links">Extentions</a>     
+       <a class="text-reset" target=""  href="#links">Extentions</a>     
        </div>
          </li>   
    
