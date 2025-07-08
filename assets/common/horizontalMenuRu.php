@@ -233,7 +233,7 @@ echo '<!--
          <a class="text-reset" target="_blank" href="https://dictionary.sutta.org/">Sutta.org</a>
          <a class="text-reset" target="_blank" href="  https://buddhistuniversity.net/content/reference/pali-thai-english-sanskrit-dictionary
 ">Buddhist University</a>
-        <a class="dropdown-item" target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
+        <a target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
            </div>
          </li>
   
@@ -241,7 +241,7 @@ echo '<!--
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
 <li>
-  <i class="' . $iconimportant . '"></i> <a class="dropdown-item" href="#" onclick="openDictionaries(event)">Open PTS, Cone, CPD, DPD, Mitra, Skr+, Wisdomlib</a>
+   <a class="dropdown-item" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS, Cone, CPD, DPD, Mitra, Skr+, Wisdomlib</a>
 </li>  
 <script src="/assets/js/openDicts.js"></script>
 
