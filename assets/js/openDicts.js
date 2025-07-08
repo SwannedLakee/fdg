@@ -10,18 +10,18 @@ function openDictionaries(event) {
       base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=',
       fallback: 'https://dsal.uchicago.edu/dictionaries/pali/'
     },
-       // POST-поиск: CPD
+       
     {
-      name: 'CPD',
-      method: 'POST',
+      name: 'CPD', 
+      method: 'POST', // POST-поиск: CPD доделать 
       base: 'https://cpd.uni-koeln.de/search',
       params: { getText: '' },
       fallback: 'https://cpd.uni-koeln.de/search'
     },
 
-        // Нет поддержки поиска извне
+        
     {
-      name: 'Gandhari',
+      name: 'Gandhari', // Нет поддержки поиска извне
       method: 'NONE',
       fallback: 'https://gandhari.org/dop'
     },
@@ -38,27 +38,29 @@ function openDictionaries(event) {
       base: 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=',
       fallback: 'https://dharmamitra.org/?target_lang=english-explained'
     },
-  
-    // POST-поиск: Sanskrit-lexicon
+
     {
+      name: 'Glosbe',
+      method: 'GET',
+      base: 'https://glosbe.com/pi/sa/',
+      fallback: 'https://glosbe.com/pi/sa/'
+    },    
+      {
       name: 'MWScan',
-      method: 'POST',
-      base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php',
-      params: { key: '', transLit: 'roman' },
+      method: 'GET',
+      base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
       fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/index.php'
     },
     {
       name: 'APScan',
-      method: 'POST',
-      base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php',
-      params: { key: '', transLit: 'roman' },
+      method: 'GET',
+      base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
       fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/index.php'
     },
     {
       name: 'MDScan',
-      method: 'POST',
-      base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php',
-      params: { key: '', transLit: 'roman' },
+      method: 'GET',
+      base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
       fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/index.php'
     },
   {

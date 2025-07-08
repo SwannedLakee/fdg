@@ -227,7 +227,16 @@ echo '<!--
            </div>
          </li>
 
-  <li><a class="dropdown-item" target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали Словарь</a></li>
+
+         <li>
+         <div class="dropdown-item ">
+         <a class="text-reset" target="_blank" href="https://dictionary.sutta.org/">Sutta.org</a>
+         <a class="text-reset" target="_blank" href="  https://buddhistuniversity.net/content/reference/pali-thai-english-sanskrit-dictionary
+">Buddhist University</a>
+        <a class="dropdown-item" target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
+           </div>
+         </li>
+  
 
           <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
 
