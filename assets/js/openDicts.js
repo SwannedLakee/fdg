@@ -1,5 +1,4 @@
-
-function openDictionaries() {
+function openDictionaries(event) {
   event.preventDefault();
   const query = document.getElementById('paliauto')?.value.trim();
 
@@ -102,26 +101,3 @@ function openDictionaries() {
   });
 }
 
-
-
-
-function openDictionaries2() {
-  event.preventDefault();
-  const query = document.getElementById('paliauto')?.value.trim();
-  const dictionaries = [
-    { base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=', suffix: '', fallback: 'https://dsal.uchicago.edu/dictionaries/pali/' }, //get
-    { base: 'https://gandhari.org/dop', suffix: '', fallback: 'https://gandhari.org/dop' }, //no way
-    { base: 'https://cpd.uni-koeln.de/search?getText=', suffix: '', fallback: 'https://cpd.uni-koeln.de/search' }, //no get 
-    { base: 'https://dict.dhamma.gift/search_html?source=pwa&q=', suffix: '', fallback: 'https://dict.dhamma.gift/?source=pwa' }, //get 
-    { base: 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=', suffix: '', fallback: 'https://dharmamitra.org/?target_lang=english-explained' }, //get 
-    { base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php', suffix: '', fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/index.php' }, //post
-    { base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php', suffix: '', fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/index.php' }, //post
-    { base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php', suffix: '', fallback: ' https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/web/index.php' }, //post
-    { base: 'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input=', suffix: '', fallback: 'https://www.wisdomlib.org/' } //get
-  ];
-
-  dictionaries.forEach(({ base, suffix, fallback }) => {https://dharmamitra.org/?target_lang=english-explained&input_sentence=
-    const url = query ? (base + encodeURIComponent(query) + suffix) : fallback;
-    window.open(url, '_blank');
-  });
-}
