@@ -348,14 +348,7 @@ echo '<!--
          </div>
          </li>
 
-
-              <li>
-         <div class="dropdown-item "> 
-         <a class="text-reset" target="_blank"   href="https://readingfaithfully.org/">ReadingFaithfully.org</a>
-                   <a class="text-reset" target="_blank"  href="/assets/br/">blurbs</a>  
-       <a class="text-reset" target="_blank"  href="https://index.readingfaithfully.org/">index</a>
-       </div>
-         </li>   
+ 
      
    <li><a class="dropdown-item" target="" href="/assets/common/lunar.html"> <i class="' . $iconimportant . '"></i> Sutta based Uposattha days</a></li>
      
@@ -368,6 +361,15 @@ echo '<!--
 
    <li><a class="dropdown-item" target="_blank" href="/cse.php">Google Custom Search</a></li>
    
+
+              <li>
+         <div class="dropdown-item "> 
+         <a class="text-reset" target="_blank"   href="https://readingfaithfully.org/">ReadingFaithfully.org</a>
+                   <a class="text-reset" target="_blank"  href="/assets/br/">blurbs</a>  
+       <a class="text-reset" target="_blank"  href="https://index.readingfaithfully.org/">index</a>
+       </div>
+         </li>  
+         
               <li>
          <div class="dropdown-item ">PTS Converter
          <a class="text-reset" target="_blank"   href="https://palistudies.blogspot.com/2020/02/sutta-number-to-pts-reference-converter.html">#1</a>
