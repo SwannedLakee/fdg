@@ -183,7 +183,7 @@ echo '<!--
          </li>   
    
    <li>
-  <a class="dropdown-item" title="Open word in many dictionaries (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS/Cone/DPD/CPD/Skr+/Wisdomlib</a>
+  <a class="dropdown-item" title="Open word in PTS/Cone/DPD/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> "Magic Button"</a>
 <script src="/assets/js/openDicts.js"></script>
 </li>  
 
