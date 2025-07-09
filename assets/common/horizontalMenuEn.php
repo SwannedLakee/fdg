@@ -193,7 +193,7 @@ echo '<!--
 <li>
   <a class="dropdown-item" target="_blank" href="javascript:void(0)"
      onclick="return openWithQuery(event, \'https://cpd.uni-koeln.de/search?query={{q}}\')">
-    Critical Pali Dict CPD
+    Critical Pali Dict (CPD)
   </a>
 </li> 
 <li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://gandhari.org/dictionary?section=dop&search={{q}}\')">M. Cone dictionary Gandhari.org</a></li>
