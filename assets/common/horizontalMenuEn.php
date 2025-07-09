@@ -195,7 +195,7 @@ echo '<!--
      onclick="return openWithQuery(event, \'https://cpd.uni-koeln.de/search?query={{q}}\')">
     Critical Pali Dict CPD
   </a>
-</li>
+</li> 
 <li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://gandhari.org/dictionary?section=dop&search={{q}}\')">M. Cone dictionary Gandhari.org</a></li>
    <li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs={{q}}\')">R. Davids, W. Stede dictionary PTS</a></li>
 
