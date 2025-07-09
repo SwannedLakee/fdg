@@ -21637,10 +21637,10 @@ include $basedir . "/assets/texts/bipm.php";
         </section>
   
         <!-- Footer-->
-        <footer id="links" class="footer text-center ">
+        <footer class="footer text-center ">
                <h2 class="page-section-heading text-center text-uppercase text-white mb-5"><?php echo $head2recomlinks;?></h2>
 			   
-            <div class="container">
+            <div id="links" class="container">
 
 			<?php echo $ctaButtons;?>
               
