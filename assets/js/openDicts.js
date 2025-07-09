@@ -37,7 +37,7 @@ function openDictionaries(event) {
     {
       name: 'Gandhari', // Нет поддержки поиска извне
       method: 'GET',
-      base: 'https://gandhari.org/dop?query=',
+      base: 'https://gandhari.org/dictionary?section=dop&search=',
       fallback: 'https://gandhari.org/dop'
     },
     {
