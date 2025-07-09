@@ -198,7 +198,7 @@ echo '<!--
          </li> 
 
          <li>
-   <a class="dropdown-item" href="#" title="Открыть слово в нескольких словарях (Alt + Q)" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/Cone/DPD/CPD, Skr+, Wisdomlib</a>
+   <a class="dropdown-item" href="#" title="Открыть слово в нескольких словарях (Alt + Q)" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/Cone/DPD/CPD/Skr+/Wisdomlib</a>
    <script src="/assets/js/openDicts.js"></script>
 
 </li>  
