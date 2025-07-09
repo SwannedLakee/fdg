@@ -112,32 +112,21 @@ if (query) {
   });
 }
 
-function openWithQueryOld(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
-  event.preventDefault();
-  const query = document.getElementById('paliauto')?.value.trim();
-
-  if (!query) return;
-
-  const url = base.replace('{{q}}', encodeURIComponent(query));
-  window.open(url, '_blank');
-}
-
 function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
-  const query = document.getElementById('paliauto')?.value.trim();
-    event.preventDefault(); // отменяем переход, если пусто
+  const queryInput = document.getElementById('paliauto');
+  const query = queryInput?.value.trim() || ''; // даже если пусто, подставляем ""
 
-if (query) {
-  const message = `Copied to clipboard`;
-  showBubbleNotification(message);
-  navigator.clipboard.writeText(query).catch(err => {
-    console.warn('Clipboard copy failed:', err);
-  });
-}
+  if (query) {
+    showBubbleNotification('Copied to clipboard');
+    navigator.clipboard.writeText(query).catch(err => {
+      console.warn('Clipboard copy failed:', err);
+    });
+  }
 
   const url = base.replace('{{q}}', encodeURIComponent(query));
   const el = event.currentTarget;
 
   el.href = url;
-  // не отменяем событие, чтобы браузер продолжил переход по href и target
-  return true;
+
+  return true; // разрешаем браузеру следовать по ссылке с учетом target
 }
