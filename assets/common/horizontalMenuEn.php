@@ -357,19 +357,7 @@ echo '<!--
          </div>
          </li>
          
-              <li>
-         <div class="dropdown-item ">
-  <a class="text-reset" href="/san/d/mg.php" >Prātimokṣa</a>    
-  <a class="text-reset" href="/san/sarv.php" >sarv</a>
-    <a class="text-reset" href="/san/mg.php" >mg</a>
-    <a class="text-reset" href="/san/lo.php" >lo</a>
-    <a class="text-reset" href="/san/mu2.php" >mu2</a>
-    <a class="text-reset" href="/san/mu3.php" >mu3</a>
-         </div>
-         </li>
-
- 
-     
+   
    <li><a class="dropdown-item" target="" href="/assets/common/lunar.html"> <i class="' . $iconimportant . '"></i> Sutta based Uposattha days</a></li>
      
     <li>
@@ -381,15 +369,6 @@ echo '<!--
 
    <li><a class="dropdown-item" target="_blank" href="/cse.php">Google Custom Search</a></li>
    
-
-              <li>
-         <div class="dropdown-item "> 
-         <a class="text-reset" target="_blank"   href="https://readingfaithfully.org/">ReadingFaithfully.org</a>
-                   <a class="text-reset" target="_blank"  href="/assets/br/">blurbs</a>  
-       <a class="text-reset" target="_blank"  href="https://index.readingfaithfully.org/">index</a>
-       </div>
-         </li>  
-         
               <li>
          <div class="dropdown-item ">PTS Converter
          <a class="text-reset" target="_blank"   href="https://palistudies.blogspot.com/2020/02/sutta-number-to-pts-reference-converter.html">#1</a>
@@ -397,6 +376,14 @@ echo '<!--
        </div>
          </li>   
 
+     <li>
+         <div class="dropdown-item "> 
+         <a class="text-reset" target="_blank"   href="https://readingfaithfully.org/">ReadingFaithfully.org</a>
+                   <a class="text-reset" target="_blank"  href="/assets/br/">blurbs</a>  
+       <a class="text-reset" target="_blank"  href="https://index.readingfaithfully.org/">index</a>
+       </div>
+    </li>  
+         
    <li><a class="dropdown-item" href="/assets/linebyline.html">Line-by-line Translation Tool</a></li>   
 <li><a class="dropdown-item" href="/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
       
