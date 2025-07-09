@@ -176,7 +176,7 @@ echo '<!--
 
                <li>
          <div class="dropdown-item ">
-                      <i class="' . $iconimportant . '"></i>        <a class="text-reset" target="_blank"  href="https://dict.dhamma.gift/">Digital Pāḷi Dict</a> 
+<i class="' . $iconimportant . '"></i> <a class="text-reset" target="" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dict.dhamma.gift/search_html?source=pwa&q={{q}}\')">Digital Pāḷi Dict</a>
          <a class="text-reset" target="_blank"   href="https://digitalpalidictionary.github.io/">Offline</a>
        <a class="text-reset" target=""  href="#links">Extentions</a>     
        </div>
@@ -187,13 +187,13 @@ echo '<!--
 <script src="/assets/js/openDicts.js"></script>
 </li>  
 
-         <li><a class="dropdown-item" target="_blank" href="https://dharmamitra.org/">Mitra Translator</a></li>
+<li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a></li>
 
 
       <li><a class="dropdown-item" target="_blank" href="https://cpd.uni-koeln.de/search">Critical Pali Dictionary CPD</a></li>   	  
    <li><a class="dropdown-item" target="_blank" href="https://gandhari.org/dop">M. Cone dictionary Gandhari.org </a></li>   
-   <li><a class="dropdown-item" target="_blank" href="https://dsal.uchicago.edu/dictionaries/pali/">R. Davids, W. Stede dictionary PTS</a></li> 
-   
+   <li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs={{q}}\')">R. Davids, W. Stede dictionary PTS</a></li>
+
 
       <li>
          <div class="dropdown-item "> Skr-En
@@ -205,7 +205,7 @@ echo '<!--
 
       <li>
          <div class="dropdown-item "> Pali-Skr
-        <a class="text-reset" target="_blank"   href="https://glosbe.com/pi/sa/sukha">Glosbe</a>
+        <a class="text-reset" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://glosbe.com/pi/sa/{{q}}\')">Glosbe</a>
         <a class="text-reset" target="_blank"   href="https://sambhasha.ksu.ac.in/CompLing/pcl_1/html/Application%20home.html">Sambhasha</a>
         <a class="text-reset" target="_blank" href="https://rephrasely.com/translate/translate-pali-to-sanskrit">Pl to SA AI</a>
        </div>
@@ -228,8 +228,11 @@ echo '<!--
            </div>
          </li>
 
-          <li><a class="dropdown-item" target="_blank" href="https://Wisdomlib.org">Wisdomlib.org</a></li>
-
+<li>
+  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input={{q}}\')" target="_blank">
+    Wisdomlib.org
+  </a>
+</li>
 		 
 
 </ul>
@@ -356,7 +359,7 @@ echo '<!--
    <li><a class="dropdown-item" target="" href="/assets/common/lunar.html"> <i class="' . $iconimportant . '"></i> Sutta based Uposattha days</a></li>
      
     <li>
-  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="convertText(event)">
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event)">
     <i class="' . $iconimportant . '"></i> Aksharamukha script converter
   </a>
 </li>

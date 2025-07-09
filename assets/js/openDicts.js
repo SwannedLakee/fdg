@@ -111,14 +111,27 @@ function openDictionaries(event) {
   });
 }
 
-function convertText(event, target = 'Devanagari') {
+function openWithQueryOld(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
   event.preventDefault();
   const query = document.getElementById('paliauto')?.value.trim();
 
-  const base = 'https://www.aksharamukha.com/converter';
-  const url = query
-    ? `${base}?target=${encodeURIComponent(target)}&text=${encodeURIComponent(query)}`
-    : base;
+  if (!query) return;
 
+  const url = base.replace('{{q}}', encodeURIComponent(query));
   window.open(url, '_blank');
+}
+
+function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
+  const query = document.getElementById('paliauto')?.value.trim();
+  if (!query) {
+    event.preventDefault(); // отменяем переход, если пусто
+    return false;
+  }
+
+  const url = base.replace('{{q}}', encodeURIComponent(query));
+  const el = event.currentTarget;
+
+  el.href = url;
+  // не отменяем событие, чтобы браузер продолжил переход по href и target
+  return true;
 }
