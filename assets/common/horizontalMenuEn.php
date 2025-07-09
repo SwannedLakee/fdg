@@ -233,7 +233,8 @@ echo '<!--
                <li>
          <div class="dropdown-item ">
          <a class="text-reset" target="_blank" href="https://chatgpt.com">ChatGPT</a>
-         <a class="text-reset" target="_blank" href="https://deepseek.com">DeepSeek</a>
+    <a class="text-reset" target="_blank" href="https://gemini.google/">Gemini</a>
+         <a class="text-reset" target="_blank" href="https://chat.deepseek.com">DeepSeek</a>
       <a class="text-reset" target="_blank" href="https://norbu-ai.org/">Norbu AI</a>
            </div>
          </li>
