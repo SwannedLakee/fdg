@@ -197,8 +197,8 @@ echo '<!--
 
       <li>
          <div class="dropdown-item "> Skr-En
-        <a class="text-reset" target="_blank"   href="https://www.sanskrit-lexicon.uni-koeln.de/">Many dicts</a>
-    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">link 2</a>
+        <a class="text-reset" target="_blank"   href="https://www.sanskrit-lexicon.uni-koeln.de/">MW + Many dicts</a>
+    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">Skrdict</a>
 
 <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\')">Learnskr</a>
        </div>

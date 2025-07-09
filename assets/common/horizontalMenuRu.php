@@ -211,9 +211,9 @@ echo '<!--
 
    <li>
          <div class="dropdown-item "> Skr
-        <a class="text-reset" target="_blank"   href="https://www.sanskrit-lexicon.uni-koeln.de">разные словари</a>
+        <a class="text-reset" target="_blank"   href="https://www.sanskrit-lexicon.uni-koeln.de">MW + разные словари</a>
 
-    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">ссылка 2</a>
+    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">SkrDict</a>
 
 <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\')">Learnskr</a>
        </div>
