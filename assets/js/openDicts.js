@@ -6,12 +6,13 @@ function openDictionaries(event) {
   const query = document.getElementById('paliauto')?.value.trim();
 
 
- // Копирование в буфер обмена
-  if (query) {
-    navigator.clipboard.writeText(query).catch(err => {
-      console.warn('Clipboard copy failed:', err);
-    });
-  }
+if (query) {
+  const message = `"${query}" copied to clipboard`;
+  showBubbleNotification(message);
+  navigator.clipboard.writeText(query).catch(err => {
+    console.warn('Clipboard copy failed:', err);
+  });
+}
 
   const dictionaries = [
     // GET-поиск
