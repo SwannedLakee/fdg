@@ -7,7 +7,7 @@ function openDictionaries(event) {
 
 
 if (query) {
-  const message = `"${query}" copied to clipboard`;
+  const message = `Copied to clipboard`;
   showBubbleNotification(message);
   navigator.clipboard.writeText(query).catch(err => {
     console.warn('Clipboard copy failed:', err);
@@ -124,10 +124,15 @@ function openWithQueryOld(event, base = 'https://www.aksharamukha.com/converter?
 
 function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
   const query = document.getElementById('paliauto')?.value.trim();
-  if (!query) {
     event.preventDefault(); // отменяем переход, если пусто
-    return false;
-  }
+
+if (query) {
+  const message = `Copied to clipboard`;
+  showBubbleNotification(message);
+  navigator.clipboard.writeText(query).catch(err => {
+    console.warn('Clipboard copy failed:', err);
+  });
+}
 
   const url = base.replace('{{q}}', encodeURIComponent(query));
   const el = event.currentTarget;
