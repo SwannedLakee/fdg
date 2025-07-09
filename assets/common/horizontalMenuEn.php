@@ -205,6 +205,13 @@ echo '<!--
 <a class="text-reset" target="_blank"  href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');">MW</a>
 <a class="text-reset" href="javascript:void(0)" onclick="
   const q = document.getElementById(\'paliauto\')?.value.trim();
+  if (q) {
+  const message = `Copied to clipboard`;
+  showBubbleNotification(message);
+  navigator.clipboard.writeText(query).catch(err => {
+    console.warn(\'Clipboard copy failed:\', err);
+  });
+}
   if (!q) return false;
   window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
   window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
