@@ -21,7 +21,14 @@ function openDictionaries(event) {
       base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=',
       fallback: 'https://dsal.uchicago.edu/dictionaries/pali/'
     },
-      {
+
+        {
+      name: 'Gandhari', // Нет поддержки поиска извне
+      method: 'GET',
+      base: 'https://gandhari.org/dictionary?section=dop&search=',
+      fallback: 'https://gandhari.org/dop'
+    },
+          {
       name: 'DPD',
       method: 'GET',
       base: 'https://dict.dhamma.gift/search_html?source=pwa&q=',
@@ -34,19 +41,12 @@ function openDictionaries(event) {
       params: { getText: '' },
       fallback: 'https://cpd.uni-koeln.de/search'
     },
-    {
-      name: 'Gandhari', // Нет поддержки поиска извне
-      method: 'GET',
-      base: 'https://gandhari.org/dictionary?section=dop&search=',
-      fallback: 'https://gandhari.org/dop'
-    },
-    {
+   /* {
       name: 'DharmaMitra',
       method: 'GET',
       base: 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=',
       fallback: 'https://dharmamitra.org/?target_lang=english-explained'
-    },
-
+    },*/
     {
       name: 'Glosbe',
       method: 'GET',
