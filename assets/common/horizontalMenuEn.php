@@ -202,12 +202,15 @@ echo '<!--
 
       <li>
          <div class="dropdown-item "> Skr-En
-        <a class="text-reset" target="_blank"   href="openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');">MW</a>
-<a class="text-reset" href="javascript:void(0)" target="_blank" onclick="
-  openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');
-  openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');
-  openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');
-">+</a> <a class="text-reset" target="_blank"   href="https://www.sanskrit-lexicon.uni-koeln.de/">Many dicts</a>
+<a class="text-reset" target="_blank"  href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');">MW</a>
+<a class="text-reset" href="javascript:void(0)" onclick="
+  const q = document.getElementById(\'paliauto\')?.value.trim();
+  if (!q) return false;
+  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
+  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
+  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
+">+</a>
+ <a class="text-reset" target="_blank"   href="https://www.sanskrit-lexicon.uni-koeln.de/">Many dicts</a>
     <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">Skrdict</a>
 <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\')">Learnskr</a>
        </div>
