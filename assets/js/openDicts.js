@@ -3,7 +3,7 @@
 
 function openDictionaries(event) {
   event.preventDefault();
-  const query = document.getElementById('paliauto')?.value.trim();
+  const query = document.getElementById('paliauto')?.value.trim().toLowerCase();
 
 
 if (query) {
@@ -114,7 +114,7 @@ if (query) {
 
 function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
   const queryInput = document.getElementById('paliauto');
-  const query = queryInput?.value.trim() || ''; // даже если пусто, подставляем ""
+  const query = queryInput?.value.trim().toLowerCase() || ''; // даже если пусто, подставляем ""
 
   if (query) {
     showBubbleNotification('Copied to clipboard');
