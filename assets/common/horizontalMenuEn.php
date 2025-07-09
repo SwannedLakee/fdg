@@ -183,7 +183,7 @@ echo '<!--
          </li>   
    
    <li>
-  <a class="dropdown-item" title="Open word in PTS/Cone/DPD/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> "Magic Button"</a>
+  <a class="dropdown-item" title="Open word in PTS/Cone/DPD/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS/Cone/DPD/CPD/Skr+/Wisdoml</a>
 <script src="/assets/js/openDicts.js"></script>
 </li>  
 
@@ -201,7 +201,7 @@ echo '<!--
 
 
       <li>
-         <div class="dropdown-item "> Skr-En
+         <div class="dropdown-item "> Skr
 <a class="text-reset" target="_blank" title="Monier-Williams Sanskrit-English Dictionary, 1899" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');">MW</a>
 <a class="text-reset" title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell" href="javascript:void(0)" onclick="
   const q = document.getElementById(\'paliauto\')?.value.trim();
