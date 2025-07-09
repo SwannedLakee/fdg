@@ -164,7 +164,7 @@ echo '<!--
 </a> 
     -->
 
-<a title="AI-assistants, Dictionaries Pali and Sanskrit" class="dropdown text-decoration-none mx-1 d-md-inline-block" id="MenuDict" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+<a title="AI-assistants, Dictionaries Pali and Sanskrit. Links will use current word from search bar. \'Magic button\'(Alt + Q)" class="dropdown text-decoration-none mx-1 d-md-inline-block" id="MenuDict" data-bs-toggle="dropdown" aria-expanded="false" href="#">
   <figure class="figure d-md-inline-block">
     <i class="menu-icon fa-solid fa-book-atlas"></i>
     <figcaption class="horiz-menu-item figure-caption text-center">AI & Dicts</figcaption>   
