@@ -202,15 +202,16 @@ echo '<!--
    <script src="/assets/js/openDicts.js"></script>
 
 </li>  
-   <li>
-<a class="dropdown-item" title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
-  \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
-  \'https://gandhari.org/dictionary?section=dop&search=\'
-  \'https://cpd.uni-koeln.de/search?query=\',
-])">Pali PTS, Cone, CPD</a>
-</li>  
 
-   
+
+<li>
+  <a class="dropdown-item" title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
+    \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
+    \'https://gandhari.org/dictionary?section=dop&search=\',
+    \'https://cpd.uni-koeln.de/search?query=\'
+  ])">Pali PTS, Cone, CPD</a>
+</li>
+
 <li>
   <a class="dropdown-item" target="_blank" href="javascript:void(0)"
      onclick="return openWithQuery(event, \'https://cpd.uni-koeln.de/search?query={{q}}\')">
