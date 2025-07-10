@@ -54,17 +54,22 @@ function savePopupState() {
     localStorage.setItem('popupLeft', popup.style.left);
 }
 
-
 if (savedDict) {
     savedDict = savedDict.toLowerCase();
-} else if (window.location.pathname.includes('/r/') || window.location.pathname.includes('/ml/') || window.location.pathname.includes('/ru/')) {
-    savedDict = "standalonebwru".toLowerCase();
+} else if (window.location.pathname.includes('/r/') ||
+           window.location.pathname.includes('/ml/') ||
+           window.location.pathname.includes('/ru/')) {
+    savedDict = "standalonebwru";
 } else {
-    savedDict = "standalonebw".toLowerCase();
+    savedDict = "standalonebw";
 }
 
-if (window.location.pathname.includes('/d/') &&
-    (savedDict === "standalonebw" || savedDict === "standalonebwru")) {
+// ── Универсальная переустановка на dpdfull ──
+if (
+    window.location.pathname.includes('/d/') &&
+    (savedDict === "standalonebw" || savedDict === "standalonebwru")
+    || window.location.search.includes('script=devanagari')
+) {
     savedDict = "dpdfull";
 }
 
