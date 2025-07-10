@@ -57,14 +57,17 @@ function savePopupState() {
 
 if (savedDict) {
     savedDict = savedDict.toLowerCase();
-} else if (window.location.pathname.includes('/d/')) {
-    savedDict = "dpdFull".toLowerCase();
 } else if (window.location.pathname.includes('/r/') || window.location.pathname.includes('/ml/') || window.location.pathname.includes('/ru/')) {
     savedDict = "standalonebwru".toLowerCase();
 } else {
     savedDict = "standalonebw".toLowerCase();
 }
-        
+
+if (window.location.pathname.includes('/d/') &&
+    (savedDict === "standalonebw" || savedDict === "standalonebwru")) {
+    savedDict = "dpdfull";
+}
+
 // Устанавливаем правильный URL для словаря в зависимости от языка
 let dhammaGift;
 let dgParams;
