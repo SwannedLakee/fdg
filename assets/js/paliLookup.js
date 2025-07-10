@@ -281,90 +281,6 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
         });
     }
 
-// встроить /ru или англ заголовки и названия
-<div class="dict-dropdown-container">
-  <button class="dict-dropdown-toggle" title="Open dictionaries" onclick="toggleDictDropdown(event)">
-    Dict <span class="dropdown-arrow">▼</span>
-  </button>
-  <div class="dict-dropdown-menu">
-    <div class="dropdown-section">
-      <div class="dropdown-header">Dictionary Groups</div>
-      <a class="dropdown-item" href="javascript:void(0)" onclick="openDictionaries(event)">
-        <span class="dropdown-icon">📚</span> 4 Pali + 4 Skr + Wlib
-      </a>
-     <a class="dropdown-item" target="_blank" href="#" 
-   title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary"
-   onclick="return openWithQueryMulti(event, [
-     'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=',
-     'https://cpd.uni-koeln.de/search?query=',
-     'https://gandhari.org/dictionary?section=dop&search='
-   ])">
-  <span class="dropdown-icon">📚</span> Pali PTS, Cone, CPD
-</a>
-<a class="dropdown-item" target="_blank" href="#" 
-   title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell"
-   onclick="return openWithQueryMulti(event, [
-     'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
-     'https://www.sanskrit-lexicon.uni-koeln.de/scans/SHSScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
-     'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
-     'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key='
-   ])">
-  <span class="dropdown-icon">📚</span> Skr MW, SHS, AP, MD
-</a>
-    </div>
-    
-    <div class="dropdown-section">
-      <div class="dropdown-header">Pali Dictionaries</div>
-    <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dict.dhamma.gift/search_html?source=pwa&q=')">
-        <span class="dropdown-icon">🏛️</span> DPD Online
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=')">
-        <span class="dropdown-icon">🏛️</span> PTS Dictionary
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://gandhari.org/dictionary?section=dop&search=')">
-        <span class="dropdown-icon">🏛️</span> Cone Gandhari.org
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://cpd.uni-koeln.de/search?query=')">
-        <span class="dropdown-icon">🏛️</span> Critical Pali Dict (CPD)
-      </a>
-    </div>
-    
-    <div class="dropdown-section">
-      <div class="dropdown-header">Sanskrit Dictionaries</div>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=')">
-        <span class="dropdown-icon">📜</span> Monier-Williams
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.sanskritdictionary.com/?iencoding=iast&lang=sans&action=Search&q=')">
-        <span class="dropdown-icon">📜</span> Sanskrit Dictionary
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.learnsanskrit.cc/translate?dir=au&search=')">
-        <span class="dropdown-icon">📜</span> LearnSanskrit
-      </a>
-    </div>
-    
-    <div class="dropdown-section">
-      <div class="dropdown-header">Other Resources</div>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=')">
-        <span class="dropdown-icon">🌍</span> Mitra Translator
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input=')">
-        <span class="dropdown-icon">🌍</span> Wisdomlib
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://glosbe.com/pi/sa/')">
-        <span class="dropdown-icon">🌍</span> Glosbe Pli-Srk
-      </a>
-      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.aksharamukha.com/converter?target=&text=')">
-        <span class="dropdown-icon">🌍</span> Aksharamukha Converter
-      </a>
-    </div>
-  </div>
-</div>
-//нужно встроить вместо открытия одного словаря выпадающий список 
-
-
-
-
-
     function showSearchButton() {
         const wordForSearch = cleanedWord.replace(/'ti/, '');
         const searchBtn = document.createElement('a');
@@ -748,6 +664,9 @@ function createPopup() {
         
         <div class="dropdown-section">
             <div class="dropdown-header">${headers[lang].pali}</div>
+                   <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dict.dhamma.gift/search_html?source=pwa&q=')">
+        <span class="dropdown-icon">🏛️</span> DPD Online
+      </a>
             <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=')">
                 <span class="dropdown-icon">🏛️</span> ${lang === 'ru' ? 'PTS словарь' : 'PTS Dictionary'}
             </a>
