@@ -753,7 +753,7 @@ function createPopup() {
     `;
 
     popup.appendChild(header);
-    popup.appendChild(dictBtn);
+    popup.appendChild(dropdownContainer);
     popup.appendChild(openBtn);
     popup.appendChild(closeBtn);
     popup.appendChild(iframe);
