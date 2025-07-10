@@ -204,7 +204,7 @@ echo '<!--
 </li>  
    <li>
 <a class="dropdown-item" title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
-  \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=\',
+  \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
   \'https://gandhari.org/dictionary?section=dop&search=\'
   \'https://cpd.uni-koeln.de/search?query=\',
 ])">Pali PTS, Cone, CPD</a>
@@ -218,7 +218,7 @@ echo '<!--
   </a>
 </li>
 <li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://gandhari.org/dictionary?section=dop&search={{q}}\')">Cловарь M. Cone Gandhari.org</a></li>
-<li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs={{q}}\')">Cловарь R. Davids, W. Stede PTS</a></li>
+<li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs={{q}}\')">Cловарь R. Davids, W. Stede PTS</a></li>
 
    <li>
          <div class="dropdown-item "> Skr

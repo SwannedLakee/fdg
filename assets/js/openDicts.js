@@ -19,7 +19,7 @@ if (query) {
     {
       name: 'PTS',
       method: 'GET',
-      base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=',
+      base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=',
       fallback: 'https://dsal.uchicago.edu/dictionaries/pali/'
     },
 
@@ -139,15 +139,16 @@ function openWithQueryMulti(event, baseUrls) {
   const searchInput = document.getElementById('paliauto');
   const query = searchInput?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
   
-  if (!query) {
-    showBubbleNotification('Please enter a search query');
-    return false;
-  }
 
   // 2. Копируем в буфер обмена
-  navigator.clipboard.writeText(query)
-    .then(() => showBubbleNotification('Query copied: ' + query))
-    .catch(err => console.error('Copy failed:', err));
+  
+  if (query) {
+    showBubbleNotification('Copied to clipboard');
+    navigator.clipboard.writeText(query).catch(err => {
+      console.warn('Clipboard copy failed:', err);
+    });
+  }
+
 
   // 3. Формируем и открываем URL для каждого словаря
   const encodedQ = encodeURIComponent(query);
