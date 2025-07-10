@@ -254,9 +254,116 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     const wordForSearch = cleanedWord.replace(/'ti/, '');
     openBtn.href = `${dhammaGift}${encodeURIComponent(wordForSearch)}${dgParams}`;
 
-    const dictBtn = document.querySelector('.dict-btn');
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
-    dictBtn.href = dictSearchUrl;
+    // Update dropdown language if needed
+    const dropdown = document.querySelector('.dict-dropdown-container');
+    if (dropdown) {
+        const lang = savedDict.includes("ru") ? "ru" : "en";
+        const headers = {
+            "en": {
+                "groups": "Dictionary Groups",
+                "pali": "Pali Dictionaries", 
+                "sanskrit": "Sanskrit Dictionaries",
+                "other": "Other Resources"
+            },
+            "ru": {
+                "groups": "Группы словарей",
+                "pali": "Пали словари",
+                "sanskrit": "Санскрит словари",
+                "other": "Другие ресурсы"
+            }
+        };
+
+        dropdown.querySelectorAll('.dropdown-header').forEach((header, index) => {
+            const sectionType = index === 0 ? 'groups' : 
+                              index === 1 ? 'pali' : 
+                              index === 2 ? 'sanskrit' : 'other';
+            header.textContent = headers[lang][sectionType];
+        });
+    }
+
+// встроить /ru или англ заголовки и названия
+<div class="dict-dropdown-container">
+  <button class="dict-dropdown-toggle" title="Open dictionaries" onclick="toggleDictDropdown(event)">
+    Dict <span class="dropdown-arrow">▼</span>
+  </button>
+  <div class="dict-dropdown-menu">
+    <div class="dropdown-section">
+      <div class="dropdown-header">Dictionary Groups</div>
+      <a class="dropdown-item" href="javascript:void(0)" onclick="openDictionaries(event)">
+        <span class="dropdown-icon">📚</span> 4 Pali + 4 Skr + Wlib
+      </a>
+     <a class="dropdown-item" target="_blank" href="#" 
+   title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary"
+   onclick="return openWithQueryMulti(event, [
+     'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=',
+     'https://cpd.uni-koeln.de/search?query=',
+     'https://gandhari.org/dictionary?section=dop&search='
+   ])">
+  <span class="dropdown-icon">📚</span> Pali PTS, Cone, CPD
+</a>
+<a class="dropdown-item" target="_blank" href="#" 
+   title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell"
+   onclick="return openWithQueryMulti(event, [
+     'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
+     'https://www.sanskrit-lexicon.uni-koeln.de/scans/SHSScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
+     'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
+     'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key='
+   ])">
+  <span class="dropdown-icon">📚</span> Skr MW, SHS, AP, MD
+</a>
+    </div>
+    
+    <div class="dropdown-section">
+      <div class="dropdown-header">Pali Dictionaries</div>
+    <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dict.dhamma.gift/search_html?source=pwa&q=')">
+        <span class="dropdown-icon">🏛️</span> DPD Online
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=')">
+        <span class="dropdown-icon">🏛️</span> PTS Dictionary
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://gandhari.org/dictionary?section=dop&search=')">
+        <span class="dropdown-icon">🏛️</span> Cone Gandhari.org
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://cpd.uni-koeln.de/search?query=')">
+        <span class="dropdown-icon">🏛️</span> Critical Pali Dict (CPD)
+      </a>
+    </div>
+    
+    <div class="dropdown-section">
+      <div class="dropdown-header">Sanskrit Dictionaries</div>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=')">
+        <span class="dropdown-icon">📜</span> Monier-Williams
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.sanskritdictionary.com/?iencoding=iast&lang=sans&action=Search&q=')">
+        <span class="dropdown-icon">📜</span> Sanskrit Dictionary
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.learnsanskrit.cc/translate?dir=au&search=')">
+        <span class="dropdown-icon">📜</span> LearnSanskrit
+      </a>
+    </div>
+    
+    <div class="dropdown-section">
+      <div class="dropdown-header">Other Resources</div>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=')">
+        <span class="dropdown-icon">🌍</span> Mitra Translator
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input=')">
+        <span class="dropdown-icon">🌍</span> Wisdomlib
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://glosbe.com/pi/sa/')">
+        <span class="dropdown-icon">🌍</span> Glosbe Pli-Srk
+      </a>
+      <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.aksharamukha.com/converter?target=&text=')">
+        <span class="dropdown-icon">🌍</span> Aksharamukha Converter
+      </a>
+    </div>
+  </div>
+</div>
+//нужно встроить вместо открытия одного словаря выпадающий список 
+
+
+
+
 
     function showSearchButton() {
         const wordForSearch = cleanedWord.replace(/'ti/, '');
@@ -565,24 +672,126 @@ function createPopup() {
         </svg>
     `;
 
-    const dictBtn = document.createElement('a');
-    dictBtn.classList.add('dict-btn');
-    dictBtn.style.position = 'absolute';
-    dictBtn.style.top = '10px';
-    dictBtn.style.right = '80px';
-    dictBtn.style.background = 'rgba(45, 62, 80, 0.6)';
-    dictBtn.style.color = 'rgba(255, 255, 255, 0.8)';
-    dictBtn.style.cursor = 'pointer';
-    dictBtn.style.width = '30px';
-    dictBtn.style.height = '30px';
-    dictBtn.style.borderRadius = '50%';
-    dictBtn.style.display = 'flex';
-    dictBtn.style.alignItems = 'center';
-    dictBtn.style.justifyContent = 'center';
-    dictBtn.style.textDecoration = 'none';
-    dictBtn.target = '_blank';
-    dictBtn.title = 'Open in dict.dhamma.gift';
-    dictBtn.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
+    // Create dropdown container
+    const dropdownContainer = document.createElement('div');
+    dropdownContainer.className = 'dict-dropdown-container';
+    dropdownContainer.style.position = 'absolute';
+    dropdownContainer.style.top = '10px';
+    dropdownContainer.style.right = '80px';
+
+    // Create dropdown toggle button
+    const dropdownToggle = document.createElement('button');
+    dropdownToggle.className = 'dict-dropdown-toggle';
+    dropdownToggle.title = 'Open dictionaries';
+    dropdownToggle.onclick = toggleDictDropdown;
+    dropdownToggle.style.background = 'rgba(45, 62, 80, 0.6)';
+    dropdownToggle.style.color = 'rgba(255, 255, 255, 0.8)';
+    dropdownToggle.style.cursor = 'pointer';
+    dropdownToggle.style.width = '30px';
+    dropdownToggle.style.height = '30px';
+    dropdownToggle.style.borderRadius = '50%';
+    dropdownToggle.style.display = 'flex';
+    dropdownToggle.style.alignItems = 'center';
+    dropdownToggle.style.justifyContent = 'center';
+    dropdownToggle.style.textDecoration = 'none';
+    dropdownToggle.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
+
+    // Create dropdown menu
+    const dropdownMenu = document.createElement('div');
+    dropdownMenu.className = 'dict-dropdown-menu';
+    dropdownMenu.style.display = 'none';
+
+    // Add dropdown sections with language-specific headers
+    const lang = savedDict.includes("ru") ? "ru" : "en";
+    const headers = {
+        "en": {
+            "groups": "Dictionary Groups",
+            "pali": "Pali Dictionaries", 
+            "sanskrit": "Sanskrit Dictionaries",
+            "other": "Other Resources"
+        },
+        "ru": {
+            "groups": "Группы словарей",
+            "pali": "Пали словари",
+            "sanskrit": "Санскрит словари",
+            "other": "Другие ресурсы"
+        }
+    };
+
+    // Add dropdown content
+    dropdownMenu.innerHTML = `
+        <div class="dropdown-section">
+            <div class="dropdown-header">${headers[lang].groups}</div>
+            <a class="dropdown-item" href="javascript:void(0)" onclick="openDictionaries(event)">
+                <span class="dropdown-icon">📚</span> ${lang === 'ru' ? '4 Пали + 4 Скр + Wlib' : '4 Pali + 4 Skr + Wlib'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="#" 
+               title="${lang === 'ru' ? 'PTS Пали словарь + Critical Pali Dictionary + Gandhari Dictionary' : 'PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary'}"
+               onclick="return openWithQueryMulti(event, [
+                 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=',
+                 'https://cpd.uni-koeln.de/search?query=',
+                 'https://gandhari.org/dictionary?section=dop&search='
+               ])">
+                <span class="dropdown-icon">📚</span> ${lang === 'ru' ? 'Пали PTS, Cone, CPD' : 'Pali PTS, Cone, CPD'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="#" 
+               title="${lang === 'ru' ? 'Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell' : 'Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell'}"
+               onclick="return openWithQueryMulti(event, [
+                 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
+                 'https://www.sanskrit-lexicon.uni-koeln.de/scans/SHSScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
+                 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
+                 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key='
+               ])">
+                <span class="dropdown-icon">📚</span> ${lang === 'ru' ? 'Скр MW, SHS, AP, MD' : 'Skr MW, SHS, AP, MD'}
+            </a>
+        </div>
+        
+        <div class="dropdown-section">
+            <div class="dropdown-header">${headers[lang].pali}</div>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=')">
+                <span class="dropdown-icon">🏛️</span> ${lang === 'ru' ? 'PTS словарь' : 'PTS Dictionary'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://gandhari.org/dictionary?section=dop&search=')">
+                <span class="dropdown-icon">🏛️</span> ${lang === 'ru' ? 'Cone Gandhari.org' : 'Cone Gandhari.org'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://cpd.uni-koeln.de/search?query=')">
+                <span class="dropdown-icon">🏛️</span> ${lang === 'ru' ? 'Critical Pali Dict (CPD)' : 'Critical Pali Dict (CPD)'}
+            </a>
+        </div>
+        
+        <div class="dropdown-section">
+            <div class="dropdown-header">${headers[lang].sanskrit}</div>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=')">
+                <span class="dropdown-icon">📜</span> ${lang === 'ru' ? 'Monier-Williams' : 'Monier-Williams'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.sanskritdictionary.com/?iencoding=iast&lang=sans&action=Search&q=')">
+                <span class="dropdown-icon">📜</span> ${lang === 'ru' ? 'Санскрит словарь' : 'Sanskrit Dictionary'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.learnsanskrit.cc/translate?dir=au&search=')">
+                <span class="dropdown-icon">📜</span> ${lang === 'ru' ? 'LearnSanskrit' : 'LearnSanskrit'}
+            </a>
+        </div>
+        
+        <div class="dropdown-section">
+            <div class="dropdown-header">${headers[lang].other}</div>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=')">
+                <span class="dropdown-icon">🌍</span> ${lang === 'ru' ? 'Mitra Переводчик' : 'Mitra Translator'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input=')">
+                <span class="dropdown-icon">🌍</span> ${lang === 'ru' ? 'Wisdomlib' : 'Wisdomlib'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://glosbe.com/pi/sa/')">
+                <span class="dropdown-icon">🌍</span> ${lang === 'ru' ? 'Glosbe Пли-Срк' : 'Glosbe Pli-Srk'}
+            </a>
+            <a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="return openWithQuery(event, 'https://www.aksharamukha.com/converter?target=&text=')">
+                <span class="dropdown-icon">🌍</span> ${lang === 'ru' ? 'Aksharamukha Конвертер' : 'Aksharamukha Converter'}
+            </a>
+        </div>
+    `;
+
+    // Assemble dropdown
+    dropdownContainer.appendChild(dropdownToggle);
+    dropdownContainer.appendChild(dropdownMenu);
 
     const iframe = document.createElement('iframe');
     iframe.src = '';
@@ -928,6 +1137,38 @@ function cleanWord(word) {
         .toLowerCase();
 }
 
+
+
+function toggleDictDropdown(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const container = event.currentTarget.closest('.dict-dropdown-container');
+  const dropdown = container.querySelector('.dict-dropdown-menu');
+  
+  // Закрыть все открытые dropdowns
+  document.querySelectorAll('.dict-dropdown-menu.show').forEach(el => {
+    if (el !== dropdown) el.classList.remove('show');
+  });
+  
+  // Переключить текущий dropdown
+  container.classList.toggle('show');
+  dropdown.classList.toggle('show');
+  
+  // Закрытие при клике вне дропдауна
+  const closeHandler = function(e) {
+    if (!container.contains(e.target)) {
+      container.classList.remove('show');
+      dropdown.classList.remove('show');
+      document.removeEventListener('click', closeHandler);
+    }
+  };
+  
+  document.addEventListener('click', closeHandler);
+}
+
+
+
 // Функция для транслитерации слова
 /*
 function transliterateWord(word) {
@@ -952,6 +1193,3 @@ function transliterateWord(word) {
     });
 }
 */
-
-
-
