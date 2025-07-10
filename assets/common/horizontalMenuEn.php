@@ -188,13 +188,13 @@ echo '<!--
 </li>  
 
 <li>
-  <a class="dropdown-item" title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
+  <a class="dropdown-item" title="PTS Pali Dictionary + Gandhari Dictionary + Digital Pali Dictionary + Critical Pali Dictionary " href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
     \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
     \'https://gandhari.org/dictionary?section=dop&search=\',
+    \'https://dict.dhamma.gift/search_html?source=pwa&q=\',
     \'https://cpd.uni-koeln.de/search?query=\'
-  ])">Pali PTS, Cone, CPD</a>
+  ])">Pali PTS, Cone, DPD, CPD</a>
 </li>
-
 
 <li>
   <a class="dropdown-item" target="_blank" href="javascript:void(0)"
