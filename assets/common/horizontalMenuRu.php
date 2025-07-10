@@ -202,7 +202,13 @@ echo '<!--
    <script src="/assets/js/openDicts.js"></script>
 
 </li>  
-<li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a></li>
+   <li>
+<a class="dropdown-item" title="PTS Pali Dictionary + Critical Pali Dictionary + Gandhari Dictionary" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
+  \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?searchhws=yes&matchtype=default&qs=\',
+  \'https://gandhari.org/dictionary?section=dop&search=\'
+  \'https://cpd.uni-koeln.de/search?query=\',
+])">Pali PTS, Cone, CPD</a>
+</li>  
 
    
 <li>
@@ -217,19 +223,13 @@ echo '<!--
    <li>
          <div class="dropdown-item "> Skr
 <a class="text-reset" target="_blank" title="Monier-Williams Sanskrit-English Dictionary, 1899" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');">MW</a>
-<a class="text-reset" title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell" href="javascript:void(0)" onclick="
-  const q = document.getElementById(\'paliauto\')?.value.trim();
-  if (!q) return false;
-  const message = `Copied to clipboard`;
-  showBubbleNotification(message);
-  navigator.clipboard.writeText(q).catch(err => {
-    console.warn(\'Clipboard copy failed:\', err);
-  });
-  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
-  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/SHSScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
-  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
-  window.open(\'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\' + encodeURIComponent(q), \'_blank\');
-">+</a>
+<a class="text-reset" title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
+  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\',
+  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/SHSScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\',
+  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\',
+  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\'
+])">+</a>
+
  <a class="text-reset" target="_blank" title="Все доступные Скр словари на сайте Cologne University"  href="https://www.sanskrit-lexicon.uni-koeln.de/">Много Словарей</a>
     <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">SkrDict</a>
 
@@ -262,7 +262,8 @@ echo '<!--
         <a class="text-reset"  target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
            </div>
          </li>
-  
+  <li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a></li>
+
 <li>
   <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input={{q}}\')" target="_blank">
     Wisdomlib.org

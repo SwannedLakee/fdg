@@ -3,7 +3,7 @@
 
 function openDictionaries(event) {
   event.preventDefault();
-  const query = document.getElementById('paliauto')?.value.trim().toLowerCase();
+  const query = document.getElementById('paliauto')?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ');
 
 
 if (query) {
@@ -114,7 +114,7 @@ if (query) {
 
 function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
   const queryInput = document.getElementById('paliauto');
-  const query = queryInput?.value.trim().toLowerCase() || ''; // даже если пусто, подставляем ""
+  const query = queryInput?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || ''; // даже если пусто, подставляем ""
 
   if (query) {
     showBubbleNotification('Copied to clipboard');
@@ -129,4 +129,36 @@ function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?tar
   el.href = url;
 
   return true; // разрешаем браузеру следовать по ссылке с учетом target
+}
+
+
+function openWithQueryMulti(event, baseUrls) {
+  event.preventDefault();
+  
+  // 1. Получаем текущее значение из поля поиска
+  const searchInput = document.getElementById('paliauto');
+  const query = searchInput?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
+  
+  if (!query) {
+    showBubbleNotification('Please enter a search query');
+    return false;
+  }
+
+  // 2. Копируем в буфер обмена
+  navigator.clipboard.writeText(query)
+    .then(() => showBubbleNotification('Query copied: ' + query))
+    .catch(err => console.error('Copy failed:', err));
+
+  // 3. Формируем и открываем URL для каждого словаря
+  const encodedQ = encodeURIComponent(query);
+  baseUrls.forEach((baseUrl, index) => {
+    const finalUrl = baseUrl + encodedQ;
+    
+    setTimeout(() => {
+      console.log('Opening:', finalUrl);
+      window.open(finalUrl, '_blank');
+    }, 1 * index); // Небольшая задержка между открытием вкладок
+  });
+
+  return false;
 }
