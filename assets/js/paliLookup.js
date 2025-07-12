@@ -81,16 +81,16 @@ let dictUrl;
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
     dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
-  dictUrl = "https://dict.dhamma.gift";
+  dictUrl = "https://d.dhamma.gift";
 //dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
     dhammaGift = 'https://dhamma.gift';
-    dictUrl = "https://dict.dhamma.gift";
+    dictUrl = "https://d.dhamma.gift";
     //dictUrl = "https://dpdict.net";
   }
   else {
     dhammaGift = 'https://dhamma.gift';
-    dictUrl = "https://dict.dhamma.gift";
+    dictUrl = "https://d.dhamma.gift";
 }
 
 if (window.location.href.includes('/r/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
@@ -263,7 +263,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     openBtn.href = `${dhammaGift}${encodeURIComponent(wordForSearch)}${dgParams}`;
 
     const dictBtn = document.querySelector('.dict-btn');
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+    const dictSearchUrl = `https://d.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
     dictBtn.href = dictSearchUrl;
 
     function showSearchButton() {
@@ -451,7 +451,7 @@ function lookupWordInStandaloneDict(word) {
     word = word.replace(/[’”'"]/g, "").replace(/ṁ/g, "ṃ");
 
     // Создаем URL для поиска слова в словаре
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+    const dictSearchUrl = `https://d.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
 
     // Проверяем, есть ли слово как ключ в dpd_i2h
     if (word in dpd_i2h) {
