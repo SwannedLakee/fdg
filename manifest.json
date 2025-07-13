@@ -3,7 +3,7 @@
     "short_name": "Dhamma.Gift",
     "description": "Sutta & Vinaya Search. Read. Multi-Tool.",
     "id": "DG",
-    "lang": "ru",
+    "lang": "en",
     "handle_links": "auto",
     "launch_handler": {
         "client_mode": "focus-existing"
@@ -90,13 +90,13 @@
             "origin": "*.dict.dhamma.gift"
         }
     ],
-    "start_url": "/ru/?source=pwa",
+    "start_url": "/?source=pwa",
     "scope": "/",
     "display": "minimal-ui",
     "background_color": "#2E3E50",
     "theme_color": "#000000",
     "share_target": {
-        "action": "/ru/",
+        "action": "/",
         "method": "GET",
         "enctype": "application/x-www-form-urlencoded",
         "params": {
@@ -106,7 +106,7 @@
     "shortcuts": [
         {
             "name": "DG Read",
-            "url": "/ru/read.php",
+            "url": "/read.php",
             "icons": [
                 {
                     "src": "/assets/img/maniIcon.png",
@@ -117,7 +117,7 @@
         },
         {
             "name": "Dict.Dhamma.Gift",
-            "url": "/ru/assets/openDDG.html",
+            "url": "/assets/openDDG.html",
             "icons": [
                 {
                     "src": "/assets/svg/dpd-logo-dark.svg",
@@ -128,7 +128,7 @@
         },
         {
             "name": "Bhikkhu Patimokkha",
-            "url": "/ru/pm.php?expand=true",
+            "url": "/pm.php?expand=true",
             "icons": [
                 {
                     "src": "/assets/img/monkIcon.png",
@@ -139,7 +139,7 @@
         },
         {
             "name": "Bhikkhuni Patimokkha",
-            "url": "/ru/bipm.php?expand=true",
+            "url": "/bipm.php?expand=true",
             "icons": [
                 {
                     "src": "/assets/img/nunIcon.png",
@@ -150,7 +150,7 @@
         },
         {
             "name": "Aksharamukha.com",
-            "url": "/ru/assets/openDDG.html?url=https://www.aksharamukha.com/converter",
+            "url": "/assets/openDDG.html?url=https://www.aksharamukha.com/converter",
             "icons": [
                 {
                     "src": "/assets/img/maniIcon.png",
@@ -161,7 +161,7 @@
         },
         {
             "name": "Dharmamitra.org",
-            "url": "/ru/assets/openDDG.html?url=https://dharmamitra.org/",
+            "url": "/assets/openDDG.html?url=https://dharmamitra.org/",
             "icons": [
                 {
                     "src": "/assets/img/maniIcon.png",
