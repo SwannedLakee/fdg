@@ -1258,3 +1258,13 @@ html {
   scrollbar-width: thin !important;
   scrollbar-color: #555 #222 !important;
 }
+
+ input.searchinput-read {
+  min-width: 230px !important;
+}
+
+@media (max-width: 768px) {
+  input.searchinput-read {
+    max-width: 230px !important;
+  }
+}
