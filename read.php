@@ -225,7 +225,7 @@ if (isset($_GET['q'])) {
        id="paliauto"
        placeholder="e.g. Kāyagat or sn56.11"
        value="<?php echo $q; ?>"
-       style="max-width: 230px;">
+       style="min-width: 230px;">
   <button type="button" id="clearbtn" class="btn btn-sm ms-1 me-1 rounded-pill">
     <i class="fas fa-times" aria-hidden="true"></i>
     <span class="visually-hidden"><?php echo $clearaption;?></span>
@@ -233,7 +233,7 @@ if (isset($_GET['q'])) {
 </div>
 
 
-<div class="input-group-append">
+<div class="input-group-append mt-1">
 <button onclick="document.getElementById( 'spinner' ).style.display = 'block'" type="submit" id="searchbtn" class="btn btn-primary mainbutton ms-1 me-1 rounded-pill ">
 <i class="fas fa-search fa-flip-horizontal" aria-hidden="true"></i>
     <span class="visually-hidden"><?php echo $searchcaption;?></span>
