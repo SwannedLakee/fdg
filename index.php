@@ -202,7 +202,7 @@ function updateURL(params) {
    <img loading="lazy" alt="Precise search in Pali Suttas and Vinaya" src="/assets/img/dhammafindlogo.webp"  style="width:100px;"></a>
 
             
-                <a class="navbar-brand mobile-none" href="/">Dhamma.Gift</a>
+                <a class="navbar-brand mobile-none" href="<?php echo $mainpage;?>">Dhamma.Gift</a>
                 <button class="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                    <?php echo $menu;?>
                     <i class="fas fa-bars"></i>
