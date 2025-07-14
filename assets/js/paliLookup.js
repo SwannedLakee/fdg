@@ -126,9 +126,9 @@ else if (savedDict === "standalonebwru") {
 }
 
 
-if (savedDict === "machinetranslation") {
-  dictUrl = "https://dharmamitra.org/?target_lang=english-explained&input_sentence="; // Используем standalone-словарь
-}
+//if (savedDict === "machinetranslation") {
+//  dictUrl = "https://dharmamitra.org/?target_lang=english-explained&input_sentence="; // Используем standalone-словарь
+//}
 
 // Функция для отложенной загрузки скриптов standalone-словаря
 // Cache for tracking loaded scripts
