@@ -157,19 +157,20 @@ var themeValue = localStorage.theme;
 //console.log("Значение theme:", themeValue);
 
 // Проверяем, существует ли уже themeObserver, и создаем новый только если его нет
-const themeObserver = window.themeObserver || new MutationObserver((mutations) => {
-  mutations.forEach(mutation => {
-    if (mutation.attributeName === 'data-bs-theme') {
-      updateDropdownMenus();
-    }
+
+if (!window.themeObserver) {
+  window.themeObserver = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      if (mutation.attributeName === 'data-bs-theme') {
+        updateDropdownMenus();
+      }
+    });
   });
-});
 
-// Сохраняем в window для последующих проверок
-window.themeObserver = themeObserver;
+  // Начинаем наблюдение за <html> элементом
+  window.themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-bs-theme']
+  });
+}
 
-// Начинаем наблюдение за <html> элементом
-themeObserver.observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ['data-bs-theme']
-});
