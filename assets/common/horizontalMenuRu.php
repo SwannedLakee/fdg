@@ -264,6 +264,11 @@ echo '<!--
     Wisdomlib.org
   </a>
 </li>
+<li>
+  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'/cse.php?q={{q}}\')" target="_blank">
+    Google Custom Search
+  </a>
+</li>
 
 </ul>    
     
@@ -393,8 +398,6 @@ echo '<!--
   </a>
 </li>
 
-
-   <li><a class="dropdown-item" target="_blank" href="/cse.php">Google Custom Search</a></li>
 
 
               <li>

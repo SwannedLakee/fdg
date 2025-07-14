@@ -196,12 +196,12 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     if (!translation) {
     translation = isRussian ? 
             `<div style="padding: 10px;">
-                <strong>${word}</strong> не найдено во встроенном словаре.
-                <br><br><a href="${dictSearchUrl}" target="_blank">Искать онлайн</a>
+                <a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a> не найдено во встроенном словаре.
+                <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать онлайн</a>
             </div>` :
             `<div style="padding: 10px;">
-                <strong>${word}</strong> not found in built-in dictionary.
-                <br><br><a href="${dictSearchUrl}" target="_blank">Search online</a>
+                <strong><a href="${dictSearchUrl}" target="_blank">${word}</a></strong> is not found in the built-in dictionary.
+                <br><br><a href="https://dhamma.gift/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search online</a>
             </div>`;
     } 
 
@@ -287,7 +287,6 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     openBtn.href = `${dhammaGift}${encodeURIComponent(wordForSearch)}${dgParams}`;
 
     const dictBtn = document.querySelector('.dict-btn');
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
     dictBtn.href = dictSearchUrl;
 
     function showSearchButton() {

@@ -255,7 +255,13 @@ echo '<!--
     Wisdomlib.org
   </a>
 </li>
-		 
+
+<li>
+  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'/cse.php?q={{q}}\')" target="_blank">
+    Google Custom Search
+  </a>
+</li>
+
 
 </ul>
 
@@ -366,9 +372,6 @@ echo '<!--
     <i class="' . $iconimportant . '"></i> Aksharamukha script converter
   </a>
 </li>
-
-
-   <li><a class="dropdown-item" target="_blank" href="/cse.php">Google Custom Search</a></li>
    
               <li>
          <div class="dropdown-item ">PTS Converter
