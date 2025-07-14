@@ -1653,7 +1653,7 @@ echo "<span class=\"pli-lang inputscript-ISOPali\" lang=\"pi\">$quote_pi<a targe
 [[ "$quote_ln" != "" ]] && 
 echo "<span class=\"eng-lang text-muted font-weight-light\" lang=\"en\">$quote_ln</span>" 
 [[ "$quote_var" != "" ]] && 
-echo "<span class=\"eng-lang text-muted font-weight-light\" lang=\"en\">$quote_var</span>" 
+echo "<span class=\"pli-lang inputscript-ISOPali text-muted font-weight-light\" lang=\"en\">$quote_var</span>" 
 echo '<br class="styled">' 
 
 echo "</p></td>
