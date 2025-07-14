@@ -2520,7 +2520,7 @@
 "sn35.237":{"pi":"Dutiyahatthapādopamasutta ","en":"The Simile of Hands and Feet (2nd) ","mtph":1,"ru":"Пример с руками и ногами Первая (o)"},
 "sn35.238":{"pi":"Āsīvisopamasutta ","en":"The Simile of the Vipers ","mtph":13,"ru":"Подобно Гадюкам (o)"},
 "sn35.239":{"pi":"Rathopamasutta ","en":"The Simile of the Chariot ","mtph":3,"ru":"Подобно Колеснице"},
-"sn35.240":{"pi":"Kummopamasutta ","en":"The Simile of the Tortoise ","mtph":1,"ru":"Подобно Черепахе "},
+"sn35.240":{"pi":"Kummopamasutta ","en":"The Simile of the Tortoise ","mtph":1,"ru":"Подобно Черепахе  (o)"},
 "sn35.241":{"pi":"Paṭhamadārukkhandhopamasutta ","en":"The Simile of the Tree Trunk (1st) ","mtph":6,"ru":"Подобно Стволу Дерева Первая"},
 "sn35.242":{"pi":"Dutiyadārukkhandhopamasutta ","en":"The Simile of the Tree Trunk (2nd) ","mtph":1,"ru":"Подобно Стволу Дерева Вторая"},
 "sn35.243":{"pi":"Avassutapariyāyasutta ","en":"The Explanation on the Corrupt ","mtph":2,"ru":"Объяснение об Испорченности"},
