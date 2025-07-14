@@ -513,7 +513,7 @@ function lookupWordInStandaloneDict(word) {
 
     
       // Если слово не найдено ни в одном словаре
-    if (!found) {
+  /*  if (!found) {
         if (isRussian) {
             out = `<div style="padding: 10px; ">
                 <strong>${word}</strong> не найдено во встроенном словаре.
@@ -525,7 +525,7 @@ function lookupWordInStandaloneDict(word) {
                 <br><br><a href="${dictSearchUrl}" target="_blank">Search online</a>
             </div>`;
         }
-    }
+    }*/
 
     return out.replace(/ṃ/g, "ṁ");
 }
