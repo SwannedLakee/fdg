@@ -200,8 +200,8 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
                 <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать онлайн</a>
             </div>` :
             `<div style="padding: 10px;">
-                <strong><a href="${dictSearchUrl}" target="_blank">${word}</a></strong> is not found in the built-in dictionary.
-                <br><br><a href="https://dhamma.gift/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search online</a>
+                <strong><a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">${word}</a></strong> is not found in the built-in dictionary.
+                <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search online</a>
             </div>`;
     } 
 
