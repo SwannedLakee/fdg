@@ -4447,7 +4447,7 @@
 "ja546":{"pi":"Vidhurajātaka ","en":"","mtph":2},
 "ja547":{"pi":"Vessantarajātaka ","en":"","mtph":10},
 "pli-tv-bu-pm":{"pi":"Bhikkhupātimokkha ","en":"The Bhikkhus Code of Discipline ","mtph":""},
-"pli-tv-bu-vb-as1-7":{"pi":"Adhikaraṇasamatha ","en":"Settling Disputes ","mtph":""}, 
+"pli-tv-bu-vb-as1-7":{"pi":"Adhikaraṇasamatha ","en":"Settling Disputes ","mtph":""},
 "pli-tv-bu-vb-ay1":{"pi":"1. Paṭhamaaniyatasikkhāpada ","en":"The first undetermined training rule ","mtph":""},
 "pli-tv-bu-vb-ay2":{"pi":"2. Dutiyaaniyatasikkhāpada ","en":"The second undetermined training rule ","mtph":""},
 "pli-tv-bu-vb-np1":{"pi":"1. Kathinasikkhāpada ","en":"The training rule on the robe season ","mtph":""},
@@ -4668,9 +4668,8 @@
 "pli-tv-bu-vb-ss11":{"pi":"11. Bhedānuvattakasikkhāpada ","en":"The training rule on supporting a schism ","mtph":""},
 "pli-tv-bu-vb-ss12":{"pi":"12. Dubbacasikkhāpada ","en":"The training rule on being difficult to correct ","mtph":""},
 "pli-tv-bu-vb-ss13":{"pi":"13. Kuladūsakasikkhāpada ","en":"The training rule on corrupters of families ","mtph":""},
-
 "pli-tv-bi-pm":{"pi":"Bhikkhunipātimokkha ","en":"The Bhikkhunis Code of Discipline ","mtph":""},
-"pli-tv-bi-vb-as1-7":{"pi":"Adhikaraṇasamatha ","en":"Settling Disputes ","mtph":""}, 
+"pli-tv-bi-vb-as1-7":{"pi":"Adhikaraṇasamatha ","en":"Settling Disputes ","mtph":""},
 "pli-tv-bi-vb-np1":{"pi":"1. Pattasannicayasikkhāpada ","en":"The training rule on collections of almsbowls ","mtph":""},
 "pli-tv-bi-vb-np2":{"pi":"2. Akālacīvarabhājanasikkhāpada ","en":"The training rule on distributing out-of-season robe-cloth ","mtph":""},
 "pli-tv-bi-vb-np3":{"pi":"3. Cīvaraparivattanasikkhāpada ","en":"The training rule on trading robes ","mtph":""},
@@ -4795,8 +4794,6 @@
 "pli-tv-bi-vb-ss11":{"pi":"11. Adhikaraṇakupitasikkhāpada ","en":"The training rule on being angry about a legal issue ","mtph":""},
 "pli-tv-bi-vb-ss12":{"pi":"12. Pāpasamācārasikkhāpada ","en":"The training rule on bad behavior ","mtph":""},
 "pli-tv-bi-vb-ss13":{"pi":"13. Dutiyapāpasamācārasikkhāpada ","en":"The second training rule on bad behavior ","mtph":""},
-
-
 "pli-tv-kd1":{"pi":"1. Mahākhandhaka ","en":"The great chapter ","mtph":""},
 "pli-tv-kd2":{"pi":"2. Uposathakkhandhaka ","en":"The chapter on the observance day ","mtph":""},
 "pli-tv-kd3":{"pi":"3. Vassūpanāyikakkhandhaka ","en":"The chapter on entering the rainy-season residence ","mtph":""},
