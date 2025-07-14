@@ -125,6 +125,11 @@ else if (savedDict === "standalonebwru") {
    dictUrl = "searchonly";
 }
 
+
+if (savedDict === "machinetranslation") {
+  dictUrl = "https://dharmamitra.org/?target_lang=english-explained&input_sentence="; // Используем standalone-словарь
+}
+
 // Функция для отложенной загрузки скриптов standalone-словаря
 // Cache for tracking loaded scripts
 const scriptCache = new Map();
