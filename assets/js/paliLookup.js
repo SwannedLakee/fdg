@@ -186,6 +186,22 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     }
     //console.log('обработали:', cleanedWord);
 
+  const isRussian = window.location.pathname.includes('/ru/') || 
+                     window.location.pathname.includes('/r/') || 
+                     window.location.pathname.includes('/ml/');
+    if (!translation) {
+    translation = isRussian ? 
+            `<div style="padding: 10px;">
+                <strong>${word}</strong> не найдено в словаре.
+                <br><a href="${dictSearchUrl}" target="_blank">Поиск онлайн</a>
+            </div>` :
+            `<div style="padding: 10px;">
+                <strong>${word}</strong> not found in dictionary.
+                <br><a href="${dictSearchUrl}" target="_blank">Search online</a>
+            </div>`;
+    } 
+
+
     if (translation) {
         const isDarkMode = document.body.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
         const themeClass = isDarkMode ? 'dark' : '';
@@ -454,9 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function lookupWordInStandaloneDict(word) {
     let out = "";
     word = word.replace(/[’”'"]/g, "").replace(/ṁ/g, "ṃ");
-    const isRussian = window.location.pathname.includes('/ru/') || 
-                     window.location.pathname.includes('/r/') || 
-                     window.location.pathname.includes('/ml/');
+  
     // Создаем URL для поиска слова в словаре
     const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
 
@@ -501,18 +515,6 @@ function lookupWordInStandaloneDict(word) {
         out += "</ul>";
     }
 
-
-    if (!out) {
-    out = isRussian ? 
-            `<div style="padding: 10px;">
-                <strong>${word}</strong> не найдено в словаре.
-                <br><a href="${dictSearchUrl}" target="_blank">Поиск онлайн</a>
-            </div>` :
-            `<div style="padding: 10px;">
-                <strong>${word}</strong> not found in dictionary.
-                <br><a href="${dictSearchUrl}" target="_blank">Search online</a>
-            </div>`;
-    } 
 
 
     return out.replace(/ṃ/g, "ṁ");
