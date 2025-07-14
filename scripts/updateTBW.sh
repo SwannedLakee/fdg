@@ -1,6 +1,7 @@
-#fix bw
+#mobile fixes for bw
 #download new archive from here
 # https://drive.google.com/drive/folders/17DZmO3PaN_bXPyDuQGRkX4dcYQ0tXhe8
+#or
 # git clone https://github.com/thebuddhaswords/BW1
 
 #from /var/www/html or other DG rootdir
