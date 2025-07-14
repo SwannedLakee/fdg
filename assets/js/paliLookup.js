@@ -458,8 +458,16 @@ function lookupWordInStandaloneDict(word) {
     // Создаем URL для поиска слова в словаре
     const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
 
+// Простая проверка URL на русский язык
+    const isRussian = window.location.pathname.includes('/ru/') || 
+                     window.location.pathname.includes('/r/') || 
+                     window.location.pathname.includes('/ml/');
+
+    let found = false;
+
     // Проверяем, есть ли слово как ключ в dpd_i2h
     if (word in dpd_i2h) {
+        found = true;
         out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
         for (const headword of dpd_i2h[word]) {
             if (headword in dpd_ebts) {
@@ -474,6 +482,7 @@ function lookupWordInStandaloneDict(word) {
         // Проверяем все ключи, где слово может быть в значениях
         for (const key in dpd_i2h) {
             if (dpd_i2h[key].includes(word)) {
+                found = true;
                 foundInValues = true;
                 // Если слово есть в dpd_ebts, выводим его перевод
                 if (word in dpd_ebts) {
@@ -490,6 +499,8 @@ function lookupWordInStandaloneDict(word) {
 
     // Проверяем, есть ли слово в dpd_deconstructor
     if (word in dpd_deconstructor) {
+        found = true;
+
         if (!out.includes(`<strong>${word}</strong>`)) {
             out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
         } else {
@@ -497,6 +508,23 @@ function lookupWordInStandaloneDict(word) {
         }
         out += "<li>" + dpd_deconstructor[word] + "</li>";
         out += "</ul>";
+    }
+
+
+    
+      // Если слово не найдено ни в одном словаре
+    if (!found) {
+        if (isRussian) {
+            out = `<div style="padding: 10px; ">
+                <strong>${word}</strong> не найдено во встроенном словаре.
+                <br><a href="${dictSearchUrl}" target="_blank" style="color: #2D3E50;">Искать онлайн</a>
+            </div>`;
+        } else {
+            out = `<div style="padding: 10px; ">
+                <strong>${word}</strong> not found in built-in dictionary.
+                <br><a href="${dictSearchUrl}" target="_blank" style="color: #2D3E50;">Search online</a>
+            </div>`;
+        }
     }
 
     return out.replace(/ṃ/g, "ṁ");
