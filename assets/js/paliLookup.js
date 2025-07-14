@@ -517,12 +517,12 @@ function lookupWordInStandaloneDict(word) {
         if (isRussian) {
             out = `<div style="padding: 10px; ">
                 <strong>${word}</strong> не найдено во встроенном словаре.
-                <br><a href="${dictSearchUrl}" target="_blank" style="color: #2D3E50;">Искать онлайн</a>
+                <br><br><a href="${dictSearchUrl}" target="_blank">Искать онлайн</a>
             </div>`;
         } else {
             out = `<div style="padding: 10px; ">
                 <strong>${word}</strong> not found in built-in dictionary.
-                <br><a href="${dictSearchUrl}" target="_blank" style="color: #2D3E50;">Search online</a>
+                <br><br><a href="${dictSearchUrl}" target="_blank">Search online</a>
             </div>`;
         }
     }
