@@ -150,13 +150,6 @@ echo '<!--
   </ul>
 <!-- </div> -->
 
-<a title="Общая История Поиска" class="dropup text-decoration-none mx-1 d-md-inline-block" id="history" href="/ru/history.php">
-<figure class="figure">
-  <i class="menu-icon icon-item fa-solid fa-clock-rotate-left"></i>
-<figcaption class="horiz-menu-item figure-caption text-center">' . $anamehist . '</figcaption>   
-</figure>	  
-</a>
-
 <!--
 
 <a class="dropdown text-decoration-none mx-1 d-md-inline-block" data-bs-toggle="dropdown" aria-expanded="false" href="#">
@@ -273,6 +266,14 @@ echo '<!--
 </li>
 
 </ul>    
+    
+
+<a title="Общая История Поиска" class="dropup text-decoration-none mx-1 d-md-inline-block" id="history" href="/ru/history.php">
+<figure class="figure">
+  <i class="menu-icon icon-item fa-solid fa-clock-rotate-left"></i>
+<figcaption class="horiz-menu-item figure-caption text-center">' . $anamehist . '</figcaption>   
+</figure>   
+</a>
     
 <a title="Материалы для обучения и сайты" class="dropdown text-decoration-none mx-1 d-md-inline-block" id="materials" data-bs-toggle="dropdown" aria-expanded="false" href="#">
 <figure class="figure d-md-inline-block">
