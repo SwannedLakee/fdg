@@ -33,12 +33,12 @@ function findRuTextUrl(slug) {
     let thsuSwither;
 
     if (window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1')) {
-        console.log("оффлайн");
+       // console.log("оффлайн");
         base = "/";
         thsuSwitherDS = thsuLinksDataoffl;
         thsuSwitherUrl = "tipitaka.theravada.su/dn/"; 
     } else {
-        console.log("онлайн");
+       // console.log("онлайн");
         base = "https://";
         thsuSwitherDS = thsuLinksData;
         thsuSwitherUrl = "tipitaka.theravada.su/"; 
