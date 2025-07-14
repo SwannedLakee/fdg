@@ -450,64 +450,74 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000); // Небольшая задержка для гарантированного рендеринга
 });
 
+
 function lookupWordInStandaloneDict(word) {
     let out = "";
     word = word.replace(/[’”'"]/g, "").replace(/ṁ/g, "ṃ");
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
     const isRussian = window.location.pathname.includes('/ru/') || 
                      window.location.pathname.includes('/r/') || 
                      window.location.pathname.includes('/ml/');
+    // Создаем URL для поиска слова в словаре
+    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
 
-    // Пытаемся найти перевод для всего словосочетания
-    out = lookupWordCombination(word, dictSearchUrl);
-    
-    // Если не найдено, разбиваем на слова и ищем по отдельности
-    if (!out) {
-        const words = word.split(/\s+/).filter(w => w.length > 0);
-        for (const singleWord of words) {
-            out += lookupWordCombination(singleWord, dictSearchUrl);
+    // Проверяем, есть ли слово как ключ в dpd_i2h
+    if (word in dpd_i2h) {
+        out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+        for (const headword of dpd_i2h[word]) {
+            if (headword in dpd_ebts) {
+                out += '<li>' + headword + '. ' + dpd_ebts[headword] + '</li>';
+            }
+        }
+        out += "</ul>";
+    }
+    // Если слово не ключ, но есть в значениях (особенно в ключе ""), ищем его в dpd_ebts
+    else {
+        let foundInValues = false;
+        // Проверяем все ключи, где слово может быть в значениях
+        for (const key in dpd_i2h) {
+            if (dpd_i2h[key].includes(word)) {
+                foundInValues = true;
+                // Если слово есть в dpd_ebts, выводим его перевод
+                if (word in dpd_ebts) {
+                    if (!out.includes(`<strong>${word}</strong>`)) {
+                        out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+                    }
+                    out += '<li>' + word + '. ' + dpd_ebts[word] + '</li>';
+                    out += "</ul>";
+                }
+                break; // Достаточно найти хотя бы один случай
+            }
         }
     }
 
-    // Если после всех проверок результат пустой
+    // Проверяем, есть ли слово в dpd_deconstructor
+    if (word in dpd_deconstructor) {
+        if (!out.includes(`<strong>${word}</strong>`)) {
+            out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+        } else {
+            out += "<ul style='line-height: 1em; padding-left: 15px;'>";
+        }
+        out += "<li>" + dpd_deconstructor[word] + "</li>";
+        out += "</ul>";
+    }
+
+
     if (!out) {
-        return isRussian ? 
+    out = isRussian ? 
             `<div style="padding: 10px;">
-                <strong>${word}</strong> не найдено во встроенном словаре.
-                <br><br><a href="${dictSearchUrl}" target="_blank">Искать онлайн</a>
+                <strong>${word}</strong> не найдено в словаре.
+                <br><a href="${dictSearchUrl}" target="_blank">Поиск онлайн</a>
             </div>` :
             `<div style="padding: 10px;">
-                <strong>${word}</strong> not found in built-in dictionary.
-                <br><br><a href="${dictSearchUrl}" target="_blank">Search online</a>
+                <strong>${word}</strong> not found in dictionary.
+                <br><a href="${dictSearchUrl}" target="_blank">Search online</a>
             </div>`;
-    }
+    } 
+
 
     return out.replace(/ṃ/g, "ṁ");
 }
 
-// Внутренняя функция поиска (без дублирования кода)
-function lookupWordCombination(word, dictSearchUrl) {
-    let result = "";
-    
-    if (word in dpd_i2h) {
-        result += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
-        for (const headword of dpd_i2h[word]) {
-            if (headword in dpd_ebts) {
-                result += '<li>' + headword + '. ' + dpd_ebts[headword] + '</li>';
-            }
-        }
-        result += "</ul>";
-    }
-
-    if (word in dpd_deconstructor) {
-        if (!result.includes(`<strong>${word}</strong>`)) {
-            result += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
-        }
-        result += "<li>" + dpd_deconstructor[word] + "</li></ul>";
-    }
-
-    return result;
-}
 
 function clearParams() {
     const keys = ['popupWidth', 'popupHeight', 'popupTop', 'popupLeft', 'windowWidth', 'windowHeight', 'isFirstDrag'];
