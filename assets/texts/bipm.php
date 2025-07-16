@@ -13,6 +13,7 @@
             <div class="my-3">
    
 <div class="level4 my-3">
+   <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bi-pm/Bi-pbkrn.m4a' type='audio/mp4'>Browser is not supported.</audio></br> </br>
  <span class="level5 pli-lang"><strong>Pubbakaraṇaṁ</strong></br>
 Sammajjanī padīpo ca, udakaṁ āsanena ca;
 Uposathassa etāni, “pubbakaraṇa”nti vuccati.
@@ -52,6 +53,7 @@ Vajjanīyā ca puggalā tasmiṁ na honti, “pattakalla”nti vuccati.
             <div class="mt-3">
    
 <div class="level4 my-3">
+    <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bi-pm/Bi-nid.m4a' type='audio/mp4'>Browser is not supported.</audio></br> </br>
  <span class="level5 pli-lang">Suṇātu me ayye saṅgho.
 Ajjuposatho pannaraso,
 yadi saṅghassa pattakallaṁ, saṅgho uposathaṁ kareyya, pātimokkhaṁ uddiseyya.</span>
