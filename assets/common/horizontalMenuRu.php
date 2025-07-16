@@ -184,7 +184,7 @@ echo '<!--
 <ul class="dropdown-menu" aria-labelledby="MenuDict">
                <li>
          <div class="dropdown-item ">
-<i class="' . $iconimportant . '"></i> <a class="text-reset" target="" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dict.dhamma.gift/search_html?source=pwa&q={{q}}\')">Digital Pāḷi Dict</a>
+<i class="' . $iconimportant . '"></i> <a class="text-reset" target="" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dict.dhamma.gift/ru/search_html?source=pwa&q={{q}}\')">Digital Pāḷi Dict</a>
          <a class="text-reset" target="_blank"   href="https://devamitta.github.io/dpd.rus/">Оффлайн</a>
        <a class="text-reset" target=""  href="#links">Расширения</a>     
        </div>
