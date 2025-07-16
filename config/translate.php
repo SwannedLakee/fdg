@@ -13,6 +13,8 @@ $searchcaption = 'Поиск';
 $clearaption = 'Очистить';
 $btnsave = 'Сохр. по умолч.';
 $btnreset = 'Сбросить';
+$toggleLangRead = 'Переключить Рус/Англ (Ctrl + 2)';
+$toggleLang = 'Переключить Рус/Англ (Ctrl + 1)';
 
 $manifest = '/manifest-ru.json'; // для русской версии
 
@@ -858,6 +860,9 @@ $clearaption = 'Clear';
 $btnsave = 'Set Defaults';
 $btnreset = 'Reset';
 
+$toggleLangRead = 'Toggle En/Ru (Ctrl + 2)';
+$toggleLang = 'Toggle En/Ru (Ctrl + 1)';
+
 
 $manifest = '/manifest.json'; // для английской версии
 
@@ -1577,6 +1582,9 @@ $dpdpart = '<h3>Download DPD</h3>
 ';
 
 }
+
+
+
 if (strpos($_SERVER['REQUEST_URI'], "/th") !== false){
 $lang = "th";
 $htmllang = "th";
@@ -1585,6 +1593,12 @@ $mainpagenoslash = '/th';
 $readerPage = $mainpage . '/read';
 $mainreadlink = '/th/read.php';
 }
+
+
+
+$mainfindtitle = 'Dhamma.Gift Find (Ctrl + 1)';
+$mainreadtitle = 'Dhamma.Gift Read (Ctrl + 2)'; 
+
 $menuuseful = 'Search,MenuRead,MenuEnglish,history,MenuDict,MenuRussian,tools,materials';
 
 

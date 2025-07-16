@@ -180,14 +180,14 @@ if (newUrl !== window.location.href) {
                     <ul class="navbar-nav ms-auto">
       <!-- <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/">Main</a></li> -->
             
-<li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="<?php echo $mainpage;?>"><?php echo $menumain;?></a></li>
+<li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" title="<?php echo $mainfindtitle;?>" href="<?php echo $mainpage;?>"><?php echo $menumain;?></a></li>
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="<?php echo $mainpagenoslash;?>/history.php"><?php echo $menuhist;?></a></li>
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="/#help"><?php echo $menuhowto;?></a></li>
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#about"><?php echo $menuabout;?></a></li>             
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="read.php#<?php echo $menuuseful;?>"><?php echo $menulinks;?></a></li>
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#contacts"><?php echo $menucontact;?></a></li>
-<li class="nav-item mb-0 mx-lg-2"><p><a class="py-1 text-decoration-none px-0 px-lg-1 rounded link-light" href="/read.php">En</a> 
-<a class="link-light text-decoration-none py-1 px-0 px-lg-1 rounded" href="/ru/read.php">Ru</a>
+<li class="nav-item mb-0 mx-lg-2"><p><a class="py-1 text-decoration-none px-0 px-lg-1 rounded link-light" title="<?php echo $toggleLangRead;?>" onclick="localStorage.siteLanguage = 'en';" href="/read.php">En</a> 
+<a class="link-light text-decoration-none py-1 px-0 px-lg-1 rounded" title="<?php echo $toggleLangRead;?>" onclick="localStorage.siteLanguage = 'ru';" href="/ru/read.php">Ru</a>
 </p></li>
 <li>
 <div class="align-items-center form-check-inline mx-0">
@@ -233,7 +233,7 @@ if (isset($_GET['q'])) {
 </div>
 
 
-<div class="input-group-append mt-1">
+<div class="input-group-append mt-2">
 <button onclick="document.getElementById( 'spinner' ).style.display = 'block'" type="submit" id="searchbtn" class="btn btn-primary mainbutton ms-1 me-1 rounded-pill ">
 <i class="fas fa-search fa-flip-horizontal" aria-hidden="true"></i>
     <span class="visually-hidden"><?php echo $searchcaption;?></span>
