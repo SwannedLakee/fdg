@@ -193,7 +193,9 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     const wordForSearch = cleanedWord.replace(/'ti/, '');
     const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
 
-    if (!translation) {
+
+
+if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation) {
     translation = isRussian ? 
             `<div style="padding: 10px;">
                 <a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a> не найдено во встроенном словаре.
@@ -987,5 +989,6 @@ function transliterateWord(word) {
     });
 }
 */
+
 
 
