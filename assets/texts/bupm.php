@@ -152,8 +152,9 @@ parisuddhetthāyasmanto, tasmā tuṇhī, evametaṁ dhārayāmīti. </span>
             <div class="mt-3">
               
                <div class="level4 my-3">
+                     <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-ss.m4a' type='audio/mp4'>Browser is not supported.</audio></br> </br>
  <span class="level5 pli-lang">Ime kho panāyasmanto terasa saṅghādisesā dhammā uddesaṁ āgacchanti. </span>
-     </br> </br><audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-ss.m4a' type='audio/mp4'>Browser is not supported.</audio>
+
 </div>           
               
 <div class="level4">
@@ -252,9 +253,10 @@ parisuddhetthāyasmanto, tasmā tuṇhī, evametaṁ dhārayāmīti.
             <div class="mt-3">
    
            <div class="level4 my-3">
- <span class="level5 pli-lang">Ime kho panāyasmanto dve aniyatā dhammā uddesaṁ āgacchanti. </span>
-     </br> </br><audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-ay.m4a' type='audio/mp4'>Browser is not supported.</audio>
+               <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-ay.m4a' type='audio/mp4'>Browser is not supported.</audio></br> </br>
      
+ <span class="level5 pli-lang">Ime kho panāyasmanto dve aniyatā dhammā uddesaṁ āgacchanti. </span>
+  
 <script src="/assets/js/audioLazyLoad.js"></script>
 </div>              
               
@@ -1312,10 +1314,9 @@ parisuddhetthāyasmanto, tasmā tuṇhī, evametaṁ dhārayāmīti.
             <div class="mt-3">
    
            <div class="level4 my-3">
- <span class="level5 pli-lang">Ime kho panāyasmanto cattāro pāṭidesanīyā dhammā uddesaṁ āgacchanti. </span>
- 
-                </br> </br><audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-pd.m4a' type='audio/mp4'>Browser is not supported.</audio>   
-</div>              
+<audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-pd.m4a' type='audio/mp4'>Browser is not supported.</audio></br></br>
+<span class="level5 pli-lang">Ime kho panāyasmanto cattāro pāṭidesanīyā dhammā uddesaṁ āgacchanti. </span>
+</div>
  
 <div class="level4">
 
@@ -1627,11 +1628,11 @@ Sekhiyā niṭṭhitā </span>
             <div class="mt-3">
    
            <div class="level4 my-3">
+
+ <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-as.m4a' type='audio/mp4'>Browser is not supported.</audio> </br></br>
  <span class="level5 pli-lang">Ime kho panāyasmanto satta adhikaraṇasamathā dhammā uddesaṁ āgacchanti.
 </span>
-       </br>            </br>     
- <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bu-pm/Bu-as.m4a' type='audio/mp4'>Browser is not supported.</audio>
-      
+
             
 </div>              
             <div class="level4 my-3">

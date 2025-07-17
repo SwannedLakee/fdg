@@ -97,8 +97,9 @@ parisuddhetthāyyāyo, tasmā tuṇhī, evametaṁ dhārayāmīti. </span>
             <div class="mt-3">
    
            <div class="level4 my-3">
+<audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bi-pm/Bi-pj.m4a' type='audio/mp4'>Browser is not supported.</audio> </br> </br>
  <span class="level5 pli-lang">Tatrime aṭṭha pārājikā dhammā uddesaṁ āgacchanti. </span>
-    </br> </br><audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bi-pm/Bi-pj.m4a' type='audio/mp4'>Browser is not supported.</audio>
+
 </div>              
 
 
@@ -2429,11 +2430,9 @@ Sekhiyā niṭṭhitā </span>
 				  <div class="collapse" id="asCollapseBi"> 
             <div class="mt-3">
            <div class="level4 my-3">
- <span class="level5 pli-lang">Ime kho panāyyāyo, satta adhikaraṇasamathā dhammā uddesaṁ āgacchanti.
+<audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bi-pm/Bi-as.m4a' type='audio/mp4'>Browser is not supported.</audio></br></br>
+<span class="level5 pli-lang">Ime kho panāyyāyo, satta adhikaraṇasamathā dhammā uddesaṁ āgacchanti.
 </span>
-       </br>            </br>     
- <audio controls class="lazy-audio" preload="none"><source src='/assets/audio/bi-pm/Bi-as.m4a' type='audio/mp4'>Browser is not supported.</audio>
-      
 </div>                                
 
 <div class="level4">
