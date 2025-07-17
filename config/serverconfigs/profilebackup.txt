@@ -38,7 +38,8 @@ alias dwnl="echo $dwnl"
 
 #SSH related
 alias ssssh="ssh -tt a0902785@141.8.192.193"
-alias asssh="ssh -i /data/data/com.termux/files/home/.ssh/Fdg2.pem  root@13.213.46.216"
+alias asssh='ssh -i "/storage/emulated/0/Documents/dpd-ui-eu.pem" ubuntu@ec2-3-125-254-158.eu-central-1.compute.amazonaws.com'
+
 alias rsssh="ssh -tt -p1000 root@94.126.201.8"
 alias oldsssh="ssh -tt -p1001 root@94.126.201.8"
 alias ksssh="ssh -tt -p1000 o561122122@94.126.201.8"
@@ -479,4 +480,5 @@ function checker() {
 apa; bash scripts/checknewlinebylineinscrepo.sh | grep -v done ; cd - >/dev/null
 }
 
+alias cdpd='cd /data/data/com.termux/files/usr/share/apache2/default-site/dpd-ui'
 apachectl start
