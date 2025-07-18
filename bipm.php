@@ -68,7 +68,11 @@ include './scripts/opentexts.php';
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":true,"shide_btm":false,"auto_load":false,"simp-plext":true}'>
   <div class="simp-playlist">
     <ul>
-  <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-pj.m4a>1. Bi-pj</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>                                                <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-ss.m4a>2. Bi-ss</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>
+<li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-pj.m4a>0.1 Pubbakaraṇa</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>                                                
+<li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-ss.m4a>0.2 Nidāna</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>
+
+<li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-pj.m4a>1. Bi-pj</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>                                                
+<li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-ss.m4a>2. Bi-ss</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>
 <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-np1vag.m4a>3. Bi-np1vag</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>                                        <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-np2vag.m4a>4. Bi-np2vag</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>
 <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-np3vag.m4a>5. Bi-np3vag</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>                                        <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-pc1vag.m4a>6. Bi-pc1vag</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>
 <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-pc2vag.m4a>7. Bi-pc2vag</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>                                        <li><span class=simp-source data-src=/assets/audio/bi-pm/Bi-pc3vag.m4a>8. Bi-pc3vag</span><span class=simp-desc>Bhikkhunīpātimokkha</span></li>
