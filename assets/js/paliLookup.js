@@ -139,7 +139,7 @@ const requestIdleCallback = window.requestIdleCallback ||
     function(cb) { return setTimeout(() => { cb({ didTimeout: false }); }, 0); };
 
 function handleWordLookup(word, event) {
-
+    
      if (!dictionaryVisible) return;
 
     let cleanedWord = cleanWord(word);
