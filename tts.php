@@ -1,5 +1,7 @@
 <?php
-// Параметры запроса
+// Параметры запроса 
+// allow pasting
+// speechSynthesis.getVoices();
 $slug = strtolower($_GET['q'] ?? '');
 $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 
