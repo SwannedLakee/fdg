@@ -480,5 +480,5 @@ function checker() {
 apa; bash scripts/checknewlinebylineinscrepo.sh | grep -v done ; cd - >/dev/null
 }
 
-alias cdpd='cd /data/data/com.termux/files/usr/share/apache2/default-site/dpd-ui'
+alias dpd='cd /data/data/com.termux/files/usr/share/apache2/default-site/dpd-ui'
 apachectl start
