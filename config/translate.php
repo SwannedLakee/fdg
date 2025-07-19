@@ -57,9 +57,9 @@ $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-cont
         <img src="/assets/img/buttons/edge-cta.png" class="img-fluid cta-img" title="Скачать из Microsoft Edge Store">
     </a>
 
-      <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhamma-gift/">
+<!--        <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhamma-gift/">
         <img src="/assets/img/buttons/opera-cta.png" class="img-fluid cta-img" title="Скачать из Opera Add-ons">
-    </a> 
+    </a> -->
     
 </div>
 
@@ -1278,9 +1278,9 @@ $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-cont
     <a class="ms-2 mb-2" href="https://microsoftedge.microsoft.com/addons/detail/dhammagift-search-and-wo/aokegkhdaijkikbdocanadeghllhfmhj">
         <img src="/assets/img/buttons/edge-cta.png" class="img-fluid cta-img" title="Download from Microsoft Edge Store">
     </a>
-           <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhamma-gift/">
+    <!--        <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhamma-gift/">
         <img src="/assets/img/buttons/opera-cta.png" class="img-fluid cta-img" title="Download from Opera Add-ons">
-    </a> 
+    </a> -->
     
 </div>
 
