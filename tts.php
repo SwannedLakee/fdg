@@ -318,6 +318,12 @@ document.addEventListener('DOMContentLoaded', function() {
       <img src="/assets/svg/comment.svg" class="dictIcon">
     </a>
 
+<!-- Добавляем кнопку перед текстовым блоком -->
+<a href="#" onclick="speakTextFromElement('voiceTextContent')" 
+        class="btn btn-sm btn-outline-secondary mb-2">
+  🔊
+</a>
+
       <div class="ms-1 form-check form-switch">
         <input type="checkbox" class="form-check-input" id="darkSwitch">
       </div>
@@ -350,11 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <?= htmlspecialchars($sourceInfo) ?>
 </div>
 
-<!-- Добавляем кнопку в нужное место -->
-<button onclick="speakTextFromElement('voiceTextContent', 'pi')" 
-        class="btn btn-sm btn-outline-secondary mb-2">
-  🔊 Listen Pali
-</button>
+
 
 <div class="text-content mt-3 pli-lang" id="voiceTextContent" lang="pi"><?= $content ?></div>
 
@@ -386,52 +388,67 @@ document.addEventListener('DOMContentLoaded', function() {
   </script>
 
  <script>
-  // Глобальные функции для TTS
-  function getLangVoiceCode(lang) {
-    const voices = {
-      'ru': 'ru-RU',
-      'en': 'en-US',
-      'pi': 'th-TH'
-    };
-    return voices[lang] || 'en-US';
-  }
-
-  function speakTextFromElement(elementId, lang) {
-    try {
-      const element = document.getElementById(elementId);
-      if (!element) {
-        console.error('Element not found:', elementId);
-        return;
-      }
-      
-      // Собираем текст из всех span внутри элемента
-      const text = Array.from(element.querySelectorAll('span'))
-        .map(span => span.textContent.trim())
-        .filter(t => t.length > 0)
-        .join(' ');
-      
-      if (!text) {
-        console.error('No text found in element:', elementId);
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = getLangVoiceCode(lang);
-      
-      // Остановить текущее воспроизведение
-      speechSynthesis.cancel();
-      
-      utterance.onerror = function(event) {
-        console.error('Speech error:', event);
-      };
-      
-      speechSynthesis.speak(utterance);
-    } catch (e) {
-      console.error('Error in speakTextFromElement:', e);
+// Улучшенная функция для TTS
+function speakTextFromElement(elementId) {
+  try {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      console.error('Элемент не найден:', elementId);
+      return;
     }
-  }
-</script>
+    
+    // Получаем язык из атрибута элемента или используем 'en' по умолчанию
+    const lang = element.getAttribute('lang') || 'en';
+    
+    // Собираем текст из всех span
+    const text = Array.from(element.querySelectorAll('span'))
+      .map(span => span.textContent.trim())
+      .filter(t => t.length > 0)
+      .join(' ');
+    
+    if (!text) {
+      alert('Не найден текст для озвучки');
+      return;
+    }
 
+    // Определяем код языка для синтеза речи
+    let langCode;
+    switch(lang) {
+      case 'ru': langCode = 'ru-RU'; break;
+      case 'pi': 
+        // Для пали проверяем содержание текста
+        langCode = /[а-яА-ЯЁё]/.test(text) ? 'ru-RU' : 'en-US';
+        break;
+      default: langCode = 'en-US';
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langCode;
+    
+    // Останавливаем текущее воспроизведение
+    window.speechSynthesis.cancel();
+    
+    // Обработчики событий
+    utterance.onerror = (event) => {
+      console.error('Ошибка синтеза:', event);
+      // Пробуем английский как fallback
+      if (langCode !== 'en-US') {
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+    
+    utterance.onend = () => {
+      console.log('Воспроизведение завершено');
+    };
+    
+    window.speechSynthesis.speak(utterance);
+    
+  } catch (e) {
+    console.error('Ошибка в speakTextFromElement:', e);
+  }
+}
+</script>
 
 
   <script src="/assets/js/autopali.js" defer></script>
