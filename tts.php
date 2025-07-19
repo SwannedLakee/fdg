@@ -378,37 +378,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </script>
 
-   <script>
-    function getLangCode(lang) {
-      switch(lang) {
-        case 'ru': return 'ru-RU';
-        case 'en': return 'en-US';
-        case 'pi': return 'th-TH'; // тайский голос хорошо читает пали
-        default: return 'en-US';
-      }
+  <script>
+  function getLangVoiceCode(lang) {
+    switch (lang) {
+      case 'ru': return 'ru-RU';
+      case 'en': return 'en-US';
+      case 'pi': return 'th-TH'; // тайский для пали
+      default: return 'en-US';
     }
+  }
 
-    function createTTSButton(textElem, lang) {
+  function speakText(text, lang) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = getLangVoiceCode(lang);
+    speechSynthesis.cancel(); // остановить предыдущую озвучку
+    speechSynthesis.speak(utterance);
+  }
+
+  function extractTextFromContentBlock(block) {
+    return Array.from(block.querySelectorAll('span'))
+      .map(span => span.innerText.trim())
+      .filter(t => t.length > 0)
+      .join(' ');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.text-content').forEach(block => {
+      const lang = block.getAttribute('lang') || 'en';
       const button = document.createElement('button');
       button.textContent = '🔊 Listen';
-      button.className = 'tts-button';
+      button.className = 'btn btn-sm btn-outline-secondary mb-2';
       button.onclick = () => {
-        const utterance = new SpeechSynthesisUtterance(textElem.innerText);
-        utterance.lang = getLangCode(lang);
-        speechSynthesis.speak(utterance);
+        const text = extractTextFromContentBlock(block);
+        if (text) speakText(text, lang);
+        else alert('Text is empty');
       };
-      return button;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const blocks = document.querySelectorAll('.text-content');
-      blocks.forEach(block => {
-        const lang = block.getAttribute('lang') || 'en';
-        const button = createTTSButton(block, lang);
-        block.parentNode.insertBefore(button, block);
-      });
+      block.parentNode.insertBefore(button, block);
     });
-  </script>
+  });
+</script>
+
   
   <script src="/assets/js/autopali.js" defer></script>
 	  <script src="/assets/js/smoothScroll.js" defer></script>
