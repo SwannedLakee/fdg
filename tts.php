@@ -2,6 +2,8 @@
 // Параметры запроса 
 // allow pasting
 // speechSynthesis.getVoices();
+// http://localhost/tts.php?q=sn1.1&script=lat&debugVoices
+
 $slug = strtolower($_GET['q'] ?? '');
 $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 
@@ -387,30 +389,125 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </script>
 <script>
-// Глобальная переменная для хранения состояния воспроизведения
-let isSpeaking = false;
-let currentUtterance = null;
 
-// Функция для тоггла воспроизведения
+// Глобальные переменные для управления воспроизведением
+let isSpeaking = false;
+let isPaused = false;
+let currentUtterance = null;
+let pausedPosition = 0;
+
+// Функция для отображения доступных голосов в консоли и на странице
+function debugVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  
+  // Вывод в консоль
+  console.group('Доступные голоса');
+  console.table(voices.map(v => ({
+    Имя: v.name,
+    Язык: v.lang,
+    URI: v.voiceURI,
+    Локальный: v.localService ? '✓' : '✗',
+    'По умолчанию': v.default ? '✓' : '✗'
+  })));
+  console.groupEnd();
+  
+  // Простой вывод на страницу
+  const debugDiv = document.createElement('div');
+  debugDiv.style.position = 'fixed';
+  debugDiv.style.top = '10px';
+  debugDiv.style.right = '10px';
+  debugDiv.style.background = 'white';
+  debugDiv.style.padding = '10px';
+  debugDiv.style.border = '1px solid #ccc';
+  debugDiv.style.zIndex = '9999';
+  debugDiv.style.maxHeight = '80vh';
+  debugDiv.style.overflow = 'auto';
+  
+  debugDiv.innerHTML = `
+    <h3 style="margin-top:0;">Доступные голоса (${voices.length})</h3>
+    <pre>${JSON.stringify(voices.map(v => ({
+      name: v.name,
+      lang: v.lang,
+      default: v.default,
+      local: v.localService
+    })), null, 2)}</pre>
+    <button onclick="this.parentNode.remove()" 
+            style="position:absolute;top:5px;right:5px;">×</button>
+  `;
+  
+  document.body.appendChild(debugDiv);
+}
+
+// Проверяем GET-параметр
+if (new URLSearchParams(window.location.search).has('debugVoices')) {
+  // Ждём загрузки голосов
+  const checkVoices = setInterval(() => {
+    if (window.speechSynthesis.getVoices().length > 0) {
+      clearInterval(checkVoices);
+      debugVoices();
+    }
+  }, 100);
+}
+
+
+// Функция для тоггла воспроизведения с поддержкой паузы
 function toggleSpeech(elementId) {
-  if (isSpeaking) {
-    // Останавливаем воспроизведение
-    window.speechSynthesis.cancel();
-    isSpeaking = false;
-    document.getElementById('speechToggleBtn').textContent = '🔊'; // Меняем иконку
-    console.log('Остановлено');
-  } else {
-    // Запускаем озвучку
+  if (isSpeaking && !isPaused) {
+    // Пауза воспроизведения
+    window.speechSynthesis.pause();
+    isPaused = true;
+    document.getElementById('speechToggleBtn').textContent = '▶️'; // Иконка play
+    console.log('На паузе');
+  } 
+  else if (isPaused) {
+    // Продолжение воспроизведения
+    window.speechSynthesis.resume();
+    isPaused = false;
+    document.getElementById('speechToggleBtn').textContent = '⏸️'; // Иконка паузы
+    console.log('Продолжено');
+  }
+  else {
+    // Запуск нового воспроизведения
+    window.speechSynthesis.cancel(); // Отменяем любое текущее воспроизведение
     currentUtterance = speakTextFromElement(elementId);
     if (currentUtterance) {
       isSpeaking = true;
-      document.getElementById('speechToggleBtn').textContent = '⏹️'; // Иконка стоп
+      isPaused = false;
+      document.getElementById('speechToggleBtn').textContent = '⏸️'; // Иконка паузы
+      
+      // Обработчики событий для сброса состояния
+      currentUtterance.onend = () => {
+        isSpeaking = false;
+        isPaused = false;
+        document.getElementById('speechToggleBtn').textContent = '🔊';
+        console.log('Воспроизведение завершено');
+      };
+      
+      currentUtterance.onerror = () => {
+        isSpeaking = false;
+        isPaused = false;
+        document.getElementById('speechToggleBtn').textContent = '🔊';
+      };
     }
   }
 }
 
+// Функция для ожидания загрузки голосов
+function loadVoices() {
+  return new Promise(resolve => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      resolve(voices);
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        resolve(window.speechSynthesis.getVoices());
+      };
+    }
+  });
+}
+
 // Основная функция озвучки
-function speakTextFromElement(elementId) {
+async function speakTextFromElement(elementId) {
   try {
     const element = document.getElementById(elementId);
     if (!element) {
@@ -429,21 +526,26 @@ function speakTextFromElement(elementId) {
       return null;
     }
 
+    // Ожидаем загрузку голосов
+    const voices = await loadVoices();
+    
     let langCode;
     let selectedVoice = null;
-
-    const voices = window.speechSynthesis.getVoices();
+    let rate = 1.0;
 
     switch (htmlLang) {
       case 'ru':
         langCode = 'ru-RU';
-        selectedVoice = voices.find(v => v.name === 'Microsoft Pavel - Russian (Russia)') 
-           || voices.find(v => v.lang === 'ru-RU');
+        // Гибкий поиск голоса Павла
+        selectedVoice = voices.find(v => 
+          v.lang === 'ru-RU' && 
+          (v.name.includes('Pavel') || v.name.includes('Павел'))
+        ) || 
+        voices.find(v => v.lang === 'ru-RU');
         break;
 
       case 'pi':
         if (/[\u0900-\u097F]/.test(text)) {
-          // Пытаемся использовать санскрит
           const saVoice = voices.find(v => v.lang === 'sa-IN');
           if (saVoice) {
             langCode = 'sa-IN';
@@ -451,6 +553,7 @@ function speakTextFromElement(elementId) {
           } else {
             langCode = 'hi-IN';
             selectedVoice = voices.find(v => v.lang === 'hi-IN');
+            rate = 0.7;
           }
         } else {
           langCode = 'en-US';
@@ -465,22 +568,36 @@ function speakTextFromElement(elementId) {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = langCode;
+    utterance.rate = rate;
+
+    // Дополнительные настройки для пали
+    if (langCode === 'hi-IN') {
+      utterance.pitch = 0.9;
+      utterance.volume = 0.9;
+    }
 
     if (selectedVoice) {
       utterance.voice = selectedVoice;
+      console.log('Используется голос:', selectedVoice.name);
     }
 
     utterance.onend = () => {
       isSpeaking = false;
+      isPaused = false;
       document.getElementById('speechToggleBtn').textContent = '🔊';
       console.log('Воспроизведение завершено');
     };
 
     utterance.onerror = (event) => {
       console.error('Ошибка синтеза:', event);
+      isSpeaking = false;
+      isPaused = false;
+      document.getElementById('speechToggleBtn').textContent = '🔊';
+      
       if (langCode !== 'en-US') {
         utterance.lang = 'en-US';
         utterance.voice = null;
+        utterance.rate = 1.0;
         window.speechSynthesis.speak(utterance);
       }
     };
@@ -495,6 +612,39 @@ function speakTextFromElement(elementId) {
     return null;
   }
 }
+
+// Функция для тоггла воспроизведения с поддержкой паузы
+async function toggleSpeech(elementId) {
+  if (isSpeaking && !isPaused) {
+    // Пауза воспроизведения
+    window.speechSynthesis.pause();
+    isPaused = true;
+    document.getElementById('speechToggleBtn').textContent = '▶️';
+    console.log('На паузе');
+  } 
+  else if (isPaused) {
+    // Продолжение воспроизведения
+    window.speechSynthesis.resume();
+    isPaused = false;
+    document.getElementById('speechToggleBtn').textContent = '⏸️';
+    console.log('Продолжено');
+  }
+  else {
+    // Запуск нового воспроизведения
+    window.speechSynthesis.cancel();
+    currentUtterance = await speakTextFromElement(elementId);
+    if (currentUtterance) {
+      isSpeaking = true;
+      isPaused = false;
+      document.getElementById('speechToggleBtn').textContent = '⏸️';
+    }
+  }
+}
+
+// Инициализация голосов при загрузке страницы
+window.speechSynthesis.onvoiceschanged = function() {
+  console.log('Доступные голоса:', window.speechSynthesis.getVoices());
+};
 </script>
   <script src="/assets/js/autopali.js" defer></script>
 	  <script src="/assets/js/smoothScroll.js" defer></script>
