@@ -318,9 +318,10 @@ document.addEventListener('DOMContentLoaded', function() {
       <img src="/assets/svg/comment.svg" class="dictIcon">
     </a>
 
-<!-- Добавляем кнопку перед текстовым блоком -->
-<a href="#" onclick="speakTextFromElement('voiceTextContent')" 
-        class="btn btn-sm btn-outline-secondary mb-2">
+<a href="#" 
+   onclick="toggleSpeech('voiceTextContent'); return false;" 
+   class="text-decoration-none text-black me-1" 
+   id="speechToggleBtn">
   🔊
 </a>
 
@@ -355,9 +356,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="text-end text-muted small mt-2">
   <?= htmlspecialchars($sourceInfo) ?>
 </div>
-
-
-
 <div class="text-content mt-3 pli-lang" id="voiceTextContent" lang="pi"><?= $content ?></div>
 
 <!-- htmlspecialchars($content) -->
@@ -386,71 +384,116 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
   </script>
+<script>
+// Глобальная переменная для хранения состояния воспроизведения
+let isSpeaking = false;
+let currentUtterance = null;
 
- <script>
-// Улучшенная функция для TTS
+// Функция для тоггла воспроизведения
+function toggleSpeech(elementId) {
+  if (isSpeaking) {
+    // Останавливаем воспроизведение
+    window.speechSynthesis.cancel();
+    isSpeaking = false;
+    document.getElementById('speechToggleBtn').textContent = '🔊'; // Меняем иконку
+    console.log('Остановлено');
+  } else {
+    // Запускаем озвучку
+    currentUtterance = speakTextFromElement(elementId);
+    if (currentUtterance) {
+      isSpeaking = true;
+      document.getElementById('speechToggleBtn').textContent = '⏹️'; // Иконка стоп
+    }
+  }
+}
+
+// Основная функция озвучки
 function speakTextFromElement(elementId) {
   try {
     const element = document.getElementById(elementId);
     if (!element) {
       console.error('Элемент не найден:', elementId);
-      return;
+      return null;
     }
-    
-    // Получаем язык из атрибута элемента или используем 'en' по умолчанию
-    const lang = element.getAttribute('lang') || 'en';
-    
-    // Собираем текст из всех span
+
+    const htmlLang = document.documentElement.getAttribute('lang') || 'en';
     const text = Array.from(element.querySelectorAll('span'))
       .map(span => span.textContent.trim())
       .filter(t => t.length > 0)
       .join(' ');
-    
+
     if (!text) {
       alert('Не найден текст для озвучки');
-      return;
+      return null;
     }
 
-    // Определяем код языка для синтеза речи
     let langCode;
-    switch(lang) {
-      case 'ru': langCode = 'ru-RU'; break;
-      case 'pi': 
-        // Для пали проверяем содержание текста
-        langCode = /[а-яА-ЯЁё]/.test(text) ? 'ru-RU' : 'en-US';
+    let selectedVoice = null;
+
+    const voices = window.speechSynthesis.getVoices();
+
+    switch (htmlLang) {
+      case 'ru':
+        langCode = 'ru-RU';
+        selectedVoice = voices.find(v => v.name === 'Microsoft Pavel - Russian (Russia)') 
+           || voices.find(v => v.lang === 'ru-RU');
         break;
-      default: langCode = 'en-US';
+
+      case 'pi':
+        if (/[\u0900-\u097F]/.test(text)) {
+          // Пытаемся использовать санскрит
+          const saVoice = voices.find(v => v.lang === 'sa-IN');
+          if (saVoice) {
+            langCode = 'sa-IN';
+            selectedVoice = saVoice;
+          } else {
+            langCode = 'hi-IN';
+            selectedVoice = voices.find(v => v.lang === 'hi-IN');
+          }
+        } else {
+          langCode = 'en-US';
+          selectedVoice = voices.find(v => v.lang === 'en-US');
+        }
+        break;
+
+      default:
+        langCode = 'en-US';
+        selectedVoice = voices.find(v => v.lang === 'en-US');
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = langCode;
-    
-    // Останавливаем текущее воспроизведение
-    window.speechSynthesis.cancel();
-    
-    // Обработчики событий
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+
+    utterance.onend = () => {
+      isSpeaking = false;
+      document.getElementById('speechToggleBtn').textContent = '🔊';
+      console.log('Воспроизведение завершено');
+    };
+
     utterance.onerror = (event) => {
       console.error('Ошибка синтеза:', event);
-      // Пробуем английский как fallback
       if (langCode !== 'en-US') {
         utterance.lang = 'en-US';
+        utterance.voice = null;
         window.speechSynthesis.speak(utterance);
       }
     };
-    
-    utterance.onend = () => {
-      console.log('Воспроизведение завершено');
-    };
-    
+
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
-    
+
+    return utterance;
+
   } catch (e) {
     console.error('Ошибка в speakTextFromElement:', e);
+    return null;
   }
 }
 </script>
-
-
   <script src="/assets/js/autopali.js" defer></script>
 	  <script src="/assets/js/smoothScroll.js" defer></script>
       <script src="/assets/js/paliLookup.js"></script>
