@@ -30,32 +30,36 @@ $siteAnnounce = '<div style="max-width: 450px; " class="alert alert-primary aler
 $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-content-center align-items-center my-3 mb-2">
     
     <button class="ms-2 mb-2 p-0 border-0 bg-transparent" id="installPWA" style="cursor:pointer;">
-        <img src="/assets/img/buttons/pwa-cta.png" class="img-fluid" style="max-width: 200px;" title="Установить Dhamma.gift как Прогрессивное Веб-Приложение (PWA)">
+        <img src="/assets/img/buttons/pwa-cta.png" class="img-fluid cta-img" title="Установить Dhamma.gift как Прогрессивное Веб-Приложение (PWA)">
     </button>
 
     <a class="ms-2 mb-2" href="https://t.me/dgift_bot">
-        <img src="/assets/img/buttons/telegram-cta.png" class="img-fluid" style="max-width: 200px;" title="Открыть DGift_bot. Или наберите @DGift_bot в любом Телеграм чате или группе">
+        <img src="/assets/img/buttons/telegram-cta.png" class="img-fluid cta-img" title="Открыть DGift_bot. Или наберите @DGift_bot в любом Телеграм чате или группе">
     </a>
 
     <a class="ms-2 mb-2" href="https://play.google.com/store/apps/details?id=gift.dhamma.twa">
-        <img src="/assets/img/buttons/google-play-cta.png" class="img-fluid" style="max-width: 200px;" title="Скачать с Google Play">
+        <img src="/assets/img/buttons/google-play-cta.png" class="img-fluid cta-img" title="Скачать с Google Play">
     </a>
     
     <a class="ms-2 mb-2" href="/assets/apk/dhamma.gift.ru-latest.apk">
-        <img src="/assets/img/buttons/apk-cta.png" class="img-fluid" style="max-width: 200px;" title="Скачать APK. В нем будет встроенный поиск и опция поделиться, как в браузере. По неизвесным причинам Google скрывает их в версии на Play Market">
+        <img src="/assets/img/buttons/apk-cta.png" class="img-fluid cta-img" title="Скачать APK. В нем будет встроенный поиск и опция поделиться, как в браузере. По неизвесным причинам Google скрывает их в версии на Play Market">
     </a>
 
     <a class="ms-2 mb-2" href="https://chromewebstore.google.com/detail/dhammagift-search-and-wor/dnnogjdcmhbiobpnkhdbfnfjnjlikabd">
-        <img src="/assets/img/buttons/chrome-cta.png" class="img-fluid" style="max-width: 200px;" title="Скачать из Chrome Web Store. Поддерживается в Chrome, Edge, Opera, Brave, Vivaldi и Yandex Browser.">
+        <img src="/assets/img/buttons/chrome-cta.png" class="img-fluid cta-img" title="Скачать из Chrome Web Store. Поддерживается в Chrome, Edge, Opera, Brave, Vivaldi и Yandex Browser.">
     </a>
 
     <a class="ms-2 mb-2" href="https://addons.mozilla.org/en-US/firefox/addon/dhamma-gift/">
-        <img src="/assets/img/buttons/firefox-cta.png" class="img-fluid" style="max-width: 200px;" title="Скачать из Firefox Add-ons">
+        <img src="/assets/img/buttons/firefox-cta.png" class="img-fluid cta-img" title="Скачать из Firefox Add-ons">
     </a>
 
     <a class="ms-2 mb-2" href="https://microsoftedge.microsoft.com/addons/detail/dhammagift-search-and-wo/aokegkhdaijkikbdocanadeghllhfmhj">
-        <img src="/assets/img/buttons/edge-cta.png" class="img-fluid" style="max-width: 200px;" title="Скачать из Microsoft Edge Store">
+        <img src="/assets/img/buttons/edge-cta.png" class="img-fluid cta-img" title="Скачать из Microsoft Edge Store">
     </a>
+
+      <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhamma-gift/">
+        <img src="/assets/img/buttons/opera-cta.png" class="img-fluid cta-img" title="Скачать из Opera Add-ons">
+    </a> 
     
 </div>
 
@@ -1248,32 +1252,35 @@ Create an issue on github or send an email, if you\'ll find other criteria.
 $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-content-center align-items-center my-3 mb-2">
     
     <button class="ms-2 mb-2 p-0 border-0 bg-transparent" id="installPWA" style="cursor:pointer;">
-        <img src="/assets/img/buttons/pwa-cta.png" class="img-fluid" style="max-width: 200px;" title="Install Dhamma.gift as progressive web app">
+        <img src="/assets/img/buttons/pwa-cta.png" class="img-fluid cta-img"  title="Install Dhamma.gift as progressive web app">
     </button>
 
     <a class="ms-2 mb-2" href="https://t.me/dgift_bot">
-        <img src="/assets/img/buttons/telegram-cta.png" class="img-fluid" style="max-width: 200px;" title="Open DGift_bot. Or type @DGift_bot in any Telegram chat or group">
+        <img src="/assets/img/buttons/telegram-cta.png" class="img-fluid cta-img" title="Open DGift_bot. Or type @DGift_bot in any Telegram chat or group">
     </a>
 
     <a class="ms-2 mb-2" href="https://play.google.com/store/apps/details?id=gift.dhamma.twa">
-        <img src="/assets/img/buttons/google-play-cta.png" class="img-fluid" style="max-width: 200px;" title="Download from Google Play">
+        <img src="/assets/img/buttons/google-play-cta.png" class="img-fluid cta-img" title="Download from Google Play">
     </a>
 
     <a class="ms-2 mb-2" href="/assets/apk/dhamma.gift-latest.apk">
-        <img src="/assets/img/buttons/apk-cta.png" class="img-fluid" style="max-width: 200px;" title="Download APK. If you need build-in browser search and share functions, which Google removes from Play Market version">
+        <img src="/assets/img/buttons/apk-cta.png" class="img-fluid cta-img" title="Download APK. If you need build-in browser search and share functions, which Google removes from Play Market version">
     </a>
     
     <a class="ms-2 mb-2" href="https://chromewebstore.google.com/detail/dhammagift-search-and-wor/dnnogjdcmhbiobpnkhdbfnfjnjlikabd">
-        <img src="/assets/img/buttons/chrome-cta.png" class="img-fluid" style="max-width: 200px;" title="Download from Chrome Web Store. Supports Chrome, Edge, Opera, Brave, Vivaldi, and Yandex Browser.">
+        <img src="/assets/img/buttons/chrome-cta.png" class="img-fluid cta-img" title="Download from Chrome Web Store. Supports Chrome, Edge, Opera, Brave, Vivaldi, and Yandex Browser.">
     </a>
 
     <a class="ms-2 mb-2" href="https://addons.mozilla.org/en-US/firefox/addon/dhamma-gift/">
-        <img src="/assets/img/buttons/firefox-cta.png" class="img-fluid" style="max-width: 200px;" title="Download from Firefox Add-ons">
+        <img src="/assets/img/buttons/firefox-cta.png" class="img-fluid cta-img" title="Download from Firefox Add-ons">
     </a>
 
     <a class="ms-2 mb-2" href="https://microsoftedge.microsoft.com/addons/detail/dhammagift-search-and-wo/aokegkhdaijkikbdocanadeghllhfmhj">
-        <img src="/assets/img/buttons/edge-cta.png" class="img-fluid" style="max-width: 200px;" title="Download from Microsoft Edge Store">
+        <img src="/assets/img/buttons/edge-cta.png" class="img-fluid cta-img" title="Download from Microsoft Edge Store">
     </a>
+           <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhamma-gift/">
+        <img src="/assets/img/buttons/opera-cta.png" class="img-fluid cta-img" title="Download from Opera Add-ons">
+    </a> 
     
 </div>
 

@@ -1175,7 +1175,9 @@ select.text-center option {
 }
 
 
-
+.cta-img {
+  max-width: 200px !important;
+}
 
 
 /* Основной скроллбар */
@@ -1268,3 +1270,4 @@ html {
     max-width: 230px !important;
   }
 }
+
