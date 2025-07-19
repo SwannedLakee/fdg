@@ -349,6 +349,13 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="text-end text-muted small mt-2">
   <?= htmlspecialchars($sourceInfo) ?>
 </div>
+
+<!-- Добавляем кнопку в нужное место -->
+<button onclick="speakTextFromElement('voiceTextContent', 'pi')" 
+        class="btn btn-sm btn-outline-secondary mb-2">
+  🔊 Listen Pali
+</button>
+
 <div class="text-content mt-3 pli-lang" id="voiceTextContent" lang="pi"><?= $content ?></div>
 
 <!-- htmlspecialchars($content) -->
@@ -379,92 +386,54 @@ document.addEventListener('DOMContentLoaded', function() {
   </script>
 
  <script>
-  // Функции вынесены в глобальную область видимости для возможного повторного использования
+  // Глобальные функции для TTS
   function getLangVoiceCode(lang) {
     const voices = {
       'ru': 'ru-RU',
       'en': 'en-US',
-      'pi': 'th-TH' // Тайский для пали
+      'pi': 'th-TH'
     };
     return voices[lang] || 'en-US';
   }
 
-  function speakText(text, lang) {
-    if (!window.speechSynthesis) {
-      console.error('Speech Synthesis not supported');
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = getLangVoiceCode(lang);
-    utterance.rate = 0.9; // Более естественная скорость
-    
-    // Остановить текущее воспроизведение
-    window.speechSynthesis.cancel();
-    
-    // Обработчики событий для отладки
-    utterance.onerror = (event) => {
-      console.error('Speech error:', event);
-    };
-    
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function extractTextFromContent(block) {
+  function speakTextFromElement(elementId, lang) {
     try {
-      return Array.from(block.querySelectorAll('span'))
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.error('Element not found:', elementId);
+        return;
+      }
+      
+      // Собираем текст из всех span внутри элемента
+      const text = Array.from(element.querySelectorAll('span'))
         .map(span => span.textContent.trim())
-        .filter(text => text.length > 0)
+        .filter(t => t.length > 0)
         .join(' ');
+      
+      if (!text) {
+        console.error('No text found in element:', elementId);
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = getLangVoiceCode(lang);
+      
+      // Остановить текущее воспроизведение
+      speechSynthesis.cancel();
+      
+      utterance.onerror = function(event) {
+        console.error('Speech error:', event);
+      };
+      
+      speechSynthesis.speak(utterance);
     } catch (e) {
-      console.error('Text extraction error:', e);
-      return '';
+      console.error('Error in speakTextFromElement:', e);
     }
-  }
-
-  function addSpeechButtons() {
-    const contentBlocks = document.querySelectorAll('.text-content');
-    
-    contentBlocks.forEach(block => {
-      // Проверяем, есть ли уже кнопка
-      if (block.dataset.speechButtonAdded) return;
-      
-      const lang = block.getAttribute('lang') || 'en';
-      const button = document.createElement('button');
-      
-      button.innerHTML = '🔊 Произнести';
-      button.className = 'speech-button btn btn-sm btn-outline-secondary mb-2';
-      button.style.marginBottom = '10px';
-      
-      button.addEventListener('click', () => {
-        const text = extractTextFromContent(block);
-        if (text) {
-          speakText(text, lang);
-        } else {
-          alert('Не удалось извлечь текст для озвучки');
-        }
-      });
-      
-      // Вставляем перед блоком с текстом
-      block.parentNode.insertBefore(button, block);
-      
-      // Помечаем блок, чтобы избежать дублирования кнопок
-      block.dataset.speechButtonAdded = 'true';
-    });
-  }
-
-  // Основной обработчик
-  document.addEventListener('DOMContentLoaded', function() {
-    // Небольшая задержка для полной стабилизации DOM
-    setTimeout(addSpeechButtons, 100);
-  });
-
-  // Альтернативный обработчик для асинхронного контента
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(addSpeechButtons, 300);
   }
 </script>
-  
+
+
+
   <script src="/assets/js/autopali.js" defer></script>
 	  <script src="/assets/js/smoothScroll.js" defer></script>
       <script src="/assets/js/paliLookup.js"></script>
