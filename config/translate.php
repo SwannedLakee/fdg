@@ -62,35 +62,7 @@ $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-cont
     </a> -->
     
 </div>
-
-
-<script>
-let deferredPrompt;
-
-window.addEventListener(\'beforeinstallprompt\', (e) => {
-// Prevent automatic banner display
-e.preventDefault();
-deferredPrompt = e;
-
-// Show the button
-const installBtn = document.getElementById(\'installPWA\');
-installBtn.style.display = \'inline-block\';
-
-installBtn.addEventListener(\'click\', () => {
-if (deferredPrompt) {
-deferredPrompt.prompt();
-deferredPrompt.userChoice.then((choiceResult) => {
-if (choiceResult.outcome === \'accepted\') {
-console.log(\'Installation accepted\');
-} else {
-console.log(\'Installation declined\');
-}
-deferredPrompt = null;
-});
-}
-});
-});
-</script>';
+';
 
 
 
@@ -1283,35 +1255,7 @@ $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-cont
     </a> -->
     
 </div>
-
-
-<script>
-let deferredPrompt;
-
-window.addEventListener(\'beforeinstallprompt\', (e) => {
-// Prevent automatic banner display
-e.preventDefault();
-deferredPrompt = e;
-
-// Show the button
-const installBtn = document.getElementById(\'installPWA\');
-installBtn.style.display = \'inline-block\';
-
-installBtn.addEventListener(\'click\', () => {
-if (deferredPrompt) {
-deferredPrompt.prompt();
-deferredPrompt.userChoice.then((choiceResult) => {
-if (choiceResult.outcome === \'accepted\') {
-console.log(\'Installation accepted\');
-} else {
-console.log(\'Installation declined\');
-}
-deferredPrompt = null;
-});
-}
-});
-});
-</script>';
+';
 
 
 

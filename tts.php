@@ -1,5 +1,7 @@
 <?php
-// Параметры запроса
+// Параметры запроса 
+// allow pasting
+// speechSynthesis.getVoices();
 $slug = strtolower($_GET['q'] ?? '');
 $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 
@@ -318,6 +320,13 @@ document.addEventListener('DOMContentLoaded', function() {
       <img src="/assets/svg/comment.svg" class="dictIcon">
     </a>
 
+<a href="#" 
+   onclick="toggleSpeech('voiceTextContent'); return false;" 
+   class="text-decoration-none text-black me-1" 
+   id="speechToggleBtn">
+  🔊
+</a>
+
       <div class="ms-1 form-check form-switch">
         <input type="checkbox" class="form-check-input" id="darkSwitch">
       </div>
@@ -349,13 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="text-end text-muted small mt-2">
   <?= htmlspecialchars($sourceInfo) ?>
 </div>
-
-<!-- Добавляем кнопку в нужное место -->
-<button onclick="speakTextFromElement('voiceTextContent', 'pi')" 
-        class="btn btn-sm btn-outline-secondary mb-2">
-  🔊 Listen Pali
-</button>
-
 <div class="text-content mt-3 pli-lang" id="voiceTextContent" lang="pi"><?= $content ?></div>
 
 <!-- htmlspecialchars($content) -->
@@ -384,56 +386,116 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
   </script>
+<script>
+// Глобальная переменная для хранения состояния воспроизведения
+let isSpeaking = false;
+let currentUtterance = null;
 
- <script>
-  // Глобальные функции для TTS
-  function getLangVoiceCode(lang) {
-    const voices = {
-      'ru': 'ru-RU',
-      'en': 'en-US',
-      'pi': 'th-TH'
-    };
-    return voices[lang] || 'en-US';
-  }
-
-  function speakTextFromElement(elementId, lang) {
-    try {
-      const element = document.getElementById(elementId);
-      if (!element) {
-        console.error('Element not found:', elementId);
-        return;
-      }
-      
-      // Собираем текст из всех span внутри элемента
-      const text = Array.from(element.querySelectorAll('span'))
-        .map(span => span.textContent.trim())
-        .filter(t => t.length > 0)
-        .join(' ');
-      
-      if (!text) {
-        console.error('No text found in element:', elementId);
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = getLangVoiceCode(lang);
-      
-      // Остановить текущее воспроизведение
-      speechSynthesis.cancel();
-      
-      utterance.onerror = function(event) {
-        console.error('Speech error:', event);
-      };
-      
-      speechSynthesis.speak(utterance);
-    } catch (e) {
-      console.error('Error in speakTextFromElement:', e);
+// Функция для тоггла воспроизведения
+function toggleSpeech(elementId) {
+  if (isSpeaking) {
+    // Останавливаем воспроизведение
+    window.speechSynthesis.cancel();
+    isSpeaking = false;
+    document.getElementById('speechToggleBtn').textContent = '🔊'; // Меняем иконку
+    console.log('Остановлено');
+  } else {
+    // Запускаем озвучку
+    currentUtterance = speakTextFromElement(elementId);
+    if (currentUtterance) {
+      isSpeaking = true;
+      document.getElementById('speechToggleBtn').textContent = '⏹️'; // Иконка стоп
     }
   }
+}
+
+// Основная функция озвучки
+function speakTextFromElement(elementId) {
+  try {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      console.error('Элемент не найден:', elementId);
+      return null;
+    }
+
+    const htmlLang = document.documentElement.getAttribute('lang') || 'en';
+    const text = Array.from(element.querySelectorAll('span'))
+      .map(span => span.textContent.trim())
+      .filter(t => t.length > 0)
+      .join(' ');
+
+    if (!text) {
+      alert('Не найден текст для озвучки');
+      return null;
+    }
+
+    let langCode;
+    let selectedVoice = null;
+
+    const voices = window.speechSynthesis.getVoices();
+
+    switch (htmlLang) {
+      case 'ru':
+        langCode = 'ru-RU';
+        selectedVoice = voices.find(v => v.name === 'Microsoft Pavel - Russian (Russia)') 
+           || voices.find(v => v.lang === 'ru-RU');
+        break;
+
+      case 'pi':
+        if (/[\u0900-\u097F]/.test(text)) {
+          // Пытаемся использовать санскрит
+          const saVoice = voices.find(v => v.lang === 'sa-IN');
+          if (saVoice) {
+            langCode = 'sa-IN';
+            selectedVoice = saVoice;
+          } else {
+            langCode = 'hi-IN';
+            selectedVoice = voices.find(v => v.lang === 'hi-IN');
+          }
+        } else {
+          langCode = 'en-US';
+          selectedVoice = voices.find(v => v.lang === 'en-US');
+        }
+        break;
+
+      default:
+        langCode = 'en-US';
+        selectedVoice = voices.find(v => v.lang === 'en-US');
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langCode;
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+
+    utterance.onend = () => {
+      isSpeaking = false;
+      document.getElementById('speechToggleBtn').textContent = '🔊';
+      console.log('Воспроизведение завершено');
+    };
+
+    utterance.onerror = (event) => {
+      console.error('Ошибка синтеза:', event);
+      if (langCode !== 'en-US') {
+        utterance.lang = 'en-US';
+        utterance.voice = null;
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+
+    return utterance;
+
+  } catch (e) {
+    console.error('Ошибка в speakTextFromElement:', e);
+    return null;
+  }
+}
 </script>
-
-
-
   <script src="/assets/js/autopali.js" defer></script>
 	  <script src="/assets/js/smoothScroll.js" defer></script>
       <script src="/assets/js/paliLookup.js"></script>
