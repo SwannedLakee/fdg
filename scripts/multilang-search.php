@@ -87,52 +87,20 @@ if (preg_match('/dictLookup/', $p) || preg_match('/dictLookup/', $extra)) {
 
     $server_name = $_SERVER['SERVER_NAME'];
     if ($server_name === 'localhost' || $server_name === '127.0.0.1') {
-        $dictUrl = "dttp://app.dicttango/WordLookup?word=";
-        echo "<script>
-        setTimeout(function() {
-            window.location.href = '{$dictUrl}{$stringForWord}';
-            document.getElementById('spinner').style.display = 'none';
-        }, 100);
-        </script>";
+        $dictUrl = "dttp://app.dicttango/WordLookup?word="; // Исправлен протокол
     } else {
-        $dictUrl = "{$dictType}{$langinurl}/search_html?q=";
-  echo "<script>
-window.dictionaryWindow ??= null;
-
-function openDictionaryWindowD(url) {
-const newWindowWidth = 500;
-const newWindowHeight = 500;
-
-const screenWidth = window.screen.availWidth;
-const screenHeight = window.screen.availHeight;
-
-const newWindowleft = screenWidth - newWindowWidth - 30;
-const newWindowTop = screenHeight - newWindowHeight - 50;
-
-const popupFeatures = 'width=' + newWindowWidth +
-                      ',height=' + newWindowHeight +
-                      ',left=' + newWindowleft +
-                      ',top=' + newWindowTop +
-                      ',scrollbars=yes,resizable=yes';
-  if (dictionaryWindow && !dictionaryWindow.closed) {
-    dictionaryWindow.close();
-  }
-  dictionaryWindow = window.open(url, 'dictionaryPopup', popupFeatures);
-  if (dictionaryWindow) {
-    dictionaryWindow.focus();
-  }
-}
-
-setTimeout(function() {
-  const dictSearchUrl = '" . $dictUrl . $stringForWord . "';
-  openDictionaryWindowD(dictSearchUrl);
-  document.getElementById('spinner').style.display = 'none';
-}, 100);
-</script>";
+        $dictUrl = "/assets/openDDG.html?url={$dictType}{$langinurl}/search_html?q=";  
     }
-
+    
+    echo "<script>
+    setTimeout(function() {
+window.location.href = '{$dictUrl}' + '{$stringForWord}';
+        document.getElementById('spinner').style.display = 'none';
+    }, 100);
+    </script>";
     return;
 }
+
 
 // Проверка условий
 if (preg_match('/wordRep/', $p) || preg_match('/wordRep/', $extra)) {
