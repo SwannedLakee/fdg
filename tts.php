@@ -682,79 +682,45 @@ if (new URLSearchParams(window.location.search).has('debugVoices')) {
 }
 
 // Функция для тоггла воспроизведения с поддержкой паузы
-// Глобальные переменные
-let wakeLock = null;
-
-// Функция для включения Wake Lock
-async function enableWakeLock() {
-    try {
-        if ('wakeLock' in navigator && !wakeLock) {
-            wakeLock = await navigator.wakeLock.request('screen');
-            console.log('Wake Lock активирован');
-            wakeLock.addEventListener('release', () => {
-                console.log('Wake Lock освобожден системой');
-            });
-        }
-    } catch (err) {
-        console.error('Ошибка Wake Lock:', err);
-    }
-}
-
-// Функция для отключения Wake Lock
-function disableWakeLock() {
-    if (wakeLock) {
-        wakeLock.release()
-            .then(() => {
-                wakeLock = null;
-                console.log('Wake Lock отключен');
-            })
-            .catch(err => {
-                console.error('Ошибка при отключении Wake Lock:', err);
-            });
-    }
-}
-
-// Модифицируем функцию toggleSpeech
-async function toggleSpeech(elementId) {
-    if (isSpeaking && !isPaused) {
-        // Пауза воспроизведения
-        window.speechSynthesis.pause();
-        isPaused = true;
-        disableWakeLock(); // Отключаем Wake Lock при паузе
-        document.getElementById('speechToggleBtn').textContent = '▶️';
-    } 
-    else if (isPaused) {
-        // Продолжение воспроизведения
-        window.speechSynthesis.resume();
+function toggleSpeech(elementId) {
+  if (isSpeaking && !isPaused) {
+    // Пауза воспроизведения
+    window.speechSynthesis.pause();
+    isPaused = true;
+    document.getElementById('speechToggleBtn').textContent = '▶️';
+    console.log('На паузе');
+  } 
+  else if (isPaused) {
+    // Продолжение воспроизведения
+    window.speechSynthesis.resume();
+    isPaused = false;
+    document.getElementById('speechToggleBtn').textContent = '⏸️';
+    console.log('Продолжено');
+  }
+  else {
+    // Запуск нового воспроизведения
+    window.speechSynthesis.cancel();
+    currentUtterance = speakTextFromElement(elementId);
+    if (currentUtterance) {
+      isSpeaking = true;
+      isPaused = false;
+      document.getElementById('speechToggleBtn').textContent = '⏸️';
+      
+      // Обработчики событий для сброса состояния
+      currentUtterance.onend = () => {
+        isSpeaking = false;
         isPaused = false;
-        await enableWakeLock(); // Включаем Wake Lock при возобновлении
-        document.getElementById('speechToggleBtn').textContent = '⏸️';
+        document.getElementById('speechToggleBtn').textContent = '🔊';
+        console.log('Воспроизведение завершено');
+      };
+      
+      currentUtterance.onerror = () => {
+        isSpeaking = false;
+        isPaused = false;
+        document.getElementById('speechToggleBtn').textContent = '🔊';
+      };
     }
-    else {
-        // Запуск нового воспроизведения
-        window.speechSynthesis.cancel();
-        currentUtterance = await speakTextFromElement(elementId);
-        if (currentUtterance) {
-            isSpeaking = true;
-            isPaused = false;
-            await enableWakeLock(); // Включаем Wake Lock при старте
-            document.getElementById('speechToggleBtn').textContent = '⏸️';
-            
-            currentUtterance.onend = () => {
-                isSpeaking = false;
-                isPaused = false;
-                disableWakeLock(); // Отключаем Wake Lock при завершении
-                document.getElementById('speechToggleBtn').textContent = '🔊';
-            };
-            
-            currentUtterance.onerror = () => {
-                isSpeaking = false;
-                isPaused = false;
-                disableWakeLock(); // Отключаем Wake Lock при ошибке
-                document.getElementById('speechToggleBtn').textContent = '🔊';
-            };
-        }
-    }
+  }
 }
 
 // Функция для ожидания загрузки голосов
