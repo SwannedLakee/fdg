@@ -117,6 +117,8 @@ $tooltipsearchbar = '
 <br>
 <strong>Alt + 1</strong> Интерфейс для чтения Рус / Англ.
 <br>
+<strong>Alt + N</strong> Открыть слово в Dict.Dhamma.Gift в новом окне.
+<br>
 <strong>Alt + Q</strong> Открыть слово в нескольких словарях.
 
 ';
@@ -900,6 +902,8 @@ $tooltipsearchbar = '<strong>Autosuggestions</strong>: Start typing at least 3 c
 <strong>Ctrl + 3</strong> Open Dict.Dhamma.Gift.
 <br>
 <strong>Alt + 1</strong> Reading Interface (En / Ru).
+<br>
+<strong>Alt + N</strong> Open word in Dict.Dhamma.Gift new window.
 <br>
 <strong>Alt + Q</strong> Search current word in many dictionaries.
 ';

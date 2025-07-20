@@ -164,7 +164,7 @@ echo '<!--
 </a> 
     -->
 
-<a title="AI-assistants, Dictionaries Pali and Sanskrit. Links will use current word from search bar. \'Magic button\'(Alt + Q)" class="dropdown text-decoration-none mx-1 d-md-inline-block" id="MenuDict" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+<a title="AI-assistants, Dictionaries Pali and Sanskrit. Lookup word from search bar (Alt + N). Many Dicts (Alt + Q)" class="dropdown text-decoration-none mx-1 d-md-inline-block" id="MenuDict" data-bs-toggle="dropdown" aria-expanded="false" href="#">
   <figure class="figure d-md-inline-block">
     <i class="menu-icon fa-solid fa-book-atlas"></i>
     <figcaption class="horiz-menu-item figure-caption text-center">AI & Dicts</figcaption>   
@@ -176,7 +176,7 @@ echo '<!--
 <li>
   <div class="dropdown-item">
     <i class="' . $iconimportant . '"></i>
-    <a class="text-reset" target="" href="javascript:void(0)" onclick="
+    <a class="text-reset" target="" title="open Dict.Dhamma.Gift in extra window (Alt + N)" href="javascript:void(0)" onclick="
       const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
         \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
@@ -185,8 +185,8 @@ echo '<!--
     ">Digital Pāḷi Dict</a>
 
 
-    <a class="text-reset" target="_blank" href="https://digitalpalidictionary.github.io/">Offline</a>
-    <a class="text-reset" target="" href="#links">Extentions</a>
+    <a class="text-reset" title="download DPD for offline usage" target="_blank" href="https://digitalpalidictionary.github.io/">Offline</a>
+    <a class="text-reset" target="_blank"  title="Browser Extentions" href="#links">Extentions</a>
   </div>
 </li>
 

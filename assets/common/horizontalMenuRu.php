@@ -174,7 +174,7 @@ echo '<!--
   
     -->
 
-<a title="ИИ-помощники, Словари Пали и Санскрит. Ссылки используют текущее слово в строке поиска. \'Волшебная кнопка\'(Alt + Q)"  class="dropdown text-decoration-none mx-1 d-md-inline-block" id="MenuDict" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+<a title="ИИ-помощники, Словари Пали и Санскрит. Смотреть слово из строки поиска (Alt + N). Много словарей (Alt + Q)"  class="dropdown text-decoration-none mx-1 d-md-inline-block" id="MenuDict" data-bs-toggle="dropdown" aria-expanded="false" href="#">
   <figure class="figure d-md-inline-block">
     <i class="menu-icon fa-solid fa-book-atlas"></i>
     <figcaption class="horiz-menu-item figure-caption text-center">ИИ, Словари</figcaption>   
@@ -185,7 +185,7 @@ echo '<!--
 <li>
   <div class="dropdown-item">
     <i class="' . $iconimportant . '"></i>
-    <a class="text-reset" target="" href="javascript:void(0)" onclick="
+    <a class="text-reset" target=""  title="открыть Dict.Dhamma.Gift в новом окне (Alt + N)" href="javascript:void(0)" onclick="
       const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
         \'https://dict.dhamma.gift/ru/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
@@ -193,8 +193,8 @@ echo '<!--
       openDictionaryWindow(url);
     ">Digital Pāḷi Dict</a>
 
-    <a class="text-reset" target="_blank" href="https://digitalpalidictionary.github.io/">Оффлайн</a>
-    <a class="text-reset" target="" href="#links">Расширения</a>
+    <a class="text-reset" target="_blank"   title="Скачать DPD для использования оффлайн" href="https://digitalpalidictionary.github.io/">Оффлайн</a>
+    <a class="text-reset" target="" title="Расширения для браузеров" href="#links">Расширения</a>
   </div>
 </li>
 

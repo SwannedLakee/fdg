@@ -239,6 +239,46 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+document.addEventListener("keydown", (event) => {
+  if (event.altKey && event.code === "KeyN") {
+    const inputEl = document.getElementById('paliauto');
+    const inputVal = inputEl?.value.trim() || '';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramQ = urlParams.get('q')?.trim() || '';
+    const paramS = urlParams.get('s')?.trim() || '';
+
+    let q = '';
+
+    if (inputVal === paramQ) {
+      q = paramS || paramQ;
+    } else if (inputVal) {
+      q = inputVal;
+    } else if (paramS) {
+      q = paramS;
+    } else {
+      q = paramQ;
+    }
+
+    const path = window.location.pathname.toLowerCase();
+    let langPrefix = '';
+
+    if (path.includes('/ru/') || path.includes('/r/')) {
+      langPrefix = '/ru';
+    } else if (path.includes('/ml/')) {
+      langPrefix = '/ml';
+    }
+
+    const baseUrl = 'https://dict.dhamma.gift' + langPrefix;
+
+    const url = q
+      ? baseUrl + '/search_html?source=pwa&q=' + encodeURIComponent(q)
+      : baseUrl + '/';
+
+    openDictionaryWindow(url);
+  }
+});
+
 
 document.addEventListener("keydown", (event) => {
   if (event.altKey && event.code === "KeyH") {
