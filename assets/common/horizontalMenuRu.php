@@ -185,7 +185,7 @@ echo '<!--
 <li>
   <div class="dropdown-item">
     <i class="' . $iconimportant . '"></i>
-    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="
+    <a class="text-reset" target="" href="javascript:void(0)" onclick="
       const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
         \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
