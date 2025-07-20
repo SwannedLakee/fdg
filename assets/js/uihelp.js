@@ -59,12 +59,12 @@ if (
 
 // Проверяем, если это N посещение и нужно подсветить элементы
 if (visitCount === targetVisitForRead) {
-    ['MenuRead', 'MenuEnglish', 'MenuRussian', 'MenuDict', 'tools', 'materials'].forEach(id => {
+    ['MenuRead', 'MenuEnglish', 'MenuRussian', 'history', 'MenuDict', 'tools', 'materials'].forEach(id => {
         highlightById(id); // Подсвечиваем каждый элемент
     });
 } else if (visitCount > targetVisitForRead + extraTimes) {
     // Убираем подсветку, если превышено количество посещений
-    ['MenuRead', 'MenuEnglish', 'MenuRussian',  'MenuDict', 'tools', 'materials'].forEach(id => {
+    ['MenuRead', 'MenuEnglish', 'MenuRussian', 'history', 'MenuDict', 'tools', 'materials'].forEach(id => {
         let element = document.getElementById(id);
         if (element) {
             element.style.boxShadow = ''; // Убираем подсветку
