@@ -1,3 +1,13 @@
+const newWindowWidth = 500;
+const newWindowHeight = 500;
+
+// Получаем ширину экрана
+const screenWidth = window.screen.availWidth;
+// Вычисляем позицию окна слева, чтобы оно было справа
+const newWindowleft = screenWidth - newWindowWidth - 30; // 20 пикселей от правого края (отступ)
+// Задаём параметры окна с left и top
+const popupFeatures = `width=${newWindowWidth},height=${newWindowHeight},left=${newWindowleft},top=50,scrollbars=yes,resizable=yes`;
+
 if (typeof initCopyNotification === 'undefined') {
     // Функция НЕ объявлена — можно добавлять её
     function initCopyNotification() {
@@ -197,15 +207,15 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
 
 if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation) {
     translation = isRussian ? 
-            `<div style="padding: 10px;">
-                <a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a> не найдено во встроенном словаре.
-                <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать онлайн</a>
-            </div>` :
-            `<div style="padding: 10px;">
-                <strong><a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">${word}</a></strong> is not found in the built-in dictionary.
-                <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search online</a>
-            </div>`;
-    } 
+        `<div style="padding: 10px;">
+            <a href="${dictSearchUrl}" onclick="event.preventDefault(); window.open('${dictSearchUrl}', '', '${popupFeatures}'); return false;" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a> не найдено во встроенном словаре.
+            <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать онлайн</a>
+        </div>` :
+        `<div style="padding: 10px;">
+            <strong><a href="#" onclick="window.open('${dictSearchUrl}', '', '${popupFeatures}'); return false;" style="text-decoration: none; color: inherit;">${word}</a></strong> is not found in the built-in dictionary.
+            <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search online</a>
+        </div>`;
+}
 
 
     if (translation) {
@@ -290,6 +300,19 @@ if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation
 
     const dictBtn = document.querySelector('.dict-btn');
     dictBtn.href = dictSearchUrl;
+    dictBtn.onclick = (e) => {
+    // Обычный клик без модификаторов (Ctrl, Shift, Meta, средняя кнопка)
+    if (
+        !e.defaultPrevented &&               // событие не отменено
+        e.button === 0 &&                    // левая кнопка мыши
+        !e.ctrlKey && !e.shiftKey && !e.metaKey && !e.altKey // без клавиш-модификаторов
+    ) {
+        e.preventDefault();                  // отменяем обычное поведение (переход)
+        window.open(dictSearchUrl, '', popupFeatures);
+    }
+    // Иначе (правый клик, ctrl+клик и т.д.) — не мешаем браузеру, ссылка работает как обычно
+};
+
 
     function showSearchButton() {
         const wordForSearch = cleanedWord.replace(/'ti/, '');
@@ -479,47 +502,52 @@ function lookupWordInStandaloneDict(word) {
     const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
 
     // Проверяем, есть ли слово как ключ в dpd_i2h
-    if (word in dpd_i2h) {
-        out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
-        for (const headword of dpd_i2h[word]) {
-            if (headword in dpd_ebts) {
-                out += '<li><span class="pli-lang " lang="pi">' + headword + '. ' + dpd_ebts[headword] + '</span></li>';
-            }
+  if (word in dpd_i2h) {
+    out += `<a href="${dictSearchUrl}" onclick="event.preventDefault(); window.open('${dictSearchUrl}', '', '${popupFeatures}'); return false;" style="text-decoration: none; color: inherit;">
+                <strong>${word}</strong>
+            </a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+    for (const headword of dpd_i2h[word]) {
+        if (headword in dpd_ebts) {
+            out += '<li>' + headword + '. ' + dpd_ebts[headword] + '</li>';
         }
-        out += "</ul>";
     }
+    out += "</ul>";
+}
     // Если слово не ключ, но есть в значениях (особенно в ключе ""), ищем его в dpd_ebts
     else {
         let foundInValues = false;
         // Проверяем все ключи, где слово может быть в значениях
         for (const key in dpd_i2h) {
-            if (dpd_i2h[key].includes(word)) {
-                foundInValues = true;
-                // Если слово есть в dpd_ebts, выводим его перевод
-                if (word in dpd_ebts) {
-                    if (!out.includes(`<strong>${word}</strong>`)) {
-                        out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+           if (dpd_i2h[key].includes(word)) {
+                    foundInValues = true;
+                    // Если слово есть в dpd_ebts, выводим его перевод
+                    if (word in dpd_ebts) {
+                        if (!out.includes(`<strong>${word}</strong>`)) {
+                            out += `<a href="${dictSearchUrl}" onclick="event.preventDefault(); window.open('${dictSearchUrl}', '', '${popupFeatures}'); return false;" style="text-decoration: none; color: inherit;">
+                                        <strong>${word}</strong>
+                                    </a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+                        }
+                        out += '<li>' + word + '. ' + dpd_ebts[word] + '</li>';
+                        out += "</ul>";
                     }
-                    out += '<li>' + word + '. ' + dpd_ebts[word] + '</li>';
-                    out += "</ul>";
+                    break; // Достаточно найти хотя бы один случай
                 }
-                break; // Достаточно найти хотя бы один случай
-            }
         }
     }
 
     // Проверяем, есть ли слово в dpd_deconstructor
     if (word in dpd_deconstructor) {
         if (!out.includes(`<strong>${word}</strong>`)) {
-            out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
-        } else {
+    out += `<a href="${dictSearchUrl}" onclick="event.preventDefault();window.open('${dictSearchUrl}', '', '${popupFeatures}'); return false;" style="text-decoration: none; color: inherit;">
+                <strong>${word}</strong>
+            </a><br><ul style="line-height: 1em; padding-left: 15px;">`;
+}
+ else {
             out += "<ul style='line-height: 1em; padding-left: 15px;'>";
         }
-        out += "<li>" + dpd_deconstructor[word] + "</li>";
+        out += "<li><span class='pli-lang' lang='pi'>" + dpd_deconstructor[word] + "</span></li>";
         out += "</ul>";
     }
-
-
 
     return out.replace(/ṃ/g, "ṁ");
 }
@@ -617,7 +645,7 @@ function createPopup() {
     dictBtn.style.alignItems = 'center';
     dictBtn.style.justifyContent = 'center';
     dictBtn.style.textDecoration = 'none';
-    dictBtn.target = '_blank';
+    dictBtn.href = '_blank';
     dictBtn.title = 'Open in dict.dhamma.gift';
     dictBtn.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
 
