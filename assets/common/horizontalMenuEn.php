@@ -174,14 +174,23 @@ echo '<!--
 <ul class="dropdown-menu" aria-labelledby="MenuDict">
 
 
-               <li>
-         <div class="dropdown-item ">
-<i class="' . $iconimportant . '"></i> <a class="text-reset" target="" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dict.dhamma.gift/search_html?source=pwa&q={{q}}\')">Digital Pāḷi Dict</a>
-         <a class="text-reset" target="_blank"   href="https://digitalpalidictionary.github.io/">Offline</a>
-       <a class="text-reset" target=""  href="#links">Extentions</a>     
-       </div>
-         </li>   
-   
+<li>
+  <div class="dropdown-item">
+    <i class="' . $iconimportant . '"></i>
+    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get(\'q\') || \'\';
+      const url = q.trim() ? 
+        \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
+        \'https://dict.dhamma.gift/\';
+      openWithQuery(event, url);
+    ">Digital Pāḷi Dict</a>
+
+    <a class="text-reset" target="_blank" href="https://digitalpalidictionary.github.io/">Offline</a>
+    <a class="text-reset" target="" href="#links">Extentions</a>
+  </div>
+</li>
+
    <li>
   <a class="dropdown-item" title="Open word in PTS/Cone/DPD/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS/Cone/DPD/CPD/Skr+/Wisdoml</a>
 <script src="/assets/js/openDicts.js"></script>
