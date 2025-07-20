@@ -188,8 +188,8 @@ echo '<!--
     <a class="text-reset" target="" href="javascript:void(0)" onclick="
       const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
-        \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
-        \'https://dict.dhamma.gift/\';
+        \'https://dict.dhamma.gift/ru/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
+        \'https://dict.dhamma.gift/ru/\';
       openDictionaryWindow(url);
     ">Digital Pāḷi Dict</a>
 

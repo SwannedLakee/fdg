@@ -96,21 +96,44 @@ if (preg_match('/dictLookup/', $p) || preg_match('/dictLookup/', $extra)) {
         </script>";
     } else {
         $dictUrl = "{$dictType}{$langinurl}/search_html?q=";
-        echo "
-        <script src='/assets/js/paliLookup.js'></script>
-<script>
-        setTimeout(function() {
-            const dictSearchUrl = '{$dictUrl}{$stringForWord}';
-            openDictionaryWindow(dictSearchUrl);
-            document.getElementById('spinner').style.display = 'none';
-        }, 100);
-        </script>";
+  echo "<script>
+const newWindowWidth = 500;
+const newWindowHeight = 500;
+
+const screenWidth = window.screen.availWidth;
+const screenHeight = window.screen.availHeight;
+
+const newWindowleft = screenWidth - newWindowWidth - 30;
+const newWindowTop = screenHeight - newWindowHeight - 50;
+
+const popupFeatures = 'width=' + newWindowWidth +
+                      ',height=' + newWindowHeight +
+                      ',left=' + newWindowleft +
+                      ',top=' + newWindowTop +
+                      ',scrollbars=yes,resizable=yes';
+
+let dictionaryWindow = null;
+
+function openDictionaryWindow(url) {
+  if (dictionaryWindow && !dictionaryWindow.closed) {
+    dictionaryWindow.close();
+  }
+  dictionaryWindow = window.open(url, 'dictionaryPopup', popupFeatures);
+  if (dictionaryWindow) {
+    dictionaryWindow.focus();
+  }
+}
+
+setTimeout(function() {
+  const dictSearchUrl = '" . $dictUrl . $stringForWord . "';
+  openDictionaryWindow(dictSearchUrl);
+  document.getElementById('spinner').style.display = 'none';
+}, 100);
+</script>";
     }
 
     return;
 }
-
-
 
 // Проверка условий
 if (preg_match('/wordRep/', $p) || preg_match('/wordRep/', $extra)) {
