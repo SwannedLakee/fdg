@@ -542,7 +542,7 @@ function lookupWordInStandaloneDict(word) {
      * @returns {string} - The HTML string with words converted to links.
      */
     function linkifyPaliWords(text) {
-        const wordRegex = /(?![^<]*>)([a-zA-ZāīūṅñṭḍṇḷṃĀĪŪṄÑṬḌṆḶṂ']+)/g;
+const wordRegex = /(?![^<]*>)([a-zA-ZāīūṅñṭḍṇḷṃĀĪŪṄÑṬḌṆḶṂёЁа-яА-Я']+)/g;
         return text.replace(wordRegex, (foundWord) => createClickableLink(foundWord));
     }
 
