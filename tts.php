@@ -389,53 +389,277 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </script>
 <script>
-
 // Глобальные переменные для управления воспроизведением
 let isSpeaking = false;
 let isPaused = false;
 let currentUtterance = null;
 let pausedPosition = 0;
 
+const pageLogger = {
+  logs: [],
+  maxLogs: 50,
+  container: null,
+  
+  init: function(showByDefault = false) {
+    // Создаем контейнер для логов
+    this.container = document.createElement('div');
+    this.container.id = 'pageLoggerContainer';
+    this.container.style.position = 'fixed';
+    this.container.style.bottom = '10px';
+    this.container.style.left = '10px';
+    this.container.style.right = '10px';
+    this.container.style.maxHeight = '30vh';
+    this.container.style.overflow = 'auto';
+    this.container.style.zIndex = '9998';
+    this.container.style.backgroundColor = 'var(--bs-body-bg)';
+    this.container.style.color = 'var(--bs-body-color)';
+    this.container.style.border = '1px solid var(--bs-border-color)';
+    this.container.style.borderRadius = '5px';
+    this.container.style.padding = '10px';
+    this.container.style.fontFamily = 'monospace';
+    this.container.style.fontSize = '12px';
+    this.container.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+    this.container.style.display = showByDefault ? 'block' : 'none';
+    
+    // Кнопка закрытия (вверху справа)
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '5px';
+    closeBtn.style.right = '5px';
+    closeBtn.style.background = 'transparent';
+    closeBtn.style.border = 'none';
+    closeBtn.style.color = 'var(--bs-body-color)';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.fontSize = '16px';
+    closeBtn.style.fontWeight = 'bold';
+    closeBtn.style.zIndex = '10000';
+    closeBtn.onclick = () => {
+      this.container.style.display = 'none';
+      const toggleBtn = document.getElementById('loggerToggleBtn');
+      if (toggleBtn) toggleBtn.textContent = '📜';
+    };
+    
+    // Кнопка управления логгером (только если debugVoices в URL)
+    if (new URLSearchParams(window.location.search).has('debugVoices')) {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.id = 'loggerToggleBtn';
+      toggleBtn.textContent = this.container.style.display === 'none' ? '📜' : '✕';
+      toggleBtn.style.position = 'fixed';
+      toggleBtn.style.bottom = '10px';
+      toggleBtn.style.right = '10px';
+      toggleBtn.style.zIndex = '9999';
+      toggleBtn.style.width = '36px';
+      toggleBtn.style.height = '36px';
+      toggleBtn.style.borderRadius = '50%';
+      toggleBtn.style.border = '1px solid var(--bs-border-color)';
+      toggleBtn.style.backgroundColor = 'var(--bs-body-bg)';
+      toggleBtn.style.color = 'var(--bs-body-color)';
+      toggleBtn.style.cursor = 'pointer';
+      toggleBtn.style.display = 'flex';
+      toggleBtn.style.alignItems = 'center';
+      toggleBtn.style.justifyContent = 'center';
+      toggleBtn.style.fontSize = '16px';
+      
+      toggleBtn.addEventListener('click', () => {
+        if (this.container.style.display === 'none') {
+          this.container.style.display = 'block';
+          toggleBtn.textContent = '✕';
+        } else {
+          this.container.style.display = 'none';
+          toggleBtn.textContent = '📜';
+        }
+      });
+      
+      document.body.appendChild(toggleBtn);
+    }
+    
+    this.container.appendChild(closeBtn);
+    document.body.appendChild(this.container);
+    
+    // Перехватываем console.log
+    const originalConsoleLog = console.log;
+    console.log = (...args) => {
+      this.addLog('log', ...args);
+      originalConsoleLog.apply(console, args);
+    };
+    
+    // Перехватываем console.error
+    const originalConsoleError = console.error;
+    console.error = (...args) => {
+      this.addLog('error', ...args);
+      originalConsoleError.apply(console, args);
+    };
+    
+    // Перехватываем console.warn
+    const originalConsoleWarn = console.warn;
+    console.warn = (...args) => {
+      this.addLog('warn', ...args);
+      originalConsoleWarn.apply(console, args);
+    };
+  },
+  
+  addLog: function(type, ...args) {
+    const logEntry = {
+      type,
+      timestamp: new Date().toISOString().substr(11, 12),
+      messages: args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      )
+    };
+    
+    this.logs.push(logEntry);
+    if (this.logs.length > this.maxLogs) {
+      this.logs.shift();
+    }
+    
+    this.updateView();
+  },
+  
+  updateView: function() {
+    if (!this.container) return;
+    
+    this.container.innerHTML = this.logs.map(log => {
+      const color = {
+        log: 'inherit',
+        warn: 'orange',
+        error: 'red'
+      }[log.type];
+      
+      return `
+        <div style="margin-bottom: 5px; border-bottom: 1px solid var(--bs-border-color); padding-bottom: 5px;">
+          <span style="color: ${color}; font-weight: bold;">${log.type.toUpperCase()}</span>
+          <span style="color: #666; margin-left: 5px;">${log.timestamp}</span>
+          <div style="white-space: pre-wrap; word-break: break-word;">${log.messages.join(' ')}</div>
+        </div>
+      `;
+    }).join('');
+    
+    // Автоскролл к новым сообщениям
+    this.container.scrollTop = this.container.scrollHeight;
+  }
+};
+
+// Инициализируем логгер при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+  const showByDefault = new URLSearchParams(window.location.search).has('debugVoices');
+  pageLogger.init(showByDefault);
+  
+  if (showByDefault) {
+    console.log('Логгер инициализирован. Все console.log будут отображаться здесь.');
+  }
+});
+
 // Функция для отображения доступных голосов в консоли и на странице
 function debugVoices() {
   const voices = window.speechSynthesis.getVoices();
   
-  // Вывод в консоль
-  console.group('Доступные голоса');
-  console.table(voices.map(v => ({
-    Имя: v.name,
-    Язык: v.lang,
-    URI: v.voiceURI,
-    Локальный: v.localService ? '✓' : '✗',
-    'По умолчанию': v.default ? '✓' : '✗'
+  // Выводим в логгер
+  console.log('Доступные голоса:', voices.map(v => ({
+    name: v.name,
+    lang: v.lang,
+    default: v.default,
+    local: v.localService
   })));
-  console.groupEnd();
   
-  // Простой вывод на страницу
-  const debugDiv = document.createElement('div');
-  debugDiv.style.position = 'fixed';
-  debugDiv.style.top = '10px';
-  debugDiv.style.right = '10px';
-  debugDiv.style.background = 'white';
-  debugDiv.style.padding = '10px';
-  debugDiv.style.border = '1px solid #ccc';
-  debugDiv.style.zIndex = '9999';
-  debugDiv.style.maxHeight = '80vh';
-  debugDiv.style.overflow = 'auto';
+  // Показываем логгер, если он скрыт
+  if (pageLogger.container.style.display === 'none') {
+    pageLogger.container.style.display = 'block';
+    const toggleBtn = document.getElementById('loggerToggleBtn');
+    if (toggleBtn) toggleBtn.textContent = '✕';
+  }
   
-  debugDiv.innerHTML = `
-    <h3 style="margin-top:0;">Доступные голоса (${voices.length})</h3>
-    <pre>${JSON.stringify(voices.map(v => ({
+  // Определяем текущую тему
+  const isDarkMode = document.body.classList.contains('dark-mode') || 
+                     document.body.getAttribute('data-theme') === 'dark';
+  
+  // Удаляем предыдущий debugDiv если он есть
+  const oldDebug = document.querySelector('#voiceDebugContainer');
+  if (oldDebug) oldDebug.remove();
+  
+  // Создаем основной контейнер
+  const debugContainer = document.createElement('div');
+  debugContainer.id = 'voiceDebugContainer';
+  debugContainer.style.position = 'fixed';
+  debugContainer.style.top = '10px';
+  debugContainer.style.right = '10px';
+  debugContainer.style.zIndex = '9999';
+  debugContainer.style.width = '350px';
+  debugContainer.style.maxWidth = '90vw';
+  
+  // Создаем кнопку закрытия (фиксированную в правом верхнем углу контейнера)
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '×';
+  closeBtn.style.position = 'absolute';
+  closeBtn.style.top = '5px';
+  closeBtn.style.right = '5px';
+  closeBtn.style.background = isDarkMode ? '#333' : '#fff';
+  closeBtn.style.border = 'none';
+  closeBtn.style.borderRadius = '50%';
+  closeBtn.style.width = '24px';
+  closeBtn.style.height = '24px';
+  closeBtn.style.display = 'flex';
+  closeBtn.style.alignItems = 'center';
+  closeBtn.style.justifyContent = 'center';
+  closeBtn.style.color = isDarkMode ? '#eee' : '#333';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.style.fontSize = '16px';
+  closeBtn.style.fontWeight = 'bold';
+  closeBtn.style.zIndex = '10000';
+  closeBtn.onclick = () => debugContainer.remove();
+  
+  // Создаем контентное окно
+  const debugContent = document.createElement('div');
+  debugContent.style.backgroundColor = isDarkMode ? '#222' : '#fff';
+  debugContent.style.color = isDarkMode ? '#eee' : '#333';
+  debugContent.style.border = '1px solid ' + (isDarkMode ? '#444' : '#ddd');
+  debugContent.style.borderRadius = '5px';
+  debugContent.style.padding = '15px 10px 10px 10px';
+  debugContent.style.maxHeight = '80vh';
+  debugContent.style.overflow = 'auto';
+  debugContent.style.boxShadow = '0 2px 15px rgba(0,0,0,0.3)';
+  
+  // Добавляем заголовок и содержимое
+  debugContent.innerHTML = `
+    <h3 style="margin:0 0 10px 0;padding-right:20px;">Доступные голоса (${voices.length})</h3>
+    <pre style="margin:0;white-space:pre-wrap;word-wrap:break-word;">${JSON.stringify(voices.map(v => ({
       name: v.name,
       lang: v.lang,
       default: v.default,
       local: v.localService
     })), null, 2)}</pre>
-    <button onclick="this.parentNode.remove()" 
-            style="position:absolute;top:5px;right:5px;">×</button>
   `;
   
-  document.body.appendChild(debugDiv);
+  // Собираем все вместе
+  debugContainer.appendChild(closeBtn);
+  debugContainer.appendChild(debugContent);
+  document.body.appendChild(debugContainer);
+  
+  // Делаем окно перемещаемым
+  let isDragging = false;
+  let offsetX, offsetY;
+  
+  const header = debugContent.querySelector('h3');
+  header.style.cursor = 'move';
+  
+  header.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - debugContainer.getBoundingClientRect().left;
+    offsetY = e.clientY - debugContainer.getBoundingClientRect().top;
+    debugContainer.style.userSelect = 'none';
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    debugContainer.style.left = (e.clientX - offsetX) + 'px';
+    debugContainer.style.top = (e.clientY - offsetY) + 'px';
+    debugContainer.style.right = 'auto';
+  });
+  
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    debugContainer.style.userSelect = '';
+  });
 }
 
 // Проверяем GET-параметр
@@ -449,31 +673,30 @@ if (new URLSearchParams(window.location.search).has('debugVoices')) {
   }, 100);
 }
 
-
 // Функция для тоггла воспроизведения с поддержкой паузы
 function toggleSpeech(elementId) {
   if (isSpeaking && !isPaused) {
     // Пауза воспроизведения
     window.speechSynthesis.pause();
     isPaused = true;
-    document.getElementById('speechToggleBtn').textContent = '▶️'; // Иконка play
+    document.getElementById('speechToggleBtn').textContent = '▶️';
     console.log('На паузе');
   } 
   else if (isPaused) {
     // Продолжение воспроизведения
     window.speechSynthesis.resume();
     isPaused = false;
-    document.getElementById('speechToggleBtn').textContent = '⏸️'; // Иконка паузы
+    document.getElementById('speechToggleBtn').textContent = '⏸️';
     console.log('Продолжено');
   }
   else {
     // Запуск нового воспроизведения
-    window.speechSynthesis.cancel(); // Отменяем любое текущее воспроизведение
+    window.speechSynthesis.cancel();
     currentUtterance = speakTextFromElement(elementId);
     if (currentUtterance) {
       isSpeaking = true;
       isPaused = false;
-      document.getElementById('speechToggleBtn').textContent = '⏸️'; // Иконка паузы
+      document.getElementById('speechToggleBtn').textContent = '⏸️';
       
       // Обработчики событий для сброса состояния
       currentUtterance.onend = () => {

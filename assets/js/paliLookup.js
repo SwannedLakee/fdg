@@ -483,7 +483,7 @@ function lookupWordInStandaloneDict(word) {
         out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
         for (const headword of dpd_i2h[word]) {
             if (headword in dpd_ebts) {
-                out += '<li>' + headword + '. ' + dpd_ebts[headword] + '</li>';
+                out += '<li><span class="pli-lang " lang="pi">' + headword + '. ' + dpd_ebts[headword] + '</span></li>';
             }
         }
         out += "</ul>";
