@@ -97,6 +97,9 @@ if (preg_match('/dictLookup/', $p) || preg_match('/dictLookup/', $extra)) {
     } else {
         $dictUrl = "{$dictType}{$langinurl}/search_html?q=";
   echo "<script>
+window.dictionaryWindow ??= null;
+
+function openDictionaryWindowD(url) {
 const newWindowWidth = 500;
 const newWindowHeight = 500;
 
@@ -111,10 +114,6 @@ const popupFeatures = 'width=' + newWindowWidth +
                       ',left=' + newWindowleft +
                       ',top=' + newWindowTop +
                       ',scrollbars=yes,resizable=yes';
-
-let dictionaryWindow = null;
-
-function openDictionaryWindow(url) {
   if (dictionaryWindow && !dictionaryWindow.closed) {
     dictionaryWindow.close();
   }
@@ -126,7 +125,7 @@ function openDictionaryWindow(url) {
 
 setTimeout(function() {
   const dictSearchUrl = '" . $dictUrl . $stringForWord . "';
-  openDictionaryWindow(dictSearchUrl);
+  openDictionaryWindowD(dictSearchUrl);
   document.getElementById('spinner').style.display = 'none';
 }, 100);
 </script>";
