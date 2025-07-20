@@ -96,7 +96,9 @@ if (preg_match('/dictLookup/', $p) || preg_match('/dictLookup/', $extra)) {
         </script>";
     } else {
         $dictUrl = "{$dictType}{$langinurl}/search_html?q=";
-        echo "<script>
+        echo "
+        <script src='/assets/js/paliLookup.js'></script>
+<script>
         setTimeout(function() {
             const dictSearchUrl = '{$dictUrl}{$stringForWord}';
             openDictionaryWindow(dictSearchUrl);
