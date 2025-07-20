@@ -533,7 +533,7 @@ function lookupWordInStandaloneDict(word) {
         // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
         return `<a href="${wordSearchUrl}"
                    onclick="event.preventDefault(); event.stopPropagation(); parent.openDictionaryWindow(this.href); return false;"
-                   style="text-decoration: none; color: inherit; border-bottom: 1px dotted;">${wordToLink}</a>`;
+                   style="text-decoration: none; color: inherit;">${wordToLink}</a>`;
     }
 
     /**
