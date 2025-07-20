@@ -173,18 +173,17 @@ echo '<!--
 
 <ul class="dropdown-menu" aria-labelledby="MenuDict">
 
-
 <li>
   <div class="dropdown-item">
     <i class="' . $iconimportant . '"></i>
     <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="
-      const urlParams = new URLSearchParams(window.location.search);
-      const q = urlParams.get(\'q\') || \'\';
+      const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
         \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
         \'https://dict.dhamma.gift/\';
       openWithQuery(event, url);
     ">Digital Pāḷi Dict</a>
+
 
     <a class="text-reset" target="_blank" href="https://digitalpalidictionary.github.io/">Offline</a>
     <a class="text-reset" target="" href="#links">Extentions</a>

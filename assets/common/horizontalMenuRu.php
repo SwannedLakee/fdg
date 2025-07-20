@@ -186,8 +186,7 @@ echo '<!--
   <div class="dropdown-item">
     <i class="' . $iconimportant . '"></i>
     <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="
-      const urlParams = new URLSearchParams(window.location.search);
-      const q = urlParams.get(\'q\') || \'\';
+      const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
         \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
         \'https://dict.dhamma.gift/\';
@@ -198,6 +197,7 @@ echo '<!--
     <a class="text-reset" target="" href="#links">Расширения</a>
   </div>
 </li>
+
 
 
          <li>
