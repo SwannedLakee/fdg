@@ -190,7 +190,7 @@ echo '<!--
       const url = q.trim() ? 
         \'https://dict.dhamma.gift/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
         \'https://dict.dhamma.gift/\';
-      openWithQuery(event, url);
+      openDictionaryWindow(url);
     ">Digital Pāḷi Dict</a>
 
     <a class="text-reset" target="_blank" href="https://digitalpalidictionary.github.io/">Оффлайн</a>

@@ -87,19 +87,27 @@ if (preg_match('/dictLookup/', $p) || preg_match('/dictLookup/', $extra)) {
 
     $server_name = $_SERVER['SERVER_NAME'];
     if ($server_name === 'localhost' || $server_name === '127.0.0.1') {
-        $dictUrl = "dttp://app.dicttango/WordLookup?word="; // Исправлен протокол
+        $dictUrl = "dttp://app.dicttango/WordLookup?word=";
+        echo "<script>
+        setTimeout(function() {
+            window.location.href = '{$dictUrl}{$stringForWord}';
+            document.getElementById('spinner').style.display = 'none';
+        }, 100);
+        </script>";
     } else {
-        $dictUrl = "/assets/openDDG.html?url={$dictType}{$langinurl}/search_html?q=";  
+        $dictUrl = "{$dictType}{$langinurl}/search_html?q=";
+        echo "<script>
+        setTimeout(function() {
+            const dictSearchUrl = '{$dictUrl}{$stringForWord}';
+            openDictionaryWindow(dictSearchUrl);
+            document.getElementById('spinner').style.display = 'none';
+        }, 100);
+        </script>";
     }
-    
-    echo "<script>
-    setTimeout(function() {
-window.location.href = '{$dictUrl}' + '{$stringForWord}';
-        document.getElementById('spinner').style.display = 'none';
-    }, 100);
-    </script>";
+
     return;
 }
+
 
 
 // Проверка условий
