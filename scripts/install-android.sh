@@ -4,7 +4,7 @@
 # pkg install -y git
 # mkdir -p $PREFIX/share/apache2/default-site/htdocs
 # cd $PREFIX/share/apache2/default-site/htdocs
-# git clone https://github.com/o28o/fdg.git ./
+# git clone https://github.com/o28o/dg.git ./
 # bash ./scripts/install-android.sh
 #for offline audio also clone fdg.audio repo
 # mkdir assets/audio
