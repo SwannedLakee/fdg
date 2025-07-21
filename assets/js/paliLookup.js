@@ -953,12 +953,12 @@ document.addEventListener("keydown", (event) => {
         localStorage.setItem('dictionaryVisible', 'true');
 
         // 4. Логика переключения
-        if (currentDict === standaloneMode) {
-            newDict = fullMode;
-            notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
-        } else {
+        if (currentDict === fullMode) {
             newDict = standaloneMode;
             notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
+        } else {
+            newDict = fullMode;
+            notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
         }
 
         // 5. Сохраняем новый режим и перезагружаем страницу
