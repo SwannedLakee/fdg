@@ -954,9 +954,11 @@ document.addEventListener("keydown", (event) => {
         // 4. Логика переключения
         if (currentDict === standaloneMode) {
             newDict = fullMode;
+              localStorage.setItem('dictionaryVisible', dictionaryVisible);
             notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
         } else {
             newDict = standaloneMode;
+              localStorage.setItem('dictionaryVisible', dictionaryVisible);
             notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
         }
 
