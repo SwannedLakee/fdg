@@ -766,11 +766,11 @@ function createPopup() {
     let isFirstDrag = localStorage.getItem('isFirstDrag') === 'false' ? false : true;
 
     if (isFirstDrag) {
-        popup.style.top = '50%';
-        popup.style.left = '50%';
-        popup.style.width = '749px';
-        popup.style.height = '600px';
-        popup.style.transform = 'translate(-50%, -50%)';
+popup.style.width = '500px';
+    popup.style.height = '500px';
+    popup.style.right = '30px';
+    popup.style.top = `${window.innerHeight - 550}px`; // 500px + 50px отступ
+    popup.style.transform = 'none';
     }
 
     function startDrag(e) {
@@ -943,51 +943,46 @@ toggleBtn.addEventListener('click', () => {
   });  
 
 document.addEventListener("keydown", (event) => {
-    // Проверяем нажатие Alt + B
     if (event.altKey && event.code === "KeyB") {
-        // 1. Определяем тип устройства
-        const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        // Улучшенное определение типа устройства
+        const isMobileLike = (
+                      
+            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
+                        (window.innerWidth <= 768)
+        );
 
-        // 2. Определяем текущий язык
+
         const isRussian = window.location.pathname.includes('/ru/') ||
-                          window.location.pathname.includes('/r/') ||
-                          window.location.pathname.includes('/ml/') ||
-                          localStorage.getItem('siteLanguage') === 'ru';
+                         window.location.pathname.includes('/r/') ||
+                         window.location.pathname.includes('/ml/') ||
+                         localStorage.getItem('siteLanguage') === 'ru';
 
-        // 3. Определяем все возможные режимы
-        const standaloneMode = isRussian ? "standalonebwru" : "standalonebw";
-        const fullMode = "dpdfull";
-        const newWindowMode = isRussian ? "newwindowru" : "newwindow";
+        // Режимы для переключения
+        const modes = {
+            standalone: isRussian ? "standalonebwru" : "standalonebw",
+            full: "dpdfull",
+            newWindow: isRussian ? "newwindowru" : "newwindow"
+        };
 
-        // 4. Получаем текущий режим
         const currentDict = localStorage.getItem('selectedDict');
-
-        let newDict;
-        let notificationText;
+        let newDict, notificationText;
         localStorage.setItem('dictionaryVisible', 'true');
 
-        // 5. Логика переключения в зависимости от устройства
-        if (isMobile) {
-            // --- ЛОГИКА ДЛЯ МОБИЛЬНЫХ: Встроенный <-> Полный ---
-            if (currentDict === fullMode) {
-                newDict = standaloneMode;
-                notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
-            } else {
-                newDict = fullMode;
-                notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
-            }
+        // Улучшенная логика переключения
+        if (isMobileLike) {
+            // Для мобильных и планшетов: переключаем между standalone и full
+            newDict = currentDict === modes.full ? modes.standalone : modes.full;
+            notificationText = isRussian ? 
+                `Словарь: ${newDict === modes.full ? "Полный" : "Встроенный"}` :
+                `Dictionary: ${newDict === modes.full ? "Full" : "Standalone"}`;
         } else {
-            // --- ЛОГИКА ДЛЯ ДЕСКТОПА: Встроенный <-> Новое окно ---
-            if (currentDict === newWindowMode) {
-                newDict = standaloneMode;
-                notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
-            } else {
-                newDict = newWindowMode;
-                notificationText = isRussian ? "Словарь: В новом окне" : "Dictionary: New Window";
-            }
+            // Для десктопов (даже с тачскрином): переключаем между standalone и newWindow
+            newDict = currentDict === modes.newWindow ? modes.standalone : modes.newWindow;
+            notificationText = isRussian ?
+                `Словарь: ${newDict === modes.newWindow ? "В новом окне" : "Встроенный"}` :
+                `Dictionary: ${newDict === modes.newWindow ? "New Window" : "Standalone"}`;
         }
 
-        // 6. Сохраняем новый режим и перезагружаем страницу
         localStorage.setItem('selectedDict', newDict);
         showBubbleNotification(notificationText);
 
@@ -996,6 +991,7 @@ document.addEventListener("keydown", (event) => {
         }, 300);
     }
 });
+
 document.addEventListener('click', function(event) {
     // Проверяем, есть ли выделенный текст внутри элемента с пали
     const pliElement = event.target.closest('.pli-lang, [lang="pi"]');
