@@ -1,3 +1,8 @@
+const isMobileLike = (
+            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
+                        (window.innerWidth <= 768)
+        );
+
 const newWindowWidth = 500;
 const newWindowHeight = 500;
 
@@ -766,12 +771,30 @@ function createPopup() {
     let isFirstDrag = localStorage.getItem('isFirstDrag') === 'false' ? false : true;
 
     if (isFirstDrag) {
-popup.style.width = '500px';
-    popup.style.height = '500px';
-    popup.style.right = '30px';
-    popup.style.top = `${window.innerHeight - 550}px`; // 500px + 50px отступ
-    popup.style.transform = 'none';
+
+if (savedDict && savedDict.includes("standalone")) {
+        
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.width = '749px';
+        popup.style.height = '600px';
+        popup.style.transform = 'translate(-50%, -50%)';
+    } else {
+
+        popup.style.width = '500px';
+        popup.style.height = '500px';
+        // Динамические отступы
+        const rightMargin = isMobileLike ? 0 : 15;    
+        // Позиционирование
+        popup.style.right = `${rightMargin}px`;
+        popup.style.top = `${window.innerHeight - 510}px`; 
+        popup.style.transform = 'none';
+    }    
+
     }
+
+
+
 
     function startDrag(e) {
         isDragging = true;
@@ -945,11 +968,7 @@ toggleBtn.addEventListener('click', () => {
 document.addEventListener("keydown", (event) => {
     if (event.altKey && event.code === "KeyB") {
         // Улучшенное определение типа устройства
-        const isMobileLike = (
-                      
-            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
-                        (window.innerWidth <= 768)
-        );
+
 
 
         const isRussian = window.location.pathname.includes('/ru/') ||
