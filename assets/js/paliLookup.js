@@ -931,6 +931,46 @@ toggleBtn.addEventListener('click', () => {
     }
   });  
 
+
+document.addEventListener("keydown", (event) => {
+    // Проверяем нажатие Alt + B
+    if (event.altKey && event.code === "KeyB") {
+        // 1. Определяем текущий язык
+        const isRussian = window.location.pathname.includes('/ru/') ||
+                          window.location.pathname.includes('/r/') ||
+                          window.location.pathname.includes('/ml/') ||
+                          localStorage.getItem('siteLanguage') === 'ru';
+
+        // 2. Определяем режимы для переключения
+        const standaloneMode = isRussian ? "standalonebwru" : "standalonebw";
+        const fullMode = "dpdfull";
+
+        // 3. Получаем текущий режим из localStorage
+        let currentDict = localStorage.getItem('selectedDict');
+
+        let newDict;
+        let notificationText;
+
+        // 4. Логика переключения
+        if (currentDict === standaloneMode) {
+            newDict = fullMode;
+            notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
+        } else {
+            newDict = standaloneMode;
+            notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
+        }
+
+        // 5. Сохраняем новый режим и перезагружаем страницу
+        localStorage.setItem('selectedDict', newDict);
+        showBubbleNotification(notificationText);
+
+        // Даем уведомлению время появиться перед перезагрузкой
+        setTimeout(() => {
+            window.location.reload();
+        }, 300);
+    }
+});
+
 document.addEventListener('click', function(event) {
     // Проверяем, есть ли выделенный текст внутри элемента с пали
     const pliElement = event.target.closest('.pli-lang, [lang="pi"]');
