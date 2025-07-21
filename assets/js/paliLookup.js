@@ -151,7 +151,13 @@ if (savedDict.includes("dpd")) {
   dictUrl = "dttp://app.dicttango/WordLookup?word=";
 } else if (savedDict === "mdict") {
   dictUrl = "mdict://mdict.cn/search?text=";
+} else if (savedDict === "newwindow") {
+  dictUrl = "https://dict.dhamma.gift/search_html?q=";
+} else if (savedDict === "newwindowru") {
+  dictUrl = "https://dict.dhamma.gift/ru/search_html?q=";
+// before this line:
 }
+
 else if (savedDict === "standalonebwru") {
   dictUrl = "standalonebwru"; // Используем standalone-словарь
 } else if (savedDict === "standalonebw") {
@@ -214,7 +220,15 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
         translation = "";
         popup.style.display = 'none';
         overlay.style.display = 'none';
+    } else if (savedDict === "newwindow" || savedDict === "newwindowru") {
+        const url = `${dictUrl}${encodeURIComponent(cleanedWord)}`;
+        openDictionaryWindow(url);
+        translation = ""; // Prevent the popup from showing
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+// before this line:
     }
+
     else {
         const url = `${dictUrl}${encodeURIComponent(cleanedWord)}`;
         iframe.src = url;

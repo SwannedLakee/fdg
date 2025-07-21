@@ -166,6 +166,7 @@ if ($lang === 'pi') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
  <link href="/assets/css/styles.css" rel="stylesheet" />
+<meta name="author" content="Pali or Translation" />
 
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
   <link href="/assets/css/pages.css" rel="stylesheet" />
