@@ -9,7 +9,7 @@
 #for offline audio also clone fdg.audio repo
 # mkdir assets/audio
 # cd assets/audio 
-# git clone https://github.com/o28o/fdg.audio.git ./
+# git clone https://github.com/o28o/audio.git ./
 #PREFIX=/data/data/com.termux/files/usr/
 httpdconf=$PREFIX/etc/apache2/httpd.conf
 httpdtdir=$PREFIX/share/apache2/default-site/htdocs
