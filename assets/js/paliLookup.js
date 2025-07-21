@@ -10,10 +10,6 @@ const newWindowTop = screenHeight - newWindowHeight - 50; // 50 пикселей
 
 const popupFeatures = `width=${newWindowWidth},height=${newWindowHeight},left=${newWindowleft},top=${newWindowTop},scrollbars=yes,resizable=yes`;
 
-// ================================================================= //
-// == НОВОЕ: Управление одним окном словаря == //
-// ================================================================= //
-
 // Переменная для хранения ссылки на открытое окно
 let dictionaryWindow = null;
 
