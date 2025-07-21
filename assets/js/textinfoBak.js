@@ -1436,7 +1436,7 @@
 "mn136":{"pi":"Mahākammavibhaṅgasutta ","en":"The Longer Analysis of Deeds ","mtph":"","ru":"Большое разъяснение поступка  "},
 "mn137":{"pi":"Saḷāyatanavibhaṅgasutta ","en":"The Analysis of the Six Sense Fields ","mtph":"","ru":"Разъяснение шести сфер   (o)"},
 "mn138":{"pi":"Uddesavibhaṅgasutta ","en":"The Analysis of a Recitation Passage ","mtph":1,"ru":"Разъяснение и сводка  "},
-"mn139":{"pi":"Araṇavibhaṅgasutta ","en":"The Analysis of Non-Conflict ","mtph":"","ru":"Разъяснение о не-конфликте "},
+"mn139":{"pi":"Araṇavibhaṅgasutta ","en":"The Analysis of Non-Conflict ","mtph":"","ru":"Разъяснение о не-конфликте  (o)"},
 "mn140":{"pi":"Dhātuvibhaṅgasutta ","en":"The Analysis of the Elements ","mtph":3,"ru":"Разъяснение элементов "},
 "mn141":{"pi":"Saccavibhaṅgasutta ","en":"The Analysis of the Truths ","mtph":2,"ru":"Изложение об истинах  (o)"},
 "mn142":{"pi":"Dakkhiṇāvibhaṅgasutta ","en":"The Analysis of Religious Donations ","mtph":"","ru":"Изложение о подношениях "},

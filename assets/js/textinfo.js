@@ -1640,7 +1640,7 @@
 "sn4.18":{"pi":"Piṇḍasutta ","en":"Alms Food ","mtph":"","ru":"Подаяния "},
 "sn4.19":{"pi":"Kassakasutta ","en":"A Farmer ","mtph":"","ru":"Крестьянин "},
 "sn4.20":{"pi":"Rajjasutta ","en":"Ruling ","mtph":"","ru":"Владычество "},
-"sn4.21":{"pi":"Sambahulasutta ","en":"Several ","mtph":"","ru":"Группа "},
+"sn4.21":{"pi":"Sambahulasutta ","en":"Several ","mtph":"","ru":"Группа  (o)"},
 "sn4.22":{"pi":"Samiddhisutta ","en":"With Samiddhi ","mtph":"","ru":"Самиддхи "},
 "sn4.23":{"pi":"Godhikasutta ","en":"With Godhika ","mtph":"","ru":"Годхика "},
 "sn4.24":{"pi":"Sattavassānubandhasutta ","en":"Seven Years of Following ","mtph":1,"ru":"Семь лет поисков "},
