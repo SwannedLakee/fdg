@@ -223,10 +223,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     } else if (savedDict === "newwindow" || savedDict === "newwindowru") {
         const url = `${dictUrl}${encodeURIComponent(cleanedWord)}`;
         openDictionaryWindow(url);
-        translation = ""; // Prevent the popup from showing
-        popup.style.display = 'none';
-        overlay.style.display = 'none';
-// before this line:
+ return; 
     }
 
     else {
@@ -945,47 +942,60 @@ toggleBtn.addEventListener('click', () => {
     }
   });  
 
-
 document.addEventListener("keydown", (event) => {
     // Проверяем нажатие Alt + B
     if (event.altKey && event.code === "KeyB") {
-        // 1. Определяем текущий язык
+        // 1. Определяем тип устройства
+        const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+        // 2. Определяем текущий язык
         const isRussian = window.location.pathname.includes('/ru/') ||
                           window.location.pathname.includes('/r/') ||
                           window.location.pathname.includes('/ml/') ||
                           localStorage.getItem('siteLanguage') === 'ru';
 
-        // 2. Определяем режимы для переключения
+        // 3. Определяем все возможные режимы
         const standaloneMode = isRussian ? "standalonebwru" : "standalonebw";
         const fullMode = "dpdfull";
+        const newWindowMode = isRussian ? "newwindowru" : "newwindow";
 
-        // 3. Получаем текущий режим из localStorage
-        let currentDict = localStorage.getItem('selectedDict');
+        // 4. Получаем текущий режим
+        const currentDict = localStorage.getItem('selectedDict');
 
         let newDict;
         let notificationText;
         localStorage.setItem('dictionaryVisible', 'true');
 
-        // 4. Логика переключения
-        if (currentDict === fullMode) {
-            newDict = standaloneMode;
-            notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
+        // 5. Логика переключения в зависимости от устройства
+        if (isMobile) {
+            // --- ЛОГИКА ДЛЯ МОБИЛЬНЫХ: Встроенный <-> Полный ---
+            if (currentDict === fullMode) {
+                newDict = standaloneMode;
+                notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
+            } else {
+                newDict = fullMode;
+                notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
+            }
         } else {
-            newDict = fullMode;
-            notificationText = isRussian ? "Словарь: Полный" : "Dictionary: Full";
+            // --- ЛОГИКА ДЛЯ ДЕСКТОПА: Встроенный <-> Новое окно ---
+            if (currentDict === newWindowMode) {
+                newDict = standaloneMode;
+                notificationText = isRussian ? "Словарь: Встроенный" : "Dictionary: Standalone";
+            } else {
+                newDict = newWindowMode;
+                notificationText = isRussian ? "Словарь: В новом окне" : "Dictionary: New Window";
+            }
         }
 
-        // 5. Сохраняем новый режим и перезагружаем страницу
+        // 6. Сохраняем новый режим и перезагружаем страницу
         localStorage.setItem('selectedDict', newDict);
         showBubbleNotification(notificationText);
 
-        // Даем уведомлению время появиться перед перезагрузкой
         setTimeout(() => {
             window.location.reload();
         }, 300);
     }
 });
-
 document.addEventListener('click', function(event) {
     // Проверяем, есть ли выделенный текст внутри элемента с пали
     const pliElement = event.target.closest('.pli-lang, [lang="pi"]');
