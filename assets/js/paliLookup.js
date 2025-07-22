@@ -23,10 +23,6 @@ let dictionaryWindow = null;
  * @param {string} url - URL для загрузки в окне.
  */
 function openDictionaryWindow(url) {
-  // Проверяем, есть ли уже открытое окно, и закрываем его
-  if (dictionaryWindow && !dictionaryWindow.closed) {
-    dictionaryWindow.close();
-  }
 
   // Открываем новое окно и сохраняем ссылку на него
   // Имя 'dictionaryPopup' помогает браузеру переиспользовать то же окно
