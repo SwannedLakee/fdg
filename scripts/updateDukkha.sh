@@ -1,18 +1,24 @@
 #cd /var/www/html
+#cd $prefix/assets/texts/sutta/
+#asset
+
+
 prefix=/media/c/soft/dg
 prefix=/mnt/c/soft/dg
-cd $prefix/assets/texts/sutta
 
-#asset
-grep -riE "\bстрадан" *  > $prefix/all.txt
-grep -riE "\bстрадан" * | grep -v ru-o.json | grep edited > $prefix/edited.txt
+function commonGrep() {
 
+grep -riE "\bстрадан" $prefix/assets/texts/sutta/* | grep -v "бедствии, несчастье, страдании, преисподней" | grep -v "страдан.*плач.*бол"
+}
+
+commonGrep > $prefix/all.txt
+commonGrep | grep -v ru-o.json | grep edited > $prefix/edited.txt
 
 echo >> $prefix/scripts/updateDukkha.sh
 date >> $prefix/scripts/updateDukkha.sh
 wc -l $prefix/all.txt $prefix/edited.txt | grep -v total >> $prefix/scripts/updateDukkha.sh
 tail $prefix/scripts/updateDukkha.sh
-cd - 
+#cd - 
 
 exit 0
 
@@ -116,3 +122,15 @@ Wed Jul 23 13:52:21 EDT 2025
 Wed Jul 23 14:15:41 EDT 2025
    745 /mnt/c/soft/dg/all.txt
    519 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 16:22:06 EDT 2025
+   668 /mnt/c/soft/dg/all.txt
+   448 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 16:23:16 EDT 2025
+   620 /mnt/c/soft/dg/all.txt
+   430 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 16:41:19 EDT 2025
+   597 /mnt/c/soft/dg/all.txt
+   415 /mnt/c/soft/dg/edited.txt
