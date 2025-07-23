@@ -14,7 +14,6 @@ wc -l $prefix/all.txt $prefix/edited.txt | grep -v total >> $prefix/scripts/upda
 tail $prefix/scripts/updateDukkha.sh
 cd - 
 
-
 exit 0
 
 Wed Jul 23 01:58:52 AM +05 2025
@@ -24,11 +23,6 @@ Wed Jul 23 01:58:52 AM +05 2025
 Wed Jul 23 02:12:37 AM +05 2025
   1056 /var/www/html/all.txt
    251 /var/www/html/edited.txt
-
-
-Tue Jul 22 18:31:26 USEDT 2025
-        0 /media/c/soft/dg/all.txt
-        0 /media/c/soft/dg/edited.txt
 
 Tue Jul 22 18:33:20 EDT 2025
   1055 /mnt/c/soft/dg/all.txt
@@ -86,6 +80,7 @@ Tue Jul 22 23:02:14 EDT 2025
    807 /mnt/c/soft/dg/all.txt
    262 /mnt/c/soft/dg/edited.txt
 
-Tue Jul 22 23:11:25 EDT 2025
+
+Tue Jul 22 23:13:37 EDT 2025
    783 /mnt/c/soft/dg/all.txt
-   251 /mnt/c/soft/dg/edited.txt
+   266 /mnt/c/soft/dg/edited.txt
