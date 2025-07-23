@@ -4,7 +4,7 @@ prefix=/mnt/c/soft/dg
 cd $prefix/assets/texts/sutta
 
 #asset
-grep -riE "\bстрадан" * | grep -v ru-o.json > $prefix/all.txt
+grep -riE "\bстрадан" *  > $prefix/all.txt
 grep -riE "\bстрадан" * | grep -v ru-o.json | grep edited > $prefix/edited.txt
 
 
@@ -100,3 +100,11 @@ Wed Jul 23 11:15:04 EDT 2025
 Wed Jul 23 11:37:00 EDT 2025
    766 /mnt/c/soft/dg/all.txt
    321 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 12:16:53 EDT 2025
+   766 /mnt/c/soft/dg/all.txt
+   541 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 12:18:14 EDT 2025
+   807 /mnt/c/soft/dg/all.txt
+   541 /mnt/c/soft/dg/edited.txt

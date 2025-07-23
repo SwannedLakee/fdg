@@ -14,6 +14,8 @@ dukkhanirodhagāminī paṭipadā ariyasaccaṁ
 dukkh.*ariyasacc
 
 taṇh.*vedan.*samud.*paṭipad
+dukkh.*samud.*nirodh.*magg
+
 ābādhā 44
 ābādhānaṁ 6
 ābādhāya 34
