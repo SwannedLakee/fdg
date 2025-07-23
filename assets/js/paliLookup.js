@@ -238,7 +238,15 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
                      window.location.pathname.includes('/ml/');
   
     const wordForSearch = cleanedWord.replace(/'ti/, '');
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+    
+    let dictSearchUrl;
+
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+        dhammaGift = '';
+      dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`;
+    } else {
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+    }
 
 if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation) {
     // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
@@ -529,7 +537,15 @@ function lookupWordInStandaloneDict(word) {
     word = word.replace(/[’”'"]/g, "").replace(/ṁ/g, "ṃ");
 
     // Creates the search URL for a given word
-    const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+        let dictSearchUrl;
+
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+        dhammaGift = '';
+      dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
+    } else {
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+    }
+
 
     /**
      * Creates a single clickable link for a word.
@@ -537,7 +553,16 @@ function lookupWordInStandaloneDict(word) {
      * @returns {string} - An HTML <a> tag.
      */
     function createClickableLink(wordToLink) {
-        const wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
+
+        let wordSearchUrl;
+
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+        dhammaGift = '';
+      wordSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`;
+    } else {
+        wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
+    }
+
         // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
         return `<a href="${wordSearchUrl}"
                    onclick="event.preventDefault(); event.stopPropagation(); parent.openDictionaryWindow(this.href); return false;"
