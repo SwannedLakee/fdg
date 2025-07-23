@@ -12,7 +12,7 @@ grep -riE "\bстрадан" $prefix/assets/texts/sutta/* | grep -v "бедст�
 }
 
 commonGrep > $prefix/all.txt
-commonGrep | grep -v ru-o.json | grep edited > $prefix/edited.txt
+grep -v ru-o.json $prefix/all.txt | grep edited > $prefix/edited.txt
 
 echo >> $prefix/scripts/updateDukkha.sh
 date >> $prefix/scripts/updateDukkha.sh
@@ -134,3 +134,7 @@ Wed Jul 23 16:23:16 EDT 2025
 Wed Jul 23 16:41:19 EDT 2025
    597 /mnt/c/soft/dg/all.txt
    415 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 18:09:53 EDT 2025
+   472 /mnt/c/soft/dg/all.txt
+   313 /mnt/c/soft/dg/edited.txt
