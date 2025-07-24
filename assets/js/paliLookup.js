@@ -137,6 +137,8 @@ dhammaGift += '/?q=';
 // Добавляем сюда логику для загрузки предпочтений поиска, сохраненных на главной.
 dgParams = '&p=-kn';
 
+let externalDict = false;
+
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
     dictUrl += "/ru";
@@ -149,10 +151,13 @@ if (savedDict.includes("dpd")) {
     dictUrl += "/gd?search=";
   }
 } else if (savedDict === "dicttango") {
+    externalDict = true;
   dictUrl = "dttp://app.dicttango/WordLookup?word=";
 } else if (savedDict === "goldenpc") {
+    externalDict = true;
   dictUrl = "goldendict://";
 } else if (savedDict === "mdict") {
+    externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
   dictUrl = "https://dict.dhamma.gift/search_html?q=";
@@ -212,7 +217,8 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     }
 }
     // Для остальных режимов — старый код без изменений
-    else if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
+//    else if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
+        else if (externalDict) { 
         const tempLink = document.createElement('a');
         tempLink.href = 'javascript:void(0)';
         tempLink.onclick = function() {
@@ -390,7 +396,8 @@ if (savedDict === "standalonebw" || savedDict === "standalonebwru") {
         }, 1500);
     }
 
-    if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
+   // if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
+     if (externalDict) {   
         popup.style.display = 'none';
         overlay.style.display = 'none';
         showSearchButton();
