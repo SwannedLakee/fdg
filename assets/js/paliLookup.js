@@ -109,6 +109,17 @@ if (
     savedDict = "dpdfull";
 }
 
+
+function setDictSearchURL(word) { 
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+      //  dhammaGift = '';
+      dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
+    } else {
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+    }
+}
+
+
 // Устанавливаем правильный URL для словаря в зависимости от языка
 let dhammaGift;
 let dgParams;
@@ -250,7 +261,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     let dictSearchUrl;
 
     if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-        dhammaGift = '';
+       // dhammaGift = '';
       dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`;
     } else {
         dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
@@ -549,7 +560,7 @@ function lookupWordInStandaloneDict(word) {
         let dictSearchUrl;
 
     if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-        dhammaGift = '';
+      //  dhammaGift = '';
       dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
     } else {
         dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
@@ -566,7 +577,7 @@ function lookupWordInStandaloneDict(word) {
         let wordSearchUrl;
 
     if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-        dhammaGift = '';
+    //    dhammaGift = '';
       wordSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`;
     } else {
         wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
