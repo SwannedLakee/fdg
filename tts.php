@@ -103,7 +103,7 @@ function loadContent($slug, $type) {
         return ['content' => $content, 'file' => $file, 'translator' => $translator];
     }
     elseif ($type === 'ru') {
-        $cmd = "find $basedir/assets/texts/sutta ../assets/texts/vinaya -name \"{$slug}_*\" -print -quit";
+        $cmd = "find $basedir/assets/texts/sutta/ $basedir/assets/texts/vinaya/ -name \"{$slug}_*\" -print -quit";
         $file = trim(shell_exec($cmd));
         if (!$file) {
             return ['content' => "Russian translation not found for: $slug", 'file' => '', 'translator' => ''];
