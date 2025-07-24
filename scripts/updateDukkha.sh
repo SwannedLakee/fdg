@@ -1,3 +1,4 @@
+#awk -F':' '{print $1}' /mnt/c/soft/dg/all.txt | uniq -c | sort
 #cd /var/www/html
 #cd $prefix/assets/texts/sutta/
 #asset
@@ -21,6 +22,17 @@ tail $prefix/scripts/updateDukkha.sh
 #cd - 
 
 exit 0
+
+#remove doulbes
+
+cd assets/texts/sutta
+ for i in `find . -type f  | awk -F'_' '{print $1}' | sort -V| uniq -c | sort -V | awk '{print $1, $2}' | grep -v "^1" | awk '{print $2}'` 
+ do 
+ ls ${i}_*  
+mv ${i}_*sv.json ../svEtc/automatic/
+ done
+
+ 
 
 Wed Jul 23 01:58:52 AM +05 2025
   1090 /var/www/html/all.txt
@@ -138,3 +150,47 @@ Wed Jul 23 16:41:19 EDT 2025
 Wed Jul 23 18:09:53 EDT 2025
    472 /mnt/c/soft/dg/all.txt
    313 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 18:40:04 EDT 2025
+   416 /mnt/c/soft/dg/all.txt
+   339 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 18:48:17 EDT 2025
+   396 /mnt/c/soft/dg/all.txt
+   319 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 19:00:28 EDT 2025
+   379 /mnt/c/soft/dg/all.txt
+   303 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 19:08:14 EDT 2025
+   367 /mnt/c/soft/dg/all.txt
+   291 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 19:25:29 EDT 2025
+   354 /mnt/c/soft/dg/all.txt
+   278 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 19:35:08 EDT 2025
+   343 /mnt/c/soft/dg/all.txt
+   267 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 19:50:39 EDT 2025
+   333 /mnt/c/soft/dg/all.txt
+   257 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 20:41:34 EDT 2025
+   320 /mnt/c/soft/dg/all.txt
+   310 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 20:55:25 EDT 2025
+   295 /mnt/c/soft/dg/all.txt
+   285 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 21:02:51 EDT 2025
+   287 /mnt/c/soft/dg/all.txt
+   277 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 21:05:42 EDT 2025
+   283 /mnt/c/soft/dg/all.txt
+   273 /mnt/c/soft/dg/edited.txt
