@@ -194,6 +194,9 @@ downloaddir=/media/c/Users/o28o/Downloads
 trndir=/media/c/soft/dg/assets/texts/sutta/
 fi
 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
 #common vars
 
 defaultTimeout=30

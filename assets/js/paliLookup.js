@@ -150,6 +150,8 @@ if (savedDict.includes("dpd")) {
   }
 } else if (savedDict === "dicttango") {
   dictUrl = "dttp://app.dicttango/WordLookup?word=";
+} else if (savedDict === "goldenpc") {
+  dictUrl = "goldendict://";
 } else if (savedDict === "mdict") {
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
@@ -210,7 +212,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     }
 }
     // Для остальных режимов — старый код без изменений
-    else if (dictUrl.includes('dicttango') || dictUrl.includes('mdict')) {
+    else if (dictUrl.includes('dicttango') || dictUrl.includes('goldenpc') || dictUrl.includes('mdict')) {
         const tempLink = document.createElement('a');
         tempLink.href = 'javascript:void(0)';
         tempLink.onclick = function() {
@@ -388,7 +390,7 @@ if (savedDict === "standalonebw" || savedDict === "standalonebwru") {
         }, 1500);
     }
 
-    if (dictUrl.includes('dicttango') || dictUrl.includes('mdict')) {
+    if (dictUrl.includes('dicttango') || dictUrl.includes('goldenpc') || dictUrl.includes('mdict')) {
         popup.style.display = 'none';
         overlay.style.display = 'none';
         showSearchButton();
@@ -1165,6 +1167,4 @@ function transliterateWord(word) {
     });
 }
 */
-
-
 
