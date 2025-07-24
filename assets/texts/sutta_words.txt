@@ -86137,7 +86137,7 @@ an11.18 Paṭhamasamādhisutta
 an11.19 Dutiyasamādhisutta 
 an11.20 Tatiyasamādhisutta 
 an11.21 Catutthasamādhisutta 
-an11.22 Sāmaññavagga 
+an11.22-29 Sāmaññavagga 
 an11.30-69 Sāmaññavagga 
 an11.70-117 Sāmaññavagga 
 an11.118-165 Sāmaññavagga 

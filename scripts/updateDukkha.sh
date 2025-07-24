@@ -198,3 +198,7 @@ Wed Jul 23 21:05:42 EDT 2025
 Wed Jul 23 21:27:53 EDT 2025
    264 /mnt/c/soft/dg/all.txt
    254 /mnt/c/soft/dg/edited.txt
+
+Wed Jul 23 22:35:18 EDT 2025
+   228 /mnt/c/soft/dg/all.txt
+   218 /mnt/c/soft/dg/edited.txt
