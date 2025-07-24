@@ -212,7 +212,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     }
 }
     // Для остальных режимов — старый код без изменений
-    else if (dictUrl.includes('dicttango') || dictUrl.includes('goldenpc') || dictUrl.includes('mdict')) {
+    else if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
         const tempLink = document.createElement('a');
         tempLink.href = 'javascript:void(0)';
         tempLink.onclick = function() {
@@ -390,7 +390,7 @@ if (savedDict === "standalonebw" || savedDict === "standalonebwru") {
         }, 1500);
     }
 
-    if (dictUrl.includes('dicttango') || dictUrl.includes('goldenpc') || dictUrl.includes('mdict')) {
+    if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
         popup.style.display = 'none';
         overlay.style.display = 'none';
         showSearchButton();
