@@ -657,14 +657,18 @@ $defaults = '
 <label for="dict-select"><h5 style="text-align: left;">Словарь по клику:</h5></label>
 <select class="dropdown droponmain rounded-pill text-black border-2 border-secondary text-center input-group-append" id="dict-select">
 <option value="standalonebwru">DPD Встроенный</option>
-<option value="standalonebw">DPD Встроенный Англ</option>
-<option value="dpdFullRu">DPD Онлайн</option>
-<option value="dpdFull">DPD Онлайн Англ</option>
+<option value="dpdFullRu">DPD Онлайн </option>
+<option value="newwindowru">DPD Онлайн Новое Окно</option>
 <option value="dpdCompactRu">DPD Онлайн мини</option>
-<option value="dpdCompact">DPD Онлайн мини Англ</option>
+<!-- <option value="machinetranslation">DharmaMitra.org</option>-->
 <option value="searchonly">Только Поиск</option>
 <option value="dictTango">DictTango Android</option>
 <option value="mdict">Mdict IOS</option>
+<option value="goldenpc">GoldenDict-NG Desktop</option>
+<option value="standalonebw">Англ DPD Встроенный</option>
+<option value="dpdFull">Англ DPD Онлайн</option>
+<option value="newwindow">Англ DPD Онлайн новое окно </option>
+<option value="dpdCompact" >Англ DPD Онлайн мини </option>
 </select> <a href="/assets/common/dictHelpRu.html">?</a>
 </div>
 
@@ -1322,15 +1326,19 @@ $defaults = '<!-- Dictionary OnClick Popup -->
 <!-- Дропдаун для выбора режима словаря -->
 <label for="dict-select"><h5 style="text-align: left;">On click dictionary:</h5></label>
 <select class="dropdown droponmain rounded-pill text-black border-2 border-secondary text-center input-group-append" id="dict-select">
-<option value="standalonebw">DPD Built-in</option>
-<option value="standalonebwru">DPD Built-in Rus</option>
+<option value="standalonebw">DPD Built-in </option>
 <option value="dpdFull">DPD Online </option>
-<option value="dpdFullRu">DPD Online Rus</option>
+<option value="newwindow">DPD Online New Window</option>
 <option value="dpdCompact">DPD Onilne mini </option>
-<option value="dpdCompactRu">DPD Online mini Rus</option>
+<!-- <option value="machinetranslation">DharmaMitra.org</option>-->
 <option value="searchonly">Search Only</option>
 <option value="dictTango">DictTango Android</option>
 <option value="mdict">Mdict IOS</option>
+<option value="goldenpc">GoldenDict-NG Desktop</option>
+<option value="standalonebwru" style="display: none;">Ru DPD Built-in </option>
+<option value="dpdFullRu" style="display: none;">Ru DPD Online </option>
+<option value="newwindowru" style="display: none;">Ru DPD Online New Window </option>
+<option value="dpdCompactRu" style="display: none;">Ru DPD Online mini </option>
 
 </select> <a href="/assets/common/dictHelp.html">?</a>
 </div>
