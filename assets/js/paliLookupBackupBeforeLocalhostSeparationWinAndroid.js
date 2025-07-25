@@ -23,11 +23,7 @@ let dictionaryWindow = null;
  * @param {string} url - URL для загрузки в окне.
  */
 function openDictionaryWindow(url) {
- if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-    // Для localhost - просто переходим по URL в текущем окне
-    window.location.href = url;
-    return;
-  }
+
   // Открываем новое окно и сохраняем ссылку на него
   // Имя 'dictionaryPopup' помогает браузеру переиспользовать то же окно
   dictionaryWindow = window.open(url, 'dictionaryPopup', popupFeatures);
@@ -112,23 +108,6 @@ if (
 ) {
     savedDict = "dpdfull";
 }
-
-
-    /**
-     * Creates the search URL for a given word
-     * @param {string} word - The word to create URL for
-     * @returns {string} - The search URL
-     * e.g. const wordSearchUrl = createDictSearchUrl(wordToLink);
-     */
-    function createDictSearchUrl(word) {
-        if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-           return `"goldendict://${encodeURIComponent(word)}`;
-            //return `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
-        }
-        return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
-    }
-
-
 
 // Устанавливаем правильный URL для словаря в зависимости от языка
 let dhammaGift;
@@ -270,14 +249,12 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     
     let dictSearchUrl;
 
-if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    dictSearchUrl = isAndroid 
-        ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`
-        : `goldendict://${encodeURIComponent(wordForSearch)}`;
-} else {
-    dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
-}
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+       // dhammaGift = '';
+      dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`;
+    } else {
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+    }
 
 if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation) {
     // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
@@ -571,14 +548,13 @@ function lookupWordInStandaloneDict(word) {
     // Creates the search URL for a given word
         let dictSearchUrl;
 
-if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    dictSearchUrl = isAndroid 
-        ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`
-        : `goldendict://${encodeURIComponent(word)}`;
-} else {
-    dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
-}
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+      //  dhammaGift = '';
+      dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
+    } else {
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+    }
+
 
     /**
      * Creates a single clickable link for a word.
@@ -589,16 +565,12 @@ if (window.location.href.includes('localhost') || window.location.href.includes(
 
         let wordSearchUrl;
 
-if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    wordSearchUrl = isAndroid 
-        ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`
-        : `goldendict://${encodeURIComponent(wordToLink)}`;
-} else {
-    wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
-}
-
-
+    if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+    //    dhammaGift = '';
+      wordSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`;
+    } else {
+        wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
+    }
 
         // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
         return `<a href="${wordSearchUrl}"
@@ -1202,5 +1174,4 @@ function transliterateWord(word) {
     });
 }
 */
-
 
