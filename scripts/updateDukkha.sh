@@ -9,7 +9,7 @@ prefix=/mnt/c/soft/dg
 
 function commonGrep() {
 
-grep -riE "страдан" $prefix/assets/texts/sutta/* | grep -v сострада | grep -v "бедствии, несчастье, страдании, преисподней" | grep -v "страдан.*плач.*бол"
+grep -riE "счасть" $prefix/assets/texts/sutta/* | grep -v несчасть | grep -v "бедствии, несчастье, страдании, преисподней" 
 }
 
 commonGrep > $prefix/all.txt
@@ -23,6 +23,9 @@ tail $prefix/scripts/updateDukkha.sh
 
 exit 0
 
+grep -f sukh.id  all.txt
+
+for i in `cat sukh.id `; do echo $i ;  grep -ri -m1 $i assets/texts/sutta/; done
 #remove doulbes
 
 cd assets/texts/sutta
