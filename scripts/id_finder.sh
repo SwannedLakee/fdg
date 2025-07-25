@@ -18,6 +18,7 @@ search_and_link() {
 
   local prefix="${input%%:*}"
   local suffix="${input#*:}"
+  echo
   echo "https://dhamma.gift/r/?q=${prefix}#${suffix}"
     echo "https://f.dhamma.gift/r/?q=${prefix}#${suffix}"
   echo "http://localhost/r/?q=${prefix}#${suffix}"
