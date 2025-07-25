@@ -9,7 +9,7 @@ prefix=/mnt/c/soft/dg
 
 function commonGrep() {
 
-grep -riE "\bсчасть" $prefix/assets/texts/sutta/* | grep -v несчасть | grep -v "бедствии, несчастье, страдании, преисподней" 
+grep -riE "\bсчасть" $prefix/assets/texts/sutta/* | grep -v несчасть | grep -v "долго" | grep -v "богов и людей" #| grep -v  
 }
 
 commonGrep > $prefix/all.txt
@@ -45,3 +45,15 @@ mv ${i}_*sv.json ../svEtc/automatic/
 Пт 25 июл 2025 10:00:34 EDT
    632 /mnt/c/soft/dg/all.txt
    475 /mnt/c/soft/dg/edited.txt
+
+Пт 25 июл 2025 11:26:07 EDT
+   627 /mnt/c/soft/dg/all.txt
+   472 /mnt/c/soft/dg/edited.txt
+
+Пт 25 июл 2025 11:49:53 EDT
+0 /mnt/c/soft/dg/all.txt
+0 /mnt/c/soft/dg/edited.txt
+
+Пт 25 июл 2025 11:50:14 EDT
+   423 /mnt/c/soft/dg/all.txt
+   287 /mnt/c/soft/dg/edited.txt
