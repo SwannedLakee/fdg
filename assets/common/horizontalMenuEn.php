@@ -1,12 +1,13 @@
 <?php
 echo '<div class="d-md-inline-block">	';
 if ((($_SERVER['SERVER_ADDR'] === '127.0.0.1') || ($_SERVER['SERVER_NAME'] === 'localhost')) && (!preg_match('/(new)(\?.*)?$/', basename($_SERVER['REQUEST_URI'])))) {
-echo '<a class="text-decoration-none mx-1" href="/ru/new">
+
+/*echo '<a class="text-decoration-none mx-1" href="/ru/new">
 <figure class="figure text-decoration-none">
   <i class="menu-icon icon-item fa-solid fa-magnifying-glass fa-flip-horizontal"></i>
   <figcaption class="horiz-menu-item figure-caption text-center">Fdg New!!!</figcaption>
 </figure>
-</a>';
+</a>';*/
 }
 
  if (preg_match('/(read\.php|new)(\?.*)?$/', basename($_SERVER['REQUEST_URI']))) {
