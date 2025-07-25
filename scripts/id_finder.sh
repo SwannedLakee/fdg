@@ -9,7 +9,7 @@ search_and_link() {
   echo
 grep -m1 -r --color=always "$input" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
   awk -F':' '{for(i=2; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : ":")}' | \
-  GREP_COLORS='mt=38;5;208' grep -E --color=always "|счаст|радос|приятн|sukh"
+  GREP_COLORS='mt=38;5;208' grep -E --color=always "|счаст|радос|приятн|sukh|sug|hit"
 
 
   local prefix="${input%%:*}"
