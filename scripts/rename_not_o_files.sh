@@ -5,6 +5,11 @@ echo "Вставьте список 'modified: ...'. Когда закончит
 while read -r line; do
   filepath=$(echo "$line" | sed 's/^modified:[[:space:]]*//')
 
+  # Переходим только если путь содержит assets/texts/sutta
+  if [[ "$filepath" != *assets/texts/sutta* ]]; then
+    continue
+  fi
+
   [[ "$filepath" != *.json ]] && continue
 
   if [[ "$filepath" =~ [+-]o\.json$ ]]; then
@@ -32,3 +37,4 @@ done
 
 echo
 echo "✅ Обработка завершена. Нажмите Enter для выхода или Ctrl+C."
+
