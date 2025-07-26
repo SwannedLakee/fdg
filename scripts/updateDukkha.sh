@@ -65,3 +65,7 @@ mv ${i}_*sv.json ../svEtc/automatic/
 Пт 25 июл 2025 15:46:56 EDT
    361 /mnt/c/soft/dg/all.txt
    235 /mnt/c/soft/dg/edited.txt
+
+Сб 26 июл 2025 07:16:06 EDT
+   277 /mnt/c/soft/dg/all.txt
+   176 /mnt/c/soft/dg/edited.txt

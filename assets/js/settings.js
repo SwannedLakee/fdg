@@ -213,27 +213,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+function shouldIgnoreKeyEvent() {
+  const activeElement = document.activeElement;
+  return activeElement && activeElement.id === "paliauto" && activeElement.tagName === "INPUT";
+}
+
 document.addEventListener("keydown", (event) => {
+  if (shouldIgnoreKeyEvent()) return;
+
   if (event.ctrlKey && event.code === "ArrowRight") {
     const nextDiv = document.getElementById("next");
     if (nextDiv) {
       const link = nextDiv.querySelector("a");
       if (link) {
-        history.pushState(null, "", link.href); // Добавляем запись в историю
-        location.href = link.href; // Принудительно переходим
+        history.pushState(null, "", link.href);
+        location.href = link.href;
       }
     }
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.ctrlKey && event.code === "ArrowLeft") {
+  } else if (event.ctrlKey && event.code === "ArrowLeft") {
     const prevDiv = document.getElementById("previous");
     if (prevDiv) {
       const link = prevDiv.querySelector("a");
       if (link) {
-        history.pushState(null, "", link.href); // Добавляем запись в историю
-        location.href = link.href; // Принудительно переходим
+        history.pushState(null, "", link.href);
+        location.href = link.href;
       }
     }
   }
@@ -811,6 +814,8 @@ document.addEventListener('keydown', (event) => {
     // Получаем следующий скрипт в списке
     let nextIndex = (scriptOptions.indexOf(currentScript) + 1) % scriptOptions.length;
     let nextScript = scriptOptions[nextIndex];
+ 
+    localStorage.removeItem('selectedScript');
 
     // Обновляем URL
     if (nextScript === 'ISOPali') {
