@@ -23,7 +23,7 @@ sutta=$4
     if ( name == "" ) { 
 name=sutta
 } 
- hiddenlink="<a class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">&nbsp;</a>"
+ hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">&nbsp;</a>"
  
  if ( textclass == 1 ) {
    language="pi"

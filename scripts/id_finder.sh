@@ -5,20 +5,21 @@ search_and_link() {
     return
   fi
 
-  # grep + awk
+input=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" | sed -e 's/"//g' -e 's/[":]$//g')
+  # grep + awk -m1
   echo
-grep -m1 -r --color=always "$input" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
+grep  -r --color=always "$input" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
   awk -F':' '{for(i=2; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : ":")}' | \
   GREP_COLORS='mt=38;5;208' grep -iE --color=always "|счаст|радос|приятн|sukh|sug|hit|dukkh"
 
 
-  local prefix="${input%%:*}"
-  local suffix="${input#*:}"
+  local prefix=${input%%:*}
+  local suffix=${input#*:}
   echo
-  echo "https://dhamma.gift/r/?q=${prefix}#${suffix}"
-    echo "https://f.dhamma.gift/r/?q=${prefix}#${suffix}"
+ # echo "https://dhamma.gift/r/?q=${prefix}#${suffix}"
+ #   echo "https://f.dhamma.gift/r/?q=${prefix}#${suffix}"
   echo "http://localhost/r/?q=${prefix}#${suffix}"
-  echo "http://127.0.0.1:8080/r/?q=${prefix}#${suffix}"echo
+  echo "http://127.0.0.1:8080/r/?q=${prefix}#${suffix}"
   echo 
   echo 
 }

@@ -150,7 +150,7 @@ if (window.location.href.includes('localhost') || window.location.href.includes(
     dictUrl = "https://dict.dhamma.gift";
 }
 
-if (window.location.href.includes('/r/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
+if (window.location.href.includes('/r/') || window.location.href.includes('/ru/') || window.location.href.includes('/ml/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
    dhammaGift += '/ru';
 }
 dhammaGift += '/?q=';
