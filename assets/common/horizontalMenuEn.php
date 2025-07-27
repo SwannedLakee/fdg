@@ -399,6 +399,7 @@ echo '<!--
          
    <li><a class="dropdown-item" href="/assets/linebyline.html">Line-by-line Translation Tool</a></li>   
 <li><a class="dropdown-item" href="/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
+  <li><a class="dropdown-item" href="/assets/listdiff.html">List Difference</a></li>
       
 
 <li><a class="dropdown-item" href="/assets/makelist.html">
