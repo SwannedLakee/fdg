@@ -23,11 +23,11 @@ let dictionaryWindow = null;
  * @param {string} url - URL для загрузки в окне.
  */
 function openDictionaryWindow(url) {
- if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-    // Для localhost - просто переходим по URL в текущем окне
+if ((window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) && externalDict === true) {
+    // Переход только если это localhost/127.0.0.1 И externalDict = true
     window.location.href = url;
     return;
-  }
+}
   // Открываем новое окно и сохраняем ссылку на него
   // Имя 'dictionaryPopup' помогает браузеру переиспользовать то же окно
   dictionaryWindow = window.open(url, 'dictionaryPopup', popupFeatures);
