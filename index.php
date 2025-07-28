@@ -214,8 +214,8 @@ function updateURL(params) {
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" title="<?php echo $mainreadtitle;?>" href="<?php echo $mainreadlink;?>"><?php echo $menuread;?></a></li>
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="<?php echo $mainpagenoslash;?>/history.php"><?php echo $menuhist;?></a></li>
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#<?php echo $menuhelp;?>"><?php echo $menuhowto;?></a></li>
-<li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#about"><?php echo $menuabout;?></a></li>             
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#<?php echo $menuuseful;?>"><?php echo $menulinks;?></a></li>
+<li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#about"><?php echo $menuabout;?></a></li>             
 <li class="nav-item mb-3 mx-lg-2"><a class="nav-link py-3 px-0 px-lg-0 rounded" href="#contacts"><?php echo $menucontact;?></a></li>
 <li class="nav-item mb-0 mx-lg-2"><p><a class="py-1 text-decoration-none px-0 px-lg-1 rounded link-light" href="/" title="<?php echo $toggleLang;?>" onclick="localStorage.siteLanguage = 'en';">En</a> 
 <a class="link-light text-decoration-none py-1 px-0 px-lg-1 rounded" href="/ru/" title="<?php echo $toggleLang;?>" onclick="localStorage.siteLanguage = 'ru';">Ru</a>
