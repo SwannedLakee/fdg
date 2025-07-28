@@ -414,7 +414,7 @@ echo '<!--
 ' . $head5makelist . '</a></li>  
 </ul>
 
-  <a title="Dhamma.Gift Multi-Tool Help"
+  <a id="multi-tool-help" title="Dhamma.Gift Multi-Tool Help"
      href="/assets/common/multiTool.html"
      class="text-muted text-decoration-none"
      style="font-size: 0.75rem; line-height: 1; position: relative; top: 0.4em;">

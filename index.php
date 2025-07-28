@@ -286,7 +286,7 @@ if (isset($_GET['q'])) {
 <i class="fas fa-search fa-flip-horizontal" aria-hidden="true"></i>
     <span class="visually-hidden"><?php echo $searchcaption;?></span>
 </button>
- <div class="text-start text-muted form-check-inline" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltipsearchbar;?>">*</div>
+ <div class="text-start text-muted form-check-inline" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" id="searchbar-help" title="<?php echo $tooltipsearchbar;?>">*</div>
 </div>
 
 </div>
@@ -303,7 +303,7 @@ if (isset($_GET['q'])) {
         <option value="-tru" <?php if (isset($p) && $p == "-tru") echo "selected";?> ><?php echo $radiotru;?></option>        
     </select>
 
-    <div class="text-start text-muted form-check-inline me-0" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltiptextype;?>">*</div>
+    <div class="text-start text-muted form-check-inline me-0" data-bs-toggle="tooltip" id="texttype-help" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltiptextype;?>">*</div>
 
     <select class="dropdown droponmain rounded-pill text-muted border-2 border-primary text-center flex-shrink-1" id="extraOptions" name="extra">
         <option value="" <?php if (isset($extra)) echo "selected";?> ><?php echo "$liststd";?></option>
@@ -316,7 +316,7 @@ if (isset($_GET['q'])) {
         <option value="-nm5" <?php if (isset($extra) && $extra == "-nm5") echo "selected";?> ><?php echo "$listnm";?></option>
     </select>
 
-    <div class="text-muted text-decoration-none me-0 form-check-inline" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltipsearchtype;?>">*</div>
+    <div class="text-muted text-decoration-none me-0 form-check-inline" data-bs-toggle="tooltip" id="searchtype-help" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltipsearchtype;?>">*</div>
 
     <div id="gear" class="text-white ms-1 flex-shrink-0" data-bs-toggle="collapse" href="#collapseSettings" role="button" aria-expanded="false" aria-controls="collapseSettings">
         <i class="fa-solid fa-gear fa-lg"></i>
@@ -627,7 +627,6 @@ input.setSelectionRange(input.value.length, input.value.length);
               </div>
               </div>
 			  
-
 	  <script src="/assets/js/smoothScroll.js" defer></script>
 	
 <script defer>
@@ -668,7 +667,7 @@ include 'assets/common/horizontalMenuEn.php';
 <div style="max-width: 450px;" class="container-lg my-5">
  <!-- <h4><?php echo $carouseltitle;?>:</h4><br> -->
  
-<div id="carouselWithCaptions" class="carousel slide " data-bs-ride="carousel">
+<div id="carouselWithCaptions" class="carousel slide" data-bs-ride="carousel">
 <!-- <div class="carousel-indicators">
     <button type="button" data-bs-target="#carouselWithCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
     <button type="button" data-bs-target="#carouselWithCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>

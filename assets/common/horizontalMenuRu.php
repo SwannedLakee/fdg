@@ -445,7 +445,7 @@ echo '<!--
 
 </ul>
 
- <a title="Помощь по Dhamma.Gift Multi-Tool"
+ <a  id="multi-tool-help"  title="Помощь по Dhamma.Gift Multi-Tool"
      href="/assets/common/multiToolRu.html"
      class="text-muted text-decoration-none"
      style="font-size: 0.75rem; line-height: 1; position: relative; top: 0.4em;">
