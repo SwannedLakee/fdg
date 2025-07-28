@@ -57,10 +57,9 @@ $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-cont
         <img src="/assets/img/buttons/edge-cta.png" class="cta-img" title="Скачать из Microsoft Edge Store">
     </a>
 
-<!--        <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhammagift-search-and-word-lookup">
+    <a class="ms-2 mb-2" href="https://chromewebstore.google.com/detail/dhammagift-search-and-wor/dnnogjdcmhbiobpnkhdbfnfjnjlikabd">
         <img src="/assets/img/buttons/opera-cta.png" class="cta-img" title="Скачать из Opera Add-ons">
-    </a> -->
-    
+    </a> 
 </div>
 ';
 
@@ -1258,9 +1257,14 @@ $ctaButtons =' <div class="d-flex flex-wrap flex-column flex-sm-row justify-cont
     <a class="ms-2 mb-2" href="https://microsoftedge.microsoft.com/addons/detail/dhammagift-search-and-wo/aokegkhdaijkikbdocanadeghllhfmhj">
         <img src="/assets/img/buttons/edge-cta.png" class="cta-img" title="Download from Microsoft Edge Store">
     </a>
-    <!--        <a class="ms-2 mb-2" href="https://addons.opera.com/en/extensions/details/dhammagift-search-and-word-lookup">
+   
+    <a class="ms-2 mb-2" href="https://chromewebstore.google.com/detail/dhammagift-search-and-wor/dnnogjdcmhbiobpnkhdbfnfjnjlikabd">
         <img src="/assets/img/buttons/opera-cta.png" class="cta-img" title="Download from Opera Add-ons">
-    </a> -->
+    </a> 
+
+<!-- 
+    https://addons.opera.com/en/extensions/details/dhammagift-search-and-word-lookup
+    -->
     
 </div>
 ';
