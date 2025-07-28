@@ -257,7 +257,14 @@ echo '<!--
         <a class="text-reset"  target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Eng-Pali</a>
            </div>
          </li>
-<li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a></li>
+
+    <li>
+         <div class="dropdown-item ">
+         <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a>
+         + <a class="text-reset" target="_blank" href="https://dharmamitra.org/nexus/db/pa
+">Nexus</a>
+           </div>
+         </li>
 
 <li>
   <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input={{q}}\')" target="_blank">
