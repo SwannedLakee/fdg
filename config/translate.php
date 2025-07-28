@@ -1568,6 +1568,7 @@ $mainreadtitle = 'Dhamma.Gift Read (Ctrl + 2)';
 
 $menuuseful = 'Search,MenuRead,MenuEnglish,history,MenuDict,MenuRussian,tools,materials';
 
+$menuhelp = 'gear,searchbar-help,texttype-help,searchtype-help,multi-tool-help';
 
 $ctaButtons .='<script>
 let deferredPrompt;
