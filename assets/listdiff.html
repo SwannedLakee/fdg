@@ -6,6 +6,7 @@
  <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
 <script src="/assets/js/jquery-3.7.0.min.js"></script>
+<link href="/assets/css/paliLookup.css" rel="stylesheet" />
 
  <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favico-noglass.png" />
@@ -44,6 +45,7 @@
         <a href="../../" title="Sutta and Vinaya search" rel="noreferrer" class="me-1">
             <img width="24px" alt="dhamma.gift icon" src="/assets/img/gray-white.png">
         </a>
+<a title="Всплывающий по клику словарь (Alt+A)" class="common-size-icon4 toggle-dict-btn text-decoration-none text-black">  <img src="/assets/svg/comment.svg" alt="Всплывающий по клику словарь" class="dictIcon"></img></a>
 
         <div class="ms-1 form-check form-switch">
             <input type="checkbox" class="form-check-input" id="darkSwitch">
@@ -52,15 +54,26 @@
 </div>
 
     <h2>Show Difference Between Two Lists</h2><br>
-    <form id="textLinksForm">
-      <div class="mb-3">
-        <label for="string1" class="form-label">List of Links 1:</label>
-        <input type="search" class="form-control" id="string1" name="string1" placeholder="e.g. sn56.11 dn22 sn12.2" required>
-      </div>
-      <div class="mb-3">
-        <label for="string2" class="form-label">List of Links 2:</label>
-        <input type="search" class="form-control" id="string2" name="string2" placeholder="e.g. sn56.11 dn22" required>
-      </div>
+    <p>
+</p>
+
+<form id="textLinksForm">
+  <div class="row">
+    <div class="mb-3 col-md-6">
+<div class="form-label">
+  <label for="string1" class="form-label d-inline">List of Links or Words 1:</label>
+  <a href="#result1" class="ms-1" style="color: royalblue; font-weight: bold; text-decoration: underline;">(Blue)</a>
+</div>
+      <textarea class="form-control" id="string1" name="string1" rows="6" placeholder="e.g. sn56.11 dn22 sn12.2" required></textarea>
+    </div>
+    <div class="mb-3 col-md-6">
+<div class="form-label">
+  <label for="string2" class="form-label d-inline">List of Links or Words 2:</label>
+  <a href="#result2" class="ms-1" style="color: firebrick; font-weight: bold; text-decoration: underline;">(Red)</a>
+</div>
+      <textarea class="form-control" id="string2" name="string2" rows="6" placeholder="e.g. sn56.11 dn22" required></textarea>
+    </div>
+  </div>
 
       <div class="form-buttons">
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -87,42 +100,75 @@
       clearForm();
     });
 
-    function processForm() {
-      // Get the input values
-      var string1 = document.getElementById('string1').value;
-      var string2 = document.getElementById('string2').value;
+  function processForm() {
+    // Get the input values
+    var string1 = document.getElementById('string1').value.trim();
+    var string2 = document.getElementById('string2').value.trim();
 
-      // Remove prefixes
+    // Remove prefixes before colon if present
+    if (string1.includes(":")) {
       string1 = string1.substring(string1.indexOf(":") + 1).trim();
-      string2 = string2.substring(string2.indexOf(":") + 1).trim();
-
-      // Remove trailing numbers
-      string1 = string1.replace(/ \(\d+\)$/, '');
-      string2 = string2.replace(/ \(\d+\)$/, '');
-
-      // Explode strings into arrays
-      var array1 = string1.split(" ");
-      var array2 = string2.split(" ");
-
-      // Find differences
-      var differences = array1.filter(function(value) {
-        return !array2.includes(value);
-      });
-
-      // Append differences from array2
-      differences = differences.concat(array2.filter(function(value) {
-        return !array1.includes(value);
-      }));
-
-      // Print differences
-      var result = "";
-      differences.forEach(function(difference) {
-        result += difference + "<br>";
-      });
-
-      // Display the result
-      document.getElementById('result').innerHTML = "Result:<br>" + result;
     }
+    if (string2.includes(":")) {
+      string2 = string2.substring(string2.indexOf(":") + 1).trim();
+    }
+
+    // Remove trailing numbers like " (23)"
+    string1 = string1.replace(/ \(\d+\)$/, '');
+    string2 = string2.replace(/ \(\d+\)$/, '');
+
+    // Explode into arrays
+    var array1 = string1.split(/\s+/);
+    var array2 = string2.split(/\s+/);
+
+    // Differences
+    var onlyIn1 = array1.filter(value => !array2.includes(value));
+    var onlyIn2 = array2.filter(value => !array1.includes(value));
+
+    // Generate result HTML
+  let result = '<div class="row">';
+
+if (onlyIn1.length > 0) {
+  result += `
+  <div class="col-md-6 mb-3" id="result1">
+    <span style="font-weight: bold; color: royalblue;">Only in List 1:</span><br>
+  <div style="color: royalblue;">
+  ${onlyIn1.map(word => `<div class="pli-lang" lang="pi">${word}</div>`).join("")}
+</div>
+  </div>
+`;
+
+}
+
+if (onlyIn2.length > 0) {
+ result += `
+  <div class="col-md-6 mb-3" id="result2">
+    <span style="font-weight: bold; color: firebrick;">Only in List 2:</span><br>
+  <div  style="color: firebrick;">
+  ${onlyIn2.map(word => `<div class="pli-lang" lang="pi">${word}</div>`).join("")}
+</div>
+
+  </div>
+`;
+
+}
+
+result += '</div>';
+
+if (onlyIn1.length === 0 && onlyIn2.length === 0) {
+  result = `<div><span style="color: green; font-weight: bold;">No differences found.</span></div>`;
+}
+
+
+    if (onlyIn1.length === 0 && onlyIn2.length === 0) {
+      result = `<div><span style="color: green; font-weight: bold;">No differences found.</span></div>`;
+    }
+
+    document.getElementById('result').innerHTML = result;
+
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+
+  }
 
     function clearForm() {
       document.getElementById('textLinksForm').reset();
@@ -130,6 +176,7 @@
     }
   </script>
   <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
+<script src="/assets/js/paliLookup.js"></script>
 
 </body>
 </html>
