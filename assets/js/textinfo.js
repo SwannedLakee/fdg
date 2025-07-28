@@ -2334,7 +2334,7 @@
 "sn35.4":{"pi":"Bāhirāniccasutta ","en":"The Exterior as Impermanent ","mtph":"","ru":"Внешнее как непостоянное"},
 "sn35.5":{"pi":"Bāhiradukkhasutta ","en":"The Exterior as Suffering ","mtph":"","ru":"Внешнее как страдание"},
 "sn35.6":{"pi":"Bāhirānattasutta ","en":"The Exterior as Not-Self ","mtph":"","ru":"Внешнее как безличностное"},
-"sn35.7":{"pi":"Ajjhattāniccātītānāgatasutta ","en":"The Interior as Impermanent in the Three Times ","mtph":"","ru":"Внутреннее прошло-будущее ненадёжно"},
+"sn35.7":{"pi":"Ajjhattāniccātītānāgatasutta ","en":"The Interior as Impermanent in the Three Times ","mtph":"","ru":"Внутреннее Прошло-Будущее Ненадёжно"},
 "sn35.8":{"pi":"Ajjhattadukkhātītānāgatasutta ","en":"The Interior as Suffering in the Three Times ","mtph":"","ru":"Внутреннее Прошло-Будущее Дискомфортно"},
 "sn35.9":{"pi":"Ajjhattānattātītānāgatasutta ","en":"The Interior as Not-Self in the Three Times ","mtph":"","ru":"Внутреннее Прошло-Будущее Безличностно"},
 "sn35.10":{"pi":"Bāhirāniccātītānāgatasutta ","en":"The Exterior as Impermanent in the Three Times ","mtph":"","ru":"Внешнее Прошло-Будущее Ненадёжно"},

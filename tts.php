@@ -785,7 +785,7 @@ async function speakTextFromElement(elementId) {
           } else {
             langCode = 'hi-IN';
             selectedVoice = voices.find(v => v.lang === 'hi-IN');
-            rate = 0.7;
+            rate = 0.4;
           }
         } else {
           langCode = 'en-US';
