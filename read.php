@@ -243,7 +243,7 @@ if (isset($_GET['q'])) {
   <span class="visually-hidden"><?php echo $searchcaption;?></span>
   </div> 
 
- <div class="text-start text-muted form-check-inline" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" data-bs-html="true" title="<?php echo $tooltipsearchbar;?>">*</div>
+ <div class="text-start text-muted form-check-inline" id="searchbar-help"  data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" data-bs-html="true" title="<?php echo $tooltipsearchbar;?>">*</div>
 </div>
 
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
         <option value="-b" <?php if (isset($p) && $p == "-b") echo "selected";?> ><?php echo $radiotbw;?></option>
         <option value="-en" <?php if (isset($p) && $p == "-en") echo "selected";?> ><?php echo $radioen;?></option>
     </select>
-       <div class="text-start text-muted form-check-inline me-0" data-bs-html="true" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltiptextype;?>">*</div>
+       <div class="text-start text-muted form-check-inline me-0" data-bs-html="true" data-bs-toggle="tooltip" id="texttype-help" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltiptextype;?>">*</div>
 
     <select class="dropdown droponmain rounded-pill text-muted border-2 border-primary text-center input-group-append" id="extraOptions" name="extra">
         <option value="" <?php if (isset($extra) && $p == "") echo "selected";?> ><?php echo "$liststd";?></option>
@@ -302,7 +302,7 @@ $(document).ready(function() {
         <option value="-nm10" <?php if (isset($extra) && $extra == "-nm10") echo "selected";?> ><?php echo "$listnm10";?></option>
       <option value="-nm5" <?php if (isset($extra) && $extra == "-nm5") echo "selected";?> ><?php echo "$listnm";?></option>
     </select>
-	  <div class="text-muted text-decoration-none me-1 form-check-inline" data-bs-html="true" data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltipsearchtype;?>">*</div>
+	  <div class="text-muted text-decoration-none me-1 form-check-inline" data-bs-html="true" data-bs-toggle="tooltip" id="searchtype-help" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $tooltipsearchtype;?>">*</div>
 </div>
   <!--  <label for="pOptions"></label> -->
   <!-- extra options -->
