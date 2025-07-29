@@ -6,21 +6,22 @@ search_and_link() {
   fi
 
 
-input=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" | sed -e 's/"//g' -e 's/[":]$//g')
+inputForUrl=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" | sed -e 's/"//g' -e 's/[":]$//g')
+inputForGrep=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" )
+
   # grep + awk -m1
- 
    if [[ -z "$input" ]]; then
-    input="$1"
+    inputForGrep="$1"
   fi
 
   echo
-grep  -r --color=always "$input" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
+grep  -r --color=always "$inputForGrep" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
   awk -F':' '{for(i=2; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : ":")}' | \
   GREP_COLORS='mt=38;5;208' grep -iE --color=always "|счаст|радос|приятн|sukh|sug|hit|dukkh"
 
 
-  local prefix=${input%%:*}
-  local suffix=${input#*:}
+  local prefix=${inputForUrl%%:*}
+  local suffix=${inputForUrl#*:}
   echo
  # echo "https://dhamma.gift/r/?q=${prefix}#${suffix}"
  #   echo "https://f.dhamma.gift/r/?q=${prefix}#${suffix}"

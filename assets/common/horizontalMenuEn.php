@@ -192,7 +192,7 @@ echo '<!--
 </li>
 
    <li>
-  <a class="dropdown-item" title="Open word in PTS/Cone/DPD/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open PTS/Cone/DPD/CPD/Skr+/Wisdoml</a>
+  <a class="dropdown-item" title="Open word in PTS/Cone/DPD/DPR/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open Pali + Skr + Wisdoml</a>
 <script src="/assets/js/openDicts.js"></script>
 </li>  
 
@@ -201,8 +201,9 @@ echo '<!--
     \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
     \'https://gandhari.org/dictionary?section=dop&search=\',
     \'https://dict.dhamma.gift/search_html?source=pwa&q=\',
+    \'https://www.digitalpalireader.online/_dprhtml/index.html\',
     \'https://cpd.uni-koeln.de/search?query=\'
-  ])">Pali PTS, Cone, DPD, CPD</a>
+  ])">Pali PTS, Cone, DPD, DPR, CPD</a>
 </li>
 
 <li>
@@ -212,6 +213,7 @@ echo '<!--
   </a>
 </li> 
 <li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://gandhari.org/dictionary?section=dop&search={{q}}\')">M. Cone dictionary Gandhari.org</a></li>
+<li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis={{q}}\')">DPR Analysis</a></li>
    <li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs={{q}}\')">R. Davids, W. Stede dictionary PTS</a></li>
 
 

@@ -29,12 +29,19 @@ if (query) {
       base: 'https://gandhari.org/dictionary?section=dop&search=',
       fallback: 'https://gandhari.org/dop'
     },
-          {
+    {
       name: 'DPD',
       method: 'GET',
       base: 'https://dict.dhamma.gift/search_html?source=pwa&q=',
       fallback: 'https://dict.dhamma.gift/?source=pwa'
     },
+    {
+      name: 'DPR', 
+      method: 'GET',
+      base: 'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis=',
+      fallback: 'https://www.digitalpalireader.online/_dprhtml/index.html'
+    },
+
     {
       name: 'CPD', 
       method: 'POST', // POST-поиск: CPD доделать 
