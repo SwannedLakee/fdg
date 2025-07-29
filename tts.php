@@ -28,7 +28,7 @@ if ($type === 'pali') {
 } elseif ($type === 'trn') {
     $lang = $is_ru_url ? 'ru' : 'en';
     $content_type = $is_ru_url ? 'ru' : 'en';
-    $title_lang = $is_ru_url ? 'Russian' : 'English';
+    $title_lang = $is_ru_url ? 'russian' : 'english';
 } else {
     // Старая логика по умолчанию (для обратной совместимости)
     $lang = 'ru';
@@ -37,12 +37,12 @@ if ($type === 'pali') {
 }
 
 // Заголовок страницы (сохраняем старый формат)
-$title = htmlspecialchars(
+$title = strtolower(htmlspecialchars(
     $slug
-    ? ucfirst(str_replace(['-', '_'], ' ', $slug)) . ' (' .
-      ($type === 'pali' ? 'Pali' : ($title_lang)) . ')'
-    : 'TTS Page'
-);
+        ? ucfirst(str_replace(['-', '_'], ' ', $slug)) . ' (' .
+          ($type === 'pali' ? 'Pali' : $title_lang) . ')'
+        : 'TTS Page'
+));
 
 // Загрузка контента по slug (обновленная версия)
 function loadContent($slug, $type) {
