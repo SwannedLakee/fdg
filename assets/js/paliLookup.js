@@ -66,7 +66,7 @@ if (typeof showBubbleNotification === 'undefined') {
         }, 2000);
     }
 }
- 
+
 // Проверяем язык в localStorage
 const siteLanguage = localStorage.getItem('siteLanguage');
 
@@ -81,7 +81,7 @@ function getSelectedText() {
 function isSelectionWithinElement(element) {
     const selection = window.getSelection();
     if (!selection.rangeCount) return false;
-    
+
     const range = selection.getRangeAt(0);
     return element.contains(range.commonAncestorContainer);
 }
@@ -165,7 +165,7 @@ if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
     dictUrl += "/ru";
   }
-  
+
   if (savedDict.includes("full")) {
     //    dictUrl += "/search_html?source=pwa&q=";
     dictUrl += "/search_html?q=";
@@ -207,33 +207,33 @@ if (savedDict === "machinetranslation") {
 const scriptCache = new Map();
 
 // Polyfill for requestIdleCallback
-const requestIdleCallback = window.requestIdleCallback || 
+const requestIdleCallback = window.requestIdleCallback ||
     function(cb) { return setTimeout(() => { cb({ didTimeout: false }); }, 0); };
 
 function handleWordLookup(word, event) {
-    
+
      if (!dictionaryVisible) return;
 
     let cleanedWord = cleanWord(word);
     //console.log('Обрабатываем:', cleanedWord);
 
     let translation = "";
-    
+
 // Для standalone-режима обрабатываем ВСЕ слова
 if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     // Пытаемся найти перевод для всего словосочетания
     const phraseTranslation = lookupWordInStandaloneDict(cleanedWord);
-    
+
     // Если перевод для словосочетания есть — выводим его
     if (phraseTranslation.trim() !== "") {
         translation += phraseTranslation;
-    } 
+    }
     // Если перевода нет — разбиваем на слова и ищем их по отдельности
     else {
         const words = cleanedWord.split(/\s+/)
                                 .map(w => cleanWord(w))
                                 .filter(w => w.length > 0);
-        
+
         for (const singleWord of words) {
             translation += lookupWordInStandaloneDict(singleWord);
         }
@@ -241,7 +241,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
 }
     // Для остальных режимов — старый код без изменений
 //    else if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
-        else if (externalDict) { 
+        else if (externalDict) {
         const tempLink = document.createElement('a');
         tempLink.href = 'javascript:void(0)';
         tempLink.onclick = function() {
@@ -255,7 +255,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     } else if (inNewWindow || savedDict === "newwindow" || savedDict === "newwindowru") {
         const url = `${dictUrl}${encodeURIComponent(cleanedWord)}`;
         openDictionaryWindow(url);
- return; 
+ return;
     }
 
     else {
@@ -264,17 +264,18 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     }
     //console.log('обработали:', cleanedWord);
 
-  const isRussian = window.location.pathname.includes('/ru/') || 
-                     window.location.pathname.includes('/r/') || 
+  const isRussian = window.location.pathname.includes('/ru/') ||
+                     window.location.pathname.includes('/r/') ||
                      window.location.pathname.includes('/ml/');
-  
+
     const wordForSearch = cleanedWord.replace(/'ti/, '');
-    
+
     let dictSearchUrl;
 
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+   inNewWindow = false;
     const isAndroid = /Android/i.test(navigator.userAgent);
-    dictSearchUrl = isAndroid 
+    dictSearchUrl = isAndroid
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`
         : `goldendict://${encodeURIComponent(wordForSearch)}`;
 } else {
@@ -283,7 +284,7 @@ if (window.location.href.includes('localhost') || window.location.href.includes(
 
 if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation) {
     // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
-    translation = isRussian ? 
+    translation = isRussian ?
         `<div style="padding: 10px;">
             <a href="${dictSearchUrl}" onclick="event.preventDefault(); parent.openDictionaryWindow('${dictSearchUrl}'); return false;" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a> не найдено во встроенном словаре.
             <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать онлайн</a>
@@ -297,20 +298,20 @@ if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation
     if (translation) {
         const isDarkMode = document.body.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
         const themeClass = isDarkMode ? 'dark' : '';
-        
+
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
         tempDiv.style.visibility = 'hidden';
         tempDiv.style.width = 'calc(100% - 20px)';
         tempDiv.innerHTML = translation;
         document.body.appendChild(tempDiv);
-        
+
         const contentHeight = tempDiv.offsetHeight;
         document.body.removeChild(tempDiv);
-        
+
         let minHeight = 100;
-        const maxHeight = window.innerHeight * 0.95; 
-        
+        const maxHeight = window.innerHeight * 0.95;
+
         if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
             minHeight = 100;
         } else {
@@ -319,46 +320,46 @@ if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation
         }
 
         let finalHeight = Math.min(Math.max(contentHeight + 20, minHeight), maxHeight);
-        
-        iframe.srcdoc = `  
-            <!DOCTYPE html>  
-            <html lang="en" class="${themeClass}">  
-            <head>  
-                <meta charset="UTF-8">  
+
+        iframe.srcdoc = `
+            <!DOCTYPE html>
+            <html lang="en" class="${themeClass}">
+            <head>
+                <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <style>  
-                    body {  
-                        font-family: Arial, sans-serif;  
-                        padding: 10px;  
-                        margin: 0;  
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 10px;
+                        margin: 0;
                         overflow: auto;
-                    }  
-                    body.dark {  
-                        background: #07021D !important;  
-                        color: #E1EAED !important;  
-                    }  
-                    strong {  
-                        font-size: 1.2em;  
-                    }  
-                    ul {  
-                        list-style-type: none;  
-                        padding-left: 0;  
-                    }  
-                    li {  
-                        margin-bottom: 10px;  
-                    }  
-                </style>  
-            </head>  
-            <body class="${themeClass}">  
-                ${translation}  
-            </body>  
-            </html>  
+                    }
+                    body.dark {
+                        background: #07021D !important;
+                        color: #E1EAED !important;
+                    }
+                    strong {
+                        font-size: 1.2em;
+                    }
+                    ul {
+                        list-style-type: none;
+                        padding-left: 0;
+                    }
+                    li {
+                        margin-bottom: 10px;
+                    }
+                </style>
+            </head>
+            <body class="${themeClass}">
+                ${translation}
+            </body>
+            </html>
         `;
-        
+
         popup.style.height = `${finalHeight}px`;
-        popup.style.display = 'block';  
+        popup.style.display = 'block';
         overlay.style.display = 'block';
-        
+
         iframe.onload = function() {
             try {
                 const iframeBody = iframe.contentDocument.body;
@@ -370,7 +371,7 @@ if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation
             }
         };
     }
-    
+
     const openBtn = document.querySelector('.open-btn');
     openBtn.href = `${dhammaGift}${encodeURIComponent(wordForSearch)}${dgParams}`;
 
@@ -422,7 +423,7 @@ if (savedDict === "standalonebw" || savedDict === "standalonebwru") {
     }
 
    // if (dictUrl.includes('dicttango') || dictUrl.includes('goldendict') || dictUrl.includes('mdict')) {
-     if (externalDict) {   
+     if (externalDict) {
         popup.style.display = 'none';
         overlay.style.display = 'none';
         showSearchButton();
@@ -445,7 +446,7 @@ function lazyLoadStandaloneScripts(lang = 'en') {
                 '/assets/js/standalone-dpd/dpd_deconstructor.js'
             ];
 
-            const langSpecific = lang === 'ru' 
+            const langSpecific = lang === 'ru'
                 ? '/assets/js/standalone-dpd/ru/dpd_ebts.js'
                 : '/assets/js/standalone-dpd/dpd_ebts.js';
 
@@ -476,7 +477,7 @@ function lazyLoadStandaloneScripts(lang = 'en') {
                 boxShadow: '0 2px 5px rgba(0,0,0,0.3)'
             });
             loadingEl.textContent = 'Loading dictionary...';
-            
+
             // Ensure loading message is visible in Safari
             document.body.appendChild(loadingEl);
             setTimeout(() => loadingEl.style.opacity = '1', 10);
@@ -491,7 +492,7 @@ function lazyLoadStandaloneScripts(lang = 'en') {
                     const script = document.createElement('script');
                     script.src = src;
                     script.defer = true;
-                    
+
                     // More reliable loading for Safari
                     script.onload = script.onreadystatechange = function() {
                         if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
@@ -499,7 +500,7 @@ function lazyLoadStandaloneScripts(lang = 'en') {
                             scriptResolve();
                         }
                     };
-                    
+
                     script.onerror = () => {
                         console.warn(`Failed to load script: ${src}`);
                         scriptResolve(); // Resolve even if failed to prevent blocking
@@ -555,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(() => console.log('Standalone eng scripts lazy-loaded'))
                     .catch(err => console.warn('Lazy loading eng scripts warning:', err));
             }, { timeout: 2000 });
-        } 
+        }
         else if (savedDict === "standalonebwru") {
             requestIdleCallback(() => {
                 lazyLoadStandaloneScripts("ru")
@@ -575,7 +576,7 @@ function lookupWordInStandaloneDict(word) {
 
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
     const isAndroid = /Android/i.test(navigator.userAgent);
-    dictSearchUrl = isAndroid 
+    dictSearchUrl = isAndroid
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`
         : `goldendict://${encodeURIComponent(word)}`;
 } else {
@@ -593,7 +594,7 @@ if (window.location.href.includes('localhost') || window.location.href.includes(
 
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
     const isAndroid = /Android/i.test(navigator.userAgent);
-    wordSearchUrl = isAndroid 
+    wordSearchUrl = isAndroid
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`
         : `goldendict://${encodeURIComponent(wordToLink)}`;
 } else {
@@ -833,7 +834,7 @@ function createPopup() {
     if (isFirstDrag) {
 
 if (savedDict && savedDict.includes("standalone")) {
-        
+
         popup.style.top = '50%';
         popup.style.left = '50%';
         popup.style.width = '749px';
@@ -844,12 +845,12 @@ if (savedDict && savedDict.includes("standalone")) {
         popup.style.width = '500px';
         popup.style.height = '500px';
         // Динамические отступы
-        const rightMargin = isMobileLike ? 0 : 15;    
+        const rightMargin = isMobileLike ? 0 : 15;
         // Позиционирование
         popup.style.right = `${rightMargin}px`;
-        popup.style.top = `${window.innerHeight - 510}px`; 
+        popup.style.top = `${window.innerHeight - 510}px`;
         popup.style.transform = 'none';
-    }    
+    }
 
     }
 
@@ -860,7 +861,7 @@ if (savedDict && savedDict.includes("standalone")) {
         isDragging = true;
         iframe.style.pointerEvents = 'none';
         popup.classList.add('dragging');
-        
+
         if (isFirstDrag) {
             const rect = popup.getBoundingClientRect();
             popup.style.transform = 'none';
@@ -868,8 +869,8 @@ if (savedDict && savedDict.includes("standalone")) {
             popup.style.left = rect.left + 'px';
             isFirstDrag = false;
             localStorage.setItem('isFirstDrag', isFirstDrag);
-        }  
-        
+        }
+
         startX = e.clientX || e.touches[0].clientX;
         startY = e.clientY || e.touches[0].clientY;
         initialLeft = parseInt(popup.style.left || 0, 10);
@@ -902,33 +903,33 @@ if (savedDict && savedDict.includes("standalone")) {
         isResizing = true;
         iframe.style.pointerEvents = 'none';
         popup.classList.add('resizing');
-        
+
         startWidth = parseInt(document.defaultView.getComputedStyle(popup).width, 10);
         startHeight = parseInt(document.defaultView.getComputedStyle(popup).height, 10);
         startResizeX = e.clientX || e.touches[0].clientX;
         startResizeY = e.clientY || e.touches[0].clientY;
-        
+
         e.preventDefault();
         e.stopPropagation();
     }
 
     function doResize(e) {
         if (!isResizing) return;
-        
+
         const currentX = e.clientX || e.touches[0].clientX;
         const currentY = e.clientY || e.touches[0].clientY;
-        
+
         const newWidth = startWidth + (currentX - startResizeX);
         const newHeight = startHeight + (currentY - startResizeY);
-        
+
         const minWidth = 200;
         const minHeight = 150;
         const maxWidth = window.innerWidth * 0.9;
         const maxHeight = window.innerHeight * 0.9;
-        
+
         popup.style.width = Math.max(minWidth, Math.min(newWidth, maxWidth)) + 'px';
         popup.style.height = Math.max(minHeight, Math.min(newHeight, maxHeight)) + 'px';
-        
+
         e.preventDefault();
         e.stopPropagation();
     }
@@ -1023,7 +1024,7 @@ toggleBtn.addEventListener('click', () => {
       // Имитируем клик по кнопке
       toggleBtn.click();
     }
-  });  
+  });
 
 document.addEventListener("keydown", (event) => {
     if (event.altKey && event.code === "KeyB") {
@@ -1051,7 +1052,7 @@ document.addEventListener("keydown", (event) => {
         if (isMobileLike) {
             // Для мобильных и планшетов: переключаем между standalone и full
             newDict = currentDict === modes.full ? modes.standalone : modes.full;
-            notificationText = isRussian ? 
+            notificationText = isRussian ?
                 `Словарь: ${newDict === modes.full ? "Полный" : "Встроенный"}` :
                 `Dictionary: ${newDict === modes.full ? "Full" : "Standalone"}`;
         } else {
@@ -1075,12 +1076,12 @@ document.addEventListener('click', function(event) {
     // Проверяем, есть ли выделенный текст внутри элемента с пали
     const pliElement = event.target.closest('.pli-lang, [lang="pi"]');
     const selectedText = getSelectedText();
-    
+
     // Для выделенного текста
     if (pliElement && selectedText && isSelectionWithinElement(pliElement)) {
         if (event.target.closest('a, button, input, textarea, select')) return;
         handleWordLookup(selectedText, event);
-    } 
+    }
     // Для клика по слову
     else if (pliElement) {
         if (event.target.closest('a, button, input, textarea, select')) return;
@@ -1092,7 +1093,7 @@ document.addEventListener('click', function(event) {
 
 function getClickedWordWithHTML(element, x, y) {
     let range;
-    
+
     if (document.caretRangeFromPoint) {
         range = document.caretRangeFromPoint(x, y); // Для Chrome, Edge
     } else if (document.caretPositionFromPoint) {
@@ -1173,7 +1174,7 @@ function getFullTextFromElement(element) {
 function cleanWord(word) {
     return word
         .replace(/^[\s'‘—.–।|…"“”]+/, ' ') // Убираем символы в начале, включая пробелы и тире
-        .replace(/^[0-9]+/, ' ') // 
+        .replace(/^[0-9]+/, ' ') //
         .replace(/[\s'‘,—.—–।|"“…:;”]+$/, ' ') // Убираем символы в конце, включая пробелы и тире
         .replace(/[‘'’‘"“””]+/g, "'") // заменяем в середине
         .trim()
@@ -1204,5 +1205,4 @@ function transliterateWord(word) {
     });
 }
 */
-
 
