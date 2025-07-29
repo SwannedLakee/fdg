@@ -363,9 +363,10 @@ $slides = [
 
 $read = 'читать';
 
-$transwarning = ' <i class="fa-solid fa-triangle-exclamation "></i> <b>Пожалуйста, Помните!</b><br><br> Переводы, словари и комментарии сделаны не Буддой! Они часто содержат фундаментальные ошибки главных положений его Учения и противоречия. Их нужно изучать внимательно и критически. 
- <br><br>
- Самое важное в Учении Будды лучше изучить <strong>самостоятельно по Суттам на Пали</strong>. Хорошей отправной точной будет Серединная Практика и Четыре Благородные Истины. Например, несколько абзацев из <strong>sn56.11</strong>.';
+$transwarning = '<i class="fa-solid fa-triangle-exclamation"></i> <b>Пожалуйста, обратите внимание!</b><br><br>
+Переводы, словари и комментарии созданы не самим Буддой. Они могут содержать неточности, упрощения или даже серьёзные искажения ключевых положений его Учения. Поэтому их стоит изучать внимательно и с критическим подходом.
+<br><br>
+    Самое важное в Учении Будды лучше изучить <strong>самостоятельно по Суттам на Пали</strong>. Хорошей отправной точной будет Серединная Практика и Четыре Благородные Истины. Например, несколько абзацев из <strong>sn56.11</strong>.';
 
 $anamemlearnpali = 'Learn Pali Переводы';
 $anamelearnsanskrit = 'Джеймс Велан. Пали и Санскрит';
@@ -1121,7 +1122,9 @@ $mainscrollmodal = '<p class="">From <a href="/read/?q=dn22&s=dukkha&lang=pli-en
 $transwarning = '<i class="fa-solid fa-triangle-exclamation "></i> <b>Please remember!</b><br><br> Translations, dictionaries and commentaries were not made by the Buddha! Be scrutinizing and critical reading them.<br><br> 
 The most important fundamentals of the Buddha’s Teaching are best learned<strong> on one’s own from the Suttas in Pali</strong>. A solid starting point is the Middle Practice and the Four Noble Truths, such as a few paragraphs from <strong>sn56.11</strong>.';   
 
-$transwarning = '<i class="fa-solid fa-triangle-exclamation "></i> <b>Please Remember!</b><br><br> Translations, dictionaries and commentaries do not originate directly from the Buddha himself! Approach them with scrutiny and critical thinking.<br><br> To acquire the fundamental teachings of the Buddha, it is highly recommended to engage in the <strong>direct study of Suttas in Pali</strong>. At the very least, concentrate on understanding the Middle Practice and the Four Noble Truths. For instance, consider delving into a dedicated section from <strong>sn56.11</strong>.';
+$transwarning = '<i class="fa-solid fa-triangle-exclamation "></i> <b>Please Remember!</b><br><br> Translations, dictionaries and commentaries do not originate directly from the Buddha himself! Approach them with scrutiny and critical thinking.
+<br><br> 
+To acquire the fundamental teachings of the Buddha, it is highly recommended to engage in the <strong>direct study of Suttas in Pali</strong>. At the very least, concentrate on understanding the Middle Practice and the Four Noble Truths. For instance, consider delving into a dedicated section from <strong>sn56.11</strong>.';
 
 
 $anamemlearnpali = 'Learn Pali Guides';
