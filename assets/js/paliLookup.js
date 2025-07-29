@@ -159,6 +159,7 @@ dhammaGift += '/?q=';
 dgParams = '&p=-kn';
 
 let externalDict = false;
+let inNewWindow = false;
 
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
@@ -197,6 +198,7 @@ else if (savedDict === "standalonebwru") {
 
 
 if (savedDict === "machinetranslation") {
+    inNewWindow = true;
   dictUrl = "https://dharmamitra.org/?target_lang=english-explained&input_sentence="; // Используем standalone-словарь
 }
 
@@ -250,7 +252,7 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
         translation = "";
         popup.style.display = 'none';
         overlay.style.display = 'none';
-    } else if (savedDict === "newwindow" || savedDict === "newwindowru") {
+    } else if (inNewWindow || savedDict === "newwindow" || savedDict === "newwindowru") {
         const url = `${dictUrl}${encodeURIComponent(cleanedWord)}`;
         openDictionaryWindow(url);
  return; 
