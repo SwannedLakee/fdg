@@ -2,6 +2,7 @@ const isMobileLike = (
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
                         (window.innerWidth <= 768)
         );
+const isLocalhost = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1');
 
 const newWindowWidth = 500;
 const newWindowHeight = 500;
@@ -25,6 +26,7 @@ let dictionaryWindow = null;
 function openDictionaryWindow(url) {
 if ((window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) && externalDict === true) {
     // Переход только если это localhost/127.0.0.1 И externalDict = true
+
     window.location.href = url;
     return;
 }
@@ -122,7 +124,8 @@ if (
      */
     function createDictSearchUrl(word) {
         if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-           return `"goldendict://${encodeURIComponent(word)}`;
+
+           return `goldendict://${encodeURIComponent(word)}`;
             //return `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
         }
         return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
@@ -134,6 +137,10 @@ if (
 let dhammaGift;
 let dgParams;
 let dictUrl;
+
+let externalDict = false;
+let inNewWindow = false;
+
 
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
     dhammaGift = '';
@@ -158,8 +165,6 @@ dhammaGift += '/?q=';
 // Добавляем сюда логику для загрузки предпочтений поиска, сохраненных на главной.
 dgParams = '&p=-kn';
 
-let externalDict = false;
-let inNewWindow = false;
 
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
@@ -273,7 +278,6 @@ if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
     let dictSearchUrl;
 
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
-   inNewWindow = false;
     const isAndroid = /Android/i.test(navigator.userAgent);
     dictSearchUrl = isAndroid
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`
@@ -575,6 +579,7 @@ function lookupWordInStandaloneDict(word) {
         let dictSearchUrl;
 
 if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+
     const isAndroid = /Android/i.test(navigator.userAgent);
     dictSearchUrl = isAndroid
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`
@@ -600,9 +605,6 @@ if (window.location.href.includes('localhost') || window.location.href.includes(
 } else {
     wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
 }
-
-
-
         // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()
         return `<a href="${wordSearchUrl}"
                    onclick="event.preventDefault(); event.stopPropagation(); parent.openDictionaryWindow(this.href); return false;"
