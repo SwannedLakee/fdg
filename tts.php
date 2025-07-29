@@ -28,7 +28,7 @@ if ($type === 'pali') {
 } elseif ($type === 'trn') {
     $lang = $is_ru_url ? 'ru' : 'en';
     $content_type = $is_ru_url ? 'ru' : 'en';
-    $title_lang = $is_ru_url ? 'russian' : 'english';
+    $title_lang = $is_ru_url ? 'Russian' : 'English';
 } else {
     // Старая логика по умолчанию (для обратной совместимости)
     $lang = 'ru';
