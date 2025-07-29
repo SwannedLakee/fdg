@@ -5,8 +5,14 @@ search_and_link() {
     return
   fi
 
+
 input=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" | sed -e 's/"//g' -e 's/[":]$//g')
   # grep + awk -m1
+ 
+   if [[ -z "$input" ]]; then
+    input="$1"
+  fi
+
   echo
 grep  -r --color=always "$input" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
   awk -F':' '{for(i=2; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : ":")}' | \

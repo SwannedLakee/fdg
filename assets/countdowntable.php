@@ -213,7 +213,9 @@ $totalinyears years total
 <a target=_blank href=http://titus.uni-frankfurt.de/texte/etcs/ind/aind/bskt/lankavat/lanka.htm>TITUS</a>  
 <a target=_blank href=http://spiritual.su/>spiritual.su</a> 
 <a target=_blank href=http://probud.narod.ru/dop.html>Probud.narod.ru</a> 
- 
+<a target=_blank href=https://hear2read.org/sanskrit-text-to-speech-demo
+>Srk tts online</a> 
+
 </td>
 </tr>
 
