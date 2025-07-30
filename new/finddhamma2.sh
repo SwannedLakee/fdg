@@ -1055,7 +1055,7 @@ keyword="$pattern"
 
 
 if [[ "$args" == *"-oru"* ]] ; then
-cd $apachesitepath/assets/texts/
+cd $apachesitepath/assets/texts/ru/
 bash $tmpdir/${prefix}cmnd  | cleanuphtml > $tmpdir/${prefix}initrun-ru
 cat $tmpdir/${prefix}initrun-ru >> $tmpdir/$basefile
 fi   

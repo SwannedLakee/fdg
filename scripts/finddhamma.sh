@@ -1000,7 +1000,7 @@ pathblock=`echo $pathAndfile | awk -F'/' '{ var=NF-1 ; for (i=1;i<=var;i++) prin
  lettersblock=`echo $filenameblock | sed 's@[0-9]*@@g'`
  numberblock=`echo $filenameblock | sed 's@[A-Za-z]*@@g'`
 #echo "$filenameblock $pathblock $lettersblock $numberblock" | tohtml
-checktrnfile="`ls $apachesitepath/assets/texts/$pathblock/*${filenameblock}_translation* 2>/dev/null | tail -n1`"
+checktrnfile="`ls $apachesitepath/assets/texts/ru/$pathblock/*${filenameblock}_translation* 2>/dev/null | tail -n1`"
 
 
 pathblocknotexttype=$(echo $pathblock | sed 's@sutta@@')

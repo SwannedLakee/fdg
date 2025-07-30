@@ -56,7 +56,7 @@ function loadContent($slug, $type) {
             : "find $basedir/assets/texts/devanagari/root/pli/ms/ -name \"{$slug}_*\" -print -quit";
     } 
     elseif ($type === 'ru') {
-        $cmd = "find $basedir/assets/texts/sutta/ $basedir/assets/texts/vinaya/ -name \"{$slug}_*\" -print -quit";
+        $cmd = "find $basedir/assets/texts/ru/sutta/ $basedir/assets/texts/ru/vinaya/ -name \"{$slug}_*\" -print -quit";
     }
     else { // en
         $cmd = "find $basedir/suttacentral.net/sc-data/sc_bilara_data/translation/en/ -name \"{$slug}_*\" -print -quit";

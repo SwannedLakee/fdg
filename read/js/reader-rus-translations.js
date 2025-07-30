@@ -95,7 +95,7 @@ var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugR
  }
 
 
-var rustrnpath = `/assets/texts/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
+var rustrnpath = `/assets/texts/ru/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 
 var htmlpath = `${Sccopy}/sc-data/sc_bilara_data/html/pli/ms/${texttype}/${slugReady}_html.json`;
 
@@ -159,7 +159,7 @@ else {
 var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slug}_root-pli-ms.json`
  }
  	
-    var trnpath = `/assets/texts/${texttype}/${slug}_translation-${pathLang}-${translator}.json`;
+    var trnpath = `/assets/texts/${pathLang}/${texttype}/${slug}_translation-${pathLang}-${translator}.json`;
     var htmlpath = `/assets/html/${texttype}/${slug}_html.json`;
   //  console.log(rootpath, trnpath, htmlpath);
 } else if ( texttype === "vinaya" ) {
