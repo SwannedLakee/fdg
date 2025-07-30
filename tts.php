@@ -1,26 +1,18 @@
 <?php
 // Параметры запроса 
-// allow pasting
-// speechSynthesis.getVoices();
-// http://localhost/tts.php?q=sn1.1&script=lat&debugVoices
-
 $slug = strtolower($_GET['q'] ?? '');
 $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 
 // Модификация slug для случаев bi- и bu-
 if (preg_match('/^(bi-|bu-)(.+)/', $slug, $matches)) {
-    $prefix = $matches[1]; // bi- или bu-
-    $rest = $matches[2];   // остальная часть slug
-    
-    // Удаляем "bi-" или "bu-" и добавляем соответствующий префикс
-    $slug = 'pli-tv-' . substr($prefix, 0, 2) . '-vb-' . $rest;
+    $slug = 'pli-tv-' . substr($matches[1], 0, 2) . '-vb-' . $matches[2];
 }
-// Определяем язык по URL (новая логика)
+
+// Определяем язык
 $is_ru_url = (strpos($_SERVER['REQUEST_URI'], '/ru/') !== false) || 
              (strpos($_SERVER['REQUEST_URI'], '/r/') !== false) || 
              (strpos($_SERVER['REQUEST_URI'], '/ml/') !== false);
 
-// Совмещаем старую и новую логику определения языка
 if ($type === 'pali') {
     $lang = 'pi';
     $content_type = 'pali';
@@ -30,13 +22,12 @@ if ($type === 'pali') {
     $content_type = $is_ru_url ? 'ru' : 'en';
     $title_lang = $is_ru_url ? 'Russian' : 'English';
 } else {
-    // Старая логика по умолчанию (для обратной совместимости)
     $lang = 'ru';
     $content_type = 'ru';
     $title_lang = 'Translation';
 }
 
-// Заголовок страницы (сохраняем старый формат)
+// Заголовок страницы
 $title = htmlspecialchars(
     $slug
         ? str_replace(['-', '_'], ' ', strtolower($slug)) . ' (' .
@@ -44,119 +35,98 @@ $title = htmlspecialchars(
         : 'TTS Page'
 );
 
-// Загрузка контента по slug (обновленная версия)
+// Загрузка контента с HTML-форматированием
 function loadContent($slug, $type) {
     include_once('config/config.php');
     
+    // Загрузка основного контента
     $jq = 'jq -r \'to_entries[] | "<a id=\"\(.key)\"></a><span>\(.value)</span>"\' | sed "s/' . $slug . '://"';
 
     if (!in_array($type, ['pali', 'ru', 'en'])) {
-        if ($type === 'trn') {
-            return ['content' => "Это перевод для: $slug", 'file' => '', 'translator' => ''];
-        }
-        return ['content' => ($type === 'pali' ? "Это палийский текст для: $slug" : "Контент для: $slug"), 'file' => '', 'translator' => ''];
+        return ['content' => ($type === 'pali' ? "Pali text not found for: $slug" : "Content not found for: $slug"), 
+                'file' => '', 
+                'translator' => ''];
     }
 
+    // Определяем путь к файлу в зависимости от типа
     if ($type === 'pali') {
         $script = $_GET['script'] ?? 'dev';
-
-        if ($script === 'lat') {
-            $cmd = "find $basedir/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ -name \"{$slug}_*\" -print -quit";
-        } else {
-            $cmd = "find $basedir/assets/texts/devanagari/root/pli/ms/ -name \"{$slug}_*\" -print -quit";
-        }
-
-        $file = shell_exec($cmd);
-        $file = is_string($file) ? trim($file) : '';
-
-        if (!$file) {
-            return ['content' => "Pali text not found for: $slug", 'file' => '', 'translator' => ''];
-        }
-
-        $content = shell_exec("cat " . escapeshellarg($file) . " | $jq");
-
-        // Обработка пунктуации
-        if ($content && $type === 'pali') {
-            $content = preg_replace_callback(
-                '/(<a\b[^>]*>.*?<\/a>)|([-—–:;“”‘’",\'.?!])/u',
-                function($matches) {
-                    if (!empty($matches[1])) {
-                        return $matches[1];
-                    }
-                    if (preg_match('/[.?!]/u', $matches[2])) {
-                        return ' | ';
-                    } elseif (preg_match('/[-—–]/u', $matches[2])) {
-                        return ' ';
-                    } else {
-                        return '';
-                    }
-                },
-                $content
-            );
-        }
-
-        // Вычисляем translator из имени файла
-        $basename = basename($file, '.json');
-        $parts = explode('-', $basename);
-        $translator = end($parts);
-
-        return ['content' => $content, 'file' => $file, 'translator' => $translator];
-    }
+        $cmd = $script === 'lat' 
+            ? "find $basedir/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ -name \"{$slug}_*\" -print -quit"
+            : "find $basedir/assets/texts/devanagari/root/pli/ms/ -name \"{$slug}_*\" -print -quit";
+    } 
     elseif ($type === 'ru') {
         $cmd = "find $basedir/assets/texts/sutta/ $basedir/assets/texts/vinaya/ -name \"{$slug}_*\" -print -quit";
-        $file = trim(shell_exec($cmd));
-        if (!$file) {
-            return ['content' => "Russian translation not found for: $slug", 'file' => '', 'translator' => ''];
-        }
-        $content = shell_exec("cat " . escapeshellarg($file) . " | $jq");
-
-        $basename = basename($file, '.json');
-        $parts = explode('-', $basename);
-        $translator = end($parts);
-
-        return ['content' => $content, 'file' => $file, 'translator' => $translator];
     }
     else { // en
         $cmd = "find $basedir/suttacentral.net/sc-data/sc_bilara_data/translation/en/ -name \"{$slug}_*\" -print -quit";
-        $file = trim(shell_exec($cmd));
-        if (!$file) {
-            return ['content' => "English translation not found for: $slug", 'file' => '', 'translator' => ''];
-        }
-        $content = shell_exec("cat " . escapeshellarg($file) . " | $jq");
-
-        $basename = basename($file, '.json');
-        $parts = explode('-', $basename);
-        $translator = end($parts);
-
-        return ['content' => $content, 'file' => $file, 'translator' => $translator];
     }
+
+    $file = trim(shell_exec($cmd));
+    if (!$file) {
+        return ['content' => ucfirst($type) . " text not found for: $slug", 'file' => '', 'translator' => ''];
+    }
+
+    // Загрузка HTML-шаблонов
+    $html_file = shell_exec("find $basedir/suttacentral.net/sc-data/sc_bilara_data/html/pli/ms/ -name \"{$slug}_html.json\" -print -quit");
+    $html_templates = [];
+    
+    if ($html_file) {
+        $html_content = shell_exec("cat " . escapeshellarg(trim($html_file)));
+        $html_templates = json_decode($html_content, true) ?: [];
+    }
+
+    // Загрузка основного контента
+    $content = shell_exec("cat " . escapeshellarg($file) . " | $jq");
+    $json_content = json_decode(shell_exec("cat " . escapeshellarg($file)), true) ?: [];
+
+    // Применяем HTML-форматирование, если есть шаблоны
+    $formatted_content = '';
+    foreach ($json_content as $key => $text) {
+        $template = $html_templates[$key] ?? '<p>{}</p>';
+        $formatted_content .= str_replace('{}', htmlspecialchars($text), $template);
+    }
+
+    // Если нет HTML-шаблонов, используем обычное форматирование
+    if (empty($html_templates)) {
+        $formatted_content = $content;
+    }
+
+    // Получаем информацию о переводчике
+    $basename = basename($file, '.json');
+    $parts = explode('-', $basename);
+    $translator = end($parts);
+
+    return [
+        'content' => $formatted_content,
+        'file' => $file,
+        'translator' => $translator,
+        'has_html' => !empty($html_templates)
+    ];
 }
 
+// Загрузка данных
 if ($slug) {
     $result = loadContent($slug, $content_type);
     $content = $result['content'];
     $translator = $result['translator'] ?: '';
+    $has_html = $result['has_html'] ?? false;
 } else {
     $content = htmlspecialchars($_POST['content'] ?? '');
     $translator = '';
+    $has_html = false;
 }
 
 // Формируем подпись
 if ($lang === 'pi') {
     $sourceInfo = 'महासङ्गीति पाळि';
-
     $script = $_GET['script'] ?? 'dev';
-
-        if ($script === 'lat') {
-            $sourceInfo = 'Mahāsaṅgīti Pāḷi';
-        } 
+    if ($script === 'lat') {
+        $sourceInfo = 'Mahāsaṅgīti Pāḷi';
+    } 
 } else {
     $sourceInfo = $lang === 'ru' ? "Перевод: $translator" : "Translator: $translator";
 }
-
-
-// Если передан slug, загружаем контент автоматически
-//$content = $slug ? loadContent($slug, $content_type) : htmlspecialchars($_POST['content'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="<?= $lang ?>">
@@ -191,7 +161,16 @@ if ($lang === 'pi') {
       white-space: pre-line;
       text-align: justify;
     }
+h1 {
+    text-align: center;
+}
+.division {
+        text-align: center;
+
+}
+
   </style>
+}
 </head>
 <body>
     <script>
@@ -316,13 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- Nav (order 1 всегда) -->
     <div class="d-flex align-items-center order-1 mb-2 mb-sm-0">
-      <a id="readLink" href="/ru/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
+      <a id="readLink" href="/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
         <svg fill="#979797" xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 0 547.596 547.596" stroke="#979797">
           <g><path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path></g>
         </svg>
       </a>
 
-      <a id="homeLink" href="/ru" title="Sutta and Vinaya search" rel="noreferrer" class="me-1">
+      <a id="homeLink" href="/" title="Sutta and Vinaya search" rel="noreferrer" class="me-1">
         <img width="24px" alt="dhamma.gift icon" class="me-1" src="/assets/img/gray-white.png">
       </a>
 
