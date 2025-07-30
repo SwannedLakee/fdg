@@ -207,8 +207,8 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         margin-bottom: 0.5rem;
     }
 
-    /* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ --- */
-    body.dark-mode {
+    /* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ (ИСПРАВЛЕНО) --- */
+    body.dark {
         --bs-body-bg: #212529;
         --bs-body-color: #dee2e6;
         --bs-border-color: #495057;
@@ -216,57 +216,82 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         --bs-table-striped-color: var(--bs-body-color);
         color-scheme: dark;
     }
-    body.dark-mode .controls-container {
-        background-color: #2b3035;
+    body.dark .controls-container {
+        background: #101010; /* ИЗМЕНЕНО ПО ЗАПРОСУ */
+        border-bottom-color: #333;
     }
-    body.dark-mode .table {
+    body.dark .table {
         color: var(--bs-body-color);
     }
-    body.dark-mode .controls-container .form-control {
+    body.dark .controls-container .form-control {
         background-color: #495057;
         color: #dee2e6;
         border-color: #6c757d;
     }
-    body.dark-mode .controls-container .form-control::placeholder {
+    body.dark .controls-container .form-control::placeholder {
         color: #adb5bd;
     }
-    body.dark-mode .controls-container .btn-outline-secondary {
+    body.dark .controls-container .btn-outline-secondary {
         color: #dee2e6;
         border-color: #6c757d;
     }
-    body.dark-mode .controls-container .btn-outline-secondary:hover {
+    body.dark .controls-container .btn-outline-secondary:hover {
         background-color: #495057;
     }
-    body.dark-mode .controls-container svg {
+    body.dark .controls-container svg {
         fill: #dee2e6;
     }
-    body.dark-mode .controls-container .toggle-dict-btn img,
-    body.dark-mode .controls-container a[href="/"] img {
+    body.dark .controls-container .toggle-dict-btn img,
+    body.dark .controls-container a[href="/"] img {
         filter: invert(1) grayscale(100%) brightness(200%);
     }
-     body.dark-mode .controls-container a.text-dark {
+     body.dark .controls-container a.text-dark {
         color: #dee2e6 !important;
     }
-    body.dark-mode .dataTables_wrapper .dataTables_length,
-    body.dark-mode .dataTables_wrapper .dataTables_filter,
-    body.dark-mode .dataTables_wrapper .dataTables_info,
-    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
-        color: #fff;
+    body.dark .dataTables_wrapper .dataTables_length,
+    body.dark .dataTables_wrapper .dataTables_filter,
+    body.dark .dataTables_wrapper .dataTables_info,
+    body.dark .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: #fff !important;
     }
-    body.dark-mode .page-link {
+    body.dark .dataTables_wrapper .dataTables_filter input {
+        background-color: #495057;
+        color: #dee2e6;
+        border: 1px solid #6c757d;
+    }
+    body.dark .page-link {
         background-color: #343a40;
         border-color: #495057;
         color: #fff;
     }
-    body.dark-mode .page-link:hover {
+    body.dark .page-link:hover {
         background-color: #495057;
     }
-    body.dark-mode .table-striped>tbody>tr:nth-of-type(odd)>* {
-        --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+    body.dark .page-item.disabled .page-link {
+        background-color: #212529;
+        border-color: #495057;
+        color: #6c757d;
+    }
+    body.dark .table-striped>tbody>tr:nth-of-type(odd)>* {
+        --bs-table-accent-bg: rgba(192,192,192,0.9); 
+        color: var(--bs-table-color); 
+    }
+    body.dark .table-bordered {
+        border-color: var(--bs-border-color);
+    }
+    body.dark .dt-buttons .btn-secondary {
+        color: #fff;
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+    body.dark .dt-buttons .btn-secondary:hover {
+        color: #fff;
+        background-color: #4e555b;
+        border-color: #484e53;
     }
   </style>
 </head>
-<body>
+<body data-bs-theme="light"> <!-- Начальная тема -->
 
 <div class="container-fluid controls-container">
   <div class="d-flex flex-wrap align-items-center justify-content-between">
@@ -322,6 +347,38 @@ function goToSlug() {
     window.location.search = `q=${slug}`;
 }
 
+// Инициализация переключателя темы
+// Заменил ваш старый скрипт на более совместимый с Bootstrap 5.3+
+// Ваш файл dark-mode-switch.js все еще будет работать, но этот подход надежнее
+document.addEventListener("DOMContentLoaded", function () {
+    const darkSwitch = document.getElementById("darkSwitch");
+    const body = document.body;
+
+    // Функция для установки темы
+    const setTheme = (isDark) => {
+        if (isDark) {
+            body.setAttribute("data-bs-theme", "dark");
+            body.classList.add("dark");
+            localStorage.setItem("darkSwitch", "dark");
+        } else {
+            body.setAttribute("data-bs-theme", "light");
+            body.classList.remove("dark");
+            localStorage.removeItem("darkSwitch");
+        }
+        darkSwitch.checked = isDark;
+    };
+
+    // Проверяем сохраненную тему при загрузке
+    const savedTheme = localStorage.getItem("darkSwitch") === "dark";
+    setTheme(savedTheme);
+
+    // Слушаем изменения переключателя
+    darkSwitch.addEventListener("change", () => {
+        setTheme(darkSwitch.checked);
+    });
+});
+
+
 $(document).ready(function() {
     $('#sutta-table').DataTable({
         stateSave: true,
@@ -340,7 +397,8 @@ $(document).ready(function() {
         buttons: [
             {
                 extend: 'colvis',
-                text: 'Колонки'
+                text: 'Колонки',
+                className: 'btn-secondary' // Добавляем класс для стилизации
             }
         ],
         language: {
