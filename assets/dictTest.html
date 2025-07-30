@@ -242,18 +242,17 @@
         // Выполнение проверок
         const results = [];
 
-addToOutput(`<br><b>=== dict.dhamma.gift ===</b>`, 'info');
-results.push(await checkEndpoint("RU", "/ru/search_html", baseUrl));
-results.push(await checkEndpoint("EN", "/search_html", baseUrl));
+addToOutput(`<br><b>=== dpdict.net ===</b>`, 'info');
+results.push(await checkEndpoint("RU", "/search_html", "https://ru.dpdict.net"));
+results.push(await checkEndpoint("EN", "/search_html", "https://dpdict.net"));
 
 addToOutput(`<br><b>=== d.dhamma.gift ===</b>`, 'info');
 results.push(await checkEndpoint("RU", "/search_html", "https://d.dhamma.gift"));
 results.push(await checkEndpoint("EN", "/search_html", "https://d.dhamma.gift"));
 
-addToOutput(`<br><b>=== dpdict.net ===</b>`, 'info');
-results.push(await checkEndpoint("RU", "/search_html", "https://ru.dpdict.net"));
-results.push(await checkEndpoint("EN", "/search_html", "https://dpdict.net"));
-
+addToOutput(`<br><b>=== dict.dhamma.gift ===</b>`, 'info');
+results.push(await checkEndpoint("RU", "/ru/search_html", baseUrl));
+results.push(await checkEndpoint("EN", "/search_html", baseUrl));
 
         // Статистика
         const successCount = results.filter(r => r.success).length;

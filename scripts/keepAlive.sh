@@ -66,5 +66,12 @@ check_endpoint "RU" "/ru/search_html" "$BASE_URL"
 check_endpoint "EN" "/search_html" "$BASE_URL"
 #check_endpoint "EN" "/search_html" "https://dpdict.net"
 
+# Проверка русского endpoint
+check_endpoint "RU" "/search_html" "https://ru.dpdict.net"
+#check_endpoint "RU" "/ru/search_html" "https://dpdict.net"
+
+# Проверка английского endpoint
+check_endpoint "EN" "/search_html" "https://ru.dpdict.net"
+#check_endpoint "EN" "/search_html" "https://dpdict.net"
 
 cd -  > /dev/null 2>&1
