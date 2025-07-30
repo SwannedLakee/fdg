@@ -197,7 +197,7 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         background: var(--bs-body-bg, #fff);
         padding: 10px;
         border-bottom: 1px solid var(--bs-border-color, #dee2e6);
-        z-index: 1020;
+        z-index: 90;
         transition: background-color 0.3s, border-color 0.3s;
     }
 
