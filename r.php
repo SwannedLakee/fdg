@@ -217,8 +217,8 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
 
         font-size: 1.1rem;
         font-weight: bold;
-        /*margin-top: 1rem;
-        margin-bottom: 0.5rem;*/
+        margin-top: 1.5rem;
+       /* margin-bottom: 0.5rem;*/
     }
 
 li { /*.division  text-align: center;*/
@@ -316,6 +316,54 @@ li { /*.division  text-align: center;*/
     #custom-search-filter {
         min-width: 150px;
     }
+
+
+
+    /* Стили для таблицы и переноса текста */
+#sutta-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#sutta-table td {
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+    padding: 8px;
+}
+
+/* Опциональные стили для колонок */
+#sutta-table td.pali-text {
+    width: 34%;
+    font-family: "Noto Sans", sans-serif;
+}
+
+#sutta-table td.en-text {
+    width: 33%;
+}
+
+#sutta-table td.ru-text {
+    width: 33%;
+}
+
+/* Для длинных слов без пробелов */
+#sutta-table td {
+    hyphens: auto;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    #sutta-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    #sutta-table td {
+        min-width: 150px;
+    }
+}
   </style>
 </head>
 <body data-bs-theme="light"> <div class="container-fluid controls-container">
