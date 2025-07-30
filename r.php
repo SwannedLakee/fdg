@@ -176,14 +176,17 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
   <title><?= htmlspecialchars($title) ?> :: Parallel Reader</title>
   <link rel="icon" type="image/png" sizes="32x32" href="https://dhamma.gift/assets/img/favico_black.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
   
-  <!-- CSS -->
+<!-- 
   <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />  
+
+  -->
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+
   <link rel="stylesheet" type="text/css" href="/assets/js/datatables/datatables.min.css"/>
 
-  <link href="/assets/css/styles.css" rel="stylesheet" />
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
   <link href="/assets/css/paliLookup.css" rel="stylesheet" />
 
   <style>
@@ -197,15 +200,36 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         z-index: 1020;
         transition: background-color 0.3s, border-color 0.3s;
     }
+
     #sutta-table td h1, 
-    #sutta-table td h2, 
+    #sutta-table td h2 {
+        font-size: 1.8rem;
+        font-weight: bold;
+       margin-top: 2.0rem;
+        text-align: center;
+
+      /*   margin-bottom: 0.5rem;*/
+    }
+
     #sutta-table td h3, 
     #sutta-table td h4 {
+ text-align: center;
+
         font-size: 1.1rem;
         font-weight: bold;
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
+        /*margin-top: 1rem;
+        margin-bottom: 0.5rem;*/
     }
+
+li { /*.division  text-align: center;*/
+  list-style-type: none;
+  padding-left: 0;
+ text-align: center;
+}
+
+.endsutta { /*  text-align: center;*/
+    margin-bottom: 5.5rem;
+}
 
     /* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ (ИСПРАВЛЕНО) --- */
     body.dark {
@@ -273,7 +297,7 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         color: #6c757d;
     }
     body.dark .table-striped>tbody>tr:nth-of-type(odd)>* {
-        --bs-table-accent-bg: rgba(192,192,192,0.9); 
+        --bs-table-accent-bg: rgba(255, 255, 255, 0.075); 
         color: var(--bs-table-color); 
     }
     body.dark .table-bordered {
@@ -289,13 +313,14 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         background-color: #4e555b;
         border-color: #484e53;
     }
+    #custom-search-filter {
+        min-width: 150px;
+    }
   </style>
 </head>
-<body data-bs-theme="light"> <!-- Начальная тема -->
-
-<div class="container-fluid controls-container">
+<body data-bs-theme="light"> <div class="container-fluid controls-container">
   <div class="d-flex flex-wrap align-items-center justify-content-between">
-    <div class="d-flex align-items-center mb-2 mb-sm-0 me-auto">
+    <div class="d-flex align-items-center mb-2 mb-sm-0">
       <a href="/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
         <svg fill="#979797" xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 0 547.596 547.596" stroke="#979797"><g><path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path></g></svg>
       </a>
@@ -312,6 +337,9 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
         <input type="checkbox" class="form-check-input" id="darkSwitch">
       </div>
     </div>
+    <div id="datatables-controls-placeholder" class="d-flex align-items-center">
+        <input type="search" id="custom-search-filter" class="form-control form-control-sm" placeholder="Filter...">
+    </div>
   </div>
 </div>
 
@@ -323,17 +351,14 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
     </div>
 </div>
   
-  <!-- JS -->
   <script src="/assets/js/jquery-3.7.0.min.js"></script>
   <script src="/assets/js/jquery-ui.min.js"></script>
-  <script src="/assets/js/bootstrap.5.3.1.bundle.min.js"></script>
+  <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
 
-  <!-- DataTables JS -->
-<script type="text/javascript" src="/assets/js/datatables/datatables.js"></script>
+  <script type="text/javascript" src="/assets/js/datatables/datatables.js"></script>
 <script type="text/javascript" src="/assets/js/natural.js"></script>
 <script type="text/javascript" src="/assets/js/strip-html.js"></script>
 
-  <!-- Custom Scripts -->
   <script src="/assets/js/autopali.js" defer></script>
   <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
   <script src="/assets/js/paliLookup.js"></script>
@@ -348,13 +373,10 @@ function goToSlug() {
 }
 
 // Инициализация переключателя темы
-// Заменил ваш старый скрипт на более совместимый с Bootstrap 5.3+
-// Ваш файл dark-mode-switch.js все еще будет работать, но этот подход надежнее
 document.addEventListener("DOMContentLoaded", function () {
     const darkSwitch = document.getElementById("darkSwitch");
     const body = document.body;
 
-    // Функция для установки темы
     const setTheme = (isDark) => {
         if (isDark) {
             body.setAttribute("data-bs-theme", "dark");
@@ -368,11 +390,9 @@ document.addEventListener("DOMContentLoaded", function () {
         darkSwitch.checked = isDark;
     };
 
-    // Проверяем сохраненную тему при загрузке
     const savedTheme = localStorage.getItem("darkSwitch") === "dark";
     setTheme(savedTheme);
 
-    // Слушаем изменения переключателя
     darkSwitch.addEventListener("change", () => {
         setTheme(darkSwitch.checked);
     });
@@ -380,7 +400,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 $(document).ready(function() {
-    $('#sutta-table').DataTable({
+    // ----- ИСПРАВЛЕНИЕ ДЛЯ ПОИСКА С ДИАКРИТИКОЙ -----
+    // Переопределяем стандартную функцию нормализации DataTables.
+    // Вместо удаления диакритики, она теперь возвращает символ как есть.
+    DataTable.util.diacritics(d => d);
+
+    var table = $('#sutta-table').DataTable({
         stateSave: true,
         colReorder: true,
         ordering: false,
@@ -391,28 +416,41 @@ $(document).ready(function() {
             }
         ],
         paging: false,
-        dom: "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+        // Убираем 'f' (filter), т.к. мы используем свой собственный.
+        // 'B' (buttons) оставляем в скрытом блоке, чтобы потом переместить.
+        dom: "<'d-none'B>" + 
              "<'row'<'col-sm-12'tr>>" +
              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         buttons: [
             {
                 extend: 'colvis',
-                text: 'Колонки',
-                className: 'btn-secondary' // Добавляем класс для стилизации
+                text: 'Lang',
+                className: 'btn-secondary btn-sm'
             }
         ],
         language: {
-            search: "Поиск:",
-            info: "Показано _TOTAL_ строк",
-            infoEmpty: "Нет данных для отображения",
-            infoFiltered: "(отфильтровано из _MAX_)",
-            zeroRecords: "Совпадений не найдено",
-            emptyTable: "Нет данных в таблице",
+            search: "", // стандартный поиск нам не нужен
             buttons: {
-                colvis: 'Видимость колонок'
+                colvis: 'Conlumn visibility'
             }
         }
     });
+
+    // --- НАДЕЖНЫЙ МЕТОД РАЗМЕЩЕНИЯ КОНТРОЛОВ ---
+
+    // 1. Перемещаем только кнопки. Добавляем отступ и вставляем их ПЕРЕД нашим полем поиска.
+    $('.dt-buttons').detach().addClass('me-3').prependTo('#datatables-controls-placeholder');
+
+    // 2. Связываем наше кастомное поле поиска с API таблицы
+    $('#custom-search-filter').on('keyup input', function () {
+        table.search(this.value).draw();
+    });
+
+    // 3. Синхронизируем значение нашего поля с сохраненным состоянием таблицы при загрузке
+    var currentSearch = table.search();
+    if (currentSearch) {
+        $('#custom-search-filter').val(currentSearch);
+    }
 });
 </script>
 
