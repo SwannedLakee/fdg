@@ -212,7 +212,7 @@ echo '<!--
     \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
     \'https://gandhari.org/dictionary?section=dop&search=\',
     \'https://dict.dhamma.gift/search_html?source=pwa&q=\',
-    \'https://www.digitalpalireader.online/_dprhtml/index.html\',
+    \'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis=\',
     \'https://cpd.uni-koeln.de/search?query=\'
   ])">Pali PTS, Cone, DPD, DPR, CPD</a>
 </li>
