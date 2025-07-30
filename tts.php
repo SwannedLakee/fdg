@@ -164,13 +164,14 @@ if ($lang === 'pi') {
 h1 {
     text-align: center;
 }
-.division {
-        text-align: center;
 
+.division {
+  list-style-type: none;
+          text-align: center;
+  padding-left: 0;
 }
 
   </style>
-}
 </head>
 <body>
     <script>
