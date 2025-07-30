@@ -1,11 +1,12 @@
 #install Termux
 #open it 
 #then run: 
-# pkg install -y git
-# mkdir -p $PREFIX/share/apache2/default-site/htdocs
-# cd $PREFIX/share/apache2/default-site/htdocs
-# git clone https://github.com/o28o/dg.git ./
-# bash ./scripts/install-android.sh
+pkg install -y git
+mkdir -p $PREFIX/share/apache2/default-site/htdocs
+cd $PREFIX/share/apache2/default-site/htdocs
+git clone https://github.com/o28o/dg.git ./
+
+bash ./scripts/install-android.sh
 #for offline audio also clone fdg.audio repo
 # mkdir assets/audio
 # cd assets/audio 
@@ -80,8 +81,8 @@ git clone https://github.com/suttacentral/sc-data.git
 
 echo "downloading offline data"
 cd ..
-git clone git@github.com:o28o/dg-offline-data.git offline-data
-
+#git clone git@github.com:o28o/dg-offline-data.git offline-data
+git clone  https://github.com/o28o/dg-offline-data.git offline-data
 echo "optionally you can donwload pali audio sc-voice data
 cd to the dhamma.gift project folder (apache default folder)
 run
