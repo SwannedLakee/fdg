@@ -37,12 +37,12 @@ if ($type === 'pali') {
 }
 
 // Заголовок страницы (сохраняем старый формат)
-$title = strtolower(htmlspecialchars(
+$title = htmlspecialchars(
     $slug
-        ? ucfirst(str_replace(['-', '_'], ' ', $slug)) . ' (' .
+        ? str_replace(['-', '_'], ' ', strtolower($slug)) . ' (' .
           ($type === 'pali' ? 'Pali' : $title_lang) . ')'
         : 'TTS Page'
-));
+);
 
 // Загрузка контента по slug (обновленная версия)
 function loadContent($slug, $type) {
