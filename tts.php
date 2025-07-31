@@ -176,6 +176,13 @@ h1 {
   padding-left: 0;
 }
 
+li { /*.division  text-align: center;*/
+  list-style-type: none;
+  padding-left: 0;
+ text-align: center;
+}
+
+
   </style>
 </head>
 <body>
