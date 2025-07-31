@@ -1081,41 +1081,52 @@ function getClickedWordWithHTML(element, x, y) {
         if (position && position.offsetNode) {
             range = document.createRange();
             range.setStart(position.offsetNode, position.offset);
-            range.setEnd(position.offsetNode, position.offset); // Добавляем setEnd
+            range.setEnd(position.offsetNode, position.offset);
         }
     }
 
     if (!range) return null;
 
+    // --- НОВОЕ ИСПРАВЛЕНИЕ НАЧАЛО ---
+
+    // 1. Убеждаемся, что браузер "привязал" клик к текстовому узлу.
+    if (range.startContainer.nodeType !== Node.TEXT_NODE) {
+        return null;
+    }
+
+    // 2. Теперь получаем реальные геометрические границы этого текстового узла.
+    const textNodeRange = document.createRange();
+    textNodeRange.selectNode(range.startContainer);
+    const rect = textNodeRange.getBoundingClientRect();
+
+    // 3. Проверяем, находятся ли координаты клика (x, y) внутри этих границ.
+    //    Это предотвращает срабатывание при клике в полях слева или справа от текста.
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+        return null;
+    }
+    // --- НОВОЕ ИСПРАВЛЕНИЕ КОНЕЦ ---
+
+
     const parentElement = element.closest('.pli-lang, .rus-lang, .eng-lang, [lang="pi"], [lang="en"], [lang="ru"]');
     if (!parentElement) {
-     //   console.log('Родительский элемент с классом pli-lang не найден.');
         return null;
     }
 
-    // Получаем текст без HTML-тегов
+    // Остальная часть функции без изменений
     const fullText = parentElement.textContent;
-
-    // Вычисляем смещение в тексте без учета HTML-тегов
     const globalOffset = calculateOffsetWithHTML(parentElement, range.startContainer, range.startOffset);
     if (globalOffset === -1) {
-      //  console.error('Не удалось вычислить глобальное смещение.');
         return null;
     }
 
-   // console.log('Смещение в полном тексте:', globalOffset);
-
-    // Используем обновленное регулярное выражение для поиска слова
-    const regex = /[^\s,;.–—!?()]+/g; // Регулярное выражение, игнорирующее пробелы и знаки препинания
+    const regex = /[^\s,;.–—!?()]+/g;
     let match;
     while ((match = regex.exec(fullText)) !== null) {
         if (match.index <= globalOffset && regex.lastIndex >= globalOffset) {
-        //    console.log('Найденное слово:', match[0]);
             return match[0];
         }
     }
 
-    // console.log('Слово не найдено');
     return null;
 }
 
