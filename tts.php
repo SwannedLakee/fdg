@@ -390,6 +390,50 @@ let isPaused = false;
 let currentUtterance = null;
 let pausedPosition = 0;
 
+// ИЗМЕНЕНИЕ: Начало блока кода для Wake Lock API
+let wakeLock = null;
+
+// Функция для запроса блокировки экрана
+const acquireWakeLock = async () => {
+  // Проверяем, поддерживается ли Wake Lock API браузером
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => {
+        // Этот обработчик сработает, если блокировка будет снята системой
+        console.log('Блокировка экрана была снята.');
+      });
+      console.log('Блокировка экрана активирована.');
+    } catch (err) {
+      console.error(`Не удалось активировать блокировку экрана: ${err.name}, ${err.message}`);
+    }
+  } else {
+    console.warn('Wake Lock API не поддерживается в этом браузере.');
+  }
+};
+
+// Функция для снятия блокировки экрана
+const releaseWakeLock = async () => {
+  if (wakeLock !== null) {
+    try {
+      await wakeLock.release();
+      wakeLock = null;
+      console.log('Блокировка экрана снята.');
+    } catch (err) {
+      console.error(`Не удалось снять блокировку экрана: ${err.name}, ${err.message}`);
+    }
+  }
+};
+
+// Снимаем блокировку, если пользователь сворачивает или переключает вкладку
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' && wakeLock !== null) {
+    releaseWakeLock();
+  }
+});
+// ИЗМЕНЕНИЕ: Конец блока кода для Wake Lock API
+
+
 const pageLogger = {
   logs: [],
   maxLogs: 50,
@@ -668,48 +712,6 @@ if (new URLSearchParams(window.location.search).has('debugVoices')) {
   }, 100);
 }
 
-// Функция для тоггла воспроизведения с поддержкой паузы
-function toggleSpeech(elementId) {
-  if (isSpeaking && !isPaused) {
-    // Пауза воспроизведения
-    window.speechSynthesis.pause();
-    isPaused = true;
-    document.getElementById('speechToggleBtn').textContent = '▶️';
-    console.log('На паузе');
-  } 
-  else if (isPaused) {
-    // Продолжение воспроизведения
-    window.speechSynthesis.resume();
-    isPaused = false;
-    document.getElementById('speechToggleBtn').textContent = '⏸️';
-    console.log('Продолжено');
-  }
-  else {
-    // Запуск нового воспроизведения
-    window.speechSynthesis.cancel();
-    currentUtterance = speakTextFromElement(elementId);
-    if (currentUtterance) {
-      isSpeaking = true;
-      isPaused = false;
-      document.getElementById('speechToggleBtn').textContent = '⏸️';
-      
-      // Обработчики событий для сброса состояния
-      currentUtterance.onend = () => {
-        isSpeaking = false;
-        isPaused = false;
-        document.getElementById('speechToggleBtn').textContent = '🔊';
-        console.log('Воспроизведение завершено');
-      };
-      
-      currentUtterance.onerror = () => {
-        isSpeaking = false;
-        isPaused = false;
-        document.getElementById('speechToggleBtn').textContent = '🔊';
-      };
-    }
-  }
-}
-
 // Функция для ожидания загрузки голосов
 function loadVoices() {
   return new Promise(resolve => {
@@ -734,23 +736,13 @@ async function speakTextFromElement(elementId) {
     }
 
     const htmlLang = document.documentElement.getAttribute('lang') || 'en';
-    
-    // Новый способ извлечения текста - берем весь текстовый контент элемента
     const text = element.textContent.trim();
-    
-    // Альтернативный вариант, если нужно игнорировать некоторые элементы:
-    // const text = Array.from(element.childNodes)
-    //   .filter(node => node.nodeType === Node.TEXT_NODE || node.tagName !== 'SCRIPT')
-    //   .map(node => node.textContent.trim())
-    //   .filter(t => t.length > 0)
-    //   .join(' ');
 
     if (!text) {
       alert('Не найден текст для озвучки');
       return null;
     }
 
-    // Остальной код остается без изменений
     const voices = await loadVoices();
     
     let langCode;
@@ -803,11 +795,13 @@ async function speakTextFromElement(elementId) {
       console.log('Используется голос:', selectedVoice.name);
     }
 
+    // ИЗМЕНЕНИЕ: Добавлены вызовы releaseWakeLock() в обработчики событий
     utterance.onend = () => {
       isSpeaking = false;
       isPaused = false;
       document.getElementById('speechToggleBtn').textContent = '🔊';
       console.log('Воспроизведение завершено');
+      releaseWakeLock(); // Снимаем блокировку
     };
 
     utterance.onerror = (event) => {
@@ -815,6 +809,7 @@ async function speakTextFromElement(elementId) {
       isSpeaking = false;
       isPaused = false;
       document.getElementById('speechToggleBtn').textContent = '🔊';
+      releaseWakeLock(); // Снимаем блокировку в случае ошибки
       
       if (langCode !== 'en-US') {
         utterance.lang = 'en-US';
@@ -831,11 +826,12 @@ async function speakTextFromElement(elementId) {
 
   } catch (e) {
     console.error('Ошибка в speakTextFromElement:', e);
+    releaseWakeLock(); // Убедимся, что блокировка снята, если произошла ошибка
     return null;
   }
 }
 
-// Функция для тоггла воспроизведения с поддержкой паузы
+// ИЗМЕНЕНИЕ: Функция для тоггла воспроизведения обновлена для управления блокировкой
 async function toggleSpeech(elementId) {
   if (isSpeaking && !isPaused) {
     // Пауза воспроизведения
@@ -843,9 +839,11 @@ async function toggleSpeech(elementId) {
     isPaused = true;
     document.getElementById('speechToggleBtn').textContent = '▶️';
     console.log('На паузе');
+    await releaseWakeLock(); // Снимаем блокировку при паузе
   } 
   else if (isPaused) {
     // Продолжение воспроизведения
+    await acquireWakeLock(); // Активируем блокировку при возобновлении
     window.speechSynthesis.resume();
     isPaused = false;
     document.getElementById('speechToggleBtn').textContent = '⏸️';
@@ -853,19 +851,23 @@ async function toggleSpeech(elementId) {
   }
   else {
     // Запуск нового воспроизведения
+    await acquireWakeLock(); // Активируем блокировку при старте
     window.speechSynthesis.cancel();
     currentUtterance = await speakTextFromElement(elementId);
     if (currentUtterance) {
       isSpeaking = true;
       isPaused = false;
       document.getElementById('speechToggleBtn').textContent = '⏸️';
+    } else {
+      // Если воспроизведение не началось, снимаем блокировку
+      await releaseWakeLock();
     }
   }
 }
 
 // Инициализация голосов при загрузке страницы
 window.speechSynthesis.onvoiceschanged = function() {
-  console.log('Доступные голоса:', window.speechSynthesis.getVoices());
+  console.log('Доступные голоса обновлены:', window.speechSynthesis.getVoices());
 };
 </script>
   <script src="/assets/js/autopali.js" defer></script>
