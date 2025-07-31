@@ -110,8 +110,8 @@ function load_all_languages_interleaved($slug) {
     $all_keys = array_keys($data_sources['pali'] + $data_sources['en'] + $data_sources['ru'] + $data_sources['html']);
     usort($all_keys, 'strnatcmp');
 
-    // --- ГЕНЕРАЦИЯ HTML ТАБЛИЦЫ ---
-    $html_output = '<div class="p-3"><table id="sutta-table" class="table table-striped table-bordered" style="width:100%">';
+    // --- ГЕНЕРАЦИЯ HTML ТАБЛИЦЫ <div class="p-3"><table id ---
+    $html_output = '<div class=""><table id="sutta-table" class="table table-striped table-bordered" style="width:100%">';
     $html_output .= '<thead><tr><th>ID</th><th>Pali</th><th>English</th><th>Russian</th></tr></thead>';
     $html_output .= '<tbody>';
 
@@ -184,10 +184,10 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
   -->
   <link href="/assets/css/styles.css" rel="stylesheet" />
 
-  <link rel="stylesheet" type="text/css" href="/assets/js/datatables/datatables.min.css"/>
 
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
   <link href="/assets/css/paliLookup.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="/assets/js/datatables/datatables.min.css"/>
 
   <style>
     /* --- ОБЩИЕ СТИЛИ --- */
@@ -334,20 +334,6 @@ li { /*.division  text-align: center;*/
     padding: 8px;
 }
 
-/* Опциональные стили для колонок */
-#sutta-table td.pali-text {
-    width: 34%;
-    font-family: "Noto Sans", sans-serif;
-}
-
-#sutta-table td.en-text {
-    width: 33%;
-}
-
-#sutta-table td.ru-text {
-    width: 33%;
-}
-
 /* Для длинных слов без пробелов */
 #sutta-table td {
     hyphens: auto;
@@ -363,7 +349,11 @@ li { /*.division  text-align: center;*/
     #sutta-table td {
         min-width: 150px;
     }
+  .controls-container {
+    position: static;
+  }
 }
+
   </style>
 </head>
 <body data-bs-theme="light"> <div class="container-fluid controls-container">
@@ -464,6 +454,7 @@ $(document).ready(function() {
             }
         ],
         paging: false,
+        'responsive': true,
         // Убираем 'f' (filter), т.к. мы используем свой собственный.
         // 'B' (buttons) оставляем в скрытом блоке, чтобы потом переместить.
         dom: "<'d-none'B>" + 

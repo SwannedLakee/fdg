@@ -728,17 +728,23 @@ async function speakTextFromElement(elementId) {
     }
 
     const htmlLang = document.documentElement.getAttribute('lang') || 'en';
-    const text = Array.from(element.querySelectorAll('span'))
-      .map(span => span.textContent.trim())
-      .filter(t => t.length > 0)
-      .join(' ');
+    
+    // Новый способ извлечения текста - берем весь текстовый контент элемента
+    const text = element.textContent.trim();
+    
+    // Альтернативный вариант, если нужно игнорировать некоторые элементы:
+    // const text = Array.from(element.childNodes)
+    //   .filter(node => node.nodeType === Node.TEXT_NODE || node.tagName !== 'SCRIPT')
+    //   .map(node => node.textContent.trim())
+    //   .filter(t => t.length > 0)
+    //   .join(' ');
 
     if (!text) {
       alert('Не найден текст для озвучки');
       return null;
     }
 
-    // Ожидаем загрузку голосов
+    // Остальной код остается без изменений
     const voices = await loadVoices();
     
     let langCode;
@@ -748,7 +754,6 @@ async function speakTextFromElement(elementId) {
     switch (htmlLang) {
       case 'ru':
         langCode = 'ru-RU';
-        // Гибкий поиск голоса Павла
         selectedVoice = voices.find(v => 
           v.lang === 'ru-RU' && 
           (v.name.includes('Pavel') || v.name.includes('Павел'))
@@ -782,7 +787,6 @@ async function speakTextFromElement(elementId) {
     utterance.lang = langCode;
     utterance.rate = rate;
 
-    // Дополнительные настройки для пали
     if (langCode === 'hi-IN') {
       utterance.pitch = 0.9;
       utterance.volume = 0.9;
