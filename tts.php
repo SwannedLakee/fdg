@@ -39,8 +39,8 @@ $title = htmlspecialchars(
 function loadContent($slug, $type) {
     include_once('config/config.php');
     
-    // Загрузка основного контента
-    $jq = 'jq -r \'to_entries[] | "<a id=\"\(.key)\"></a><span>\(.value)</span>"\' | sed "s/' . $slug . '://"';
+    // **ИСПРАВЛЕНИЕ 1: Добавлен пробел в конце строки jq для разделения сегментов**
+    $jq = 'jq -r \'to_entries[] | "<a id=\"\(.key)\"></a><span>\(.value)</span> " \' | sed "s/' . $slug . '://"';
 
     if (!in_array($type, ['pali', 'ru', 'en'])) {
         return ['content' => ($type === 'pali' ? "Pali text not found for: $slug" : "Content not found for: $slug"), 
@@ -82,14 +82,20 @@ function loadContent($slug, $type) {
 
     // Применяем HTML-форматирование, если есть шаблоны
     $formatted_content = '';
-    foreach ($json_content as $key => $text) {
-        $template = $html_templates[$key] ?? '<p>{}</p>';
-        $formatted_content .= str_replace('{}', htmlspecialchars($text), $template);
+    if (!empty($json_content)) {
+        foreach ($json_content as $key => $text) {
+            $template = $html_templates[$key] ?? '<p>{}</p>';
+            // **ИСПРАВЛЕНИЕ 2: Добавлен пробел после каждого сегмента**
+            $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
+        }
+        // Удаляем лишний пробел в конце всей строки
+        $formatted_content = trim($formatted_content);
     }
 
-    // Если нет HTML-шаблонов, используем обычное форматирование
+
+    // Если нет HTML-шаблонов, используем обычное форматирование из $content
     if (empty($html_templates)) {
-        $formatted_content = $content;
+        $formatted_content = trim($content);
     }
 
     // Получаем информацию о переводчике
@@ -141,7 +147,6 @@ if ($lang === 'pi') {
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
   <link href="/assets/css/pages.css" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
-<!-- -->
 <link href="/assets/css/paliLookup.css" rel="stylesheet" />
 
 <script src="/assets/js/jquery-3.7.0.min.js"></script>
@@ -237,8 +242,7 @@ function updateLanguageSwitcher(lang) {
     
     else if (lang === 'pi') {
         switcher.innerHTML = `
-       <!-- <span class="btn btn-sm btn-primary rounded-pill ms-1">pi</span> -->
-            <a class="btn btn-sm btn-primary rounded-pill btn-outline-secondary active" href="#" onclick="togglePaliScript(); return false;" title="Devanagari / Roman Script">pi</a>
+       <a class="btn btn-sm btn-primary rounded-pill btn-outline-secondary active" href="#" onclick="togglePaliScript(); return false;" title="Devanagari / Roman Script">pi</a>
             <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1" href="#" onclick="setLanguage('en'); return false;" title="English">en</a>
             <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1" href="#" onclick="setLanguage('ru'); return false;" title="Russian">ru</a>
         `;
@@ -294,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="container mt-3">
   <div class="d-flex flex-wrap align-items-center justify-content-between">
 
-    <!-- Nav (order 1 всегда) -->
     <div class="d-flex align-items-center order-1 mb-2 mb-sm-0">
       <a id="readLink" href="/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
         <svg fill="#979797" xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 0 547.596 547.596" stroke="#979797">
@@ -306,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <img width="24px" alt="dhamma.gift icon" class="me-1" src="/assets/img/gray-white.png">
       </a>
 
-    <!-- Dictionary OnClick Popup -->
     <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)" class="toggle-dict-btn text-decoration-none text-black me-1">
       <img src="/assets/svg/comment.svg" class="dictIcon">
     </a>
@@ -324,7 +326,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <a href="/assets/common/ttsHelp.html" class="text-decoration-none text-muted ms-2">?</a>
     </div>
 
-    <!-- Lang (order 2 на моб, order 3 на десктопе) -->
     <div class="d-inline-flex align-items-center lang-switcher order-2 order-sm-3 mb-2 mb-sm-0">
               <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none" href="#" onclick="setLanguage('pi'); return false;">pi</a>
       <span class="btn btn-sm btn-primary rounded-pill ms-1">en</span>
@@ -332,8 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     </div>
 
-    <!-- Form (order 3 на моб, order 2 на десктопе) -->
-<form id="slugForm" class="d-flex align-items-center flex-nowrap order-3 order-sm-2 mx-auto flex-grow-0" onsubmit="return goToSlug();" style="min-width: 140px; max-width: 250px;">
+    <form id="slugForm" class="d-flex align-items-center flex-nowrap order-3 order-sm-2 mx-auto flex-grow-0" onsubmit="return goToSlug();" style="min-width: 140px; max-width: 250px;">
   <input type="search" class="form-control form-control-sm rounded-pill me-1 flex-grow-1" 
          id="paliauto" name="q" value="<?= htmlspecialchars($slug) ?>" 
          placeholder="e.g. an3.76" style="min-width: 100px;" autofocus>
@@ -351,8 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 <div class="text-content mt-3 pli-lang" id="voiceTextContent" lang="pi"><?= $content ?></div>
 
-<!-- htmlspecialchars($content) -->
-  <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
+<script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
 
   <script>
     function goToSlug() {
@@ -863,10 +862,8 @@ window.speechSynthesis.onvoiceschanged = function() {
 };
 </script>
   <script src="/assets/js/autopali.js" defer></script>
-	  <script src="/assets/js/smoothScroll.js" defer></script>
+      <script src="/assets/js/smoothScroll.js" defer></script>
       <script src="/assets/js/paliLookup.js"></script>
       <script src="/assets/js/settings.js"></script>
-<!--      <script src="https://code.responsivevoice.org/responsivevoice.js?key=X8U4dR8x"></script> -->
-
 </body>
 </html>
