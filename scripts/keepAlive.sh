@@ -13,7 +13,7 @@ if [[ -s "$words_file" ]]; then
     term="$(echo "${file_terms[RANDOM % ${#file_terms[@]}]}" | tr -d '\r' | xargs)"
 else
     # Массив терминов по умолчанию
-    terms=("dhamma")
+    terms=("dukkha")
 #    terms=("bhagavato" "dhamma" "dukkha" "adhivacanasamphasso" "kho" "kacchapo")
     term="${terms[RANDOM % ${#terms[@]}]}"
 fi
