@@ -373,8 +373,8 @@ echo '<!--
          <div class="dropdown-item ">
           <a class="text-reset" target=""  onclick="localStorage.setItem(\'siteLanguage\', \'th\');" href="/th/?q=">DG</a> 
           <a class="text-reset" target=""   href="/old.php">old</a>
-        <a class="text-reset" target=""   href="/tts.php">TTS</a>  
-      <a class="text-reset" target="Read whole Nikaya or Samyutta on one page" href="/r.php">Read+</a>  
+        <a class="text-reset" target="" target="TTS Text-to-speech" href="/tts.php" onclick="return openWithQuery(event, \'/tts.php?q={{q}}\')" >TTS</a>  
+      <a href="/r.php" class="text-reset" target="Read whole Nikaya or Samyutta on one page"  onclick="return openWithQuery(event, \'/r.php?q={{q}}\')" >Read+</a>  
 
        <!--  <a class="text-reset" target=""  href="/new/">new</a> --> 
                   <a class="text-reset" target=""  href="' . $readerPage . '">index</a>  

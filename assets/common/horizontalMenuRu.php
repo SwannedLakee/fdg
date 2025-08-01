@@ -400,8 +400,9 @@ echo '<!--
          <div class="dropdown-item ">
           <a class="text-reset" target="" onclick="localStorage.setItem(\'siteLanguage\', \'th\');" href="/th/?q=">DG</a> 
          <a class="text-reset" target=""  href="/old.php">old</a> 
-        <a class="text-reset" target=""   href="/ru/tts.php">TTS</a>  
-              <a class="text-reset" target="Читать  Никаи или Саньютты целиком на одной странице" href="/r.php">Read+</a>  
+        <a class="text-reset" target="" target="TTS Текст-в-речь" href="/ru/tts.php" onclick="return openWithQuery(event, \'/ru/tts.php?q={{q}}\')" >TTS</a>  
+      <a href="/ru/r.php" class="text-reset" target="Читать Никаи или Саньютты целиком на одной странице" onclick="return openWithQuery(event, \'/ru/r.php?q={{q}}\')" >Read+</a>  
+
 
        <!--  <a class="text-reset" target=""  href="/new/">new</a> -->                   <a class="text-reset" target="" href="' . $readerPage . '"> индекс</a>   
             <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">sutta</a>        

@@ -439,53 +439,71 @@ document.addEventListener("DOMContentLoaded", function () {
 
 $(document).ready(function() {
     // ----- ИСПРАВЛЕНИЕ ДЛЯ ПОИСКА С ДИАКРИТИКОЙ -----
-    // Переопределяем стандартную функцию нормализации DataTables.
-    // Вместо удаления диакритики, она теперь возвращает символ как есть.
     DataTable.util.diacritics(d => d);
 
     var table = $('#sutta-table').DataTable({
         stateSave: true,
         colReorder: true,
         ordering: false,
-        columnDefs: [
-            {
-                targets: 0,
-                visible: false
-            }
-        ],
+        columnDefs: [{
+            targets: 0,
+            visible: false
+        }],
         paging: false,
         'responsive': true,
-        // Убираем 'f' (filter), т.к. мы используем свой собственный.
-        // 'B' (buttons) оставляем в скрытом блоке, чтобы потом переместить.
-        dom: "<'d-none'B>" + 
+
+        // --- ШАГ 1: ДОБАВЛЯЕМ SEARCH BUILDER ('Q') В DOM ---
+        // Теперь оба элемента, B (Buttons) и Q (SearchBuilder), создаются в невидимом блоке.
+        dom: "<'d-none'QB>" + 
              "<'row'<'col-sm-12'tr>>" +
              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-        buttons: [
-            {
-                extend: 'colvis',
-                text: 'Lang',
-                className: 'btn-secondary btn-sm'
-            }
-        ],
+        
+        buttons: [{
+            extend: 'colvis',
+            text: 'Lang',
+            className: 'btn-secondary btn-sm'
+        }],
+
+        // --- ШАГ 2: ВОЗВРАЩАЕМ КОНФИГУРАЦИЮ ДЛЯ SEARCH BUILDER ---
         language: {
-            search: "", // стандартный поиск нам не нужен
+            search: "", // Нам не нужен текст для стандартного поиска
             buttons: {
-                colvis: 'Conlumn visibility'
+                colvis: 'Column visibility'
+            },
+            searchBuilder: { // Эта секция нужна для самого Search Builder
+                button: 'Search Builder', // Текст на кнопке
+                preDefined: {
+                    criteria: [{
+                        condition: '!contains',
+                        data: 'Quote',
+                        value: ['ExcludeMe']
+                    }],
+                    logic: 'AND'
+                }
             }
         }
     });
 
-    // --- НАДЕЖНЫЙ МЕТОД РАЗМЕЩЕНИЯ КОНТРОЛОВ ---
+    // --- ШАГ 3: РАЗМЕЩАЕМ ЭЛЕМЕНТЫ В НУЖНОМ ПОРЯДКЕ ---
+    const placeholder = $('#datatables-controls-placeholder');
 
-    // 1. Перемещаем только кнопки. Добавляем отступ и вставляем их ПЕРЕД нашим полем поиска.
-    $('.dt-buttons').detach().addClass('me-3').prependTo('#datatables-controls-placeholder');
+    // 1. Перемещаем кнопку 'Lang' и ставим ее ПЕРЕД фильтром (сохраняем ваш порядок)
+    $('.dt-buttons').detach().addClass('me-3').prependTo(placeholder);
 
-    // 2. Связываем наше кастомное поле поиска с API таблицы
-    $('#custom-search-filter').on('keyup input', function () {
-        table.search(this.value).draw();
+    // 2. Перемещаем SearchBuilder и ставим его ПОСЛЕ фильтра.
+    // У него будет свой собственный контейнер .dt-searchbuilder
+    $('.dt-searchbuilder').detach().addClass('ms-2').appendTo(placeholder);
+
+
+    // --- ШАГ 4: ЯВНО УКАЗЫВАЕМ SMART SEARCH ---
+    $('#custom-search-filter').on('keyup input', function() {
+        // Вызываем search() с явным указанием параметра smart: true.
+        // Это не меняет поведение по умолчанию, но вносит ясность.
+        // формат: search(значение, это_рег_выражение?, умный_поиск?)
+        table.search(this.value, false, true).draw();
     });
 
-    // 3. Синхронизируем значение нашего поля с сохраненным состоянием таблицы при загрузке
+    // Синхронизируем значение поля с сохраненным состоянием
     var currentSearch = table.search();
     if (currentSearch) {
         $('#custom-search-filter').val(currentSearch);
