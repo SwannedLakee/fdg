@@ -6,7 +6,7 @@ while read -r line; do
   filepath=$(echo "$line" | sed 's/^modified:[[:space:]]*//')
 
   # Переходим только если путь содержит assets/texts/sutta
-  if [[ "$filepath" != *assets/texts/sutta* ]]; then
+  if [[ "$filepath" != *assets/texts/ru/sutta* ]]; then
     continue
   fi
 
