@@ -167,129 +167,153 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
  <link rel="stylesheet" type="text/css" href="/assets/js/datatables/datatables.min.css"/>
  <style>
   /* --- ОБЩИЕ СТИЛИ --- */
-  .controls-container {
-    position: sticky;
-    top: 0;
-    background: var(--bs-body-bg, #fff);
-    padding: 10px;
-    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
-    z-index: 90;
-    transition: background-color 0.3s, border-color 0.3s;
-  }
-  #sutta-table td h1,
-  #sutta-table td h2 {
-    font-size: 1.8rem;
-    font-weight: bold;
-   margin-top: 2.0rem;
-    text-align: center;
-   /* margin-bottom: 0.5rem;*/
-  }
-  #sutta-table td h3,
-  #sutta-table td h4 {
-text-align: center;
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-top: 1.5rem;
-   /* margin-bottom: 0.5rem;*/
-  }
-li { /*.division text-align: center;*/
- list-style-type: none;
- padding-left: 0;
-text-align: center;
+.controls-container {
+  position: sticky;
+  top: 0;
+  background: var(--bs-body-bg, #fff);
+  padding: 10px;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  z-index: 90;
+  transition: background-color 0.3s, border-color 0.3s;
 }
-.endsutta { /* text-align: center;*/
+
+#sutta-table td h1,
+#sutta-table td h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-top: 2.0rem;
+  text-align: center;
+}
+
+#sutta-table td h3,
+#sutta-table td h4 {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+}
+
+li {
+  list-style-type: none;
+  padding-left: 0;
+  text-align: center;
+}
+
+.endsutta {
   margin-bottom: 5.5rem;
 }
-  /* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ (ИСПРАВЛЕНО) --- */
-  body.dark {
-    --bs-body-bg: #212529;
-    --bs-body-color: #dee2e6;
-    --bs-border-color: #495057;
-    --bs-table-color: var(--bs-body-color);
-    --bs-table-striped-color: var(--bs-body-color);
-    color-scheme: dark;
-  }
-  body.dark .controls-container {
-    background: #101010; /* ИЗМЕНЕНО ПО ЗАПРОСУ */
-    border-bottom-color: #333;
-  }
-  body.dark .table {
-    color: var(--bs-body-color);
-  }
-  body.dark .controls-container .form-control {
-    background-color: #495057;
-    color: #dee2e6;
-    border-color: #6c757d;
-  }
-  body.dark .controls-container .form-control::placeholder {
-    color: #adb5bd;
-  }
-  body.dark .controls-container .btn-outline-secondary {
-    color: #dee2e6;
-    border-color: #6c757d;
-  }
-  body.dark .controls-container .btn-outline-secondary:hover {
-    background-color: #495057;
-  }
-  body.dark .controls-container svg {
-    fill: #dee2e6;
-  }
-  body.dark .controls-container .toggle-dict-btn img,
-  body.dark .controls-container a[href="/"] img {
-    filter: invert(1) grayscale(100%) brightness(200%);
-  }
-  body.dark .controls-container a.text-dark {
-    color: #dee2e6 !important;
-  }
-  body.dark .dataTables_wrapper .dataTables_length,
-  body.dark .dataTables_wrapper .dataTables_filter,
-  body.dark .dataTables_wrapper .dataTables_info,
-  body.dark .dataTables_wrapper .dataTables_paginate .paginate_button {
-    color: #fff !important;
-  }
-  body.dark .dataTables_wrapper .dataTables_filter input {
-    background-color: #495057;
-    color: #dee2e6;
-    border: 1px solid #6c757d;
-  }
-  body.dark .page-link {
-    background-color: #343a40;
-    border-color: #495057;
-    color: #fff;
-  }
-  body.dark .page-link:hover {
-    background-color: #495057;
-  }
-  body.dark .page-item.disabled .page-link {
-    background-color: #212529;
-    border-color: #495057;
-    color: #6c757d;
-  }
-  body.dark .table-striped>tbody>tr:nth-of-type(odd)>* {
-    --bs-table-accent-bg: rgba(255, 255, 255, 0.075);
-    color: var(--bs-table-color);
-  }
-  body.dark .table-bordered {
-    border-color: var(--bs-border-color);
-  }
-  body.dark .dt-buttons .btn-secondary {
-    color: #fff;
-    background-color: #5a6268;
-    border-color: #545b62;
-  }
-  body.dark .dt-buttons .btn-secondary:hover {
-    color: #fff;
-    background-color: #4e555b;
-    border-color: #484e53;
-  }
-  #custom-search-filter {
-    min-width: 150px;
-  }
-  /* Стили для таблицы и переноса текста */
+
+/* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ --- */
+body.dark {
+  --bs-body-bg: #212529;
+  --bs-body-color: #dee2e6;
+  --bs-border-color: #495057;
+  --bs-table-color: var(--bs-body-color);
+  --bs-table-striped-color: var(--bs-body-color);
+  color-scheme: dark;
+}
+
+body.dark .controls-container {
+  background: #101010;
+  border-bottom-color: #333;
+}
+
+body.dark .table {
+  color: var(--bs-body-color);
+}
+
+body.dark .controls-container .form-control {
+  background-color: #495057;
+  color: #dee2e6;
+  border-color: #6c757d;
+}
+
+body.dark .controls-container .form-control::placeholder {
+  color: #adb5bd;
+}
+
+body.dark .controls-container .btn-outline-secondary {
+  color: #dee2e6;
+  border-color: #6c757d;
+}
+
+body.dark .controls-container .btn-outline-secondary:hover {
+  background-color: #495057;
+}
+
+body.dark .controls-container svg {
+  fill: #dee2e6;
+}
+
+body.dark .controls-container .toggle-dict-btn img,
+body.dark .controls-container a[href="/"] img {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+body.dark .controls-container a.text-dark {
+  color: #dee2e6 !important;
+}
+
+body.dark .dataTables_wrapper .dataTables_length,
+body.dark .dataTables_wrapper .dataTables_filter,
+body.dark .dataTables_wrapper .dataTables_info,
+body.dark .dataTables_wrapper .dataTables_paginate .paginate_button {
+  color: #fff !important;
+}
+
+body.dark .dataTables_wrapper .dataTables_filter input {
+  background-color: #495057;
+  color: #dee2e6;
+  border: 1px solid #6c757d;
+}
+
+body.dark .page-link {
+  background-color: #343a40;
+  border-color: #495057;
+  color: #fff;
+}
+
+body.dark .page-link:hover {
+  background-color: #495057;
+}
+
+body.dark .page-item.disabled .page-link {
+  background-color: #212529;
+  border-color: #495057;
+  color: #6c757d;
+}
+
+body.dark .table-striped>tbody>tr:nth-of-type(odd)>* {
+  --bs-table-accent-bg: rgba(255, 255, 255, 0.075);
+  color: var(--bs-table-color);
+}
+
+body.dark .table-bordered {
+  border-color: var(--bs-border-color);
+}
+
+body.dark .dt-buttons .btn-secondary {
+  color: #fff;
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+body.dark .dt-buttons .btn-secondary:hover {
+  color: #fff;
+  background-color: #4e555b;
+  border-color: #484e53;
+}
+
+#custom-search-filter {
+  min-width: 150px;
+}
+
+/* --- СТИЛИ ТАБЛИЦЫ С РАВНОМЕРНЫМ РАСПРЕДЕЛЕНИЕМ КОЛОНОК --- */
 #sutta-table {
   table-layout: fixed;
   width: 100%;
 }
+
 #sutta-table td {
   word-wrap: break-word;
   word-break: break-word;
@@ -297,24 +321,105 @@ text-align: center;
   white-space: normal;
   vertical-align: top;
   padding: 8px;
-}
-/* Для длинных слов без пробелов */
-#sutta-table td {
   hyphens: auto;
 }
+
+/* Колонка ID - минимальная ширина */
+#sutta-table th:nth-child(1), 
+#sutta-table td:nth-child(1) {
+  width: 5% !important;
+  max-width: 100px;
+  min-width: 50px;
+}
+
+/* Базовые стили для текстовых колонок */
+#sutta-table th:not(:nth-child(1)), 
+#sutta-table td:not(:nth-child(1)) {
+  width: auto;
+}
+
+/* Случай 1: Только одна текстовая колонка видна */
+#sutta-table th:nth-child(2):last-child,
+#sutta-table td:nth-child(2):last-child,
+#sutta-table th:nth-child(3):last-child,
+#sutta-table td:nth-child(3):last-child,
+#sutta-table th:nth-child(4):last-child,
+#sutta-table td:nth-child(4):last-child {
+  width: 95% !important;
+}
+
+/* Случай 2: Две текстовые колонки видны */
+#sutta-table th:nth-child(2):nth-last-child(2),
+#sutta-table td:nth-child(2):nth-last-child(2),
+#sutta-table th:nth-child(3):nth-last-child(1),
+#sutta-table td:nth-child(3):nth-last-child(1),
+#sutta-table th:nth-child(3):nth-last-child(2),
+#sutta-table td:nth-child(3):nth-last-child(2),
+#sutta-table th:nth-child(4):nth-last-child(1),
+#sutta-table td:nth-child(4):nth-last-child(1) {
+  width: 47.5% !important;
+}
+
+/* Случай 3: Все три текстовые колонки видны */
+#sutta-table th:nth-child(2):nth-last-child(3),
+#sutta-table td:nth-child(2):nth-last-child(3),
+#sutta-table th:nth-child(3):nth-last-child(2),
+#sutta-table td:nth-child(3):nth-last-child(2),
+#sutta-table th:nth-child(4):nth-last-child(1),
+#sutta-table td:nth-child(4):nth-last-child(1) {
+  width: 31.66% !important;
+}
+
 /* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
   #sutta-table {
     display: block;
     overflow-x: auto;
   }
- 
+  
   #sutta-table td {
     min-width: 150px;
   }
- .controls-container {
-  position: static;
- }
+  
+  .controls-container {
+    position: static;
+  }
+  
+  /* На мобильных делаем все колонки 100% ширины */
+  #sutta-table th,
+  #sutta-table td {
+    width: 100% !important;
+    display: block;
+  }
+  
+  /* Скрываем заголовки на мобильных */
+  #sutta-table thead {
+    display: none;
+  }
+  
+  /* Добавляем псевдо-заголовки для ясности */
+  #sutta-table td::before {
+    content: attr(data-column);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  #sutta-table td:nth-child(1)::before {
+    content: "ID";
+  }
+  
+  #sutta-table td:nth-child(2)::before {
+    content: "Pali";
+  }
+  
+  #sutta-table td:nth-child(3)::before {
+    content: "English";
+  }
+  
+  #sutta-table td:nth-child(4)::before {
+    content: "Russian";
+  }
 }
  </style>
 </head>
@@ -393,10 +498,17 @@ $(document).ready(function() {
     stateSave: true,
     colReorder: true,
     ordering: false,
-    columnDefs: [{
-      targets: 0,
-      visible: false
-    }],
+       columnDefs: [
+      {
+        targets: 0,
+        visible: false,
+        width: "5%"
+      },
+      {
+        targets: [1, 2, 3],
+        width: "31.66%"
+      }
+    ],
     paging: false,
     responsive: true,
     dom: "<'row'<'col-sm-12'tr>>" +
@@ -442,6 +554,23 @@ $(document).ready(function() {
       }
     }
   });
+
+
+   // Обновляем ширину колонок при изменении видимости
+  table.on('column-visibility.dt', function() {
+    var visibleColumns = table.columns().visible().reduce(function(a, b) {
+      return a + (b ? 1 : 0);
+    }, 0) - 1; // Минус колонка ID
+    
+    if (visibleColumns === 1) {
+      table.columns([1, 2, 3]).visible().nodes().to$().css('width', '95%');
+    } else if (visibleColumns === 2) {
+      table.columns([1, 2, 3]).visible().nodes().to$().css('width', '47.5%');
+    } else if (visibleColumns === 3) {
+      table.columns([1, 2, 3]).visible().nodes().to$().css('width', '31.66%');
+    }
+  });
+  
   // Ваш кастомный фильтр (единственный)
 $('#custom-search-filter').on('keyup input', function() {
   table.search(this.value).draw();
