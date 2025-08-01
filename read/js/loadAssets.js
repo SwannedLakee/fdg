@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "mlth": { js: "./js/multilang-th.js", css: "./css/thai-multi.css" },
         "r": { js: "./js/reader-rus-translations.js", css: "./css/index.css" },
         "th": { js: "./js/reader-th.js", css: "./css/thai.css" },
-        "bb": { js: "./js/index.js", css: "./css/index.css" },
+        "bb": { js: "./js/indexBB.js", css: "./css/index.css" },
         "read": { js: "./js/index.js", css: "./css/index.css" }
     };
 
