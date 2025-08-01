@@ -100,7 +100,7 @@ var rootpath = `/assets/texts/en/root/${texttype}/${slugReady}_root-pli-ms.json`
       let language = "pli";
 
  if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {
-//	     var rootpath = `/assets/texts/${texttype}/${slug}_root-pli-ms.json`;
+//       var rootpath = `/assets/texts/${texttype}/${slug}_root-pli-ms.json`;
 var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slug}_rootd-pli-ms.json`
  } 
  else if (( script === "thai" ) || ( savedScript === "Thai" ) ) {
@@ -120,7 +120,7 @@ else if (otrnranges.indexOf(slug) !== -1) {
 }
 
 else {
-  var trnpath = `/assets/texts/en/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
+  var trnpath = `/assets/texts/en/translation/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 }
 
 var varpath = `${Sccopy}/sc-data/sc_bilara_data/variant/pli/ms/${texttype}/${slugReady}_variant-pli-ms.json`
@@ -191,11 +191,11 @@ const varResponse = fetchVariant();
       
       
       /* openHtml = openHtml.replace(/^<span class='verse-line'>/, "<br><span class='verse-line'>"); inputscript-IASTPali 
-      Roman (IAST)     	IAST
-Roman (IAST: Pāḷi)     	IASTPali
-Roman (IPA)            	IPA
-Roman (ISO 15919)      	ISO
-Roman (ISO 15919: Pāḷi)	ISOPali */
+      Roman (IAST)      IAST
+Roman (IAST: Pāḷi)      IASTPali
+Roman (IPA)             IPA
+Roman (ISO 15919)       ISO
+Roman (ISO 15919: Pāḷi) ISOPali */
 // ISOPali ISO IASTPali IAST
 
 let startIndex = segment.indexOf(':') + 1;
@@ -291,7 +291,7 @@ if (translator === "o") {
 } else if (translator === "o+in+progress" ) {
   translatorforuser = '<a href=/assets/common/o-en.html>o</a>, in progress';
 } else {
-	translatorforuser = translator ;
+  translatorforuser = translator ;
 }
 
 //console.log('texttype ' + texttype + ' translator ' + translator);
@@ -514,7 +514,7 @@ prevName = prevName.replace(/[0-9.]/g, '');
       );
     }
     );
-	     addToSearchHistory(); 
+       addToSearchHistory(); 
 
     })
 .catch(error => {
@@ -591,8 +591,8 @@ if (lang) {
     language = lang;
     setLanguage(lang);
   } else if  (localStorage.paliToggle) {
-    	language = localStorage.paliToggle; 
-		//  console.log('read from ls ' + language);
+      language = localStorage.paliToggle; 
+    //  console.log('read from ls ' + language);
 setLanguage(language);
   }
 } else {
@@ -619,7 +619,7 @@ setLanguage(language);
       <li><span class="abbr">dhp</span> Dhammapada</li>
       <li><span class="abbr">thag</span> Theragāthā</li>
       <li><span class="abbr">thig</span> Therīgāthā</li>
-	  <li><span class="abbr">kp</span> Khuddakapāṭha</li>
+    <li><span class="abbr">kp</span> Khuddakapāṭha</li>
   </ul>
   </div>
   
@@ -731,7 +731,7 @@ function showPali() {
 function toggleThePali() {
   const languageButton = document.getElementById("language-button");
 
-	 // initial state
+   // initial state
  if (!localStorage.paliToggle) {
     localStorage.paliToggle = "pli-eng";
   }   
