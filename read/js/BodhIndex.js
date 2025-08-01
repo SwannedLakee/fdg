@@ -849,3 +849,12 @@ abbreviations.forEach(book => {
   });
 });
 
+
+
+/*
+for f in *_translation-en-bodhi.json; do
+  mv "$f" "${f/-bodhi/-nanamoli+bodhi}"
+done
+
+
+*/
