@@ -17,7 +17,7 @@ array_pop($parts);
 $otherFields = $parts;
 $dirtolist = implode('/', $otherFields);
 
-$command = "ls $location/$dirtolist | sort -V | sort -V | grep -{$type}1 {$slug}_ | grep -v {$slug}_";
+$command = "ls $location/$dirtolist | sort -V | grep -{$type}1 {$slug}_ | grep -v {$slug}_";
 $next = shell_exec($command);
 
 $nextslug = preg_replace('/_.*$/', '', $next);
