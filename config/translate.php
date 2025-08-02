@@ -283,6 +283,12 @@ $carouseltitle = 'Интересные Запросы';
 
 $slides = [
          
+        
+          [
+        'title' => 'Эквивалент SWOT-анализа в Дхамме',
+        'desc' => 'Привлекательность, Недостаток-опасность, "Спасение" и явления, которые следует изучить в этом ключе',
+        'link' => '/ru/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
+    ],        
           [
         'title' => 'Три вида Зависимого Возникновения',
         'desc' => 'Последовательности из <span title="dn15">10</span>, <span title="dn14, sn12.65, sn12.67">11</span> и <span title="sn12.2 в этой подборке и др. суттах, самая известная и распространненная схема">12</span> условий',
@@ -1015,6 +1021,13 @@ $titledeschowtovideo = 'How to search in Pali Suttas and Vinaya with Dhamma.Gift
 $carouseltitle = 'Top Interesting Queries';
 
 $slides = [
+
+[
+    'title' => 'The Dhamma Equivalent of a SWOT Analysis',
+    'desc' => 'Attractiveness, Danger-Drawback, "Escape", and phenomena to be examined through this lens',
+    'link' => '/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
+],
+
 [
     'title' => 'Three Types of Dependent Origination',
     'desc' => 'Sequences of <span title="dn15">10</span>, <span title="dn14, sn12.65, sn12.67">11</span> and <span title="sn12.2 in this set and many other suttas, the most well-known and common formula">12</span> conditions',
