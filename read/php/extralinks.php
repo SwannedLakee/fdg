@@ -1,4 +1,4 @@
-<?php 
+<?php
 header("Content-Type:text/plain");
 error_reporting(E_ERROR | E_PARSE);
 //include('../../config/config.php');
@@ -19,14 +19,19 @@ function extraLinks($fromjs) {
     $bblink = "";
   }
 
+// --- НАЧАЛО ДОБАВЛЕННОЙ ЛОГИКИ ---
+if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/b/') !== false) {
+    $bblink = "";
+}
+// --- КОНЕЦ ДОБАВЛЕННОЙ ЛОГИКИ ---
 
 $is_ru_referer = false;
   if (isset($_SERVER['HTTP_REFERER'])) {
-      $is_ru_referer = (strpos($_SERVER['HTTP_REFERER'], '/ru/') !== false) || 
-                      (strpos($_SERVER['HTTP_REFERER'], '/r/') !== false) ||
-                      (strpos($_SERVER['HTTP_REFERER'], '/ml/') !== false);
+      $is_ru_referer = (strpos($_SERVER['HTTP_REFERER'], '/ru/') !== false) ||
+                       (strpos($_SERVER['HTTP_REFERER'], '/r/') !== false) ||
+                       (strpos($_SERVER['HTTP_REFERER'], '/ml/') !== false);
   }
-  
+
   // Формируем ссылки в зависимости от языка
   $pali_link = '/tts.php?q='.$fromjs;
   $trn_link = $is_ru_referer ? '/ru/tts.php?q='.$fromjs.'&type=trn' : '/tts.php?q='.$fromjs.'&type=trn';
@@ -48,7 +53,7 @@ $is_ru_referer = false;
   if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
       // Если $fromjs содержит *bu-vb* или *bi-vb*
       $parts = explode("-", $fromjs);
-      
+
       // Определить pmtype (bu или bi)
       $pmtype = (strpos($fromjs, "bu") !== false) ? "bu" : ((strpos($fromjs, "bi") !== false) ? "bi" : "");
       $vbIndex = array_search("vb", $parts);
@@ -60,7 +65,7 @@ $is_ru_referer = false;
         $rule = ucfirst($rule);
       }
 
-      $trnpath = shell_exec("echo $fromjs | awk -F'-' '{{OFS=\"-\"} 
+      $trnpath = shell_exec("echo $fromjs | awk -F'-' '{{OFS=\"-\"}
         if (NF == 5) {
           print $1,$2,$3,$4\"/\"$1,$2,$3,$4,substr($5,0,2)\"/\"$1,$2,$3,$4,$5
         } else if (NF == 6) {
@@ -86,11 +91,11 @@ $is_ru_referer = false;
           $hasAudio = true;
           $voicefilename = basename($voicematches[0]);
           $voicefile = "/assets/audio/" . $pmtype . "-pm" . "/" . $voicefilename;
-          
+
           $fileExt = pathinfo($voicefilename, PATHINFO_EXTENSION);
           $mimeType = ($fileExt === 'mp3') ? 'audio/mpeg' : 'audio/mp4; codecs="mp4a.40.2"';
-      //        <button class='close-player' aria-label='Close player'>×</button>
-    
+      //    <button class='close-player' aria-label='Close player'>×</button>
+
 $playerHtml = "<span class='voice-dropdown'>
     <a href='javascript:void(0)' class='voice-link'  title='Text-to-Speech Options' class='voice-link'>Voice</a>
     <span class='voice-player'>
@@ -101,7 +106,7 @@ $playerHtml = "<span class='voice-dropdown'>
             Pali <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Copy</a> <a href='$pali_link' title='Open Pali'>Open</a> |
             Trn <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Copy</a> <a href='$trn_link' title='Open Translation' >Open</a> |
             <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
-            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a> 
+            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
       }
@@ -115,10 +120,10 @@ $playerHtml = "<span class='voice-dropdown'>
         $hasAudio = true;
         $voicefilename = basename($voicematches[0]);
         $voicefile = "/assets/audio/" . $nikaya . $book . "/". $voicefilename;
-        
+
         $fileExt = strtolower(pathinfo($voicefilename, PATHINFO_EXTENSION));
         $mimeType = 'audio/mp4'; // По умолчанию для m4a
-        
+
         if ($fileExt === 'mp3') {
             $mimeType = 'audio/mpeg';
         } elseif ($fileExt === 'm4a' || $fileExt === 'mp4') {
@@ -130,7 +135,7 @@ $playerHtml = "<span class='voice-dropdown'>
         } elseif ($fileExt === 'wav') {
             $mimeType = 'audio/wav';
         }
-        
+
 $playerHtml = "<span class='voice-dropdown'>
     <a href='javascript:void(0)' class='voice-link' title='Text-to-Speech Options' >Voice</a>
     <span class='voice-player'>
@@ -141,7 +146,7 @@ $playerHtml = "<span class='voice-dropdown'>
             Pali <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Copy</a> <a href='$pali_link' title='Open Pali'>Open</a> |
             Trn <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Copy</a> <a href='$trn_link' title='Open Translation' >Open</a> |
             <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
-            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a> 
+            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
     }
@@ -156,17 +161,17 @@ $playerHtml = "<span class='voice-dropdown'>
             Pali <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Copy</a> <a href='$pali_link' title='Open Pali'>Open</a> |
             Trn <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Copy</a> <a href='$trn_link' title='Open Translation' >Open</a> |
             <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
-            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a> 
+            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
 
   }
 
-  if ($mode == "offline") {  
-      $output = shell_exec("
-      ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1 2>/dev/null` ; 
+  if ($mode == "offline") {
+    $output = shell_exec("
+      ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1 2>/dev/null` ;
       ruslinkdn=`cd $locationrudn ; ls -R . | grep -m1 \"{$fromjs}.html\" ` ;
-      
+
       echo -n \"{$playerHtml}{$final}\"
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
         [ ! -z $bblink ] && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
@@ -174,7 +179,7 @@ $playerHtml = "<span class='voice-dropdown'>
         [ ! -z \$ruslinkdn ] && echo -n \"&nbsp;<a title='Theravada.su' target='' href=/tipitaka.theravada.su/dn/\$ruslinkdn>Th.su</a>\"
       ");
   } else {
-      // online 
+      // online
       if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
           echo "";
       } else {
@@ -211,25 +216,24 @@ $playerHtml = "<span class='voice-dropdown'>
           }
           $thsulink = str_replace(PHP_EOL, '', $thsulink);
 
-          $output = shell_exec("ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1` ; ruslinkdn=\"$thsulink\"; 
+          $output = shell_exec("ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1` ; ruslinkdn=\"$thsulink\";
 
           echo -n \"{$playerHtml}{$final}\";
-          
-          [[ $bwlink != \"\" ]] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href='$linktbw/$bwlink'>TBW</a>\"; 
+
+          [[ $bwlink != \"\" ]] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href='$linktbw/$bwlink'>TBW</a>\";
 
           [[ $bblink != \"\" ]]  && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
-          
-          [[ \$ruslink != \"\" ]] && echo -n \"&nbsp;<a title='Theravada.ru' target='' href='https://theravada.ru/Teaching/Canon/Suttanta/Texts/\$ruslink'>Th.ru</a>\"; 
-                
+
+          [[ \$ruslink != \"\" ]] && echo -n \"&nbsp;<a title='Theravada.ru' target='' href='https://theravada.ru/Teaching/Canon/Suttanta/Texts/\$ruslink'>Th.ru</a>\";
+
           [ \${#ruslinkdn} -gt 5 ] && echo -n \"&nbsp;<a title='Theravada.su' target='' href='\$ruslinkdn'>Th.su</a>\";
           ");
       }
   }
-  
+
   $result = str_replace(PHP_EOL, '', $output);
   return $output;
 }
 
 echo extraLinks($_GET['fromjs']);
 ?>
-
