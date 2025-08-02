@@ -150,7 +150,46 @@ const rootResponse = fetch(rootpath)
       });
   });
 
-  const translationResponse = fetch(trnpath).then(response => response.json());
+// Add this function to handle fetching translations with fallback translators
+async function fetchTranslationWithFallback(slugReady, texttype, pathLang, initialTranslator) {
+  const translators = [
+    initialTranslator, // Try the original translator first
+    "bodhi",
+    "nyanamoli+bodhi",
+    "walshe",
+    "anandajoti",
+    "kelly",
+    "sujato"
+  ];
+
+  for (const translator of translators) {
+    const trnpath = `/assets/texts/en/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
+    try {
+      const response = await fetch(trnpath);
+      if (response.ok) {
+        const data = await response.json();
+        return { data, translator }; // Return both the data and the translator that worked
+      }
+    } catch (error) {
+      console.log(`Note: translation not found for ${translator}`);
+    }
+  }
+
+  console.log('Note: no translation found in any fallback path');
+  return { data: {}, translator: initialTranslator }; // Return empty object if all paths fail
+}
+
+// Then modify the Promise.all section to use this new function
+// Replace:
+// const translationResponse = fetch(trnpath).then(response => response.json());
+// With:
+const translationResponse = fetchTranslationWithFallback(slugReady, texttype, pathLang, translator)
+  .then(({ data, translator: usedTranslator }) => {
+    translator = usedTranslator; // Update the translator variable with the one that worked
+    return data;
+  });
+
+
   const htmlResponse = fetch(htmlpath).then(response => response.json());
 async function fetchVariant() {
   const paths = [varpath, varpathLocal];
@@ -277,7 +316,17 @@ if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o-en.html>o</a> from Pali';
 } else if (translator === "sv") {
   translatorforuser = 'SV theravada.ru from Eng';
-} else if ((translator === "" && texttype === "sutta" ) || (translator === "sujato" )) {
+}  else if (translator === "bodhi") {
+  translatorforuser = "Bhikkhu Bodhi";
+} else if (translator === "nyanamoli+bodhi") {
+  translatorforuser = "Bhikkhu Ñāṇamoli & Bhikkhu Bodhi";
+} else if (translator === "walshe") {
+  translatorforuser = "Maurice Walshe";
+} else if (translator === "anandajoti") {
+  translatorforuser = "Ānandajoti Bhikkhu";
+} else if (translator === "kelly") {
+  translatorforuser = "John Kelly, Sue Sawyer & Victoria Yareham";
+}  else if ((translator === "" && texttype === "sutta" ) || (translator === "sujato" )) {
   translatorforuser = 'Bhikkhu Sujato';
 } else if ((translator === "" && texttype === "vinaya") || (translator === "brahmali" ))  {
   translatorforuser = 'Bhikkhu Brahmali';
@@ -559,7 +608,7 @@ More search options available from the main page.</p>`;
 // Отправка запроса по адресу http://localhost:8080/ru/?q= с использованием значения slug
 var xhr = new XMLHttpRequest();
 var xhr = new XMLHttpRequest();
-xhr.open("GET", "/?p=-kn&q=" + encodeURIComponent(slug), true);
+xhr.open("GET", "/bb/?p=-kn&q=" + encodeURIComponent(slug), true);
 xhr.send();
 
 xhr.onreadystatechange = function() {
