@@ -157,6 +157,8 @@ $anamesc = 'SuttaCentral.net';
 $linksclegacy = '/legacy.suttacentral.net/';
 $anamesclegacy = 'SC.net Legacy';
 //api-emulator
+$tbwroottextlocation = $basedir . "/assets/texts/en/";
+
 $scroottextlocation = $basedir . "/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms";
 $sctrntextlocation = $basedir . "/suttacentral.net/sc-data/sc_bilara_data/translation/";
 //opentexts.php

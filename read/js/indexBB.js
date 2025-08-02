@@ -510,7 +510,7 @@ document.head.appendChild(ogDescriptionMeta);
       toggleThePali();
       
       $.ajax({
-      url: "/read/php/api.php?fromjs=" +texttype +"/" +slugReady +"&type=A"
+      url: "/read/php/apiBB.php?fromjs=" +texttype +"/" +slugReady +"&type=A"
     }).done(function(data) {
       let nextArray = data.split(" ");
       let nextSlug = nextArray[0];
@@ -539,7 +539,7 @@ nextName = nextName.replace(/[0-9.]/g, '');
     );
   
   $.ajax({
-      url: "/read/php/api.php?fromjs=" +texttype +"/" +slugReady +"&type=B"
+      url: "/read/php/apiBB.php?fromjs=" +texttype +"/" +slugReady +"&type=B"
     }).done(function(data) {
       const prevArray = data.split(" ");
       let prevSlug = prevArray[0];
