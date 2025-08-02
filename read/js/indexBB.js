@@ -75,10 +75,10 @@ var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slugReady}_ro
 var rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`
  } 
 else {
-var rootpath = `/assets/texts/en/root/${texttype}/${slugReady}_root-pli-ms.json`
+var rootpath = `/assets/texts/en/${texttype}/${slugReady}_root-pli-ms.json`
  }
 
-   var htmlpath = `/assets/texts/en/html/${texttype}/${slugReady}_html.json`;
+   var htmlpath = `/assets/texts/en/${texttype}/${slugReady}_html.json`;
  
    //  //  let otrnranges = ['sn56.11', 'sn12.2'];
   
@@ -120,7 +120,7 @@ else if (otrnranges.indexOf(slug) !== -1) {
 }
 
 else {
-  var trnpath = `/assets/texts/en/translation/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
+  var trnpath = `/assets/texts/en/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 }
 
 var varpath = `${Sccopy}/sc-data/sc_bilara_data/variant/pli/ms/${texttype}/${slugReady}_variant-pli-ms.json`
@@ -434,12 +434,19 @@ if (canShowClose && !isWarningClosed) {
 
 //конец вывода информации
 
- const pageTitleElement = document.querySelector("h1");
-let pageTitleText = pageTitleElement.textContent;
-pageTitle = pageTitleText.replace(/[0-9.]/g, '');
+const pageTitleElement = document.querySelector("h1");
+let pageTitle = '';
 
-slug = slug.replace(/pli-tv-|vb-/g, '');
-document.title = `${slug} ${pageTitle}`;
+if (pageTitleElement && pageTitleElement.textContent) {
+  let pageTitleText = pageTitleElement.textContent;
+  pageTitle = pageTitleText.replace(/[0-9.]/g, '');
+}
+
+if (typeof slug === 'string') {
+  slug = slug.replace(/pli-tv-|vb-/g, '');
+  document.title = `${slug} ${pageTitle}`.trim();
+}
+
     
 var metaDescription = document.createElement('meta');
 metaDescription.name = 'description';
