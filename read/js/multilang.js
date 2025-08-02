@@ -98,7 +98,7 @@ if ( texttype === "vinaya")
   var engtrnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/en/brahmali/vinaya/${slugReady}_translation-en-brahmali.json`;
 } 
 else if (otrnranges.indexOf(slug) !== -1) { 
-    var engtrnpath = `/assets/texts/en/${texttype}/${slugReady}_translation-en-o.json`;
+    var engtrnpath = `/assets/texts/en/o/${texttype}/${slugReady}_translation-en-o.json`;
         translator = "o";
 }
 

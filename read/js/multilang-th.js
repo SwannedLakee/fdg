@@ -104,7 +104,7 @@ if ( texttype === "vinaya")
 
 
 else if (otrnranges.indexOf(slug) !== -1) { 
-    var engtrnpath = `/assets/texts/en/${texttype}/${slugReady}_translation-en-o.json`;
+    var engtrnpath = `/assets/texts/en/o/${texttype}/${slugReady}_translation-en-o.json`;
         translator = "o";
 }
  else {
