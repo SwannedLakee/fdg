@@ -38,6 +38,9 @@ align-items: center;
   font-size: 1.1rem; 
 }
 
+#sutta hr { 
+display: none;
+}
 
 #scrollToTopBtn {
 border-width: 2px;
