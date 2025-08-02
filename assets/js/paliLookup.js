@@ -136,7 +136,8 @@ function createDictSearchUrl(word) {
             : `goldendict://${encodeURIComponent(word)}`;
     }
     // This part remains the same
-    return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+//    return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+    return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?q=${encodeURIComponent(word)}`;
 }
 
 
@@ -180,7 +181,9 @@ if (savedDict.includes("dpd")) {
 
   if (savedDict.includes("full")) {
     //    dictUrl += "/search_html?source=pwa&q=";
-    dictUrl += "/search_html?q=";
+//    dictUrl += "/search_html?q=";
+    dictUrl += "/?q=";
+
   } else if (savedDict.includes("compact")) {
     dictUrl += "/gd?search=";
   }
@@ -194,9 +197,11 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
-  dictUrl = "https://dict.dhamma.gift/search_html?q=";
+ // dictUrl = "https://dict.dhamma.gift/search_html?q=";
+      dictUrl = "https://dict.dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/search_html?q=";
+  //dictUrl = "https://dict.dhamma.gift/ru/search_html?q=";
+  dictUrl = "https://dict.dhamma.gift/ru/?q=";
 // before this line:
 }
 
@@ -288,7 +293,7 @@ if (isLocalhost) {
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`
         : `goldendict://${encodeURIComponent(wordForSearch)}`;
 } else {
-const dictSearchUrl = createDictSearchUrl(wordForSearch);
+    dictSearchUrl = createDictSearchUrl(wordForSearch);
 }
 
 
