@@ -169,7 +169,7 @@ $playerHtml = "<span class='voice-dropdown'>
       
       echo -n \"{$playerHtml}{$final}\"
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
-        [ ! -z $bblink ] && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/bb/$bblink>BB</a>\"
+        [ ! -z $bblink ] && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
         [ ! -z \$ruslink ] && echo -n \"&nbsp;<a target='' title='Theravada.ru' href=$linkforthru/\$ruslink>Th.ru</a>\"
         [ ! -z \$ruslinkdn ] && echo -n \"&nbsp;<a title='Theravada.su' target='' href=/tipitaka.theravada.su/dn/\$ruslinkdn>Th.su</a>\"
       ");
@@ -217,7 +217,7 @@ $playerHtml = "<span class='voice-dropdown'>
           
           [[ $bwlink != \"\" ]] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href='$linktbw/$bwlink'>TBW</a>\"; 
 
-          [[ $bblink != \"\" ]]  && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/bb/$bblink>BB</a>\"
+          [[ $bblink != \"\" ]]  && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
           
           [[ \$ruslink != \"\" ]] && echo -n \"&nbsp;<a title='Theravada.ru' target='' href='https://theravada.ru/Teaching/Canon/Suttanta/Texts/\$ruslink'>Th.ru</a>\"; 
                 
