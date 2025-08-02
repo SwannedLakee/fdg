@@ -362,7 +362,7 @@ if (translator === "o") {
    
 const enUrl = window.location.href;
 
-const ruUrl = enUrl.replace("/read/", "/r/");
+let ruUrl = enUrl.replace("/read/", "/r/");
 ruUrl = enUrl.replace("/bb/", "/r/");
 let scLink = `<p class="sc-link"><a title="Russian (Alt+1)" href="${ruUrl}">Ru</a>&nbsp;`;
  
