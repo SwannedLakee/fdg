@@ -13,7 +13,7 @@ function extraLinks($fromjs) {
 
   if (file_exists($bwfile) ) {
       $bwlink = "$forbwpath/$fromjs.html";
-      $bblink = "/?q=$fromjs";
+      $bblink = "?q=$fromjs";
   } else {
     $bwlink = "";
     $bblink = "";
