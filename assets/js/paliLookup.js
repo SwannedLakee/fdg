@@ -121,21 +121,23 @@ if (
 }
 
 
-    /**
-     * Creates the search URL for a given word
-     * @param {string} word - The word to create URL for
-     * @returns {string} - The search URL
-     * e.g. const wordSearchUrl = createDictSearchUrl(wordToLink);
-     */
-    function createDictSearchUrl(word) {
-        if (isLocalhost) {
-
-           return `goldendict://${encodeURIComponent(word)}`;
-            //return `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
-        }
-        return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+/**
+ * Creates the search URL for a given word
+ * @param {string} word - The word to create URL for
+ * @returns {string} - The search URL
+ * e.g. const wordSearchUrl = createDictSearchUrl(wordToLink);
+ */
+function createDictSearchUrl(word) {
+    if (isLocalhost) {
+        // This logic is now consistent with your other functions
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        return isAndroid
+            ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`
+            : `goldendict://${encodeURIComponent(word)}`;
     }
-
+    // This part remains the same
+    return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+}
 
 
 // Устанавливаем правильный URL для словаря в зависимости от языка
@@ -286,7 +288,7 @@ if (isLocalhost) {
         ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`
         : `goldendict://${encodeURIComponent(wordForSearch)}`;
 } else {
-    dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+const dictSearchUrl = createDictSearchUrl(wordForSearch);
 }
 
 
@@ -578,32 +580,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000); // Небольшая задержка для гарантированного рендеринга
 });
 
+/**
+ * Создает кликабельную ссылку с правильным поведением для любой среды.
+ * @param {string} wordToLink - Слово для ссылки.
+ * @returns {string} - Готовый HTML тег <a>.
+ */
+function createClickableLink(wordToLink) {
+    const wordSearchUrl = createDictSearchUrl(wordToLink);
+    let clickAction;
 
-  /**
-     * Создает кликабельную ссылку с правильным поведением для любой среды.
-     * @param {string} wordToLink - Слово для ссылки.
-     * @returns {string} - Готовый HTML тег <a>.
-     */
-    function createClickableLink(wordToLink) {
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        let wordSearchUrl;
-        let clickAction;
-
-        if (isLocalhost) {
-            wordSearchUrl = isAndroid
-                ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`
-                : `goldendict://${encodeURIComponent(wordToLink)}`;
-            // Для localhost просто переходим по ссылке
-            clickAction = `window.location.href=this.href; return false;`;
-        } else {
-            wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
-            // Для live-сайта открываем в новом окне
-            clickAction = `event.preventDefault(); event.stopPropagation(); parent.openDictionaryWindow(this.href); return false;`;
-        }
-
-        return `<a href="${wordSearchUrl}" onclick="${clickAction}" style="text-decoration: none; color: inherit;">${wordToLink}</a>`;
+    if (isLocalhost) {
+        // Для localhost просто переходим по ссылке
+        clickAction = `window.location.href=this.href; return false;`;
+    } else {
+        // Для live-сайта открываем в новом окне
+        clickAction = `event.preventDefault(); event.stopPropagation(); parent.openDictionaryWindow(this.href); return false;`;
     }
 
+    // Вот недостающая часть:
+    return `<a href="${wordSearchUrl}" onclick="${clickAction}" style="text-decoration: none; color: inherit;">${wordToLink}</a>`;
+} 
 
 
 function lookupWordInStandaloneDict(word) {

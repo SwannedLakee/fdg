@@ -329,11 +329,10 @@ margin-left: 6px;
   max-width: 105rem;
 }
 
-/* Перенос слов для читаемости */
+/* Перенос слов для читаемости    white-space: pre-wrap; */
 #sutta * {
   word-break: break-word;
   overflow-wrap: break-word;
-  white-space: pre-wrap;
 }
 
 
