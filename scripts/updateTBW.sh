@@ -33,7 +33,7 @@ textindex=$(echo "$i" | awk -F'/' '{print $NF}' | sed 's/.html//g');
 
 sed -i \
   -e '/<\/body>/i\<script>document.addEventListener("click",e=>{if(e.target.closest("a.dg-link")){e.preventDefault();const s=new URLSearchParams(window.location.search).get("s");window.location.href=e.target.closest("a").href+(s?`&s=${encodeURIComponent(s)}`:"");}})<\/script>' \
-  -e "/<li>.*Translated/s|<li>|<li><a class=\"dg-link\" href=\"/r/?q=$textindex\">DG</a> <a href=\"https://suttacentral.net/$textindex\">SC</a> <a href=\"https://thebuddhaswords.net/$i\">TBW</a> |" \
+  -e "/<li>.*Translated/s|<li>|<li><a class=\"dg-link\" href=\"/r/?q=$textindex\">DG</a> <a class=\"dg-link\" href=\"/b/?q=$textindex\">BB</a> <a href=\"https://thebuddhaswords.net/$i\">TBW</a> <a href=\"https://suttacentral.net/$textindex\">SC</a> |" \
   "$i"
 done
 
