@@ -13,13 +13,8 @@ function extraLinks($fromjs) {
 
   if (file_exists($bwfile) ) {
       $bwlink = "$forbwpath/$fromjs.html";
-
-if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
-      $bblink = "?q=$fromjs";
-}
   } else {
     $bwlink = "";
-    $bblink = "";
   }
 
 $is_ru_referer = false;
@@ -170,7 +165,6 @@ $playerHtml = "<span class='voice-dropdown'>
       ruslinkdn=`cd $locationrudn ; ls -R . | grep -m1 \"{$fromjs}.html\" ` ;
 
       echo -n \"{$playerHtml}{$final}\"
-        [ ! -z $bblink ] && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
         [ ! -z \$ruslink ] && echo -n \"&nbsp;<a target='' title='Theravada.ru' href=$linkforthru/\$ruslink>Th.ru</a>\"
         [ ! -z \$ruslinkdn ] && echo -n \"&nbsp;<a title='Theravada.su' target='' href=/tipitaka.theravada.su/dn/\$ruslinkdn>Th.su</a>\"
@@ -216,8 +210,6 @@ $playerHtml = "<span class='voice-dropdown'>
           $output = shell_exec("ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1` ; ruslinkdn=\"$thsulink\";
 
           echo -n \"{$playerHtml}{$final}\";
-
-          [[ $bblink != \"\" ]]  && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
 
           [[ $bwlink != \"\" ]] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href='$linktbw/$bwlink'>TBW</a>\";
 

@@ -356,7 +356,7 @@ if (translator === "o") {
       
       
       $.ajax({
-      url: "/read/php/extralinks.php?fromjs=" +slug
+      url: "/read/php/extralinksBB.php?fromjs=" +slug
     }).done(function(data) {
       const linksArray = data.split(",");
    
