@@ -13,17 +13,14 @@ function extraLinks($fromjs) {
 
   if (file_exists($bwfile) ) {
       $bwlink = "$forbwpath/$fromjs.html";
+
+if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
       $bblink = "?q=$fromjs";
+}
   } else {
     $bwlink = "";
     $bblink = "";
   }
-
-// --- НАЧАЛО ДОБАВЛЕННОЙ ЛОГИКИ ---
-if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/b/') !== false) {
-    $bblink = "";
-}
-// --- КОНЕЦ ДОБАВЛЕННОЙ ЛОГИКИ ---
 
 $is_ru_referer = false;
   if (isset($_SERVER['HTTP_REFERER'])) {
@@ -237,3 +234,5 @@ $playerHtml = "<span class='voice-dropdown'>
 
 echo extraLinks($_GET['fromjs']);
 ?>
+
+
