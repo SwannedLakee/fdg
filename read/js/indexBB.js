@@ -365,7 +365,8 @@ const enUrl = window.location.href;
 let ruUrl = enUrl.replace("/read/", "/r/");
 ruUrl = enUrl.replace("/b/", "/r/");
 
-let scLink = `<p class="sc-link"><a title="English translation from SuttaCentral.net (Alt+1)" href="${enUrl}">Trn2</a>&nbsp;<a title="Russian (Alt+1)" href="${ruUrl}">Ru</a>&nbsp;`;
+let altTrn = enUrl.replace("/b/", "/read/");
+let scLink = `<p class="sc-link"><a title="English translation from SuttaCentral.net (Alt+1)" href="${altTrn}">En</a>&nbsp;<a title="Russian (Alt+1)" href="${ruUrl}">Ru</a>&nbsp;`;
  
 //dpr
 if (texttype !== "vinaya") {
