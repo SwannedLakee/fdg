@@ -14,6 +14,11 @@ inputForGrep=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | gr
     inputForGrep="$1"
   fi
 
+if [[ $inputForGrep =~ [[:alpha:]]+[[:digit:]]+:[[:digit:]]+ ]]; then
+  inputForGrep+='"'
+fi
+
+
   echo
 grep  -r --color=always "$inputForGrep" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
   awk -F':' '{for(i=2; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : ":")}' | \
