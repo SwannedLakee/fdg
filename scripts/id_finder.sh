@@ -8,16 +8,12 @@ search_and_link() {
 
 inputForUrl=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" | sed -e 's/"//g' -e 's/[":]$//g')
 inputForGrep=$(echo $input | tr ' ' '\n' | grep -iE "[0-9]{1,}*:[0-9]{1,}*" | grep -iE "[a-zA-Z]" )
-
   # grep + awk -m1
    if [[ -z "$input" ]]; then
     inputForGrep="$1"
   fi
 
-if [[ $inputForGrep =~ [[:alpha:]]+[[:digit:]]+:[[:digit:]]+ ]]; then
-  inputForGrep+='"'
-fi
-
+inputForGrep=$(echo "$inputForGrep" | sed -E '/^[a-zA-Z0-9\.]+:[0-9\.]+[^"]$/s/$/"/')
 
   echo
 grep  -r --color=always "$inputForGrep" ../suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ assets/texts/sutta ../suttacentral.net/sc-data/sc_bilara_data/translation/en/ 2>/dev/null | \
