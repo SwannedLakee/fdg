@@ -156,11 +156,11 @@ async function fetchTranslationWithFallback(slugReady, texttype, pathLang, initi
     initialTranslator, // Try the original translator first
     "bodhi",
     "nyanamoli+bodhi",
-    "walshe",
     "anandajoti",
+    "sujato+walton",
+    "walshe",
     "buddharakkhita",
     "thanissaro",
-    "sujato+walton",
     "kelly",
     "sujato"
   ];
