@@ -158,6 +158,8 @@ async function fetchTranslationWithFallback(slugReady, texttype, pathLang, initi
     "nyanamoli+bodhi",
     "walshe",
     "anandajoti",
+    "buddharakkhita",
+    "sujato+walton",
     "kelly",
     "sujato"
   ];
@@ -316,17 +318,23 @@ if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o-en.html>o</a> from Pali';
 } else if (translator === "sv") {
   translatorforuser = 'SV theravada.ru from Eng';
-}  else if (translator === "bodhi") {
+} else if (translator === "anandajoti") {
+  translatorforuser = "Ānandajoti Bhikkhu";
+} else if (translator === "bodhi") {
   translatorforuser = "Bhikkhu Bodhi";
 } else if (translator === "nyanamoli+bodhi") {
   translatorforuser = "Bhikkhu Ñāṇamoli & Bhikkhu Bodhi";
+} else if (translator === "thanissaro") {
+  translatorforuser = "Thaissaro Bhikkhu";
 } else if (translator === "walshe") {
   translatorforuser = "Maurice Walshe";
-} else if (translator === "anandajoti") {
-  translatorforuser = "Ānandajoti Bhikkhu";
 } else if (translator === "kelly") {
   translatorforuser = "John Kelly, Sue Sawyer & Victoria Yareham";
-}  else if ((translator === "" && texttype === "sutta" ) || (translator === "sujato" )) {
+} else if (translator === "buddharakkhita") {
+  translatorforuser = "Acharya Buddharakkhita";
+} else if (translator === "sujato+walton") {
+  translatorforuser = "Bhikkhu Sujato, Jessica Walton";
+} else if ((translator === "" && texttype === "sutta" ) || (translator === "sujato" )) {
   translatorforuser = 'Bhikkhu Sujato';
 } else if ((translator === "" && texttype === "vinaya") || (translator === "brahmali" ))  {
   translatorforuser = 'Bhikkhu Brahmali';
@@ -855,12 +863,12 @@ const firstNum = slugParts ? slugParts[2] : '';
   } else if (book === "dhp") {
     return `kn/dhp/${slug}`;
   } else if (book === "ud") {
-    return `kn/ud/vagga${firstNum}/${slug}`;
+    return `kn/ud/${slug}`;
   } else if (book === "iti") {
  //   return `kn/iti/vagga${findItiVagga(firstNum)}/${slug}`;
     return `kn/iti/${slug}`;
   } else if (book === "snp") {
-    return `kn/snp/vagga${firstNum}/${slug}`;
+    return `kn/snp/${slug}`;
   } else if (book === "thag" || book === "thig") {
     return `kn/${book}/${slug}`;
   } else if (book === "ja") {
