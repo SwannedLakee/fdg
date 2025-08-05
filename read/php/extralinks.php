@@ -18,10 +18,18 @@ function extraLinks($fromjs) {
     $bblink = "";
   }
 
-  $forbbpath = strtolower(substr($fromjs,0,2));
-  $bbfile = "$bblocation/$forbbpath/$fromjs.html";
 
-  if (file_exists($bwfile) ) {
+  $forbbpath = strtolower(substr($fromjs,0,2));
+
+if (preg_match('/(dn|mn|sn[0-9]|an)/', $fromjs)) {
+    // если $fromjs содержит 'dn', 'mn', 'sn' с цифрой или 'an'
+    $bbfile = "$bblocation/$texttype/$forbbpath/$fromjs.html";
+} else {
+    // если $fromjs не содержит ни одной из этих подстрок
+    $bbfile = "$bblocation/$texttype/kn/$forbbpath/$fromjs.html";
+}
+
+  if (file_exists($bbfile) ) {
 if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
       $bblink = "?q=$fromjs";
 }

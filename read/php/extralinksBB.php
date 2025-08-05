@@ -22,7 +22,7 @@ function extraLinks($fromjs) {
   $forbbpath = strtolower(substr($fromjs,0,2));
   $bbfile = "$bblocation/$forbbpath/$fromjs.html";
 
-  if (file_exists($bwfile) ) {
+  if (file_exists($bbfile) ) {
       $bblink = "?q=$fromjs";
   } else {
 if (strpos($_SERVER['REQUEST_URI'], '/b/') === true) {

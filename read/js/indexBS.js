@@ -61,7 +61,7 @@ function buildSutta(slug) {
   let html = `<div class="button-area"><button title="Switch language (Atl+Z or Alt+Space)" id="language-button" class="hide-button">Pāḷi Eng</button></div>`;
   
   const slugReady = parseSlug(slug);
-  // console.log("slugReady is " + slugReady + " slug is " + slug); 
+ console.log("slugReady is " + slugReady + " slug is " + slug); 
 
 let params = new URLSearchParams(document.location.search);
  let script = params.get("script");
