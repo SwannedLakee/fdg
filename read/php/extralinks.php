@@ -9,8 +9,7 @@ function extraLinks($fromjs) {
   $forbwpath = strtolower(substr($fromjs,0,2));
   $bwfile = "$bwlocation/$forbwpath/$fromjs.html";
 
-  $texttype='sutta';
-
+ 
   if (file_exists($bwfile) ) {
       $bwlink = "$forbwpath/$fromjs.html";
   } else {
@@ -18,16 +17,20 @@ function extraLinks($fromjs) {
     $bblink = "";
   }
 
+ $texttype='sutta';
+$cleaned = preg_replace('/\d.*$/', '', $fromjs);
+$forbbpath = strtolower($cleaned);
 
-  $forbbpath = strtolower(substr($fromjs,0,2));
 
 if (preg_match('/(dn|mn|sn[0-9]|an)/', $fromjs)) {
     // если $fromjs содержит 'dn', 'mn', 'sn' с цифрой или 'an'
-    $bbfile = "$bblocation/$texttype/$forbbpath/$fromjs.html";
+    $bbfile = "$bblocation/$texttype/$forbbpath/{$fromjs}_root-pli-ms.json";
 } else {
     // если $fromjs не содержит ни одной из этих подстрок
-    $bbfile = "$bblocation/$texttype/kn/$forbbpath/$fromjs.html";
+    $bbfile = "$bblocation/$texttype/kn/$forbbpath/{$fromjs}_root-pli-ms.json";
 }
+
+echo "$bbfile";
 
   if (file_exists($bbfile) ) {
 if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
