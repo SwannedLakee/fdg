@@ -193,7 +193,21 @@ const translationResponse = fetchTranslationWithFallback(slugReady, texttype, pa
   });
 
 
-  const htmlResponse = fetch(htmlpath).then(response => response.json());
+const htmlResponse = fetch(htmlpath).then(response => {
+  if (!response.ok) {
+    // Если файл не найден или другая ошибка, возвращаем пустой объект,
+    // чтобы Promise.all не завершился с ошибкой.
+    return {};
+  }
+  return response.json();
+}).catch(error => {
+  // На случай других проблем, например, с сетью
+  console.log('HTML response fetch failed:', error);
+  return {};
+});
+
+//  const htmlResponse = fetch(htmlpath).then(response => response.json());
+
 async function fetchVariant() {
   const paths = [varpath, varpathLocal];
 
@@ -402,10 +416,19 @@ function getTextUrl(slug) {
   return "Запись не найдена";
 }
 
+
 function findTextUrl(nikaya, subdivision, textnum) {
+  // Проверка 1: Существует ли вообще такая никая в нашем объекте.
+  if (!digitalPaliReader[nikaya] || !digitalPaliReader[nikaya].available) {
+    return null;
+  }
+
   if (subdivision !== null) {
-    if (digitalPaliReader[nikaya].available[subdivision]) {
-      let item = digitalPaliReader[nikaya].available[subdivision].find(item => {
+    const subdivisionArray = digitalPaliReader[nikaya].available[subdivision];
+
+    // Проверка 2: Существует ли подраздел и является ли он массивом.
+    if (Array.isArray(subdivisionArray)) {
+      let item = subdivisionArray.find(item => {
         if (Array.isArray(item)) {
           if (item.length === 3) {
             return textnum >= item[0] && textnum <= item[1];
@@ -421,14 +444,21 @@ function findTextUrl(nikaya, subdivision, textnum) {
       }
     }
   } else {
-    let item = digitalPaliReader[nikaya].available.find(item => Array.isArray(item) ? item[0] === textnum : item === textnum);
-    if (item) {
-      return digitalPaliReader.constants.rootUrl + item[1];
+    const availableArray = digitalPaliReader[nikaya].available;
+
+    // Проверка 3: Является ли свойство .available массивом (это место оригинального сбоя для 'thag').
+    if (Array.isArray(availableArray)) {
+      let item = availableArray.find(item => Array.isArray(item) ? item[0] === textnum : item === textnum);
+      if (item) {
+        return digitalPaliReader.constants.rootUrl + item[1];
+      }
     }
   }
   
+  // Если ничего не найдено ни в одном из путей.
   return null;
 }
+
 
 let textUrl = getTextUrl(slug);
 // console.log("Ссылка на", slug + ":", textUrl);
