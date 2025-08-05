@@ -159,6 +159,7 @@ async function fetchTranslationWithFallback(slugReady, texttype, pathLang, initi
     "walshe",
     "anandajoti",
     "buddharakkhita",
+    "thanissaro",
     "sujato+walton",
     "kelly",
     "sujato"
