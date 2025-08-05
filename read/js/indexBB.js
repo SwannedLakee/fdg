@@ -312,7 +312,6 @@ ${varData[segment].trim()}${linkToCopy}
 }
 });
 
-
 //console.log('texttype ' + texttype + ' translator ' + translator);
 if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o-en.html>o</a> from Pali';
