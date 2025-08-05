@@ -167,8 +167,8 @@ $scriptfile = $basedir. '/scripts/ranges.sh';
 
 $thsulocation = $basedir. '/tipitaka.theravada.su/';
 $thrulocation = $basedir. '/theravada.ru/Teaching/Canon';
-$bwlocation = $basedir. '/bw';
-$bblocation = $basedir. '/assets/texts/en';
+$bwlocation = $basedir. 'bw';
+$bblocation = $basedir. 'assets/texts/en';
 
 //extralinks.php
 
