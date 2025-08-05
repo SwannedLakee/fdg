@@ -8,7 +8,7 @@ if ( preg_match('/Android/', $uname)  ) {
     $mode = 'offline';
 //$mode = 'online';
 
-$basedir = "/data/data/com.termux/files/usr/share/apache2/default-site/htdocs";
+$basedir = "/data/data/com.termux/files/usr/share/apache2/default-site/htdocs/";
 $fontawesomejs = '<script src="/assets/js/fontawesome.6.6.all.js"></script>';
 
 

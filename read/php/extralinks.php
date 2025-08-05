@@ -6,7 +6,8 @@ error_reporting(E_ERROR | E_PARSE);
 function extraLinks($fromjs) {
   include_once('../../config/config.php');
   $forthru = str_replace(".", '_', $fromjs);
-  $forbwpath = strtolower(substr($fromjs,0,2));
+$cleaned = preg_replace('/\d.*$/', '', $fromjs);
+$forbwpath = strtolower($cleaned);
   $bwfile = "$bwlocation/$forbwpath/$fromjs.html";
 
  
@@ -14,32 +15,32 @@ function extraLinks($fromjs) {
       $bwlink = "$forbwpath/$fromjs.html";
   } else {
     $bwlink = "";
-    $bblink = "";
   }
 
  $texttype='sutta';
-$cleaned = preg_replace('/\d.*$/', '', $fromjs);
 $forbbpath = strtolower($cleaned);
 
 
-if (preg_match('/(dn|mn|sn[0-9]|an)/', $fromjs)) {
+if (preg_match('/(dn|mn)/', $fromjs)) {
     // если $fromjs содержит 'dn', 'mn', 'sn' с цифрой или 'an'
     $bbfile = "$bblocation/$texttype/$forbbpath/{$fromjs}_root-pli-ms.json";
+} else if (preg_match('/(sn[0-9]|an)/', $fromjs)) {
+$booknum = preg_replace('/\..*$/', '', $fromjs);
+    $bbfile = "$bblocation/$texttype/$forbbpath/$booknum/{$fromjs}_root-pli-ms.json";
 } else {
     // если $fromjs не содержит ни одной из этих подстрок
     $bbfile = "$bblocation/$texttype/kn/$forbbpath/{$fromjs}_root-pli-ms.json";
 }
 
-echo "$bbfile";
+//echo "$bbfile";
 
   if (file_exists($bbfile) ) {
-if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
       $bblink = "?q=$fromjs";
-}
   } else {
+if (strpos($_SERVER['REQUEST_URI'], '/b/') === true) {
     $bblink = "";
   }
-
+}
 
 $is_ru_referer = false;
   if (isset($_SERVER['HTTP_REFERER'])) {

@@ -6,29 +6,31 @@ error_reporting(E_ERROR | E_PARSE);
 function extraLinks($fromjs) {
   include_once('../../config/config.php');
   $forthru = str_replace(".", '_', $fromjs);
-  $forbwpath = strtolower(substr($fromjs,0,2));
+$cleaned = preg_replace('/\d.*$/', '', $fromjs);
+$forbwpath = strtolower($cleaned);
   $bwfile = "$bwlocation/$forbwpath/$fromjs.html";
 
-  $texttype='sutta';
-
+ 
   if (file_exists($bwfile) ) {
       $bwlink = "$forbwpath/$fromjs.html";
   } else {
     $bwlink = "";
   }
 
+ $texttype='sutta';
+$forbbpath = strtolower($cleaned);
 
 
-  $forbbpath = strtolower(substr($fromjs,0,2));
-  $bbfile = "$bblocation/$forbbpath/$fromjs.html";
-
-  if (file_exists($bbfile) ) {
-      $bblink = "?q=$fromjs";
-  } else {
-if (strpos($_SERVER['REQUEST_URI'], '/b/') === true) {
-    $bblink = "";
-  }
-  }
+if (preg_match('/(dn|mn)/', $fromjs)) {
+    // если $fromjs содержит 'dn', 'mn', 'sn' с цифрой или 'an'
+    $bbfile = "$bblocation/$texttype/$forbbpath/{$fromjs}_root-pli-ms.json";
+} else if (preg_match('/(sn[0-9]|an)/', $fromjs)) {
+$booknum = preg_replace('/\..*$/', '', $fromjs);
+    $bbfile = "$bblocation/$texttype/$forbbpath/$booknum/{$fromjs}_root-pli-ms.json";
+} else {
+    // если $fromjs не содержит ни одной из этих подстрок
+    $bbfile = "$bblocation/$texttype/kn/$forbbpath/{$fromjs}_root-pli-ms.json";
+}
 
 
 $is_ru_referer = false;
@@ -179,6 +181,7 @@ $playerHtml = "<span class='voice-dropdown'>
       ruslinkdn=`cd $locationrudn ; ls -R . | grep -m1 \"{$fromjs}.html\" ` ;
 
       echo -n \"{$playerHtml}{$final}\"
+  
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
         [ ! -z \$ruslink ] && echo -n \"&nbsp;<a target='' title='Theravada.ru' href=$linkforthru/\$ruslink>Th.ru</a>\"
         [ ! -z \$ruslinkdn ] && echo -n \"&nbsp;<a title='Theravada.su' target='' href=/tipitaka.theravada.su/dn/\$ruslinkdn>Th.su</a>\"
