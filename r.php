@@ -109,7 +109,8 @@ function load_all_languages_interleaved($slug) {
   } else {
     foreach ($all_keys as $key) {
       if (strpos($key, ':') === false) continue;
-     
+      
+      $row_id = htmlspecialchars($key);
       $template = $data_sources['html'][$key] ?? '{}';
       $pali_text = htmlspecialchars($data_sources['pali'][$key] ?? '', ENT_QUOTES, 'UTF-8');
       $en_text = htmlspecialchars($data_sources['en'][$key] ?? '', ENT_QUOTES, 'UTF-8');
@@ -118,8 +119,8 @@ function load_all_languages_interleaved($slug) {
       $en_col_html = str_replace('{}', $en_text, $template);
       $ru_col_html = str_replace('{}', $ru_text, $template);
       
-      // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлены data-column атрибуты ---
-      $html_output .= "<tr>";
+      // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлен ID к <tr> и data-column атрибуты к <td> ---
+      $html_output .= "<tr id='{$row_id}'>";
       $html_output .= "<td data-column='ID'>" . htmlspecialchars($key) . "</td>";
       $html_output .= "<td data-column='Pali' class='pali-text' lang='pi'>{$pali_col_html}</td>";
       $html_output .= "<td data-column='English' class='en-text' lang='en'>{$en_col_html}</td>";
@@ -323,13 +324,6 @@ body.dark .dt-buttons .btn-secondary:hover {
   hyphens: auto;
 }
 
-/* Колонка ID - минимальная ширина */
-#sutta-table th:nth-child(1), 
-#sutta-table td:nth-child(1) {
-  width: 5% !important;
-  max-width: 100px;
-  min-width: 50px;
-}
 
 /* Базовые стили для текстовых колонок */
 #sutta-table th:not(:nth-child(1)), 
@@ -370,40 +364,92 @@ body.dark .dt-buttons .btn-secondary:hover {
 }
 
 /* --- ИЗМЕНЕНИЕ ЗДЕСЬ: Исправлена логика мобильного отображения --- */
-/* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
-  #sutta-table {
+  /* Скрываем заголовки таблицы */
+  #sutta-table thead {
+    display: none;
+  }
+
+  /* Заставляем элементы таблицы вести себя как блочные элементы */
+  #sutta-table, #sutta-table tbody, #sutta-table tr, #sutta-table td {
     display: block;
-    overflow-x: auto;
+    width: 100% !important;
+  }
+
+  /* Каждая строка таблицы становится "карточкой" */
+  #sutta-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.25rem;
+    overflow: hidden;
   }
   
   #sutta-table td {
-    min-width: 150px;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+    padding: 0.75rem;
+  }
+  
+  /* Убираем рамку у последней ячейки в "карточке" */
+  #sutta-table tr td:last-child {
+    border-bottom: none;
+  }
+  
+
+  /* Добавляем псевдо-заголовки из data-атрибута */
+  #sutta-table td[data-column]::before {
+    content: attr(data-column);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--bs-body-color);
+  }
+
+  /* --- НОВОЕ ПРАВИЛО --- */
+  /* Скрываем повторные заголовки для всех строк, кроме первой */
+  #sutta-table tr + tr td[data-column]::before {
+    display: none;
   }
   
   .controls-container {
     position: static;
   }
-  
-  /* На мобильных делаем все колонки 100% ширины */
-  #sutta-table th,
-  #sutta-table td {
-    width: 100% !important;
-    display: block;
-  }
-  
-  /* Скрываем заголовки на мобильных */
-  #sutta-table thead {
-    display: none;
-  }
-  
-  /* Добавляем псевдо-заголовки для ясности из data-атрибута */
-  #sutta-table td::before {
-    content: attr(data-column);
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
+
+/* Случай 1: Только одна текстовая колонка видна */
+#sutta-table th:nth-child(2):last-child,
+#sutta-table td:nth-child(2):last-child,
+#sutta-table th:nth-child(3):last-child,
+#sutta-table td:nth-child(3):last-child,
+#sutta-table th:nth-child(4):last-child,
+#sutta-table td:nth-child(4):last-child {
+  width: 100% !important;
+}
+
+/* Случай 2: Две текстовые колонки видны */
+#sutta-table th:nth-child(2):nth-last-child(2),
+#sutta-table td:nth-child(2):nth-last-child(2),
+#sutta-table th:nth-child(3):nth-last-child(1),
+#sutta-table td:nth-child(3):nth-last-child(1),
+#sutta-table th:nth-child(3):nth-last-child(2),
+#sutta-table td:nth-child(3):nth-last-child(2),
+#sutta-table th:nth-child(4):nth-last-child(1),
+#sutta-table td:nth-child(4):nth-last-child(1) {
+  width: 100% !important;
+}
+
+/* Случай 3: Все три текстовые колонки видны */
+#sutta-table th:nth-child(2):nth-last-child(3),
+#sutta-table td:nth-child(2):nth-last-child(3),
+#sutta-table th:nth-child(3):nth-last-child(2),
+#sutta-table td:nth-child(3):nth-last-child(2),
+#sutta-table th:nth-child(4):nth-last-child(1),
+#sutta-table td:nth-child(4):nth-last-child(1) {
+  width: 100% !important;
+}
+
+
+
 }
  </style>
 </head>
@@ -449,6 +495,7 @@ body.dark .dt-buttons .btn-secondary:hover {
  <script src="/assets/js/paliLookup.js"></script>
  <script src="/assets/js/settings.js"></script>
  <script src="/assets/js/smoothScroll.js" defer></script>
+ <script src="/assets/js/copyToClipboard.js" defer></script>
 <script>
 function goToSlug() {
   const slug = document.getElementById('paliauto').value.trim().toLowerCase();
@@ -563,6 +610,53 @@ $('#custom-search-filter').on('keyup input', function() {
 $('.dt-buttons')
   .addClass('me-2') 
   .prependTo('#datatables-controls-placeholder');
+
+  // --- НОВАЯ ЛОГИКА ДЛЯ ПРОКРУТКИ К ЯКОРЮ ---
+  function scrollToHash() {
+    const hash = window.location.hash;
+    // Проверяем, есть ли хэш и является ли он якорем на сегмент (например, #4.5)
+    if (hash && hash.includes('.')) {
+      // Получаем slug из PHP. Он безопасен, т.к. прошел через htmlspecialchars
+      const slug = '<?= $slug ?>'; 
+      
+      // Очищаем хэш от символа '#'
+      const segmentId = hash.substring(1);
+      
+      // Собираем полный ID для строки таблицы (mn70 + : + 4.5 => mn70:4.5)
+      const targetId = `${slug}:${segmentId}`;
+      
+      // jQuery требует экранирования спецсимволов (например, ":") в селекторах ID
+      const targetElement = $('#' + $.escapeSelector(targetId));
+
+      if (targetElement.length) {
+        // Даем небольшую задержку, чтобы таблица и другие элементы успели отрисоваться
+        setTimeout(function() {
+          // Динамически вычисляем высоту "липкой" шапки для корректного смещения
+          const headerHeight = $('.controls-container').outerHeight() || 70;
+          
+          // Плавно прокручиваем к элементу с отступом от шапки
+          $('html, body').animate({
+            scrollTop: targetElement.offset().top - headerHeight - 10 // Доп. отступ 10px
+          }, 500);
+          
+          // Временно подсвечиваем строку для наглядности
+          const originalColor = targetElement.css('background-color');
+          targetElement.css('transition', 'background-color 0.5s ease');
+          targetElement.css('background-color', 'rgba(255, 255, 0, 0.3)');
+          
+          // Убираем подсветку через 3 секунды
+          setTimeout(function() {
+              targetElement.css('background-color', originalColor);
+          }, 3000);
+
+        }, 150); // Задержка 150 мс
+      }
+    }
+  }
+
+  // Вызываем функцию после полной загрузки и инициализации таблицы
+  scrollToHash();
+  // --- КОНЕЦ НОВОЙ ЛОГИКИ ---
 });
 </script>
 </body>
