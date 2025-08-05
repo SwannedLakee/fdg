@@ -122,9 +122,9 @@ function load_all_languages_interleaved($slug) {
       // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлен ID к <tr> и data-column атрибуты к <td> ---
       $html_output .= "<tr id='{$row_id}'>";
       $html_output .= "<td data-column='ID'>" . htmlspecialchars($key) . "</td>";
-      $html_output .= "<td data-column='Pali' class='pali-text' lang='pi'>{$pali_col_html}</td>";
-      $html_output .= "<td data-column='English' class='en-text' lang='en'>{$en_col_html}</td>";
-      $html_output .= "<td data-column='Russian' class='ru-text' lang='ru'>{$ru_col_html}</td>";
+      $html_output .= "<td data-column='Pali' class='pali-text copyLink' lang='pi'>{$pali_col_html}</td>";
+      $html_output .= "<td data-column='English' class='en-text copyLink' lang='en'>{$en_col_html}</td>";
+      $html_output .= "<td data-column='Russian' class='ru-text copyLink' lang='ru'>{$ru_col_html}</td>";
       $html_output .= "</tr>";
     }
   }
@@ -642,7 +642,7 @@ $('.dt-buttons')
           // Временно подсвечиваем строку для наглядности
           const originalColor = targetElement.css('background-color');
           targetElement.css('transition', 'background-color 0.5s ease');
-          targetElement.css('background-color', 'rgba(255, 255, 0, 0.3)');
+          targetElement.css('background-color', '#1abc9c');
           
           // Убираем подсветку через 3 секунды
           setTimeout(function() {
