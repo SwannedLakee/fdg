@@ -1,4 +1,4 @@
- <?php
+<?php
 // reader.php
 // --- ПАРАМЕТРЫ ---
 // Получаем slug и очищаем его от возможных якорей (например, #ll)
@@ -117,11 +117,13 @@ function load_all_languages_interleaved($slug) {
       $pali_col_html = str_replace('{}', $pali_text, $template);
       $en_col_html = str_replace('{}', $en_text, $template);
       $ru_col_html = str_replace('{}', $ru_text, $template);
+      
+      // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлены data-column атрибуты ---
       $html_output .= "<tr>";
-      $html_output .= "<td>" . htmlspecialchars($key) . "</td>";
-      $html_output .= "<td class='pali-text' lang='pi'>{$pali_col_html}</td>";
-      $html_output .= "<td class='en-text' lang='en'>{$en_col_html}</td>";
-      $html_output .= "<td class='ru-text' lang='ru'>{$ru_col_html}</td>";
+      $html_output .= "<td data-column='ID'>" . htmlspecialchars($key) . "</td>";
+      $html_output .= "<td data-column='Pali' class='pali-text' lang='pi'>{$pali_col_html}</td>";
+      $html_output .= "<td data-column='English' class='en-text' lang='en'>{$en_col_html}</td>";
+      $html_output .= "<td data-column='Russian' class='ru-text' lang='ru'>{$ru_col_html}</td>";
       $html_output .= "</tr>";
     }
   }
@@ -158,10 +160,7 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
  <link rel="icon" type="image/png" sizes="32x32" href="https://dhamma.gift/assets/img/favico_black.png">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
-<!--
- <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
- -->
- <link href="/assets/css/styles.css" rel="stylesheet" />
+<link href="/assets/css/styles.css" rel="stylesheet" />
  <link href="/assets/css/extrastyles.css" rel="stylesheet" />
  <link href="/assets/css/paliLookup.css" rel="stylesheet" />
  <link rel="stylesheet" type="text/css" href="/assets/js/datatables/datatables.min.css"/>
@@ -370,6 +369,7 @@ body.dark .dt-buttons .btn-secondary:hover {
   width: 31.66% !important;
 }
 
+/* --- ИЗМЕНЕНИЕ ЗДЕСЬ: Исправлена логика мобильного отображения --- */
 /* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
   #sutta-table {
@@ -397,28 +397,12 @@ body.dark .dt-buttons .btn-secondary:hover {
     display: none;
   }
   
-  /* Добавляем псевдо-заголовки для ясности */
+  /* Добавляем псевдо-заголовки для ясности из data-атрибута */
   #sutta-table td::before {
     content: attr(data-column);
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
-  }
-  
-  #sutta-table td:nth-child(1)::before {
-    content: "ID";
-  }
-  
-  #sutta-table td:nth-child(2)::before {
-    content: "Pali";
-  }
-  
-  #sutta-table td:nth-child(3)::before {
-    content: "English";
-  }
-  
-  #sutta-table td:nth-child(4)::before {
-    content: "Russian";
   }
 }
  </style>

@@ -80,9 +80,9 @@ $menuhowto = 'Помощь';
 $menuabout = 'О Проекте';
 $menulinks = 'Полезное';
 $menucontact = 'Контакты';
-$copyrightnote = 'Материалы сайта распространяются по модели <a class="text-white text-decoration-none me-0" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Attribution-NonCommercial-ShareAlike 4.0 International">CC BY-NC-SA 4.0</a>, но Пали тексты и Английские переводы SuttaCentra.net и работы А. Я. Сыркина и TheBuddhasWords.net подчиняются другим условиям. Для их использования уточняйте условия у правообладателей.';
-$poweredby = 'Powered by NI';
-$tooltippoweredby = 'Natural Intelligence, Естественный Интеллект, Dhamma Интеллект';
+$copyrightnote = 'Материалы сайта распространяются по модели <a class="text-white text-decoration-none me-0" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="top" title="С указанием авторства-Некоммерческая-С сохранением условий версии 4.0 Международная">CC BY-NC-SA 4.0</a>, но Пали тексты и Английские переводы SuttaCentra.net и работы А. Я. Сыркина и TheBuddhasWords.net подчиняются другим условиям. Для их использования уточняйте условия у правообладателей.';
+$poweredby = 'Powered by DI';
+$tooltippoweredby = 'Дхамма Интеллект, Dhamma Intelligence, Естественный Интеллект, Natural Intelligence';
 
 $tooltiptitle = 'На Pāḷi, Русском, Английском, ไทย и සිංහල ';
 $title = 'Найдите Истину';
@@ -880,7 +880,7 @@ $menulinks = 'Useful Links';
 $menucontact = 'Contacts';
 
 $poweredby = 'Powered by NI';
-$tooltippoweredby = 'Natural Intelligence, Dhamma Intelligence';
+$tooltippoweredby = 'Dhamma Intelligence, Natural Intelligence';
 
 $tooltiptitle = 'In Pāḷi, English, Russian, සිංහල & ไทย';
 $title = 'Search for Truth';
