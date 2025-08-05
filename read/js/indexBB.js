@@ -857,7 +857,8 @@ const firstNum = slugParts ? slugParts[2] : '';
   } else if (book === "ud") {
     return `kn/ud/vagga${firstNum}/${slug}`;
   } else if (book === "iti") {
-    return `kn/iti/vagga${findItiVagga(firstNum)}/${slug}`;
+ //   return `kn/iti/vagga${findItiVagga(firstNum)}/${slug}`;
+    return `kn/ud/${slug}`;
   } else if (book === "snp") {
     return `kn/snp/vagga${firstNum}/${slug}`;
   } else if (book === "thag" || book === "thig") {
