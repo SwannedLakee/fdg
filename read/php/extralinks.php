@@ -13,14 +13,22 @@ function extraLinks($fromjs) {
 
   if (file_exists($bwfile) ) {
       $bwlink = "$forbwpath/$fromjs.html";
-
-if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
-      $bblink = "?q=$fromjs";
-}
   } else {
     $bwlink = "";
     $bblink = "";
   }
+
+  $forbbpath = strtolower(substr($fromjs,0,2));
+  $bbfile = "$bblocation/$forbbpath/$fromjs.html";
+
+  if (file_exists($bwfile) ) {
+if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
+      $bblink = "?q=$fromjs";
+}
+  } else {
+    $bblink = "";
+  }
+
 
 $is_ru_referer = false;
   if (isset($_SERVER['HTTP_REFERER'])) {

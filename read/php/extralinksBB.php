@@ -17,6 +17,20 @@ function extraLinks($fromjs) {
     $bwlink = "";
   }
 
+
+
+  $forbbpath = strtolower(substr($fromjs,0,2));
+  $bbfile = "$bblocation/$forbbpath/$fromjs.html";
+
+  if (file_exists($bwfile) ) {
+      $bblink = "?q=$fromjs";
+  } else {
+if (strpos($_SERVER['REQUEST_URI'], '/b/') === true) {
+    $bblink = "";
+  }
+  }
+
+
 $is_ru_referer = false;
   if (isset($_SERVER['HTTP_REFERER'])) {
       $is_ru_referer = (strpos($_SERVER['HTTP_REFERER'], '/ru/') !== false) ||
