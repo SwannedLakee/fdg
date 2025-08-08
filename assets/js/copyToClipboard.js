@@ -149,24 +149,36 @@ document.addEventListener('DOMContentLoaded', function() {
   // Инициализируем уведомление при загрузке
   initCopyNotification();
 
+  // =======================================================================
+  // НАЧАЛО НОВОГО КОДА: Копирование ссылки на строку по правому клику/долгому нажатию
+  // =======================================================================
+
   let pressTimer = null;
 
-  // Функция-обработчик, которая находит и копирует ссылку
+// Универсальная функция-обработчик, которая находит и копирует ссылку
   const handleLineLinkCopy = (event) => {
-    const verseLine = event.target.closest('.verse-line');
-    if (!verseLine) return;
+    // 1. Находим ближайший родительский элемент с атрибутом [id],
+    // начиная от элемента, по которому кликнули.
+    const anchorElement = event.target.closest('[id]');
 
-    // Предотвращаем стандартное поведение (меню, выделение текста)
+    // Если элемент с ID не найден, ничего не делаем.
+    if (!anchorElement) return;
+
+    // 2. Ищем .copyLink ВНУТРИ найденного элемента с ID.
+    // Это нужно, чтобы получить базовый URL для ссылки.
+    const copyLinkElem = anchorElement.querySelector('.copyLink');
+
+    // Если .copyLink не найден, мы не можем построить ссылку, выходим.
+    if (!copyLinkElem) return;
+
+    // Предотвращаем стандартное поведение (контекстное меню, выделение и т.д.)
+    // Это действие выполняется только если все проверки выше прошли.
     event.preventDefault();
 
-    // Находим ID строки из дочернего элемента
-    const idSpan = verseLine.querySelector('span[id]');
-    if (!idSpan || !idSpan.id) return;
-    const hash = idSpan.id;
-
-    // Находим базовый URL из атрибута onclick, чтобы ссылка была правильной
-    const copyLinkElem = verseLine.querySelector('.copyLink');
-    if (!copyLinkElem) return;
+    // 3. Используем ID найденного элемента как хеш для ссылки.
+    const hash = anchorElement.id;
+    
+    // --- Дальнейшая логика для сборки URL и копирования остается прежней ---
 
     const onclickAttr = copyLinkElem.getAttribute('onclick');
     const urlMatch = onclickAttr.match(/copyToClipboard\('([^']*)'\)/);
@@ -188,9 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const path = window.location.pathname;
       const language = localStorage.getItem('siteLanguage') || (path.includes('/r/') ? 'ru' : 'en');
       const notificationText = {
-        ru: "Ссылка на строку скопирована",
-        en: "Link to line copied"
-      }[language] || "Link to line copied";
+        ru: "Ссылка скопирована",
+        en: "Link copied"
+      }[language] || "Link copied";
       showBubbleNotification(notificationText);
     }).catch(err => {
       console.error('Не удалось скопировать ссылку: ', err);
@@ -218,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   document.addEventListener('touchend', clearLongPressTimer);
   document.addEventListener('touchmove', clearLongPressTimer);
-
-
+   // =======================================================================
+  // КОНЕЦ НОВОГО КОДА
+  // =======================================================================
 });
