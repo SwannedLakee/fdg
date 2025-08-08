@@ -35,12 +35,12 @@ function findBwTextUrl(slug) {
         console.log("оффлайн");
         base = "/";
        // tbwRootUrl = "bw/";
-        tbwRootUrl = "/bb/?q="; 
+        tbwRootUrl = "bb/?q="; 
     } else {
         console.log("онлайн");
         base = "/";
       //  tbwRootUrl = "bw/"; 
-         tbwRootUrl = "/bb/?q="; 
+         tbwRootUrl = "bb/?q="; 
       //  base = "https://";
       //  tbwRootUrl = "thebuddhaswords.net/"; 
     }
