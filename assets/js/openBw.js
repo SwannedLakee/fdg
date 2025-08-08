@@ -1,56 +1,82 @@
 document.addEventListener("DOMContentLoaded", function() {
-  //  console.log("Страница загружена");
-    const ruLinks = document.querySelectorAll('.bwLink');
-    ruLinks.forEach(link => {
+    // Get the 's' parameter from the browser's URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sParam = urlParams.get('s');
+ 
+    let keyword;
+
+    // Check for the existence of an element with the class "keyword"
+    let keywordElement = document.querySelector('.keyword');
+    if (keywordElement) {
+        keyword = keywordElement.textContent.trim();
+    } else {
+        keyword = ""; // Default value if the element is not found
+    }
+
+    // Use the value from the "s" parameter or "keyword"
+    const searchValue = sParam && sParam.trim() !== "" ? sParam : keyword;
+
+    const bwLinks = document.querySelectorAll('.bwLink');
+    bwLinks.forEach(link => {
         const slug = link.getAttribute('data-slug');
-     //   console.log("Slug:", slug);
-        const textUrl = findBwTextUrl(slug);
-     //   console.log("Text URL:", textUrl);
+        // Pass the searchValue to the URL generation function
+        const textUrl = findBwTextUrl(slug, searchValue);
         if (!textUrl) {
             link.style.display = 'none';
         } else {
-            // Установка значения в атрибут href
+            // Set the value in the href attribute
             link.href = textUrl;
+             link.target = "_blank";
         }
     });
 });
 
 function openBw(slug) {
-  //  console.log("Открывается TBW для:", slug);
-    let textUrl = findBwTextUrl(slug);
+    // Also get searchValue here for direct calls to this function
+    const urlParams = new URLSearchParams(window.location.search);
+    const sParam = urlParams.get('s');
+    let keyword;
+    const keywordElement = document.querySelector('.keyword');
+    if (keywordElement) {
+        keyword = keywordElement.textContent.trim();
+    } else {
+        keyword = "";
+    }
+    const searchValue = sParam && sParam.trim() !== "" ? sParam : keyword;
+
+    let textUrl = findBwTextUrl(slug, searchValue);
     if (textUrl) {
-     //   console.log("Ссылка найдена:", textUrl);
         window.open(textUrl, "_blank");
     } else {
-            console.log("Ссылка не найдена", slug, textUrl);
+        console.log("Link not found for slug:", slug);
     }
 }
 
-function findBwTextUrl(slug) {
+function findBwTextUrl(slug, searchValue) {
     let datasetBw;
     let tbwRootUrl;
     let base; 
 
     if (window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1')) {
-        console.log("оффлайн");
         base = "/";
-       // tbwRootUrl = "bw/";
         tbwRootUrl = "b/?q="; 
     } else {
-        console.log("онлайн");
         base = "/";
-      //  tbwRootUrl = "bw/"; 
-         tbwRootUrl = "b/?q="; 
-      //  base = "https://";
-      //  tbwRootUrl = "thebuddhaswords.net/"; 
+        tbwRootUrl = "b/?q="; 
     }
   
-        datasetBw = tbwLinksData;
+    // Assumes tbwLinksData is available in the global scope
+    datasetBw = typeof tbwLinksData !== 'undefined' ? tbwLinksData : [];
   
     if (datasetBw && datasetBw.length) {
         const item = datasetBw.find(item => Array.isArray(item) ? item[0] === slug : item === slug);
         if (item) {
-            return base + tbwRootUrl + item[1];
+            let finalUrl = base + tbwRootUrl + item[1];
+            // If a searchValue exists, append it as the 's' parameter
+            if (searchValue) {
+                finalUrl += '&s=' + encodeURIComponent(searchValue);
+            }
+            return finalUrl;
         }
     }
     return null;

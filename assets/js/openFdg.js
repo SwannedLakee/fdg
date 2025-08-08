@@ -55,6 +55,7 @@ fdgLinks.forEach(link => {
     } else {
         // Установка значения в атрибут href
         link.href = textUrl;
+         link.target = "_blank";
     }
 });
 });

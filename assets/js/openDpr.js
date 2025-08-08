@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             // Установка значения в атрибут href
             link.href = textUrl;
+             link.target = "_blank";
         }
     });
 });
