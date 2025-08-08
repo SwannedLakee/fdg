@@ -38,7 +38,7 @@ function switchIcon(x) {
 //theme control
 function toggleThemeManually() {
   const bodyTag = document.body;
-let themeButton = themeButton || document.getElementById("theme-button");
+  const themeButton = document.getElementById("theme-button");
 
   function setTheme(theme) {
     if (theme === "light") {

@@ -124,24 +124,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Обработчик для кнопки смены темы
-let themeButton = themeButton || document.getElementById("theme-button");
-
-if (themeButton) {
-    themeButton.addEventListener('click', function() {
-        setTimeout(() => {
-            const arrowImg = document.getElementById('arrowImg');
-            if (arrowImg) {
-                const isDark = document.documentElement.classList.contains('dark') || 
-                               localStorage.theme === 'dark' ||
-                               (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                
-                arrowImg.src = isDark ? '/assets/svg/arrow-up.svg' : '/assets/svg/arrow-up-dark.svg';
-            }
-        }, 50);
-    });
-}
-
 //scroll by s params
 document.addEventListener("DOMContentLoaded", function() {
     let params = new URLSearchParams(document.location.search);
