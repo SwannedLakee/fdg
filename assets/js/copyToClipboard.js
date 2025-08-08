@@ -1,6 +1,5 @@
 // Функция для добавления стилей и элемента уведомления
 function initCopyNotification() {
-
   // Создаем элемент уведомления
   const bubble = document.createElement('div');
   bubble.id = 'bubbleNotification';
@@ -8,14 +7,13 @@ function initCopyNotification() {
   document.body.appendChild(bubble);
 }
 
-
 // Функция для определения языка
 function getNotificationText() {
   const path = window.location.pathname;
-  const language = localStorage.getItem('siteLanguage') || 
-                  (path.includes('/r/') ? 'ru' : 
+  const language = localStorage.getItem('siteLanguage') ||
+                  (path.includes('/r/') ? 'ru' :
                    path.includes('/read/') ? 'en' : 'en');
-  
+
   return {
     ru: "Цитата скопирована",
     en: "Quote copied"
@@ -57,7 +55,7 @@ function copyToClipboard(text = "") {
   const suttaId = new URL(text).searchParams.get('q') || '';
 
   let textParts = [];
-  
+
   // 1. Всегда добавляем текст пали (с видимыми вариантами)
   const piElement = parentSpan.querySelector('.pli-lang');
   if (piElement) {
@@ -88,7 +86,7 @@ function copyToClipboard(text = "") {
       .filter(el => !el.closest('.hidden-variant'))
       .map(el => el.textContent.trim())
       .filter(Boolean);
-    
+
     if (otherTranslations.length > 0) {
       textParts = textParts.concat(otherTranslations);
     }
@@ -96,10 +94,10 @@ function copyToClipboard(text = "") {
 
   // Собираем финальный текст с правильными отступами
   let textToCopy = textParts.join('\n\n'); // Двойной перенос между блоками
-  
+
   // 4. Добавляем ID сутты и ссылку с дополнительными отступами
   if (suttaId) textToCopy += `\n\n${suttaId}`;
-    
+
   if (text.includes('localhost') || text.includes('127.0.0.1')) {
     text = text.replace(/http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, 'https://dhamma.gift');
     }
@@ -108,7 +106,7 @@ function copyToClipboard(text = "") {
 
   console.log('Копируемый текст:', textToCopy);
   showBubbleNotification(getNotificationText());
-  
+
   if (navigator.clipboard) {
     navigator.clipboard.writeText(textToCopy).catch(() => fallbackCopy(textToCopy));
   } else {
@@ -130,10 +128,10 @@ function fallbackCopy(text) {
 function showBubbleNotification(text) {
   const bubble = document.getElementById('bubbleNotification');
   if (!bubble) return;
-  
+
   bubble.textContent = text;
   bubble.classList.add('show');
-  
+
   setTimeout(() => {
     bubble.classList.remove('show');
   }, 2000);
@@ -149,54 +147,46 @@ document.addEventListener('DOMContentLoaded', function() {
   // Инициализируем уведомление при загрузке
   initCopyNotification();
 
-  // =======================================================================
-  // НАЧАЛО НОВОГО КОДА: Копирование ссылки на строку по правому клику/долгому нажатию
-  // =======================================================================
-
   let pressTimer = null;
 
-// Универсальная функция-обработчик, которая находит и копирует ссылку
+  // Универсальная функция-обработчик, которая находит и копирует ссылку
   const handleLineLinkCopy = (event) => {
-    // 1. Находим ближайший родительский элемент с атрибутом [id],
-    // начиная от элемента, по которому кликнули.
-    const anchorElement = event.target.closest('[id]');
+    // ---- КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ----
+    // Ищем ближайший элемент .copyLink к месту клика/нажатия.
+    const copyLinkTarget = event.target.closest('.copyLink');
 
-    // Если элемент с ID не найден, ничего не делаем.
-    if (!anchorElement) return;
+    // Если клик был НЕ на элементе .copyLink, ничего не делаем и выходим.
+    // Это позволяет стандартному меню работать везде, кроме этих ссылок.
+    if (!copyLinkTarget) {
+      return;
+    }
 
-    // 2. Ищем .copyLink ВНУТРИ найденного элемента с ID.
-    // Это нужно, чтобы получить базовый URL для ссылки.
-    const copyLinkElem = anchorElement.querySelector('.copyLink');
-
-    // Если .copyLink не найден, мы не можем построить ссылку, выходим.
-    if (!copyLinkElem) return;
-
-    // Предотвращаем стандартное поведение (контекстное меню, выделение и т.д.)
-    // Это действие выполняется только если все проверки выше прошли.
+    // Если мы здесь, значит, цель найдена. Отменяем стандартное меню.
     event.preventDefault();
 
-    // 3. Используем ID найденного элемента как хеш для ссылки.
-    const hash = anchorElement.id;
-    
-    // --- Дальнейшая логика для сборки URL и копирования остается прежней ---
+    // Теперь, когда цель определена, находим её родителя с ID.
+    const anchorElement = copyLinkTarget.closest('[id]');
+    if (!anchorElement) return; // На всякий случай
 
+    const copyLinkElem = copyLinkTarget; // Наша цель и есть элемент со ссылкой
+
+    // Используем ID найденного родителя как хеш для ссылки.
+    const hash = anchorElement.id;
+
+    // --- Дальнейшая логика для сборки URL и копирования остается прежней ---
     const onclickAttr = copyLinkElem.getAttribute('onclick');
     const urlMatch = onclickAttr.match(/copyToClipboard\('([^']*)'\)/);
     if (!urlMatch || !urlMatch[1]) return;
-    
-    // Собираем итоговую ссылку, заменяя хеш на правильный
+
     const baseUrl = new URL(urlMatch[1]);
     baseUrl.hash = hash;
     let finalUrl = baseUrl.href;
 
-    // Заменяем localhost на dhamma.gift, если нужно
     if (finalUrl.includes('localhost') || finalUrl.includes('127.0.0.1')) {
       finalUrl = finalUrl.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, 'https://dhamma.gift');
     }
 
-    // Копируем в буфер обмена
     navigator.clipboard.writeText(finalUrl).then(() => {
-      // Показываем кастомное уведомление
       const path = window.location.pathname;
       const language = localStorage.getItem('siteLanguage') || (path.includes('/r/') ? 'ru' : 'en');
       const notificationText = {
@@ -206,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
       showBubbleNotification(notificationText);
     }).catch(err => {
       console.error('Не удалось скопировать ссылку: ', err);
-      fallbackCopy(finalUrl); // Используем fallback для старых браузеров
+      fallbackCopy(finalUrl);
     });
   };
 
@@ -215,22 +205,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 2. Обработчики для долгого нажатия на сенсорных устройствах
   document.addEventListener('touchstart', (event) => {
-    // Запускаем таймер только если нажатие было на нужной строке
-    if (event.target.closest('.verse-line')) {
+    // Запускаем таймер, только если нажатие было на самой ссылке .copyLink
+    if (event.target.closest('.copyLink')) {
       pressTimer = window.setTimeout(() => {
         handleLineLinkCopy(event);
         pressTimer = null;
-      }, 500); // 500 мс для долгого нажатия
+      }, 500);
     }
-  }, { passive: false }); // passive: false, чтобы работал event.preventDefault()
+  }, { passive: false });
 
   const clearLongPressTimer = () => {
     clearTimeout(pressTimer);
   };
-  
+
   document.addEventListener('touchend', clearLongPressTimer);
   document.addEventListener('touchmove', clearLongPressTimer);
-   // =======================================================================
-  // КОНЕЦ НОВОГО КОДА
-  // =======================================================================
+ 
 });
