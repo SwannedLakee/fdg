@@ -17,9 +17,9 @@ function getNotificationText() {
                    path.includes('/read/') ? 'en' : 'en');
   
   return {
-    ru: "Скопировано в буфер",
-    en: "Copied to clipboard"
-  }[language] || "Copied to clipboard";
+    ru: "Цитата скопирована",
+    en: "Quote copied"
+  }[language] || "Quote copied";
 }
 
 // Основная функция копирования
