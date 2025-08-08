@@ -101,7 +101,7 @@ function copyToClipboard(text = "") {
   if (suttaId) textToCopy += `\n\n${suttaId}`;
     
   if (text.includes('localhost') || text.includes('127.0.0.1')) {
-        text = text.replace(/http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, 'https://dhamma.gift');
+    text = text.replace(/http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, 'https://dhamma.gift');
     }
 
   textToCopy += `\n${text}`;
@@ -150,89 +150,4 @@ document.addEventListener('DOMContentLoaded', function() {
 initCopyNotification();
 
 
-    
-// Event delegation для копирования
-document.addEventListener('click', function(e) {
-  const copyLink = e.target.closest('.copyLink');
-  if (!copyLink) return;
-
-  e.preventDefault();
-
- let url = copyLink.dataset.copyText || '';
-  
-  if (url.includes('localhost') || url.includes('127.0.0.1')) {
-        url = url.replace(/http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, 'https://dhamma.gift');
-    }
-    
-
-  const contentBlock = copyLink.closest('span[id]');
-  if (!contentBlock) return;
-
-  // Функция для обработки текста
-  const processText = (text) => {
-    if (!text) return '';
-    return text
-      .replace(/\u00A0/g, '\n')
-      .replace(/\s\s+/g, '\n')
-      .trim();
-  };
-
-  let textToCopy = '';
-
-  // 1. Текст на пали (исключаем только hidden-variant)
-  const piTextElements = contentBlock.querySelectorAll('[lang="pi"]:not(.hidden-variant)');
-  let piText = '';
-  
-  piTextElements.forEach(el => {
-    const text = processText(el.textContent);
-    if (text) {
-      if (piText) piText += '\n';
-      piText += text;
-    }
-  });
-  
-  if (piText) textToCopy += piText;
-
-  // 2. Собираем переводы (исключаем только hidden-variant)
- // Ищем только УНИКАЛЬНЫЕ языки, игнорируем вложенные дубликаты
-const langSet = new Set();
-const translations = [];
-
-for (const el of contentBlock.querySelectorAll('[lang]:not([lang="pi"]):not(.hidden-variant)')) {
-  const lang = el.getAttribute('lang');
-  const text = processText(el.textContent);
-
-  if (!text || text === piText || langSet.has(lang)) continue;
-
-  langSet.add(lang);
-  translations.push({ lang, text });
-}
-
-  // Добавляем переводы с разделением
-  if (translations.length > 0) {
-    textToCopy += '\n\n';
-    
-    let currentLang = null;
-    translations.forEach((t, i) => {
-      // Пустая строка между разными языками
-      if (currentLang && currentLang !== t.lang) {
-        textToCopy += '\n';
-      }
-      textToCopy += t.text;
-      if (i < translations.length - 1) {
-        textToCopy += '\n';
-      }
-      currentLang = t.lang;
-    });
-  }
-
-  // 3. Номер сутты и URL
-  const suttaId = new URL(url).searchParams.get('q') || '';
-  if (suttaId) textToCopy += `\n\n${suttaId}`;
-  textToCopy += `\n${url}`;
-
-  navigator.clipboard.writeText(textToCopy)
-    .then(() => showBubbleNotification(getNotificationText()))
-    .catch(() => fallbackCopy(textToCopy));
-});
-    });
+   });

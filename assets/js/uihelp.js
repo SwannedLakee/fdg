@@ -206,11 +206,11 @@ const hintSettings = {
         },
         '/r/': {
             title: 'Подсказка:',
-            message: 'Чтобы скопировать ссылку на нужное место, кликните в конце нужной строки — там есть невидимая ссылка.'
+            message: 'Чтобы скопировать цитату и ссылку, кликните в конце строки — там есть невидимая ссылка. правый клик/долгое нажатие — копирует только ссылку.'
         },
         '/read/': {
             title: 'Hint:',
-            message: 'To copy a link to a specific location, click at the end of the desired line — there’s an invisible link there.'
+            message: 'To copy a quote and link, click at the end of the line — there is an invisible link there. Right-click/long-press copies only the link.'
         }
     }
 };
