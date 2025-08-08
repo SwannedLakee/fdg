@@ -126,7 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Обработчик для кнопки смены темы
-const themeButton = document.getElementById("theme-button");
+var themeButton = themeButton || document.getElementById("theme-button");
+
 if (themeButton) {
     themeButton.addEventListener('click', function() {
         setTimeout(() => {
