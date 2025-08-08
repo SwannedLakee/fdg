@@ -146,8 +146,78 @@ document.addEventListener('DOMContentLoaded', function() {
     shareOnlineElement.style.display = 'none';
   }
 
-// Инициализируем уведомление при загрузке
-initCopyNotification();
+  // Инициализируем уведомление при загрузке
+  initCopyNotification();
+
+  let pressTimer = null;
+
+  // Функция-обработчик, которая находит и копирует ссылку
+  const handleLineLinkCopy = (event) => {
+    const verseLine = event.target.closest('.verse-line');
+    if (!verseLine) return;
+
+    // Предотвращаем стандартное поведение (меню, выделение текста)
+    event.preventDefault();
+
+    // Находим ID строки из дочернего элемента
+    const idSpan = verseLine.querySelector('span[id]');
+    if (!idSpan || !idSpan.id) return;
+    const hash = idSpan.id;
+
+    // Находим базовый URL из атрибута onclick, чтобы ссылка была правильной
+    const copyLinkElem = verseLine.querySelector('.copyLink');
+    if (!copyLinkElem) return;
+
+    const onclickAttr = copyLinkElem.getAttribute('onclick');
+    const urlMatch = onclickAttr.match(/copyToClipboard\('([^']*)'\)/);
+    if (!urlMatch || !urlMatch[1]) return;
+    
+    // Собираем итоговую ссылку, заменяя хеш на правильный
+    const baseUrl = new URL(urlMatch[1]);
+    baseUrl.hash = hash;
+    let finalUrl = baseUrl.href;
+
+    // Заменяем localhost на dhamma.gift, если нужно
+    if (finalUrl.includes('localhost') || finalUrl.includes('127.0.0.1')) {
+      finalUrl = finalUrl.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, 'https://dhamma.gift');
+    }
+
+    // Копируем в буфер обмена
+    navigator.clipboard.writeText(finalUrl).then(() => {
+      // Показываем кастомное уведомление
+      const path = window.location.pathname;
+      const language = localStorage.getItem('siteLanguage') || (path.includes('/r/') ? 'ru' : 'en');
+      const notificationText = {
+        ru: "Ссылка на строку скопирована",
+        en: "Link to line copied"
+      }[language] || "Link to line copied";
+      showBubbleNotification(notificationText);
+    }).catch(err => {
+      console.error('Не удалось скопировать ссылку: ', err);
+      fallbackCopy(finalUrl); // Используем fallback для старых браузеров
+    });
+  };
+
+  // 1. Обработчик для правого клика мыши
+  document.addEventListener('contextmenu', handleLineLinkCopy);
+
+  // 2. Обработчики для долгого нажатия на сенсорных устройствах
+  document.addEventListener('touchstart', (event) => {
+    // Запускаем таймер только если нажатие было на нужной строке
+    if (event.target.closest('.verse-line')) {
+      pressTimer = window.setTimeout(() => {
+        handleLineLinkCopy(event);
+        pressTimer = null;
+      }, 500); // 500 мс для долгого нажатия
+    }
+  }, { passive: false }); // passive: false, чтобы работал event.preventDefault()
+
+  const clearLongPressTimer = () => {
+    clearTimeout(pressTimer);
+  };
+  
+  document.addEventListener('touchend', clearLongPressTimer);
+  document.addEventListener('touchmove', clearLongPressTimer);
 
 
-   });
+});
