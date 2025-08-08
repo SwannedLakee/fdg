@@ -206,14 +206,17 @@ const hintSettings = {
         },
         '/r/': {
             title: 'Подсказка:',
-            message: 'Чтобы скопировать цитату и ссылку, кликните в конце строки — там есть невидимая ссылка. правый клик/долгое нажатие — копирует только ссылку.'
+            message: 'Чтобы скопировать цитату и ссылку, кликните в конце строки — там есть невидимая ссылка.'
         },
         '/read/': {
             title: 'Hint:',
-            message: 'To copy a quote and link, click at the end of the line — there is an invisible link there. Right-click/long-press copies only the link.'
+            message: 'To copy a quote and link, click at the end of the line — there is an invisible link there. '
         }
     }
 };
+
+// правый клик/долгое нажатие — копирует только ссылку.
+// Right-click/long-press copies only the link.
 
 // Вызываем функцию с настройками
 showHint(hintSettings);
