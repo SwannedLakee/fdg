@@ -34,11 +34,13 @@ function findBwTextUrl(slug) {
     if (window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1')) {
         console.log("оффлайн");
         base = "/";
-        tbwRootUrl = "bw/"; 
+       // tbwRootUrl = "bw/";
+        tbwRootUrl = "/bb/?q="; 
     } else {
         console.log("онлайн");
         base = "/";
-        tbwRootUrl = "bw/"; 
+      //  tbwRootUrl = "bw/"; 
+         tbwRootUrl = "/bb/?q="; 
       //  base = "https://";
       //  tbwRootUrl = "thebuddhaswords.net/"; 
     }
