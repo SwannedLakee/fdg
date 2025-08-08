@@ -1,5 +1,4 @@
 // Функция для подсветки всех элементов с указанным ID с прозрачным фоном
-// Функция для подсветки всех элементов с указанным ID с плавным мерцанием и прозрачным фоном
 function highlightAllById(elementId) {
     // Используем тот же селектор, чтобы найти родительский элемент и всех его потомков
     const elements = document.querySelectorAll(`[id="${elementId}"], [id="${elementId}"] *`);
@@ -126,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Обработчик для кнопки смены темы
-var themeButton = themeButton || document.getElementById("theme-button");
+let themeButton = themeButton || document.getElementById("theme-button");
 
 if (themeButton) {
     themeButton.addEventListener('click', function() {
