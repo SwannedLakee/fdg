@@ -79,17 +79,17 @@ body[data-theme="dark"] #scrollToTopBtn #arrowImg {
   color: #5a5a5a;
 }
 
-/* Исправление для byline */
 .byline p {
- /*  white-space: nowrap; Запрет переноса */
-  overflow: hidden;    /* Обрезка выходящего за границы */
+  overflow: hidden;  
   text-overflow: ellipsis; /* "..." если текст не помещается */
   margin: 0;          /* Убираем отступы */
 }
 
+  /* 
 .rus-lang {
   font-family: "Robto Serif", serif;
 }
+*/
 
 .byline .pli-lang,
 .byline .rus-lang, .byline .eng-lang {
