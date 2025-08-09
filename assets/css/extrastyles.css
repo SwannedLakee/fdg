@@ -162,10 +162,11 @@ display: none;
 }
 
 
-html.dark #scrollToTopBtn #arrowImg {
+html.dark #scrollToTopBtn #arrowImg,
+body.dark #scrollToTopBtn #arrowImg,
+body[data-theme="dark"] #scrollToTopBtn #arrowImg {
   filter: invert(1);
 }
-
 
 .form-check-inline {
  margin-right: 0rem !important; 
