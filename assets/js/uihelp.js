@@ -30,6 +30,33 @@ if (
 
         localStorage.setItem('visited_sc', 'true'); // Запоминаем, что пользователь уже заходил
     }
+
+
+const resultPageIds = ['gearResult', 'helpResult'];
+const currentPath = window.location.pathname;
+
+if (
+    (currentPath.includes('/result/') || currentPath.includes('/ru/') || currentPath === '/') &&
+    !localStorage.getItem('visited_result') &&
+    // НОВОЕ УСЛОВИЕ: проверяем, что все нужные элементы есть на странице
+    resultPageIds.every(id => document.getElementById(id))
+) {
+    highlightMultipleById(resultPageIds);
+    localStorage.setItem('visited_result', 'true');
+}
+
+let resultVisitCount = parseInt(localStorage.getItem('resultVisitCount') || '0');
+resultVisitCount++;
+localStorage.setItem('resultVisitCount', resultVisitCount.toString());
+
+if (
+    resultVisitCount === 3 &&
+    !localStorage.getItem('visited_result') &&
+    resultPageIds.every(id => document.getElementById(id))
+) {
+    highlightMultipleById(resultPageIds);
+    localStorage.setItem('visited_result', 'true');
+}
     
         // Проверяем, если это первое посещение страницы с /result/
     if (window.location.pathname.includes('/ru/') && !localStorage.getItem('visited_result')) {
