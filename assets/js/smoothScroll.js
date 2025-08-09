@@ -32,6 +32,11 @@ function highlightAllById(elementId) {
     });
 }
 
+function highlightMultipleById(ids) {
+    ids.forEach(highlightById);
+}
+
+
 /**
  * ===================================================================
  * ИНТЕЛЛЕКТУАЛЬНАЯ ПРОКРУТКА К ЯКОРЮ (#)
