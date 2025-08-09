@@ -92,8 +92,8 @@ function copyToClipboard(text = "") {
     }
   }
 
-  // Собираем финальный текст с правильными отступами
-  let textToCopy = textParts.join('\n\n'); // Двойной перенос между блоками
+
+let textToCopy = textParts.join('\n\n').replace(/✦/g, ''); 
 
   // 4. Добавляем ID сутты и ссылку с дополнительными отступами
   if (suttaId) textToCopy += `\n\n${suttaId}`;
