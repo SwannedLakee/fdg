@@ -1287,7 +1287,7 @@ html {
 
 p .quoteLink,
 p .quoteLink-start {
-    font-size: 1.5em; /* или другой желаемый размер */
+    font-size: 1.2em; /* или другой желаемый размер */
 }
 
 
@@ -1297,7 +1297,7 @@ p .quoteLink-start {
 
 .quoteLink-start {
     position: absolute;
-    top: 0em;
+    top: -0.2em;
     left: -1.0em;
 
     color: inherit;
