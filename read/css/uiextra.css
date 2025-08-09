@@ -91,6 +91,10 @@ body[data-theme="dark"] #scrollToTopBtn #arrowImg {
 }
 */
 
+.hint {
+  font-family: sans-serif;
+}
+
 .byline .pli-lang,
 .byline .rus-lang, .byline .eng-lang {
   display: inline;    /* Отменяем inline-block для byline */
