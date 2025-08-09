@@ -198,15 +198,15 @@ const hintSettings = {
     patterns: {
         '/ru/result/': {
             title: 'Подсказка:',
-            message: 'Чтобы открыть текст с нужного места, кликните в конце нужной строки — там есть невидимая ссылка (курсор изменится на палец).'
+            message: 'Чтобы открыть текст с нужного места, кликните в конце нужной строки — там есть невидимая ссылка.'
         },
         '/result/': {
             title: 'Hint:',
-            message: 'To open the text from a specific location, click at the end of the desired line — there’s an invisible link there (the cursor will change to a hand pointer).'
+            message: 'To open the text from a specific location, click at the end of the desired line — there is an invisible link there.'
         },
         '/r/': {
             title: 'Подсказка:',
-            message: 'Чтобы скопировать цитату со ссылкой, кликните в конце строки — там есть невидимая ссылка. Длинное нажатие/правый клик — копирует только ссылку.'
+            message: 'Чтобы скопировать цитату со ссылкой, кликните в конце строки — там есть невидимая ссылка. Длинное нажатие/правый клик копирует только ссылку.'
         },
         '/read/': {
             title: 'Hint:',
