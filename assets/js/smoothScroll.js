@@ -49,14 +49,14 @@ function intelligentScrollToHash() {
     const totalWaitTime = 6000; // Общее время ожидания - 6 секунд
     let timeElapsed = 0;
     
-    console.log(`[Scroll] Начало поиска элемента: #${elementId}`);
+//    console.log(`[Scroll] Начало поиска элемента: #${elementId}`);
 
     const pollingInterval = setInterval(() => {
         const element = document.getElementById(elementId);
 
         // 1. УСПЕХ: Элемент найден
         if (element) {
-            console.log(`[Scroll] Элемент #${elementId} найден! Прокручиваем.`);
+     //       console.log(`[Scroll] Элемент #${elementId} найден! Прокручиваем.`);
             clearInterval(pollingInterval); // Останавливаем проверку
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             highlightAllById(elementId);
