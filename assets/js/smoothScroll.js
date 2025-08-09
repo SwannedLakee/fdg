@@ -49,7 +49,7 @@ function highlightAllById(elementId) {
 window.addEventListener('DOMContentLoaded', function() {
     var hash = window.location.hash;
     const isLocalhost = window.location.hostname.match(/localhost|127\.0\.0\.1/);
-    const timeout = isLocalhost ? 1000 : 2500; 
+    const timeout = isLocalhost ? 1000 : 3000; 
     
     if (hash) {
         setTimeout(function() {
