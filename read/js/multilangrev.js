@@ -506,7 +506,7 @@ const warning = `
 `;
 
 // Добавляем HTML
-suttaArea.innerHTML = scLink + '<br>' + (!isWarningClosed ? warning : '') + translatorByline + html + translatorByline + warning + scLink;
+suttaArea.innerHTML = scLink + '<br>' + (!isWarningClosed ? warning : '') + translatorByline + revhtml + translatorByline + warning + scLink;
 
 // Добавляем обработчик события для кнопки закрытия (если она есть)
 if (canShowClose && !isWarningClosed) {
