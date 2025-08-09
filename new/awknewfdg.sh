@@ -23,7 +23,7 @@ sutta=$4
     if ( name == "" ) { 
 name=sutta
 } 
- hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">&nbsp;</a>"
+ hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦</a>"
  
  if ( textclass == 1 ) {
    language="pi"
@@ -47,9 +47,9 @@ else if ( textclass == 4 ) {
     } 
 if (NR == 1 || (file_name != prev_file && textclass == 1)) {
     
-        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" qoute, hiddenlink "</span>;;;"
+        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" hiddenlink, qoute "</span>;;;"
     } else {
-        print "<span class=\"" htmlclass " quote\" lang=\"" language "\">" qoute, hiddenlink "</span><br class=\"styled\">;;;"
+        print "<span class=\"" htmlclass " quote\" lang=\"" language "\">" hiddenlink, qoute  "</span><br class=\"styled\">;;;"
     }
 
     prev_file = $2
