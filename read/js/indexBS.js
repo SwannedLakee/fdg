@@ -439,7 +439,7 @@ let pageTitle = '';
 if (pageTitleElement) {
   // Получаем весь текст из элемента, включая вложенные теги
   let text = pageTitleElement.textContent;
-  const paliLettersRegex = /[a-zāīūṭḍñṃṁṅṇ]/gi;
+  const paliLettersRegex = /[a-zāīūṭḍñṃṁṅṇśṣ\s]/gi;
 
   // Извлечь только эти символы и собрать обратно в строку
   const filtered = text.match(paliLettersRegex);
