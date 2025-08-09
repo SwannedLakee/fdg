@@ -553,7 +553,7 @@ if (pageTitleElement) {
   // Извлечь только эти символы и собрать обратно в строку
   const filtered = text.match(paliLettersRegex);
   if (filtered) {
-    pageTitle = filtered.join(' ');
+    pageTitle = filtered.join('');
   }
 }
 //  pageTitle = pageTitleText.replace(/[0-9.]/g, '');
