@@ -1278,3 +1278,31 @@ html {
   }
 }
 
+
+
+/* Делаем родительские элементы контекстом для позиционирования */
+.pli-lang, .rus-lang, .eng-lang, .variant {
+  position: relative;
+}
+
+.quoteLink {
+      opacity: 0;
+}
+
+.quoteLink-start {
+    position: absolute;
+    top: 0.1em;
+    left: -1.0em;
+
+    color: inherit;
+    opacity: 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+.quoteLink:hover,
+.quoteLink:focus,
+.quoteLink-start:hover,
+.quoteLink-start:focus {
+    opacity: 0.9;
+}

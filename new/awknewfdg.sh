@@ -1,4 +1,4 @@
-#keyword="$(echo $@ | awk '{$1=""; print $0}' | sed 's/^ //')"
+#keyword="$(echo $@ | awk '{$1=""; print $0}' | sed 's/^ //')" &nbsp;
 keyword="$2"
 awk -F "@" 'BEGIN { ORS = "" }  { OFS = "" } 
 {
@@ -23,8 +23,8 @@ sutta=$4
     if ( name == "" ) { 
 name=sutta
 } 
- unhiddenlink="<a target=_blank class=\"fdgLink text-reset text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦ </a>"
- hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">&nbsp;</a>" 
+ unhiddenlink="<a target=_blank class=\"fdgLink quoteLink-start text-reset text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦ </a>"
+ hiddenlink="<a target=_blank class=\"fdgLink quoteLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦</a>" 
  if ( textclass == 1 ) {
    language="pi"
    htmlclass="pli-lang"
