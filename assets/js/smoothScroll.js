@@ -46,7 +46,7 @@ function intelligentScrollToHash() {
     const elementId = hash.substring(1);
     
     const checkInterval = 500; // Проверять каждые 500 мс
-    const totalWaitTime = 6000; // Общее время ожидания - 6 секунд
+    const totalWaitTime = 8500; // Общее время ожидания 
     let timeElapsed = 0;
     
 //    console.log(`[Scroll] Начало поиска элемента: #${elementId}`);
