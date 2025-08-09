@@ -191,6 +191,17 @@ echo '<!--
   </div>
 </li>
 
+       <li>
+         <div class="dropdown-item ">
+        ✨ 
+         <a class="text-reset" target="_blank" href="https://chatgpt.com">ChatGPT</a>
+    <a class="text-reset" target="_blank" href="https://gemini.google/">Gemini</a>
+         <a class="text-reset" target="_blank" href="https://chat.deepseek.com">DeepSeek</a>
+      <a class="text-reset" target="_blank" href="https://norbu-ai.org/">Norbu AI</a>
+           </div>
+         </li>
+
+
    <li>
   <a class="dropdown-item" title="Open word in PTS/Cone/DPD/DPR/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open Pali + Skr + Wisdoml</a>
 <script src="/assets/js/openDicts.js"></script>
@@ -241,15 +252,6 @@ echo '<!--
        </div>
          </li>
 
-               <li>
-         <div class="dropdown-item ">
-         <i class="' . $iconimportant . '"></i>
-         <a class="text-reset" target="_blank" href="https://chatgpt.com">ChatGPT</a>
-    <a class="text-reset" target="_blank" href="https://gemini.google/">Gemini</a>
-         <a class="text-reset" target="_blank" href="https://chat.deepseek.com">DeepSeek</a>
-      <a class="text-reset" target="_blank" href="https://norbu-ai.org/">Norbu AI</a>
-           </div>
-         </li>
 
          <li>
          <div class="dropdown-item ">

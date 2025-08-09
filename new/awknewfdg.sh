@@ -6,7 +6,7 @@ texttype=$1
 file_name=$2
 textclass=$3
 gsub(/[ \t]+$/, "", $5)
-qoute=$5
+quote=$5
 line_id=$4
 
 if (match(file_name, /[0-9]-[0-9]/)) {
@@ -23,8 +23,8 @@ sutta=$4
     if ( name == "" ) { 
 name=sutta
 } 
- hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦</a>"
- 
+ unhiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦ </a>"
+ hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">&nbsp;</a>" 
  if ( textclass == 1 ) {
    language="pi"
    htmlclass="pli-lang"
@@ -47,9 +47,9 @@ else if ( textclass == 4 ) {
     } 
 if (NR == 1 || (file_name != prev_file && textclass == 1)) {
     
-        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" hiddenlink, qoute "</span>;;;"
+        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" unhiddenlink " " quote, hiddenlink "</span>;;;"
     } else {
-        print "<span class=\"" htmlclass " quote\" lang=\"" language "\">" hiddenlink, qoute  "</span><br class=\"styled\">;;;"
+        print "<span class=\"" htmlclass " quote\" lang=\"" language "\">"  unhiddenlink " " quote, hiddenlink  "</span><br class=\"styled\">;;;"
     }
 
     prev_file = $2

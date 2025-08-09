@@ -198,7 +198,14 @@ echo '<!--
   </div>
 </li>
 
-
+          <li>
+         <div class="dropdown-item ">
+         ✨ <a class="text-reset" target="_blank" href="https://chatgpt.com">ChatGPT</a>
+             <a class="text-reset" target="_blank" href="https://gemini.google/">Gemini</a>
+         <a class="text-reset" target="_blank" href="https://chat.deepseek.com">DeepSeek</a>
+      <a class="text-reset" target="_blank" href="https://norbu-ai.org/">Norbu AI</a>
+           </div>
+         </li>
 
          <li>
    <a class="dropdown-item" href="#" title="Открыть слово в словарях PTS/Cone/DPD/DPR/CPD/Skr+/Wisdomlib (Alt + Q)" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/Cone/DPD/CPD/Skr+/Wisdoml</a>
@@ -251,14 +258,7 @@ echo '<!--
        </div>
          </li>
 
-          <li>
-         <div class="dropdown-item ">
-         <i class="' . $iconimportant . '"></i> <a class="text-reset" target="_blank" href="https://chatgpt.com">ChatGPT</a>
-             <a class="text-reset" target="_blank" href="https://gemini.google/">Gemini</a>
-         <a class="text-reset" target="_blank" href="https://chat.deepseek.com">DeepSeek</a>
-      <a class="text-reset" target="_blank" href="https://norbu-ai.org/">Norbu AI</a>
-           </div>
-         </li>
+
 
 
          <li>
