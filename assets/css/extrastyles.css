@@ -1285,6 +1285,12 @@ html {
   position: relative;
 }
 
+p .quoteLink,
+p .quoteLink-start {
+    font-size: 1.5em; /* или другой желаемый размер */
+}
+
+
 .quoteLink {
       opacity: 0;
 }

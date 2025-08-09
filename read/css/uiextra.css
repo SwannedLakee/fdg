@@ -634,6 +634,13 @@ margin-left: 6px;
   position: relative;
 }
 
+
+p .copyLink,
+p .copyLink-start {
+    font-size: 1.5em; /* или другой желаемый размер */
+}
+
+
 .copyLink {
       opacity: 0;
 }
