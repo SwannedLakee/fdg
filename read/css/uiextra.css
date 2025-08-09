@@ -87,6 +87,10 @@ body[data-theme="dark"] #scrollToTopBtn #arrowImg {
   margin: 0;          /* Убираем отступы */
 }
 
+.rus-lang {
+  font-family: "Robto Serif", serif;
+}
+
 .byline .pli-lang,
 .byline .rus-lang, .byline .eng-lang {
   display: inline;    /* Отменяем inline-block для byline */
