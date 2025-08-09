@@ -176,7 +176,7 @@ if (slug.includes("mn"))  {
   
   
  if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {
-//	     var rootpath = `/assets/texts/${texttype}/${slug}_root-pli-ms.json`;
+//       var rootpath = `/assets/texts/${texttype}/${slug}_root-pli-ms.json`;
 var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slug}_rootd-pli-ms.json`
  } 
  else if (( script === "thai" ) || ( savedScript === "Thai" ) ) {
@@ -191,7 +191,7 @@ var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slug}
     var htmlpath = `/assets/html/${texttype}/${slug}_html.json`;
 
 } else if ( texttype === "vinaya" ) {
-	
+  
 if (vinayaranges.indexOf(slug) !== -1) { 
   var trnpath = rustrnpath; 
  // scLink += ifRus; 
@@ -266,11 +266,11 @@ const varResponse = fetchVariant();
       }
       let [openHtml, closeHtml] = htmlData[segment].split(/{}/);
       /* openHtml = openHtml.replace(/^<span class='verse-line'>/, "<br><span class='verse-line'>"); inputscript-IASTPali 
-      Roman (IAST)     	IAST
-Roman (IAST: Pāḷi)     	IASTPali
-Roman (IPA)            	IPA
-Roman (ISO 15919)      	ISO
-Roman (ISO 15919: Pāḷi)	ISOPali */
+      Roman (IAST)      IAST
+Roman (IAST: Pāḷi)      IASTPali
+Roman (IPA)             IPA
+Roman (ISO 15919)       ISO
+Roman (ISO 15919: Pāḷi) ISOPali */
 // ISOPali ISO IASTPali IAST
 
 
@@ -337,22 +337,21 @@ paliData[segment] = paliData[segment].replace(/[—–—]/, ' — ');
 //   console.log(`transData[${segment}]: ${transData[segment]}`);
   //  console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
   
- let linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">✦ </a>`;
-let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"> ✦</a>`;
-let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`;
+  let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a>`
+let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`
 
-if (engTransData[segment] !== transData[segment]) {
-    html += `<p><span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
-        <span class="rus-lang" lang="ru">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}</span>
-        <span class="eng-lang" lang="en">${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}</span>
-    </span></p>\n\n`;
-} else {
-    html += `<p><span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
-        <span class="rus-lang" lang="en">${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}</span>
-    </span></p>\n\n`;
-}
+    if (engTransData[segment] !== transData[segment]) {
+        html += `<p><span id="${anchor}">
+      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}${linkToCopy}</span>
+      <span class="rus-lang" lang="ru">${transData[segment].trim()}${linkToCopy}</span>
+      <span class="eng-lang" lang="en">${engTransData[segment].trim()}${linkToCopy}</span>
+      </span></p>\n\n`;
+    } else {
+        html += `<p><span id="${anchor}">
+      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}${linkToCopy}</span>
+      <span class="rus-lang" lang="en">${engTransData[segment].trim()}${linkToCopy}</span>
+      </span></p>\n\n`;
+    }
 
     });
 
@@ -373,7 +372,7 @@ if (translator === "o") {
 } else if (translator === "o+in+progress" ) {
   translatorforuser = '<a href=/assets/common/o.html>o</a>, в процессе';
 } else {
-	translatorforuser = translator ;
+  translatorforuser = translator ;
 }
 
 
@@ -662,8 +661,8 @@ if (document.location.search) {
     console.log("in the initializing " + lang);
     setLanguage(lang);
   } else if  (localStorage.paliToggleSpecial) {
-    	language = localStorage.paliToggleSpecial; 
-		  console.log('read from ls ' + language);
+      language = localStorage.paliToggleSpecial; 
+      console.log('read from ls ' + language);
 setLanguage(language);
   }
 } else {
@@ -725,7 +724,7 @@ setLanguage(language);
       <li><span class="abbr">snp</span> Sutta-nipāta</li>
       <li><span class="abbr">thag</span> Theragāthā</li>
       <li><span class="abbr">thig</span> Therīgāthā</li>
-	  <li><span class="abbr">kp</span> Khuddakapāṭha</li>
+    <li><span class="abbr">kp</span> Khuddakapāṭha</li>
   </ul>
   </div><div>
 </div>
@@ -895,4 +894,3 @@ abbreviations.forEach(book => {
     citation.focus();
   });
 });
-
