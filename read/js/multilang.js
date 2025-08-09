@@ -355,66 +355,74 @@ if (finder && finder.trim() !== "") {
   }
 }
 
-let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a>`
-let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`
-//   console.log(`transData[${segment}]: ${transData[segment]}`);
-  //  console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
-    if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a><br>
-	 
-<font class="variant">
-${varData[segment].trim()}${linkToCopy}   
-</font> 	 </span>
-  
+const linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">✦ </a>`;
+let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a>`;
+let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`;
 
-<span class="right-column">
-      <span class="rus-lang" lang="ru">${transData[segment].trim()}${linkToCopy} </span><br>
+// console.log(`transData[${segment}]: ${transData[segment]}`);
+// console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
 
-	  	  <span class="eng-lang" lang="en"><font>${engTransData[segment].trim()}${linkToCopy}</font><br>
-		  </span>
-		  </span>
-      </span>${closeHtml}\n\n`;
-	  
-	  //	  </span>   --dark-gray2: #9E9E9E;  --light-gray2: #616161;
-//      <span class="eng-lang" lang="en">
+if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
+            <font class="variant">
+                ${linkToCopyStart}${varData[segment].trim()}${linkToCopy}
+            </font>
+        </span>
 
-    } else if (engTransData[segment] !== transData[segment]) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a>
-	  </span>
-	  <span class="right-column">
-      <span class="rus-lang" lang="ru">${transData[segment].trim()}${linkToCopy}
-	  </span><br>
+        <span class="right-column">
+            <span class="rus-lang" lang="ru">
+                ${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
+            </span><br>
 
-	  	  <span class="eng-lang" lang="en"><font>${engTransData[segment].trim()}${linkToCopy}</font><br>
-		  </span>
-		  </span>
+            <span class="eng-lang" lang="en">
+                <font>${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}</font><br>
+            </span>
+        </span>
+    </span>${closeHtml}\n\n`;
 
-      </span>${closeHtml}\n\n`;
-	  
-	  //	  </span>   --dark-gray2: #9E9E9E;  --light-gray2: #616161;
-//      <span class="eng-lang" lang="en">
+} else if (engTransData[segment] !== transData[segment]) {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
+        </span>
+        <span class="right-column">
+            <span class="rus-lang" lang="ru">
+                ${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
+            </span><br>
 
-    } else if (varData[segment] !== undefined) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}<a class="text-decoration-none copyLink" style="cursor: pointer;"  onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a><br>
-</span>      
-<div class="variant">
-${varData[segment].trim()}${linkToCopy}   
-</div>
-<span class="right-column">
-      <span class="rus-lang" lang="en">${engTransData[segment].trim()}${linkToCopy}</span>
-      </span>
-      </span>
-	  
-	  ${closeHtml}\n\n`;
-    }  else {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}<a class="text-decoration-none copyLink" style="cursor: pointer;"  onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a></span>
-      <span class="rus-lang" lang="en">${engTransData[segment].trim()}${linkToCopy}</span>
-      </span>${closeHtml}\n\n`;
-    }
+            <span class="eng-lang" lang="en">
+                <font>${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}</font><br>
+            </span>
+        </span>
+    </span>${closeHtml}\n\n`;
+
+} else if (varData[segment] !== undefined) {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
+        </span>
+        <div class="variant">
+            ${linkToCopyStart}${varData[segment].trim()}${linkToCopy}
+        </div>
+        <span class="right-column">
+            <span class="rus-lang" lang="en">
+                ${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}
+            </span>
+        </span>
+    </span>${closeHtml}\n\n`;
+
+} else {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
+        </span>
+        <span class="rus-lang" lang="en">
+            ${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}
+        </span>
+    </span>${closeHtml}\n\n`;
+}
 
     });
 
