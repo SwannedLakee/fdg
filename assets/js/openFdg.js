@@ -1,5 +1,3 @@
-
-
 // --- НАЧАЛО: УТИЛИТЫ ДЛЯ POPUP ---
 
 function saveFdgPopupState(popup) {
@@ -20,8 +18,6 @@ function clearFdgPopupParams() {
 // --- НАЧАЛО: КОД ДЛЯ СОЗДАНИЯ POPUP ОКНА ---
 
 function createFdgPopup() {
-    // ЗАМЕТКА: Элемент затемнения (overlay) полностью удален по вашему требованию.
-
     const popup = document.createElement('div');
     popup.className = 'fdg-popup';
     popup.style.cssText = `
@@ -35,28 +31,38 @@ function createFdgPopup() {
         z-index: 9999;
     `;
 
-    // Проверка и сброс параметров
-    const currentWindowWidth = window.innerWidth;
-    const currentWindowHeight = window.innerHeight;
-    const savedWindowWidth = localStorage.getItem('fdgWindowWidth');
-    const savedWindowHeight = localStorage.getItem('fdgWindowHeight');
+    const isMobile = window.innerWidth <= 768;
+    const isFirstDrag = localStorage.getItem('isFdgFirstDrag') === null;
 
-    if (savedWindowWidth && savedWindowHeight && (parseInt(savedWindowWidth, 10) !== currentWindowWidth || parseInt(savedWindowHeight, 10) !== currentWindowHeight)) {
-        clearFdgPopupParams();
+    // --- Логика позиционирования в зависимости от устройства ---
+    if (isMobile) {
+        // На мобильных: по умолчанию на весь экран
+        popup.style.width = '100%';
+        popup.style.height = '100%';
+        popup.style.top = '0';
+        popup.style.left = '0';
+        popup.style.borderRadius = '0';
+    } else {
+        // Проверяем сохраненные параметры для десктопа
+        const savedWidth = localStorage.getItem('fdgPopupWidth');
+        const savedHeight = localStorage.getItem('fdgPopupHeight');
+        const savedTop = localStorage.getItem('fdgPopupTop');
+        const savedLeft = localStorage.getItem('fdgPopupLeft');
+
+        if (savedWidth && !isFirstDrag) {
+            // Восстанавливаем, если есть сохраненные данные
+            popup.style.width = savedWidth;
+            popup.style.height = savedHeight;
+            popup.style.top = savedTop;
+            popup.style.left = savedLeft;
+        } else {
+            // По умолчанию для десктопа: справа
+            popup.style.width = '45%';
+            popup.style.height = '80%';
+            popup.style.top = '10%';
+            popup.style.left = '53%';
+        }
     }
-    localStorage.setItem('fdgWindowWidth', currentWindowWidth);
-    localStorage.setItem('fdgWindowHeight', currentWindowHeight);
-
-    // Восстановление размеров и позиции
-    const savedWidth = localStorage.getItem('fdgPopupWidth');
-    const savedHeight = localStorage.getItem('fdgPopupHeight');
-    const savedTop = localStorage.getItem('fdgPopupTop');
-    const savedLeft = localStorage.getItem('fdgPopupLeft');
-
-    if (savedWidth) popup.style.width = savedWidth;
-    if (savedHeight) popup.style.height = savedHeight;
-    if (savedTop) popup.style.top = savedTop;
-    if (savedLeft) popup.style.left = savedLeft;
 
     // "Невидимый" хедер для перетаскивания
     const header = document.createElement('div');
@@ -87,13 +93,11 @@ function createFdgPopup() {
     closeBtn.onmouseover = () => { closeBtn.style.backgroundColor = 'rgba(206, 5, 32, 0.6)'; };
     closeBtn.onmouseout = () => { closeBtn.style.backgroundColor = 'rgba(206, 5, 32, 0.6)'; };
 
-
     // Кнопка "Открыть в новом окне"
     const openNewWindowBtn = document.createElement('a');
     openNewWindowBtn.className = 'fdg-open-new-window-btn';
     openNewWindowBtn.target = '_blank';
     openNewWindowBtn.title = 'Открыть в новом окне';
-    // Кнопка теперь всегда круглая и видимая
     openNewWindowBtn.style.cssText = buttonStyle + 'right: 40px; background-color: rgba(45, 62, 80, 0.6); color: #fff;';
     openNewWindowBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="14" height="14" fill="currentColor"><path d="M432 320H400a16 16 0 0 0-16 16v96H64V128h96a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16H48A48 48 0 0 0 0 112v352a48 48 0 0 0 48 48h352a48 48 0 0 0 48-48V336a16 16 0 0 0-16-16zm88-256V24a24 24 0 0 0-24-24H368c-21.4 0-32.1 25.9-17 41l35.7 35.7L150.3 307.7a24 24 0 0 0 0 34L174.6 366a24 24 0 0 0 34 0L445.7 128.9l35.7 35.7c15.1 15.1 41 4.5 41-17z"/></svg>`;
     openNewWindowBtn.onmouseover = () => { openNewWindowBtn.style.backgroundColor = 'rgba(45, 62, 80, 0.8)'; };
@@ -105,14 +109,10 @@ function createFdgPopup() {
     iframe.src = '';
     iframe.style.cssText = 'width: 100%; height: 100%; border: none; background-color: #eaf0f0;';
 
-    // Уголок для изменения размера (нижняя полоска удалена)
-
-    // Уголок для изменения размера (нижняя полоска удалена)
-const resizeHandle = document.createElement('div');
-resizeHandle.className = 'fdg-resize-handle';
-// РЕШЕНИЕ: Добавляем прозрачный фон, чтобы перекрыть старые стили
-resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; cursor: nwse-resize; z-index: 10; background-color: transparent;';
-
+    // Уголок для изменения размера
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'fdg-resize-handle';
+    resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; cursor: nwse-resize; z-index: 10; background-color: transparent;';
     resizeHandle.innerHTML = `
         <style>
             .fdg-resize-handle::after {
@@ -140,29 +140,13 @@ resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20
     // --- Логика перетаскивания и изменения размера ---
     let isDragging = false, isResizing = false;
     let startX, startY, initialLeft, initialTop, startWidth, startHeight, startResizeX, startResizeY;
-    let isFirstDrag = localStorage.getItem('isFdgFirstDrag') === 'false' ? false : true;
 
-    if (isFirstDrag) {
-        popup.style.top = '50%';
-        popup.style.left = '50%';
-        popup.style.width = '80%';
-        popup.style.height = '80%';
-        popup.style.transform = 'translate(-50%, -50%)';
-    }
-
-    // Логика перетаскивания
     function startDrag(e) {
-        isDragging = true;
-        iframe.style.pointerEvents = 'none';
-        
         if (isFirstDrag) {
-            const rect = popup.getBoundingClientRect();
-            popup.style.transform = 'none';
-            popup.style.top = `${rect.top}px`;
-            popup.style.left = `${rect.left}px`;
-            isFirstDrag = false;
             localStorage.setItem('isFdgFirstDrag', 'false');
         }
+        isDragging = true;
+        iframe.style.pointerEvents = 'none';
         const touch = e.touches ? e.touches[0] : e;
         startX = touch.clientX;
         startY = touch.clientY;
@@ -189,7 +173,6 @@ resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20
         }
     }
 
-    // Логика изменения размера (диагональная)
     function startResize(e) {
         isResizing = true;
         iframe.style.pointerEvents = 'none';
@@ -204,6 +187,9 @@ resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20
 
     function doResize(e) {
         if (!isResizing) return;
+        if (isMobile) {
+            popup.style.borderRadius = '8px'; // Возвращаем скругление при изменении размера
+        }
         const touch = e.touches ? e.touches[0] : e;
         const newWidth = startWidth + (touch.clientX - startResizeX);
         const newHeight = startHeight + (touch.clientY - startResizeY);
@@ -219,7 +205,8 @@ resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20
         }
     }
 
-    // Назначение обработчиков событий
+    // *** ИЗМЕНЕНИЕ ***: Убрана проверка `if (!isMobile)`.
+    // Теперь обработчики событий назначаются на всех устройствах.
     header.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', moveDrag);
     document.addEventListener('mouseup', stopDrag);
@@ -247,12 +234,10 @@ const { popup: fdgPopup, closeBtn: fdgCloseBtn, openNewWindowBtn: fdgOpenNewWind
 // --- Логика закрытия попапа ---
 const closeFdgPopup = () => {
     fdgPopup.style.display = 'none';
-    // fdgOverlay.style.display = 'none'; // Оверлей удален
     fdgIframe.src = 'about:blank';
 };
 
 fdgCloseBtn.addEventListener('click', closeFdgPopup);
-// overlay.addEventListener('click', closeFdgPopup); // Оверлей удален
 fdgOpenNewWindowBtn.addEventListener('click', () => {
     setTimeout(closeFdgPopup, 100);
 });
@@ -264,18 +249,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const checkbox = document.getElementById('quotePopupCheckbox');
   const storageKey = 'quotePopupEnabled';
 
-    // 1. Устанавливаем начальное состояние чекбокса:
-    // - Если в localStorage null (первый запуск) -> checked = true (попап включен)
-    // - Если 'true' -> checked = true
-    // - Если 'false' -> checked = false
   if (checkbox) {
-    // 1. Устанавливаем начальное состояние чекбокса.
-    // По умолчанию попапы включены, поэтому если в хранилище не 'false', то чекбокс активен.
     checkbox.checked = localStorage.getItem(storageKey) !== 'false';
-
-    // 2. При изменении состояния чекбокса обновляем localStorage.
     checkbox.addEventListener('change', function() {
-      // Сохраняем 'true' или 'false' в виде строки.
       localStorage.setItem(storageKey, this.checked);
     });
   }
