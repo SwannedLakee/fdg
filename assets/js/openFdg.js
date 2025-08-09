@@ -106,9 +106,13 @@ function createFdgPopup() {
     iframe.style.cssText = 'width: 100%; height: 100%; border: none; background-color: #eaf0f0;';
 
     // Уголок для изменения размера (нижняя полоска удалена)
-    const resizeHandle = document.createElement('div');
-    resizeHandle.className = 'fdg-resize-handle';
-    resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; cursor: nwse-resize; z-index: 10;';
+
+    // Уголок для изменения размера (нижняя полоска удалена)
+const resizeHandle = document.createElement('div');
+resizeHandle.className = 'fdg-resize-handle';
+// РЕШЕНИЕ: Добавляем прозрачный фон, чтобы перекрыть старые стили
+resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; cursor: nwse-resize; z-index: 10; background-color: transparent;';
+
     resizeHandle.innerHTML = `
         <style>
             .fdg-resize-handle::after {
@@ -260,9 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const checkbox = document.getElementById('quotePopupCheckbox');
   const storageKey = 'quotePopupEnabled';
 
-  // Эта проверка `if (checkbox)` и есть защита от ошибок.
-  // Если элемент не найден, `checkbox` будет `null`,
-  // и код внутри этого блока просто не выполнится.
+    // 1. Устанавливаем начальное состояние чекбокса:
+    // - Если в localStorage null (первый запуск) -> checked = true (попап включен)
+    // - Если 'true' -> checked = true
+    // - Если 'false' -> checked = false
   if (checkbox) {
     // 1. Устанавливаем начальное состояние чекбокса.
     // По умолчанию попапы включены, поэтому если в хранилище не 'false', то чекбокс активен.
