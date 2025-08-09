@@ -262,7 +262,30 @@ anchor = segment;
 
 var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
 
-  let finder = params.get("s");
+// Получаем параметры из текущего URL
+let finder = params.get("s");
+
+// Если параметр 's' не найден в текущем URL, проверяем referer
+if (!finder) {
+  try {
+    if (document.referrer) {
+      const refererUrl = new URL(document.referrer);
+      const refererParams = new URLSearchParams(refererUrl.search);
+      const refererFinder = refererParams.get("s");
+      
+      if (refererFinder) {
+        finder = refererFinder;
+        // Можно также добавить параметр в текущий URL без перезагрузки
+        history.replaceState(null, '', `?q=${params.get("q")}&s=${encodeURIComponent(finder)}`);
+      }
+    }
+  } catch (e) {
+    console.log("Could not parse referer URL:", e);
+  }
+}
+
+
+
  //  finder = finder.replace(/\\b/g, '');
 //  finder = finder.replace(/%08/g, '\\b');
  // console.log(finder);

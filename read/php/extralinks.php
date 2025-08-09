@@ -32,15 +32,18 @@ $booknum = preg_replace('/\..*$/', '', $fromjs);
     $bbfile = "$bblocation/$texttype/kn/$forbbpath/{$fromjs}_root-pli-ms.json";
 }
 
-//echo "$bbfile";
+ $bblink = '';
 
-  if (file_exists($bbfile) ) {
-      $bblink = "?q=$fromjs";
-  } else {
-if (strpos($_SERVER['REQUEST_URI'], '/b/') === true) {
-    $bblink = "";
+  if (strpos($_SERVER['REQUEST_URI'], '/b/') === false) {
+      if (file_exists($bbfile)) {
+          $bblink = "?q=$fromjs";
+       if (isset($_GET['s'])) {
+        $s_param = urlencode($_GET['s']);
+            $bblink .= "&s=" . $s_param;
+          }
+      }
   }
-}
+
 
 $is_ru_referer = false;
   if (isset($_SERVER['HTTP_REFERER'])) {
