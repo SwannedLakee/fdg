@@ -23,7 +23,7 @@ sutta=$4
     if ( name == "" ) { 
 name=sutta
 } 
- unhiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦ </a>"
+ unhiddenlink="<a target=_blank class=\"fdgLink text-reset text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦ </a>"
  hiddenlink="<a target=_blank class=\"fdgLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">&nbsp;</a>" 
  if ( textclass == 1 ) {
    language="pi"
@@ -47,7 +47,7 @@ else if ( textclass == 4 ) {
     } 
 if (NR == 1 || (file_name != prev_file && textclass == 1)) {
     
-        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" unhiddenlink " " quote, hiddenlink "</span>;;;"
+        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" unhiddenlink " " quote, hiddenlink "</span>;;;<br class=\"styled\">;;;"
     } else {
         print "<span class=\"" htmlclass " quote\" lang=\"" language "\">"  unhiddenlink " " quote, hiddenlink  "</span><br class=\"styled\">;;;"
     }
@@ -66,6 +66,3 @@ if (prev_file != file_name && NR != 1) {
     }  else  
 
  print count, metaphor, text_name, prev_file, file_name
-
-mn129@mn129:21.3@4@mn129@13@Bālapaṇḍitasutta     dn1@dn1:1.22.2@1@dn1@2@Brahmajālasutta           dn2@dn2:57.2@1@dn2@30@Sāmaññaphalasutta          sn56.48@sn56.48:1.4@3@sn56.48@1@Dutiyachiggaḷayugasutta
-sn56.47@sn56.47:1.1@3@sn56.47@1@Paṭhamachiggaḷayugasutta

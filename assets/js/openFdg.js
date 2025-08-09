@@ -23,7 +23,7 @@ function createFdgPopup() {
     popup.style.cssText = `
         display: none;
         position: fixed;
-        background-color: #eaf0f0;
+        background-color: rgb(234, 240, 240, 0%);
         border-radius: 8px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
         border: 1px solid #b0b0b0;

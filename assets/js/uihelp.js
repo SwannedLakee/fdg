@@ -225,11 +225,11 @@ const hintSettings = {
     patterns: {
         '/ru/result/': {
             title: 'Подсказка:',
-            message: 'Чтобы открыть текст с нужного места, кликните в конце нужной строки — там есть невидимая ссылка.'
+            message: 'Чтобы открыть текст с нужного места, кликните по ✦ или в конце нужной строки по невидимой ссылке.'
         },
         '/result/': {
             title: 'Hint:',
-            message: 'To open the text from a specific location, click at the end of the desired line — there’s an invisible link there.'
+            message: 'To open the text from a specific location, click the ✦ or the invisible link at the end of the desired line.'
         },
         '/r/': {
             title: 'Подсказка:',
