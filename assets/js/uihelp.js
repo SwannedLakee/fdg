@@ -26,7 +26,7 @@ if (
     window.location.pathname.includes('/r/')
 ) && !localStorage.getItem('visited_sc') && visitCount === 3) {
         highlightMultipleById(['gearRead', 'helpsc']);
-		    localStorage.setItem('dictionaryVisible', 'true');
+            localStorage.setItem('dictionaryVisible', 'true');
 
         localStorage.setItem('visited_sc', 'true'); // Запоминаем, что пользователь уже заходил
     }
@@ -202,7 +202,7 @@ const hintSettings = {
         },
         '/result/': {
             title: 'Hint:',
-            message: 'To open the text from a specific location, click at the end of the desired line — there is an invisible link there.'
+            message: 'To open the text from a specific location, click at the end of the desired line — there’s an invisible link there.'
         },
         '/r/': {
             title: 'Подсказка:',
@@ -215,13 +215,9 @@ const hintSettings = {
     }
 };
 
-// 
-// 
-
 // Вызываем функцию с настройками
 showHint(hintSettings);
-//observeAndHighlightElements('hint');
- 
+//observeAndHighlightElements('hint'); 
  
 if (
   visitCount >= targetVisitForPWApopup &&
@@ -355,5 +351,4 @@ function initPwaBanner() {
     console.error('Ошибка инициализации PWA баннера:', error);
   }
 }
-
 
