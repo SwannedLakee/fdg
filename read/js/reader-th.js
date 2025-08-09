@@ -382,28 +382,31 @@ if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== unde
 }
 
 
-let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a>`
+const linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">✦ </a>`;
+let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">✦</a>`
 let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`
 
-
 if (paliData[segment] !== undefined && transData[segment] !== undefined && varData[segment] !== undefined) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim()}${linkToCopy}<br>
+              html += `${openHtml}<span id="${anchor}">
+            <span class="pli-lang " lang="pi">${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}<br>
       <font class="variant">
-${varData[segment].trim()}${linkToCopy}   
-</font>      
-      </span>
-      <span class="rus-lang" lang="ru">${transData[segment].trim()}${linkToCopy}
-</span>
-      </span>${closeHtml}\n\n`;
-} else if (paliData[segment] !== undefined && transData[segment] !== undefined) {
-html += `${openHtml}<span id="${anchor}"><span class="pli-lang inputscript-ISOPali" lang="pi">${paliData[segment].trim().trim()}${linkToCopy}</span><span class="rus-lang" lang="ru">${transData[segment].trim()}${linkToCopy}</span></span>${closeHtml}\n\n`;
-} else if (paliData[segment] !== undefined) {
-  html += openHtml + '<span id="' + anchor + '"><span class="pli-lang inputscript-ISOPali" lang="pi">' + paliData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
-} else if (transData[segment] !== undefined) {
-  html += openHtml + '<span id="' + anchor + '"><span class="rus-lang" lang="ru">' + transData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
-}
-    });
+      ${linkToCopyStart}${varData[segment].trim()} ${linkToCopy}   
+      </font>     
+            </span>
+            <span class="rus-lang" lang="ru">${linkToCopyStart} ${transData[segment].trim()} ${linkToCopy}
+      <br></span>
+            </span>${closeHtml}\n\n`;
+      } else if (paliData[segment] !== undefined && transData[segment] !== undefined ) {
+              html += `${openHtml}<span id="${anchor}">
+            <span class="pli-lang " lang="pi">${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}</span>
+            <span class="rus-lang" lang="ru">${linkToCopyStart} ${transData[segment].trim()} ${linkToCopy}<br></span>
+            </span>${closeHtml}\n\n`;
+      } else if (paliData[segment] !== undefined) {
+        html += openHtml + '<span id="' + anchor + '"><span class="pli-lang inputscript-ISOPali" lang="pi">' + linkToCopyStart + paliData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
+      } else if (transData[segment] !== undefined) {
+        html += openHtml + '<span id="' + anchor + '"><span class="rus-lang" lang="ru">' + linkToCopyStart + transData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
+      }
+});
 
 //console.log('before ' + translator) ;
 
@@ -574,9 +577,20 @@ if (canShowClose && !isWarningClosed) {
 
 //конец вывода информации
 
-const pageTitleElement = document.querySelector("h1");
-let pageTitleText = pageTitleElement.textContent;
-pageTitle = pageTitleText.replace(/[0-9.]/g, '');
+const pageTitleElement = document.querySelector("h1.sutta-title");
+let pageTitle = '';
+
+if (pageTitleElement) {
+  // Получаем весь текст из элемента, включая вложенные теги
+  let text = pageTitleElement.textContent;
+  const paliLettersRegex = /[a-zāīūṭḍñṃṁṅṇśṣ\s]/gi;
+
+  // Извлечь только эти символы и собрать обратно в строку
+  const filtered = text.match(paliLettersRegex);
+  if (filtered) {
+    pageTitle = filtered.join('');
+  }
+}
 
 slug = slug.replace(/pli-tv-|vb-/g, '');
 document.title = `${slug} ${pageTitle}`;

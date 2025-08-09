@@ -336,51 +336,75 @@ if (finder && finder.trim() !== "") {
   }
 }
 
-let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">&nbsp;</a>`
-let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`
+const linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">✦ </a>`;
+let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')">✦</a>`;
+let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`;
 
-//   console.log(`transData[${segment}]: ${transData[segment]}`);
-  //  console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
-    if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${преобразоватьТекст().trim()}${linkToCopy}
-	  </span>
-      <span class="greyedout rus-lang" lang="ru">${paliData[segment].trim()}${linkToCopy}
-<br>
-		  <font class="variant">
-${varData[segment].trim()}${linkToCopy}  
-</font>		  </span>      
-      </span>${closeHtml}\n\n`;
-	  
-	  //	  </span>   --dark-gray2: #9E9E9E;  --light-gray2: #616161;
-//      <span class="eng-lang" lang="en">
+// console.log(`transData[${segment}]: ${transData[segment]}`);
+// console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
 
-    } else if (engTransData[segment] !== transData[segment]) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${преобразоватьТекст().trim()}${linkToCopy}
-	  </span>
-      <span class="greyedout rus-lang" lang="ru">${paliData[segment].trim()}${linkToCopy}
-		  </span>
-      </span>${closeHtml}\n\n`;
-	  
-	  //	  </span>   --dark-gray2: #9E9E9E;  --light-gray2: #616161;
-//      <span class="eng-lang" lang="en">
+if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}<br>
+            <font class="variant">
+                ${linkToCopyStart} ${varData[segment].trim()} ${linkToCopy}
+            </font>
+        </span>
 
-    } else if (varData[segment] !== undefined) {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${преобразоватьТекст().trim()}${linkToCopy}</span>
+        <span class="right-column">
+            <span class="rus-lang" lang="ru">
+                ${linkToCopyStart} ${transData[segment].trim()} ${linkToCopy}
+            </span><br>
 
-      <span class="greyedout eng-lang" lang="en">${paliData[segment].trim()}${linkWithDataSet}</span><br>
-      <font class="variant">
-${varData[segment].trim()}${linkToCopy}   
-</font>      
-      </span>${closeHtml}\n\n`;
-    }  else {
-        html += `${openHtml}<span id="${anchor}">
-      <span class="pli-lang inputscript-ISOPali" lang="pi">${преобразоватьТекст().trim()}${linkToCopy}</span>
-      <span class="greyedout rus-lang" lang="ru">${paliData[segment].trim()}${linkToCopy}</span>
-      </span>${closeHtml}\n\n`;
-    }
+            <span class="eng-lang" lang="en">
+                <font>${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}</font><br>
+            </span>
+        </span>
+    </span>${closeHtml}\n\n`;
+
+} else if (engTransData[segment] !== transData[segment]) {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}
+        </span>
+        <span class="right-column">
+            <span class="rus-lang" lang="ru">
+                ${linkToCopyStart} ${transData[segment].trim()} ${linkToCopy}
+            </span><br>
+
+            <span class="eng-lang" lang="en">
+                <font>${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}</font><br>
+            </span>
+        </span>
+    </span>${closeHtml}\n\n`;
+
+} else if (varData[segment] !== undefined) {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}<br>
+        </span>
+        <div class="variant">
+            ${linkToCopyStart} ${varData[segment].trim()} ${linkToCopy}
+        </div>
+        <span class="right-column">
+            <span class="rus-lang" lang="en">
+                ${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}
+            </span>
+        </span>
+    </span>${closeHtml}\n\n`;
+
+} else {
+    html += `${openHtml}<span id="${anchor}">
+        <span class="pli-lang inputscript-ISOPali" lang="pi">
+            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}
+        </span>
+        <span class="rus-lang" lang="en">
+            ${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}
+        </span>
+    </span>${closeHtml}\n\n`;
+}
+
 
     });
 
@@ -540,11 +564,20 @@ if (canShowClose && !isWarningClosed) {
 
 //конец вывода информации
 
+const pageTitleElement = document.querySelector("h1.sutta-title");
+let pageTitle = '';
 
- 
- const pageTitleElement = document.querySelector("h1");
-let pageTitleText = pageTitleElement.textContent;
-pageTitle = pageTitleText.replace(/[0-9.]/g, '');
+if (pageTitleElement) {
+  // Получаем весь текст из элемента, включая вложенные теги
+  let text = pageTitleElement.textContent;
+  const paliLettersRegex = /[a-zāīūṭḍñṃṁṅṇśṣ\s]/gi;
+
+  // Извлечь только эти символы и собрать обратно в строку
+  const filtered = text.match(paliLettersRegex);
+  if (filtered) {
+    pageTitle = filtered.join('');
+  }
+}
 
 slug = slug.replace(/pli-tv-|vb-/g, '');
 document.title = `${slug} ${pageTitle}`;

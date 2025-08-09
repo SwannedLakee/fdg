@@ -67,7 +67,7 @@ function createFdgPopup() {
     // "Невидимый" хедер для перетаскивания
     const header = document.createElement('div');
     header.className = 'fdg-popup-header';
-    header.style.cssText = 'height: 30px; cursor: move; position: absolute; top: 0; left: 0; width: 100%; z-index: 1; background: transparent;';
+    header.style.cssText = 'height: 10px; cursor: move; position: absolute; top: 0; left: 0; width: 100%; z-index: 1; background: transparent;';
 
     // Общие стили для кнопок
     const buttonStyle = `
