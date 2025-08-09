@@ -36,10 +36,10 @@ function createFdgPopup() {
 
     // --- Логика позиционирования в зависимости от устройства ---
     if (isMobile) {
-        // На мобильных: по умолчанию на весь экран
+        // На мобильных: по умолчанию на 60% высоты по центру
         popup.style.width = '100%';
-        popup.style.height = '100%';
-        popup.style.top = '0';
+        popup.style.height = '60%';
+        popup.style.top = '20%';
         popup.style.left = '0';
         popup.style.borderRadius = '0';
     } else {
@@ -58,8 +58,8 @@ function createFdgPopup() {
         } else {
             // По умолчанию для десктопа: справа
             popup.style.width = '45%';
-            popup.style.height = '80%';
-            popup.style.top = '10%';
+            popup.style.height = '50%';
+            popup.style.top = '40%';
             popup.style.left = '53%';
         }
     }
@@ -188,7 +188,7 @@ function createFdgPopup() {
     function doResize(e) {
         if (!isResizing) return;
         if (isMobile) {
-            popup.style.borderRadius = '8px'; // Возвращаем скругление при изменении размера
+            popup.style.borderRadius = '8px';
         }
         const touch = e.touches ? e.touches[0] : e;
         const newWidth = startWidth + (touch.clientX - startResizeX);
@@ -205,8 +205,6 @@ function createFdgPopup() {
         }
     }
 
-    // *** ИЗМЕНЕНИЕ ***: Убрана проверка `if (!isMobile)`.
-    // Теперь обработчики событий назначаются на всех устройствах.
     header.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', moveDrag);
     document.addEventListener('mouseup', stopDrag);
@@ -241,6 +239,22 @@ fdgCloseBtn.addEventListener('click', closeFdgPopup);
 fdgOpenNewWindowBtn.addEventListener('click', () => {
     setTimeout(closeFdgPopup, 100);
 });
+
+
+// --- НОВЫЙ БЛОК: Закрытие при клике вне окна (только на мобильных) ---
+document.addEventListener('click', function(event) {
+    // Проверяем, что попап видим
+    if (fdgPopup.style.display === 'block') {
+        const isClickInside = fdgPopup.contains(event.target);
+        const isMobile = window.innerWidth <= 768;
+
+        // Если клик был не внутри попапа и это мобильное устройство 
+        if (!isClickInside && isMobile) {
+            closeFdgPopup();
+        }
+    }
+});
+
 
 // --- Логика работы со ссылками (без изменений) ---
 
