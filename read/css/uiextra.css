@@ -54,6 +54,10 @@ border-width: 2px;
   opacity: 0.8;
 }
 
+html.dark #scrollToTopBtn #arrowImg {
+  filter: invert(1);
+}
+
 .go-button {
   margin-left: 5px;
   height: 35px;
