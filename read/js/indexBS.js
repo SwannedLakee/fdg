@@ -432,9 +432,21 @@ if (canShowClose && !isWarningClosed) {
 
 //конец вывода информации
 
- const pageTitleElement = document.querySelector("h1");
-let pageTitleText = pageTitleElement.textContent;
-pageTitle = pageTitleText.replace(/[0-9.]/g, '');
+
+const pageTitleElement = document.querySelector("h1.sutta-title");
+let pageTitle = '';
+
+if (pageTitleElement) {
+  // Получаем весь текст из элемента, включая вложенные теги
+  let text = pageTitleElement.textContent;
+  const paliLettersRegex = /[a-zāīūṭḍñṃṁṅṇ]/gi;
+
+  // Извлечь только эти символы и собрать обратно в строку
+  const filtered = text.match(paliLettersRegex);
+  if (filtered) {
+    pageTitle = filtered.join(' ');
+  }
+}
 
 slug = slug.replace(/pli-tv-|vb-/g, '');
 document.title = `${slug} ${pageTitle}`;
