@@ -15,7 +15,7 @@ function highlightAllById(elementId) {
         element.style.transition = 'background-color 0.45s ease-in-out';
 
         let blinkCount = 0;
-        const maxBlinks = 6;
+        const maxBlinks = 4;
         const intervalDuration = 500;
         
         const blinkInterval = setInterval(() => {
