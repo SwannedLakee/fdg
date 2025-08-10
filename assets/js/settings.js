@@ -383,8 +383,11 @@ function applySavedDict(dict) {
     localStorage.removeItem(key); // Удаляем сохранённое состояние чекбокса
   });
 
-clearFdgPopupParams();
-  // Дополнительные параметры, которые нужно очистить
+    // Проверяем, существует ли функция clearFdgPopupParams()
+    if (typeof clearFdgPopupParams === 'function') {
+        clearFdgPopupParams(); // Вызываем, если функция объявлена
+    }
+      // Дополнительные параметры, которые нужно очистить
   localStorage.removeItem('selectedScript');
   localStorage.removeItem('selectedDict');
   localStorage.removeItem("defaultReader");

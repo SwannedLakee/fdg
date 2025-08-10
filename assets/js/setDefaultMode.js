@@ -98,8 +98,11 @@
   });
 
 
-clearFdgPopupParams();
-
+    // Проверяем, существует ли функция clearFdgPopupParams()
+    if (typeof clearFdgPopupParams === 'function') {
+        clearFdgPopupParams(); // Вызываем, если функция объявлена
+    }
+    
       if (typeof resetForm === 'function') {
         resetForm();
       }
