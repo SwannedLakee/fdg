@@ -662,3 +662,10 @@ p .copyLink-start {
 .copyLink-start:focus {
     opacity: 0.9;
 }
+
+h1.sutta-title > span,
+header ul li > span {
+  position: relative;
+  display: inline-block;
+  vertical-align: top; /* Добавлено для лучшего выравнивания */
+}
