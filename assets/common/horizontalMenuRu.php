@@ -433,7 +433,7 @@ echo '<!--
 
    <li><a class="dropdown-item" target="_blank" href="/assets/common/lunarRu.html"> <i class="' . $iconimportant . '"></i> Дни Упосаттхи по Суттам</a></li>
 <li>
-  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event,,{newWindow: true})">
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event,https://www.aksharamukha.com/converter?target=Devanagari&text={{q}},{newWindow: true})">
     <i class="' . $iconimportant . '"></i> Aksharamukha текстовый конвертер
   </a>
 </li>
