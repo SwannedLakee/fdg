@@ -289,20 +289,37 @@ if (searchValue !== "") {
         // Получаем данные в текущей строке
         var rowData = this.data();
 
-        // Проходим по каждому элементу данных в строке
-        rowData.forEach(function(cellData, index) {
-            if (index !== 0) {
-                // Применяем регулярное выражение к содержимому ячейки и подсвечиваем совпадения
-                var regex = new RegExp(searchValue + '(?![^<]*>)', 'gi');
-                // var regex = new RegExp(finder, 'gi'); // 'gi' - игнорировать регистр
-                cellData = cellData.replace(regex, function(match) {
-                    return '<b class="match finder">' + match + '</b>';
-                });
+rowData.forEach(function(cellData, index) {
+    // Only proceed if there is a search value and the cell data is a string
+    if (searchValue && typeof cellData === 'string') {
 
-                // Обновляем содержимое ячейки с примененной подсветкой
-                table.cell(rowIdx, index).data(cellData);
+        // This regex matches two things:
+        // 1. (<[^>]+>)  -> A full HTML tag. This will be captured and left alone.
+        // 2. (searchValue) -> Your search term. This will be captured and highlighted.
+        // The 'gi' flags ensure it's global (replaces all occurrences) and case-insensitive.
+        const highlightRegex = new RegExp(`(<[^>]+>)|(${searchValue})`, 'gi');
+
+        const newCellData = cellData.replace(highlightRegex, (match, tag, textToHighlight) => {
+            // If 'textToHighlight' was found, it means we matched your search term.
+            if (textToHighlight) {
+                // So, we wrap it in the highlight tag.
+                return `<b class="match finder">${textToHighlight}</b>`;
+            }
+            // Otherwise, 'tag' was found, meaning we matched an HTML element.
+            else if (tag) {
+                // So, we return it completely unchanged, preserving the URL.
+                return tag;
+            }
+            // Fallback for any other case (shouldn't happen with this regex).
+            else {
+                return match;
             }
         });
+
+        // Update the cell with the correctly highlighted HTML.
+        table.cell(rowIdx, index).data(newCellData);
+    }
+});
     });
 
     // Перерисовываем таблицу для применения изменений
