@@ -1,5 +1,5 @@
- const path = window.location.pathname;
- const isRussianOrML = /^\/(r|ru|ml)\//.test(path);
+const path = window.location.pathname;
+const isRussianOrML = /^\/(r|ru|ml)\//.test(path);
 
 // Глобальный объект со всеми словарями
 const DICTIONARIES = {
@@ -82,6 +82,58 @@ const DICTIONARIES = {
   }
 };
 
+/*
+,
+  'SkrDict': {
+    name: 'SkrDict',
+    method: 'GET',
+    base: 'https://sanskritdictionary.com/?iencoding=iast&q=',
+    fallback: 'https://sanskritdictionary.com/',
+    iframe: false
+  },
+  'Learnskr': {
+    name: 'Learnskr',
+    method: 'GET',
+    base: 'https://www.learnsanskrit.cc/translate?dir=au&search=',
+    fallback: 'https://www.learnsanskrit.cc/',
+    iframe: false
+  }
+*/
+
+// Функция для получения настроек окна
+function getWindowSettings() {
+  const newWindowWidth = 500;
+  const newWindowHeight = 500;
+  const screenWidth = window.screen.availWidth;
+  const screenHeight = window.screen.availHeight;
+  const newWindowleft = screenWidth - newWindowWidth - 30;
+  const newWindowTop = screenHeight - newWindowHeight - 50;
+  
+  return {
+    width: newWindowWidth,
+    height: newWindowHeight,
+    left: newWindowleft,
+    top: newWindowTop,
+    features: `width=${newWindowWidth},height=${newWindowHeight},left=${newWindowleft},top=${newWindowTop},scrollbars=yes,resizable=yes`
+  };
+}
+
+
+
+// Функция для открытия или переиспользования окна
+function openOrFocusWindow(url, windowName) {
+  const settings = getWindowSettings();
+  let win = window.open('', windowName, settings.features);
+  
+  if (win && !win.closed) {
+    win.location.href = url;
+  } else {
+    win = window.open(url, windowName, settings.features);
+  }
+  
+  win.focus();
+  return win;
+}
 
 // Основная функция для открытия группы словарей
 function openDictionariesGroup(event, dictNames) {
@@ -92,6 +144,47 @@ function openDictionariesGroup(event, dictNames) {
   
   // Получаем объекты словарей по именам
   const dictionaries = dictNames.map(name => DICTIONARIES[name]).filter(Boolean);
+  
+  // Разделяем словари на iframe и non-iframe
+  const iframeDicts = dictionaries.filter(d => d.iframe);
+  const nonIframeDicts = dictionaries.filter(d => !d.iframe);
+  
+  // Открываем non-iframe словари в отдельных вкладках
+  nonIframeDicts.forEach(dict => {
+    const url = query ? dict.base + encodeURIComponent(query) : dict.fallback;
+    window.open(url, '_blank');
+  });
+  
+
+
+  // Обрабатываем iframe словари
+  if (iframeDicts.length === 1) {
+    // Если только один iframe словарь - открываем в новом окне без вкладок
+    const dict = iframeDicts[0];
+    const url = query ? dict.base + encodeURIComponent(query) : dict.fallback;
+    openOrFocusWindow(url, 'dictWindow');
+  } else if (iframeDicts.length > 1) {
+    // Если несколько iframe словарей - открываем окно с вкладками
+    openMultiIframeWindow(iframeDicts, query);
+  }
+}
+
+// Функция для открытия окна с несколькими вкладками iframe
+function openMultiIframeWindow(dictionaries, query) {
+  const settings = getWindowSettings();
+  
+  // Пытаемся получить ссылку на существующее окно
+  let win = window.open('', 'multiDict', settings.features);
+  
+  // Если окно уже было открыто и не закрыто, просто фокусируем его
+  if (win && !win.closed) {
+    // Очищаем содержимое окна перед записью нового
+    win.document.write('');
+    win.document.close();
+  } else {
+    // Если окно было закрыто или не существовало, открываем новое
+    win = window.open('', 'multiDict', settings.features);
+  }
   
   // Копируем в буфер обмена
   if (query) {
@@ -105,42 +198,9 @@ function openDictionariesGroup(event, dictNames) {
       console.warn('Clipboard copy failed:', err);
     });
   }
-  
-  // Разделяем словари на iframe и non-iframe
-  const iframeDicts = dictionaries.filter(d => d.iframe);
-  const nonIframeDicts = dictionaries.filter(d => !d.iframe);
-  
-  // Открываем non-iframe словари в отдельных вкладках
-  nonIframeDicts.forEach(dict => {
-    const url = query ? dict.base + encodeURIComponent(query) : dict.fallback;
-    window.open(url, '_blank');
-  });
-  
-  // Обрабатываем iframe словари
-  if (iframeDicts.length === 1) {
-    // Если только один iframe словарь - открываем в новом окне без вкладок
-    const dict = iframeDicts[0];
-    const url = query ? dict.base + encodeURIComponent(query) : dict.fallback;
-    window.open(url, '_blank');
-  } else if (iframeDicts.length > 1) {
-    // Если несколько iframe словарей - открываем окно с вкладками
-    openMultiIframeWindow(iframeDicts, query);
-  }
-}
 
-// Функция для открытия окна с несколькими вкладками iframe
-function openMultiIframeWindow(dictionaries, query) {
-  const newWindowWidth = 500;
-  const newWindowHeight = 500;
-  const screenWidth = window.screen.availWidth;
-  const screenHeight = window.screen.availHeight;
-  const newWindowleft = screenWidth - newWindowWidth - 30;
-  const newWindowTop = screenHeight - newWindowHeight - 50;
-  const popupFeatures = `width=${newWindowWidth},height=${newWindowHeight},left=${newWindowleft},top=${newWindowTop},scrollbars=yes,resizable=yes`;
-  
-  let win = window.open('', 'multiDict', popupFeatures);
-  
-  win.document.write(`
+  // Генерируем HTML для окна
+  const htmlContent = `
     <html>
     <head>
       <title>Dictionaries</title>
@@ -179,21 +239,26 @@ function openMultiIframeWindow(dictionaries, query) {
       </script>
     </body>
     </html>
-  `);
+  `;
+  
+  // Записываем содержимое в окно
+  win.document.write(htmlContent);
   win.document.close();
+  win.focus();
 }
 
-// Обновленные версии старых функций
+// Функция для открытия одного словаря
 function openWithQuery(event, dictName) {
   openDictionariesGroup(event, [dictName]);
 }
 
+// Функция для открытия нескольких словарей
 function openWithQueryMulti(event, dictNames) {
   openDictionariesGroup(event, dictNames);
 }
 
+// Функция для открытия всех словарей
 function openDictionaries(event) {
- 
   const numDicts = Object.keys(DICTIONARIES).length;
   
   const confirmMessage = isRussianOrML 
@@ -205,22 +270,25 @@ function openDictionaries(event) {
   }
 }
 
-
-function openWithQueryLink(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
+// Функция для открытия ссылки с возможностью управления окном
+function openWithQueryLink(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}', options = {}) {
+  // Получаем запрос
   const queryInput = document.getElementById('paliauto');
-  const query = queryInput?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || ''; // даже если пусто, подставляем ""
-
-  if (query) {
-    showBubbleNotification('Copied to clipboard');
-    navigator.clipboard.writeText(query).catch(err => {
-      console.warn('Clipboard copy failed:', err);
-    });
-  }
-
+  const query = queryInput?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
+  
+  // Формируем URL
   const url = base.replace('{{q}}', encodeURIComponent(query));
   const el = event.currentTarget;
 
-  el.href = url;
+  // Если указан флаг newWindow, открываем в новом окне с нашими параметрами
+  if (options.newWindow) {
+    event.preventDefault();
+    const settings = getWindowSettings();
+    openOrFocusWindow(url, 'linkWindow', settings.features);
+    return false;
+  }
 
-  return true; // разрешаем браузеру следовать по ссылке с учетом target
+  // Стандартное поведение (использует target из ссылки)
+  el.href = url;
+  return true;
 }

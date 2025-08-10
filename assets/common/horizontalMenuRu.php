@@ -262,14 +262,14 @@ echo '<!--
 
 
  <a class="text-reset" target="_blank" title="Все доступные Скр словари на сайте Cologne University"  href="https://www.sanskrit-lexicon.uni-koeln.de/">Много Словарей</a>
-    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">SkrDict</a>
+    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\', {newWindow: true})">SkrDict</a>
 
-<a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\')">Learnskr</a>
+<a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\', {newWindow: true})">Learnskr</a>
        </div>
          </li> 
      <li>
          <div class="dropdown-item "> Pali-Skr
-        <a class="text-reset" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event, \'https://glosbe.com/pi/sa/{{q}}\')">Glosbe</a>
+        <a class="text-reset" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event, \'https://glosbe.com/pi/sa/{{q}}\', {newWindow: true})">Glosbe</a>
         <a class="text-reset" target="_blank"   href="https://sambhasha.ksu.ac.in/CompLing/pcl_1/html/Application%20home.html">Sambhasha</a>
         <a class="text-reset" target="_blank" href="https://rephrasely.com/translate/translate-pali-to-sanskrit">Pl to SA AI</a>
        </div>
@@ -302,7 +302,7 @@ echo '<!--
   </a>
 </li>
 <li>
-  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'/cse.php?q={{q}}\')" target="_blank">
+  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQueryLink(event, \'/cse.php?q={{q}}\')" target="_blank">
     Google Custom Search
   </a>
 </li>
@@ -433,12 +433,10 @@ echo '<!--
 
    <li><a class="dropdown-item" target="_blank" href="/assets/common/lunarRu.html"> <i class="' . $iconimportant . '"></i> Дни Упосаттхи по Суттам</a></li>
 <li>
-  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event)">
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event,,{newWindow: true})">
     <i class="' . $iconimportant . '"></i> Aksharamukha текстовый конвертер
   </a>
 </li>
-
-
 
               <li>
          <div class="dropdown-item ">PTS Конвертер
