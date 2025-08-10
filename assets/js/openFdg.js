@@ -260,16 +260,19 @@ document.addEventListener('click', function(event) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  const checkbox = document.getElementById('quotePopupCheckbox');
-  const storageKey = 'quotePopupEnabled';
+const checkbox = document.getElementById('quotePopupCheckbox');
+const storageKey = 'quotePopupEnabled';
 
-  if (checkbox) {
-    checkbox.checked = localStorage.getItem(storageKey) !== 'false';
-    checkbox.addEventListener('change', function() {
-      localStorage.setItem(storageKey, this.checked);
-    });
-  }
-  
+if (checkbox) {
+    // Инициализация: если в localStorage нет значения, установить true (по умолчанию включено)
+    if (localStorage.getItem(storageKey) === null) {
+        localStorage.setItem(storageKey, 'true');
+    }
+ checkbox.checked = localStorage.getItem(storageKey) === 'false'; // Инвертировано
+checkbox.addEventListener('change', function() {
+    localStorage.setItem(storageKey, !this.checked); // Инвертировано
+});
+}
     const urlParams = new URLSearchParams(window.location.search);
     const sParam = urlParams.get('s');
  
