@@ -662,7 +662,7 @@ $defaults = '
 <!-- Дропдаун для выбора системы письма -->
 <label for="dict-select"><h5 style="text-align: left;">Словарь по клику:</h5></label>
 <select class="dropdown droponmain rounded-pill text-black border-2 border-secondary text-center input-group-append" id="dict-select">
-<option value="standalonebwru">DPD Встроенный</option>
+<option value="standaloneru">DPD Встроенный</option>
 <option value="dpdFullRu">DPD Онлайн </option>
 <option value="newwindowru">DPD Онлайн Новое Окно</option>
 <option value="dpdCompactRu">DPD Онлайн мини</option>
@@ -671,7 +671,7 @@ $defaults = '
 <option value="dictTango">DictTango Android</option>
 <option value="mdict">Mdict IOS</option>
 <option value="goldenpc">GoldenDict-NG Desktop</option>
-<option value="standalonebw">Англ DPD Встроенный</option>
+<option value="standalone">Англ DPD Встроенный</option>
 <option value="dpdFull">Англ DPD Онлайн</option>
 <option value="newwindow">Англ DPD Онлайн новое окно </option>
 <option value="dpdCompact" >Англ DPD Онлайн мини </option>
@@ -1346,7 +1346,7 @@ $defaults = '<!-- Dictionary OnClick Popup -->
 <!-- Дропдаун для выбора режима словаря -->
 <label for="dict-select"><h5 style="text-align: left;">On click dictionary:</h5></label>
 <select class="dropdown droponmain rounded-pill text-black border-2 border-secondary text-center input-group-append" id="dict-select">
-<option value="standalonebw">DPD Built-in </option>
+<option value="standalone">DPD Built-in </option>
 <option value="dpdFull">DPD Online </option>
 <option value="newwindow">DPD Online New Window</option>
 <option value="dpdCompact">DPD Onilne mini </option>
@@ -1355,7 +1355,7 @@ $defaults = '<!-- Dictionary OnClick Popup -->
 <option value="dictTango">DictTango Android</option>
 <option value="mdict">Mdict IOS</option>
 <option value="goldenpc">GoldenDict-NG Desktop</option>
-<option value="standalonebwru" style="display: none;">Ru DPD Built-in </option>
+<option value="standaloneru" style="display: none;">Ru DPD Built-in </option>
 <option value="dpdFullRu" style="display: none;">Ru DPD Online </option>
 <option value="newwindowru" style="display: none;">Ru DPD Online New Window </option>
 <option value="dpdCompactRu" style="display: none;">Ru DPD Online mini </option>
