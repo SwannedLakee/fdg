@@ -17,7 +17,7 @@ const dictionaries = [
   { name: 'Gandhari', method: 'GET', base: 'https://gandhari.org/dictionary?section=dop&search=', fallback: 'https://gandhari.org/dop', iframe: true },
   { name: 'DPD', method: 'GET', base: 'https://dict.dhamma.gift/search_html?source=pwa&q=', fallback: 'https://dict.dhamma.gift/?source=pwa', iframe: true },
   { name: 'DPR', method: 'GET', base: 'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis=', fallback: 'https://www.digitalpalireader.online/_dprhtml/index.html', iframe: false },
-  { name: 'CPD', method: 'POST', base: 'https://cpd.uni-koeln.de/search', params: { getText: '' }, fallback: 'https://cpd.uni-koeln.de/search', iframe: true },
+  { name: 'CPD', method: 'GET', base: 'https://cpd.uni-koeln.de/search?query=', fallback: 'https://cpd.uni-koeln.de/search', iframe: true },
   { name: 'Glosbe', method: 'GET', base: 'https://glosbe.com/pi/sa/', fallback: 'https://glosbe.com/pi/sa/', iframe: false },
   { name: 'MWScan', method: 'GET', base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=', fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/index.php', iframe: false },
   { name: 'APScan', method: 'GET', base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=', fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/index.php', iframe: false },
