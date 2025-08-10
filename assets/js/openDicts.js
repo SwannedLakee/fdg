@@ -1,18 +1,7 @@
-
 //  <a href="#" onclick="openDictionaries(event)">Dict</a>
-
 function openDictionaries(event) {
   event.preventDefault();
   const query = document.getElementById('paliauto')?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ');
-
-
-if (query) {
-  const message = `Copied to clipboard`;
-  showBubbleNotification(message);
-  navigator.clipboard.writeText(query).catch(err => {
-    console.warn('Clipboard copy failed:', err);
-  });
-}
 
   const dictionaries = [
     // GET-поиск
@@ -22,8 +11,7 @@ if (query) {
       base: 'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=',
       fallback: 'https://dsal.uchicago.edu/dictionaries/pali/'
     },
-
-        {
+    {
       name: 'Gandhari', // Нет поддержки поиска извне
       method: 'GET',
       base: 'https://gandhari.org/dictionary?section=dop&search=',
@@ -41,7 +29,6 @@ if (query) {
       base: 'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis=',
       fallback: 'https://www.digitalpalireader.online/_dprhtml/index.html'
     },
-
     {
       name: 'CPD', 
       method: 'POST', // POST-поиск: CPD доделать 
@@ -49,7 +36,7 @@ if (query) {
       params: { getText: '' },
       fallback: 'https://cpd.uni-koeln.de/search'
     },
-   /* {
+    /* {
       name: 'DharmaMitra',
       method: 'GET',
       base: 'https://dharmamitra.org/?target_lang=english-explained&input_sentence=',
@@ -61,7 +48,7 @@ if (query) {
       base: 'https://glosbe.com/pi/sa/',
       fallback: 'https://glosbe.com/pi/sa/'
     },    
-      {
+    {
       name: 'MWScan',
       method: 'GET',
       base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
@@ -79,7 +66,7 @@ if (query) {
       base: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key=',
       fallback: 'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/index.php'
     },
-  {
+    {
       name: 'Wisdomlib',
       method: 'GET',
       base: 'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input=',
@@ -87,36 +74,62 @@ if (query) {
     }
   ];
 
-  dictionaries.forEach(dict => {
-    if (!query) {
-      window.open(dict.fallback, '_blank');
-      return;
+  // --- НАЧАЛО ИЗМЕНЕНИЙ ---
+
+  const numDicts = dictionaries.length;
+  const path = window.location.pathname;
+  // Проверяем, начинается ли путь с /r/, /ru/ или /ml/
+  const isRussianOrML = /^\/(r|ru|ml)\//.test(path); 
+
+  let confirmMessage;
+  if (isRussianOrML) {
+    confirmMessage = `Будет открыто ${numDicts} вкладок. Продолжить?`;
+  } else {
+    confirmMessage = `This will open ${numDicts} tabs. Do you want to proceed?`;
+  }
+
+  // Запрашиваем подтверждение у пользователя
+  if (window.confirm(confirmMessage)) {
+    if (query) {
+      const message = `Copied to clipboard`;
+      // Предполагается, что функция showBubbleNotification определена где-то в другом месте
+      showBubbleNotification(message); 
+      navigator.clipboard.writeText(query).catch(err => {
+        console.warn('Clipboard copy failed:', err);
+      });
     }
 
-    if (dict.method === 'GET') {
-      window.open(dict.base + encodeURIComponent(query), '_blank');
-    } else if (dict.method === 'POST') {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = dict.base;
-      form.target = '_blank';
-      form.style.display = 'none';
-
-      for (const key in dict.params) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = (key === 'key' || key === 'getText') ? query : dict.params[key];
-        form.appendChild(input);
+    dictionaries.forEach(dict => {
+      if (!query) {
+        window.open(dict.fallback, '_blank');
+        return;
       }
 
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-    } else if (dict.method === 'NONE') {
-      window.open(dict.fallback, '_blank');
-    }
-  });
+      if (dict.method === 'GET') {
+        window.open(dict.base + encodeURIComponent(query), '_blank');
+      } else if (dict.method === 'POST') {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = dict.base;
+        form.target = '_blank';
+        form.style.display = 'none';
+
+        for (const key in dict.params) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = (key === 'key' || key === 'getText') ? query : dict.params[key];
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+      } else if (dict.method === 'NONE') {
+        window.open(dict.fallback, '_blank');
+      }
+    });
+  }
 }
 
 function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
@@ -137,7 +150,6 @@ function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?tar
 
   return true; // разрешаем браузеру следовать по ссылке с учетом target
 }
-
 
 function openWithQueryMulti(event, baseUrls) {
   event.preventDefault();
