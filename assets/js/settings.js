@@ -383,14 +383,15 @@ function applySavedDict(dict) {
     localStorage.removeItem(key); // Удаляем сохранённое состояние чекбокса
   });
 
+clearFdgPopupParams();
   // Дополнительные параметры, которые нужно очистить
   localStorage.removeItem('selectedScript');
   localStorage.removeItem('selectedDict');
   localStorage.removeItem("defaultReader");
   localStorage.removeItem('paliToggleRu');
   localStorage.removeItem('viewMode');
-        localStorage.removeItem("localSearchHistory");
-
+  localStorage.removeItem("quotePopupEnabled");
+  localStorage.removeItem("localSearchHistory");
   localStorage.setItem("variantVisibility", "hidden");
 
 
