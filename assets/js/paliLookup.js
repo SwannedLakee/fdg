@@ -106,15 +106,15 @@ if (savedDict) {
 } else if (window.location.pathname.includes('/r/') ||
            window.location.pathname.includes('/ml/') ||
            window.location.pathname.includes('/ru/')) {
-    savedDict = "standalonebwru";
+    savedDict = "standaloneru";
 } else {
-    savedDict = "standalonebw";
+    savedDict = "standalone";
 }
 
 // ── Универсальная переустановка на dpdfull ──
 if (
     window.location.pathname.includes('/d/') &&
-    (savedDict === "standalonebw" || savedDict === "standalonebwru")
+    (savedDict === "standalone" || savedDict === "standaloneru")
     || window.location.search.includes('script=devanagari')
 ) {
     savedDict = "dpdfull";
@@ -205,10 +205,10 @@ if (savedDict.includes("dpd")) {
 // before this line:
 }
 
-else if (savedDict === "standalonebwru") {
-  dictUrl = "standalonebwru"; // Используем standalone-словарь
-} else if (savedDict === "standalonebw") {
-  dictUrl = "standalonebw"; // Используем standalone-словарь
+else if (savedDict === "standaloneru") {
+  dictUrl = "standaloneru"; // Используем standalone-словарь
+} else if (savedDict === "standalone") {
+  dictUrl = "standalone"; // Используем standalone-словарь
 } else {
    dictUrl = "searchonly";
 }
@@ -237,7 +237,7 @@ function handleWordLookup(word, event) {
     let translation = "";
 
 // Для standalone-режима обрабатываем ВСЕ слова
-if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
+if (dictUrl === "standalone" || dictUrl === "standaloneru") {
     // Пытаемся найти перевод для всего словосочетания
     const phraseTranslation = lookupWordInStandaloneDict(cleanedWord);
 
@@ -297,7 +297,7 @@ if (isLocalhost) {
 }
 
 
-if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation) {
+if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
     // Создаем ссылку на слово с помощью глобальной функции и оборачиваем в strong
     const wordLink = `<strong>${createClickableLink(word)}</strong>`;
 
@@ -331,7 +331,7 @@ if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation
         let minHeight = 100;
         const maxHeight = window.innerHeight * 0.95;
 
-        if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
+        if (dictUrl === "standalone" || dictUrl === "standaloneru") {
             minHeight = 100;
         } else {
             const screenHeight = window.innerHeight;
@@ -397,7 +397,7 @@ if ((dictUrl === "standalonebw" || dictUrl === "standalonebwru") && !translation
     const dictBtn = document.querySelector('.dict-btn');
     dictBtn.href = dictSearchUrl;
 
-if (savedDict === "standalonebw" || savedDict === "standalonebwru") {
+if (savedDict === "standalone" || savedDict === "standaloneru") {
   dictBtn.onclick = (e) => {
     e.preventDefault();
     parent.openDictionaryWindow(dictSearchUrl);
@@ -568,14 +568,14 @@ function lazyLoadStandaloneScripts(lang = 'en') {
 document.addEventListener('DOMContentLoaded', function() {
     // Минимальная задержка перед началом загрузки
     setTimeout(() => {
-        if (savedDict === "standalonebw") {
+        if (savedDict === "standalone") {
             requestIdleCallback(() => {
                 lazyLoadStandaloneScripts()
                     .then(() => console.log('Standalone eng scripts lazy-loaded'))
                     .catch(err => console.warn('Lazy loading eng scripts warning:', err));
             }, { timeout: 2000 });
         }
-        else if (savedDict === "standalonebwru") {
+        else if (savedDict === "standaloneru") {
             requestIdleCallback(() => {
                 lazyLoadStandaloneScripts("ru")
                     .then(() => console.log('Standalone rus scripts lazy-loaded'))
@@ -676,6 +676,7 @@ function createPopup() {
     popup.style.position = 'fixed';
     popup.style.maxWidth = '100%';
     popup.style.maxHeight = '1200px';
+    popup.style.borderRadius = '8px';
     popup.style.overflow = 'hidden';
 
     // Проверка параметров окна браузера
@@ -1020,7 +1021,7 @@ document.addEventListener("keydown", (event) => {
 
         // Режимы для переключения
         const modes = {
-            standalone: isRussian ? "standalonebwru" : "standalonebw",
+            standalone: isRussian ? "standaloneru" : "standalone",
             full: "dpdfull",
             newWindow: isRussian ? "newwindowru" : "newwindow"
         };

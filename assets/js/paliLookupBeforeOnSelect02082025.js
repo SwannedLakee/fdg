@@ -61,9 +61,9 @@ if (savedDict) {
 } else if (window.location.pathname.includes('/d/')) {
     savedDict = "dpdFull".toLowerCase();
 } else if (window.location.pathname.includes('/r/') || window.location.pathname.includes('/ml/') || window.location.pathname.includes('/ru/')) {
-    savedDict = "standalonebwru".toLowerCase();
+    savedDict = "standaloneru".toLowerCase();
 } else {
-    savedDict = "standalonebw".toLowerCase();
+    savedDict = "standalone".toLowerCase();
 }
         
 // Устанавливаем правильный URL для словаря в зависимости от языка
@@ -109,10 +109,10 @@ if (savedDict.includes("dpd")) {
 } else if (savedDict === "mdict") {
   dictUrl = "mdict://mdict.cn/search?text=";
 }
-else if (savedDict === "standalonebwru") {
-  dictUrl = "standalonebwru"; // Используем standalone-словарь
-} else if (savedDict === "standalonebw") {
-  dictUrl = "standalonebw"; // Используем standalone-словарь
+else if (savedDict === "standaloneru") {
+  dictUrl = "standaloneru"; // Используем standalone-словарь
+} else if (savedDict === "standalone") {
+  dictUrl = "standalone"; // Используем standalone-словарь
 } else {
    dictUrl = "searchonly";
 }
@@ -237,14 +237,14 @@ function lazyLoadStandaloneScripts(lang = 'en') {
 document.addEventListener('DOMContentLoaded', function() {
     // Минимальная задержка перед началом загрузки
     setTimeout(() => {
-        if (savedDict === "standalonebw") {
+        if (savedDict === "standalone") {
             requestIdleCallback(() => {
                 lazyLoadStandaloneScripts()
                     .then(() => console.log('Standalone eng scripts lazy-loaded'))
                     .catch(err => console.warn('Lazy loading eng scripts warning:', err));
             }, { timeout: 2000 });
         } 
-        else if (savedDict === "standalonebwru") {
+        else if (savedDict === "standaloneru") {
             requestIdleCallback(() => {
                 lazyLoadStandaloneScripts("ru")
                     .then(() => console.log('Standalone rus scripts lazy-loaded'))
@@ -634,7 +634,7 @@ document.addEventListener('click', function(event) {
         if (dictionaryVisible) {
             let translation = "";
             
-            if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
+            if (dictUrl === "standalone" || dictUrl === "standaloneru") {
                 translation = lookupWordInStandaloneDict(cleanedText);
             } 
             else if (dictUrl.includes('dicttango') || dictUrl.includes('mdict')) {
@@ -671,7 +671,7 @@ document.addEventListener('click', function(event) {
                 let minHeight = 100;
                 const maxHeight = window.innerHeight * 0.95; 
                 
-                if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
+                if (dictUrl === "standalone" || dictUrl === "standaloneru") {
                     minHeight = 100;
                 } else {
                     const screenHeight = window.innerHeight;
@@ -802,7 +802,7 @@ document.addEventListener('click', function(event) {
             if (dictionaryVisible) {
                 let translation = "";
                 
-                if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
+                if (dictUrl === "standalone" || dictUrl === "standaloneru") {
                     translation = lookupWordInStandaloneDict(cleanedWord);
                 } 
                 else if (dictUrl.includes('dicttango') || dictUrl.includes('mdict')) {
@@ -839,7 +839,7 @@ document.addEventListener('click', function(event) {
                     let minHeight = 100;
                     const maxHeight = window.innerHeight * 0.95; 
                     
-                    if (dictUrl === "standalonebw" || dictUrl === "standalonebwru") {
+                    if (dictUrl === "standalone" || dictUrl === "standaloneru") {
                         minHeight = 100;
                     } else {
                         const screenHeight = window.innerHeight;

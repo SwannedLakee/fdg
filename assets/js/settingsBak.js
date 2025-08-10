@@ -141,14 +141,14 @@ if (savedDict && [...dictSelect.options].some(opt => opt.value === savedDict)) {
 } else {
   
 if (window.location.href.includes('/r/') || window.location.href.includes('/ml/') || window.location.href.includes('/ru/')) {
-dictSelect.value = 'standalonebwru'; // Значение по умолчанию standalonebwru
+dictSelect.value = 'standaloneru'; // Значение по умолчанию standaloneru
 //  localStorage.setItem('selectedDict', 'dpdCompactRu');
 } else if (window.location.href.includes('/d/')) {
-dictSelect.value = 'dpdFull'; // Значение по умолчанию standalonebwru
+dictSelect.value = 'dpdFull'; // Значение по умолчанию standaloneru
 //  localStorage.setItem('selectedDict', 'dpdCompactRu');
 } else {
-  dictSelect.value = 'standalonebw'; // Значение по умолчанию
-//  localStorage.setItem('selectedDict', 'standalonebw');
+  dictSelect.value = 'standalone'; // Значение по умолчанию
+//  localStorage.setItem('selectedDict', 'standalone');
 }
 }
 
