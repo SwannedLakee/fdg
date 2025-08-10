@@ -215,44 +215,61 @@ echo '<!--
 
 
 <li>
-  <a class="dropdown-item" title="PTS Pali Dictionary + Gandhari Dictionary + Digital Pali Dictionary + Critical Pali Dictionary " href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
-    \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
-    \'https://gandhari.org/dictionary?section=dop&search=\',
-    \'https://dict.dhamma.gift/search_html?source=pwa&q=\',
-    \'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis=\',
-    \'https://cpd.uni-koeln.de/search?query=\'
-  ])">Pali PTS, Cone, DPD, DPR, CPD</a>
+  <a class="dropdown-item" title="PTS Pali Dictionary + Gandhari Dictionary + Digital Pali Dictionary + Critical Pali Dictionary" 
+     href="javascript:void(0)" 
+     onclick="return openWithQueryMulti(event, [\'PTS\', \'Gandhari\', \'DPD\', \'DPR\', \'CPD\'])">
+    Pali PTS, Cone, DPD, DPR, CPD
+  </a>
 </li>
 
 <li>
   <a class="dropdown-item" target="_blank" href="javascript:void(0)"
-     onclick="return openWithQuery(event, \'https://cpd.uni-koeln.de/search?query={{q}}\')">
+     onclick="return openWithQuery(event, \'CPD\')">
     Critical Pali Dict (CPD)
   </a>
 </li>
-<li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://gandhari.org/dictionary?section=dop&search={{q}}\')">Cловарь M. Cone Gandhari.org</a></li>
-<li><a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis={{q}}\')">DPR Analysis</a></li>
-<li><a class="dropdown-item" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs={{q}}\')">Cловарь R. Davids, W. Stede PTS</a></li>
+<li>
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" 
+     onclick="openWithQuery(event, \'Gandhari\')">
+    Словарь M. Cone Gandhari.org
+  </a>
+</li>
+<li>
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" 
+     onclick="openWithQuery(event, \'DPR\')">
+    DPR Analysis
+  </a>
+</li>
+<li>
+  <a class="dropdown-item" target="_blank" href="javascript:void(0)" 
+     onclick="openWithQuery(event, \'PTS\')">
+    Словарь R. Davids, W. Stede PTS
+  </a>
+</li>
 
    <li>
          <div class="dropdown-item "> Skr
-<a class="text-reset" target="_blank" title="Monier-Williams Sanskrit-English Dictionary, 1899" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key={{q}}\');">MW</a>
-<a class="text-reset" title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell" href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
-  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MWScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\',
-  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/SHSScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\',
-  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/APScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\',
-  \'https://www.sanskrit-lexicon.uni-koeln.de/scans/MDScan/2020/web/webtc/indexcaller.php?transLit=roman&key=\'
-])">+</a>
+
+<a class="text-reset" target="_blank" 
+   title="Monier-Williams Sanskrit-English Dictionary, 1899" 
+   href="javascript:void(0)" 
+   onclick="openWithQuery(event, \'MWScan\')">MW</a>
+
+<a class="text-reset" 
+   title="Monier-Williams + Shabda-Sagara + Apte Practical + Macdonell" 
+   href="javascript:void(0)" 
+   onclick="return openWithQueryMulti(event, [\'MWScan\', \'SHSScan\', \'APScan\', \'MDScan\'])">+</a>
+
 
  <a class="text-reset" target="_blank" title="Все доступные Скр словари на сайте Cologne University"  href="https://www.sanskrit-lexicon.uni-koeln.de/">Много Словарей</a>
-    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\')">SkrDict</a>
+    <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://sanskritdictionary.com/?iencoding=iast&q={{q}}&lang=sans&action=Search\', {newWindow: true})">SkrDict</a>
 
-<a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\')">Learnskr</a>
+<a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://www.learnsanskrit.cc/translate?dir=au&search={{q}}\', {newWindow: true})">Learnskr</a>
        </div>
          </li> 
      <li>
          <div class="dropdown-item "> Pali-Skr
-        <a class="text-reset" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event, \'https://glosbe.com/pi/sa/{{q}}\')">Glosbe</a>
+        <a class="text-reset" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event, \'https://glosbe.com/pi/sa/{{q}}\', {newWindow: true})">Glosbe</a>
         <a class="text-reset" target="_blank"   href="https://sambhasha.ksu.ac.in/CompLing/pcl_1/html/Application%20home.html">Sambhasha</a>
         <a class="text-reset" target="_blank" href="https://rephrasely.com/translate/translate-pali-to-sanskrit">Pl to SA AI</a>
        </div>
@@ -273,19 +290,19 @@ echo '<!--
     <li>
          <div class="dropdown-item ">
          <i class="' . $iconimportant . '"></i>
-         <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a>
+         <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a>
          + <a class="text-reset" target="_blank" href="https://dharmamitra.org/nexus/db/pa
 ">Nexus</a>
            </div>
          </li>
 
 <li>
-  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input={{q}}\')" target="_blank">
+  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQueryLink(event, \'https://www.wisdomlib.org/index.php?type=search&division=glossary&item=&mode=text&input={{q}}\')" target="_blank">
     Wisdomlib.org
   </a>
 </li>
 <li>
-  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQuery(event, \'/cse.php?q={{q}}\')" target="_blank">
+  <a class="dropdown-item" href="javascript:void(0)" onclick="openWithQueryLink(event, \'/cse.php?q={{q}}\')" target="_blank">
     Google Custom Search
   </a>
 </li>
@@ -400,8 +417,8 @@ echo '<!--
          <div class="dropdown-item ">
           <a class="text-reset" target="" onclick="localStorage.setItem(\'siteLanguage\', \'th\');" href="/th/?q=">DG</a> 
          <a class="text-reset" target=""  href="/old.php">old</a> 
-        <a class="text-reset" target="" target="TTS Текст-в-речь" href="/ru/tts.php" onclick="return openWithQuery(event, \'/ru/tts.php?q={{q}}\')" >TTS</a>  
-      <a href="/ru/r.php" class="text-reset" target="Читать Никаи или Саньютты целиком на одной странице" onclick="return openWithQuery(event, \'/ru/r.php?q={{q}}\')" >Read+</a>  
+        <a class="text-reset" target="" target="TTS Текст-в-речь" href="/ru/tts.php" onclick="return openWithQueryLink(event, \'/ru/tts.php?q={{q}}\')" >TTS</a>  
+      <a href="/ru/r.php" class="text-reset" target="Читать Никаи или Саньютты целиком на одной странице" onclick="return openWithQueryLink(event, \'/ru/r.php?q={{q}}\')" >Read+</a>  
 
 
        <!--  <a class="text-reset" target=""  href="/new/">new</a> -->                   <a class="text-reset" target="" href="' . $readerPage . '"> индекс</a>   
@@ -416,12 +433,10 @@ echo '<!--
 
    <li><a class="dropdown-item" target="_blank" href="/assets/common/lunarRu.html"> <i class="' . $iconimportant . '"></i> Дни Упосаттхи по Суттам</a></li>
 <li>
-  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQuery(event)">
+  <a class="dropdown-item" href="javascript:void(0)" target="_blank" onclick="openWithQueryLink(event, \'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}\', {newWindow: true})">
     <i class="' . $iconimportant . '"></i> Aksharamukha текстовый конвертер
   </a>
 </li>
-
-
 
               <li>
          <div class="dropdown-item ">PTS Конвертер
