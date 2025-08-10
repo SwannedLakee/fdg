@@ -373,141 +373,83 @@ function applySavedDict(dict) {
       window.location.href = url.toString();
     }
   }
- 
- if (resetButton) { 
-  resetButton.addEventListener('click', function() {
-	  console.log('reset Button clicked');
-  // Удаляем значения из localStorage для всех чекбоксов
-  document.querySelectorAll(".setting-checkbox").forEach(checkbox => {
-    const key = checkbox.dataset.key; // Берём ключ из data-key
-    localStorage.removeItem(key); // Удаляем сохранённое состояние чекбокса
-  });
+
+if (resetButton) {
+  resetButton.addEventListener('click', function () {
+    // Определяем текущий язык
+    const path = window.location.pathname;
+    const language =
+      localStorage.getItem('siteLanguage') ||
+      (/^\/(ru|r|ml)\//.test(path) ? 'ru' : 'en');
+
+    const messages = {
+      ru: {
+        confirm: 'Вы уверены, что хотите сбросить ВСЕ настройки?',
+        success: 'Настройки сброшены'
+      },
+      en: {
+        confirm: 'Are you sure you want to reset ALL settings?',
+        success: 'Reset successful'
+      }
+    };
+
+    // Показываем подтверждение
+    if (!confirm(messages[language].confirm)) return;
+
+    const notificationText = messages[language].success;
+
+    // Удаляем значения из localStorage для всех чекбоксов
+    document.querySelectorAll('.setting-checkbox').forEach(checkbox => {
+      const key = checkbox.dataset.key;
+      if (key) localStorage.removeItem(key);
+    });
 
     // Проверяем, существует ли функция clearFdgPopupParams()
     if (typeof clearFdgPopupParams === 'function') {
-        clearFdgPopupParams(); // Вызываем, если функция объявлена
-    }
-      // Дополнительные параметры, которые нужно очистить
-  localStorage.removeItem('selectedScript');
-  localStorage.removeItem('selectedDict');
-  localStorage.removeItem("defaultReader");
-  localStorage.removeItem('paliToggleRu');
-  localStorage.removeItem('viewMode');
-  localStorage.removeItem("quotePopupEnabled");
-  localStorage.removeItem("localSearchHistory");
-  localStorage.setItem("variantVisibility", "hidden");
-
-
-  const keysToRemove = [
-    'lightMode',
-    'dark',
-    'paliToggleRu',
-    'pli-rus',
-    'popupHeight',
-    'popupLeft',
-    'popupTop',
-    'popupWidth',
-    'removePunct',
-    'selectedDict',
-    'selectedScript',
-    'theme',
-    'themeButtonAction',
-    'visitCount',
-    'windowHeight',
-    'windowWidth',
-    'isFirstDrag'
-  ];
-
-  keysToRemove.forEach(key => {
-    localStorage.removeItem(key);
-  });
-
-
-  // Очищаем параметр 'script' из URL
-  const url = new URL(window.location.href);
-  url.searchParams.delete('script');
-
-  // Перезагружаем страницу с обновленным URL
-  window.location.href = url.toString();
-});
-}
-
-//Default readers
-/* dropdown variant
-// Получаем выпадающий список
-var readerSelect = document.getElementById('reader-select');
-
-// Устанавливаем обработчик события при изменении выбранного значения
-readerSelect.addEventListener('change', function() {
-    // Устанавливаем значение в localStorage
-    localStorage.setItem("defaultReader", this.value);
-    // Обновляем URL
-  //  updateUrl();
-});
-
-// Проверяем значение в localStorage при загрузке страницы и устанавливаем выбранное значение
-var savedReader = localStorage.getItem("defaultReader");
-if (savedReader) {
-    readerSelect.value = savedReader;
-}
-
-// Сохраняем текущие значения параметров
-const initialBaseUrl = getBaseUrl();
-const initialDefaultReader = localStorage.defaultReader;
-
-// Функция для получения текущего baseUrl
-function getBaseUrl() {
-    let baseUrl;
-    if (window.location.href.includes('/ru') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
-        baseUrl = window.location.origin + "/r/";
-    } else {
-        baseUrl = window.location.origin + "/read/";
+      clearFdgPopupParams();
     }
 
-    if (localStorage.defaultReader === 'ml') {
-        baseUrl = window.location.origin + "/ml/";
-    } else if (localStorage.defaultReader === 'rv') {
-        baseUrl = window.location.origin + "/rev/";
-    } else if (localStorage.defaultReader === 'd') {
-        baseUrl = window.location.origin + "/d/";
-    } else if (localStorage.defaultReader === 'mem') {
-        baseUrl = window.location.origin + "/memorize/";
-    } else if (localStorage.defaultReader === 'fr') {
-        baseUrl = window.location.origin + "/frev/";
-    }
+    // Ключи для удаления
+    const keysToRemove = [
+      'selectedScript', 'selectedDict', 'defaultReader', 'paliToggleRu',
+      'viewMode', 'quotePopupEnabled', 'localSearchHistory', 'lightMode',
+      'dark', 'pli-rus', 'popupHeight', 'popupLeft', 'popupTop', 'popupWidth',
+      'removePunct', 'theme', 'themeButtonAction', 'visitCount',
+      'windowHeight', 'windowWidth', 'isFirstDrag'
+    ];
 
-    return baseUrl;
-}
+    localStorage.clear();
+    sessionStorage.clear();
 
-// Функция для обновления URL
-function updateUrl() {
-    const currentBaseUrl = getBaseUrl();
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    // Установка значений по умолчанию
+    localStorage.setItem('variantVisibility', 'hidden');
+
+    // Удаляем параметр 'script' из URL
     const url = new URL(window.location.href);
+    url.searchParams.delete('script');
 
-    // Извлекаем путь из currentBaseUrl
-    const newPath = new URL(currentBaseUrl).pathname;
-
-    // Обновляем путь в текущем URL
-    url.pathname = newPath;
-
-    // Сохраняем новый URL
-    window.location.href = url.toString();
-}
-
-// Функция для проверки изменений и обновления URL
-function checkAndUpdateUrl() {
-    const currentBaseUrl = getBaseUrl();
-    const currentDefaultReader = localStorage.defaultReader;
-
-    // Если параметры изменились, обновляем URL
-    if (currentBaseUrl !== initialBaseUrl || currentDefaultReader !== initialDefaultReader) {
-        updateUrl();
+    // Показ уведомления
+    if (typeof showBubbleNotification === 'function') {
+      showBubbleNotification(notificationText);
+    } else {
+      alert(notificationText); // fallback
     }
-}
-*/
-// end of default reader part
 
-// radio button varians
+    // Перезагрузка с задержкой
+    setTimeout(() => {
+      // Если URL изменился — идём по нему, иначе принудительно перезагружаем
+      if (url.toString() !== window.location.href) {
+        window.location.href = url.toString();
+      } else {
+        window.location.reload();
+      }
+    }, 1000);
+  });
+}
+ 
+
 
 // Получаем все радиокнопки
 var readerRadios = document.querySelectorAll('input[name="reader"]');
