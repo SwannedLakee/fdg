@@ -619,58 +619,56 @@ document.getElementById("date").textContent = formattedDate;
 <script defer src="/assets/js/themeswitch.js"></script>
 <script src="/assets/js/copyToClipboard.js"></script>
 <script>
-
-// pressing enter will "submit" the citation and load
-form.addEventListener("submit", e => {
-  e.preventDefault();
-  if (citation.value) {
-    buildSutta(citation.value.replace(/\s+/g, " "));
-   history.pushState({ page: citation.value.replace(/\s+/g, " ") }, "", `?q=${citation.value.replace(/\s+/g, " ")}`);
-  }
-});
-
-
 window.addEventListener("DOMContentLoaded", function() {
+    const params = new URLSearchParams(document.location.search);
+    const finder = params.get("s");
+    const query = params.get("q");
+    const url = document.location.href;
 
-setTimeout(function() {
+    // 🎯 Выполняем скрипт, только если в URL есть параметры 's' и 'q' и нет якоря #
+    if (finder && finder.trim() !== "" && query && url.indexOf("#") === -1) {
+        
+        const maxTime = 8500; // Максимальное время ожидания в мс (8.5 секунд)
+        const intervalTime = 500; // Интервал между попытками в мс (0.5 секунды)
+        let elapsedTime = 0;
 
-let params = new URLSearchParams(document.location.search);
-let finder = params.get("s");
-// finder = finder.replace(/\\b/g, '');
-let query = params.get("q");
-let url = document.location.href;
+        const tryToScroll = function() {
+            const regex = new RegExp(finder, 'gi');
+            
+            // 🧐 Ищем совпадения только внутри основного контейнера с текстом #sutta
+            const suttaArea = document.getElementById('sutta');
+            if (!suttaArea) return false; // Если контейнер ещё не загрузился
 
-if (finder && finder.trim() !== "" && query && url.indexOf("#") === -1) {
-//   console.log("Parameters 's', 'q', and no anchor found in URL");
+            const textNodes = document.evaluate(
+                ".//text()[normalize-space(parent::*) != '']", // XPath ищет внутри suttaArea
+                suttaArea,
+                null,
+                XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+                null
+            );
 
-let regex = new RegExp(finder, 'gi');
-let textNodes = document.evaluate(
-"//text()[normalize-space(parent::*) != '']",
-document.body,
-null,
-XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-null
-);
+            for (let i = 0; i < textNodes.snapshotLength; i++) {
+                const currentNode = textNodes.snapshotItem(i);
+                if (regex.test(currentNode.nodeValue)) {
+                    const parentNode = currentNode.parentNode;
+                    parentNode.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                    return true; // ✅ Успех! Прокрутка выполнена.
+                }
+            }
+            return false; // ❌ Неудача, совпадение пока не найдено.
+        };
 
-for (let i = 0; i < textNodes.snapshotLength; i++) {
-let currentNode = textNodes.snapshotItem(i);
-if (regex.test(currentNode.nodeValue)) {
-console.log("Found match in text node:", currentNode.nodeValue);
-
-let parentNode = currentNode.parentNode;
-parentNode.scrollIntoView({
-behavior: "smooth",
-block: "start"
-});
-
-break; // Прекратить поиск после первого совпадения
-}
-}
-} else {
-//  console.log("Conditions not met: 's' parameter empty or missing, 'q' parameter empty or missing, or anchor found in URL");
-}
-},
-1000); // 1.5 секунды таймаута
+        const scrollInterval = setInterval(function() {
+            elapsedTime += intervalTime;
+            // 🛑 Прекращаем, если прокрутка удалась или вышло время
+            if (tryToScroll() || elapsedTime >= maxTime) {
+                clearInterval(scrollInterval);
+            }
+        }, intervalTime);
+    }
 });
 </script>
 

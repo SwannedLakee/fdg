@@ -677,138 +677,65 @@ document.getElementById("date").textContent = formattedDate;
 //      var theLanguage = $('html').attr("lang");
 //      randPlaceholder('ru');
 </script>
-<script>
-
-// Event listener to submit the form when Enter key is pressed
-/*
-var input = document.getElementById("paliauto");
-input.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    document.getElementById("searchbtn").click();
-  }
-});
-*/
-
-// Поместить курсор в конец строки в поле ввода
-//input.focus();
-//input.setSelectionRange(input.value.length, input.value.length);
-</script>
 <script src="/assets/js/autopali.js" defer></script>
-
-<!-- <script>
-$(document).ready(function() {
-  // Обработчик для нажатия клавиши Enter
-  $(document).on('keydown', function(event) {
-    if (event.key === 'Enter') {
-      $('#collapseSettings').collapse('hide'); // Здесь меняем 'toggle' на 'hide'
-     $('#navbarResponsive').collapse('hide');
-    }
-  });
-
-  // Обработчик для отправки формы
-  $('#searchbtn').on('click', function() {
-    $('#collapseSettings').collapse('hide'); // Здесь меняем 'toggle' на 'hide'
-          $('#navbarResponsive').collapse('hide');
-  });
-});
-</script>
-  -->
 <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
 <script defer src="/assets/js/themeswitch.js"></script>
 <script src="/assets/js/copyToClipboard.js"></script>
 <!-- <script src="/assets/js/fontawesome.6.6.all.js" defer></script>
-
-<script>
-    // Получаем текущий хостнейм
-    var hostname = window.location.hostname;
-
-    // Создаем элемент скрипта
-    var scriptElement = document.createElement('script');
-
-    // Устанавливаем атрибуты скрипта в зависимости от хостнейма
-    if (hostname === "localhost") {
-      scriptElement.src = "/assets/js/fontawesome.6.1.all.js";
-      scriptElement.defer = true;
-    } else {
-      scriptElement.src = "https://kit.fontawesome.com/a2bd6cd99e.js";
-      scriptElement.crossOrigin = "anonymous";
-      scriptElement.defer = true;
-    }
-
-    // Вставляем созданный скрипт в тег head
-    document.head.appendChild(scriptElement);
-  </script>-->
-<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=X8U4dR8x"></script>
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=X8U4dR8x"></script>
  -->
+
 <script>
-
-// pressing enter will "submit" the citation and load
-form.addEventListener("submit", e => {
-  e.preventDefault();
-  if (citation.value) {
-    const query = citation.value.replace(/\s+/g, " ");
-    
-    // Получаем текущий параметр s, если он есть
-    const currentParams = new URLSearchParams(window.location.search);
-    const sParam = currentParams.get("s");
-
-    // Строим новый URL с учётом параметра s
-    let newUrl = `?q=${encodeURIComponent(query)}`;
-    if (sParam) {
-      newUrl += `&s=${encodeURIComponent(sParam)}`;
-    }
-
-    buildSutta(query);
-    history.pushState({ page: query }, "", newUrl);
-
-  }
-});
-
-
-//scroll to fortpst match
 window.addEventListener("DOMContentLoaded", function() {
+    const params = new URLSearchParams(document.location.search);
+    const finder = params.get("s");
+    const query = params.get("q");
+    const url = document.location.href;
 
-setTimeout(function() {
-//  console.log("Timeout fired after 1.5 seconds");
+    // 🎯 Выполняем скрипт, только если в URL есть параметры 's' и 'q' и нет якоря #
+    if (finder && finder.trim() !== "" && query && url.indexOf("#") === -1) {
+        
+        const maxTime = 8500; // Максимальное время ожидания в мс (8.5 секунд)
+        const intervalTime = 500; // Интервал между попытками в мс (0.5 секунды)
+        let elapsedTime = 0;
 
-let params = new URLSearchParams(document.location.search);
-let finder = params.get("s");
-//   finder = finder.replace(/\\b/g, '');
-let query = params.get("q");
-let url = document.location.href;
+        const tryToScroll = function() {
+            const regex = new RegExp(finder, 'gi');
+            
+            // 🧐 Ищем совпадения только внутри основного контейнера с текстом #sutta
+            const suttaArea = document.getElementById('sutta');
+            if (!suttaArea) return false; // Если контейнер ещё не загрузился
 
-if (finder && finder.trim() !== "" && query && url.indexOf("#") === -1) {
-//   console.log("Parameters 's', 'q', and no anchor found in URL");
+            const textNodes = document.evaluate(
+                ".//text()[normalize-space(parent::*) != '']", // XPath ищет внутри suttaArea
+                suttaArea,
+                null,
+                XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+                null
+            );
 
-let regex = new RegExp(finder, 'gi');
-let textNodes = document.evaluate(
-"//text()[normalize-space(parent::*) != '']",
-document.body,
-null,
-XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-null
-);
+            for (let i = 0; i < textNodes.snapshotLength; i++) {
+                const currentNode = textNodes.snapshotItem(i);
+                if (regex.test(currentNode.nodeValue)) {
+                    const parentNode = currentNode.parentNode;
+                    parentNode.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                    return true; // ✅ Успех! Прокрутка выполнена.
+                }
+            }
+            return false; // ❌ Неудача, совпадение пока не найдено.
+        };
 
-for (let i = 0; i < textNodes.snapshotLength; i++) {
-let currentNode = textNodes.snapshotItem(i);
-if (regex.test(currentNode.nodeValue)) {
-//      console.log("Found match in text node:", currentNode.nodeValue);
-
-let parentNode = currentNode.parentNode;
-parentNode.scrollIntoView({
-behavior: "smooth",
-block: "start"
-});
-
-break; // Прекратить поиск после первого совпадения
-}
-}
-} else {
-//       console.log("Conditions not met: 's' parameter empty or missing, 'q' parameter empty or missing, or anchor found in URL");
-}
-},
-1000); // 1.5 секунды таймаута
+        const scrollInterval = setInterval(function() {
+            elapsedTime += intervalTime;
+            // 🛑 Прекращаем, если прокрутка удалась или вышло время
+            if (tryToScroll() || elapsedTime >= maxTime) {
+                clearInterval(scrollInterval);
+            }
+        }, intervalTime);
+    }
 });
 </script>
 <script src="/assets/js/uihelp.js"></script>
