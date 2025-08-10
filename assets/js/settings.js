@@ -282,6 +282,51 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' || event.code === 'Escape') {
+        // --- 1. Close the fdgPopup from openFdg.js ---
+        // We look for the fdg-popup element and check if it's visible.
+        const fdgPopupElement = document.querySelector('.fdg-popup');
+        if (fdgPopupElement && fdgPopupElement.style.display === 'block') {
+            // If the popup is open, we simulate a click on its close button.
+            const fdgCloseButton = fdgPopupElement.querySelector('.fdg-close-btn');
+            if (fdgCloseButton) {
+                fdgCloseButton.click();
+                event.preventDefault(); // Prevent any other action.
+                return; // Stop further execution.
+            }
+        }
+
+        // --- 2. Close the main dictionary popup from paliLookup.js ---
+        // We look for the main lookup popup element and check its visibility.
+        const paliLookupPopupElement = document.querySelector('.popup');
+        if (paliLookupPopupElement && paliLookupPopupElement.style.display === 'block') {
+            // If the popup is open, we simulate a click on its close button.
+            const paliLookupCloseButton = paliLookupPopupElement.querySelector('.close-btn');
+            if (paliLookupCloseButton) {
+                paliLookupCloseButton.click();
+                event.preventDefault();
+                return;
+            }
+        }
+
+        // --- 3. Close the Quick Modal (Cattāri Ariyasaccāni) ---
+        // We check if the quick modal is open by looking for its overlay.
+        const quickOverlayElement = document.querySelector('.quick-overlay-element');
+        if (quickOverlayElement && quickOverlayElement.style.opacity === '1') {
+            // If the modal is open, we call its close function.
+            // This assumes toggleQuickModal handles closing if it's already open.
+             if (typeof toggleQuickModal === 'function') {
+                toggleQuickModal(); // This will close it if it's open.
+                event.preventDefault();
+                return;
+            }
+        }
+    }
+});
+
+
+
 
 document.addEventListener("keydown", (event) => {
   if (event.altKey && event.code === "KeyH") {
@@ -913,7 +958,6 @@ document.addEventListener("keydown", function (event) {
 let quickModalIsOpen = false;
 let quickOverlay = null;
 let quickModal = null;
-let escHandler = null;
 
 function createQuickModal() {
   let currentUrl = window.location.href;
@@ -1131,18 +1175,11 @@ function createQuickModal() {
       quickModal = null;
       quickModalIsOpen = false;
     }, 300);
-
-    if (escHandler) {
-      document.removeEventListener("keydown", escHandler);
-      escHandler = null;
-    }
   };
 
   quickOverlay.addEventListener("click", (e) => e.target === quickOverlay && closeQuickModal());
   quickModal.querySelector("#quickCloseModalBtn").addEventListener("click", closeQuickModal);
 
-  escHandler = (e) => e.key === "Escape" && closeQuickModal();
-  document.addEventListener("keydown", escHandler);
 }
 
 function toggleQuickModal() {
