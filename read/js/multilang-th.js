@@ -366,7 +366,9 @@ var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slugReady}_ro
  } 
  else if (( script === "thai" ) || ( savedScript === "Thai" ) || (siteLanguage === "th")) {
 var  rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`
- } 
+ } else if ( script === "isopali" ) {
+var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugReady}_root-pli-ms.json`
+ }
 else {
 var  rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`;
  }

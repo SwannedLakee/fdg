@@ -116,7 +116,7 @@ var rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli
  } else if ( script === "isopali" ) {
 var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugReady}_root-pli-ms.json`
  } else {
-var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugReady}_root-pli-ms.json`
+var  rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`;
  }
 
 
