@@ -92,8 +92,7 @@ function copyToClipboard(text = "") {
     }
   }
 
-
-let textToCopy = textParts.join('\n\n').replace(/✦/g, ''); 
+let textToCopy = textParts.join('\n\n').replace(/✦/g, '').replace(/  /g, ''); 
 
   // 4. Добавляем ID сутты и ссылку с дополнительными отступами
   if (suttaId) textToCopy += `\n\n${suttaId}`;
