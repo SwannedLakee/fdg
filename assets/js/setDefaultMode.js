@@ -47,6 +47,18 @@
       localStorage.removeItem("userPreferences");
       localStorage.removeItem("defaultReader");
       localStorage.removeItem("localSearchHistory");
+  // Дополнительные параметры, которые нужно очистить
+  localStorage.removeItem('selectedScript');
+  localStorage.removeItem('selectedDict');
+  localStorage.removeItem("defaultReader");
+  localStorage.removeItem('paliToggleRu');
+  localStorage.removeItem('viewMode');
+  localStorage.removeItem("quotePopupEnabled");
+  localStorage.removeItem("localSearchHistory");
+  localStorage.setItem("variantVisibility", "hidden");
+
+
+
 
       document.querySelectorAll("select").forEach(select => {
         select.selectedIndex = 0;
@@ -59,6 +71,34 @@
       document.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
         checkbox.checked = checkbox.defaultChecked;
       });
+
+
+ const keysToRemove = [
+    'lightMode',
+    'dark',
+    'paliToggleRu',
+    'pli-rus',
+    'popupHeight',
+    'popupLeft',
+    'popupTop',
+    'popupWidth',
+    'removePunct',
+    'selectedDict',
+    'selectedScript',
+    'theme',
+    'themeButtonAction',
+    'visitCount',
+    'windowHeight',
+    'windowWidth',
+    'isFirstDrag'
+  ];
+
+  keysToRemove.forEach(key => {
+    localStorage.removeItem(key);
+  });
+
+
+clearFdgPopupParams();
 
       if (typeof resetForm === 'function') {
         resetForm();
