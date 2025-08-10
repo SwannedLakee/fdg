@@ -292,32 +292,60 @@ if (searchValue !== "") {
 rowData.forEach(function(cellData, index) {
     // Only proceed if there is a search value and the cell data is a string
     if (searchValue && typeof cellData === 'string') {
+        
+        // Create a temporary, disconnected HTML element to safely parse the cell's content.
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = cellData;
 
-        // This regex matches two things:
-        // 1. (<[^>]+>)  -> A full HTML tag. This will be captured and left alone.
-        // 2. (searchValue) -> Your search term. This will be captured and highlighted.
-        // The 'gi' flags ensure it's global (replaces all occurrences) and case-insensitive.
-        const highlightRegex = new RegExp(`(<[^>]+>)|(${searchValue})`, 'gi');
+        // A recursive function to traverse the HTML nodes
+        function highlightInNode(node) {
+            // We only care about text nodes (nodeType === 3)
+            if (node.nodeType === 3) {
+                const text = node.nodeValue;
 
-        const newCellData = cellData.replace(highlightRegex, (match, tag, textToHighlight) => {
-            // If 'textToHighlight' was found, it means we matched your search term.
-            if (textToHighlight) {
-                // So, we wrap it in the highlight tag.
-                return `<b class="match finder">${textToHighlight}</b>`;
-            }
-            // Otherwise, 'tag' was found, meaning we matched an HTML element.
-            else if (tag) {
-                // So, we return it completely unchanged, preserving the URL.
-                return tag;
-            }
-            // Fallback for any other case (shouldn't happen with this regex).
-            else {
-                return match;
-            }
-        });
+                // Use the user's search term directly as a regular expression, without escaping it.
+                // This ensures that ".*" and other special characters work as intended.
+                const regex = new RegExp(searchValue, 'gi');
 
-        // Update the cell with the correctly highlighted HTML.
-        table.cell(rowIdx, index).data(newCellData);
+                if (regex.test(text)) {
+                    const fragment = document.createDocumentFragment();
+                    let lastIndex = 0;
+
+                    // Replace all matches in the current text node
+                    text.replace(regex, (match, offset) => {
+                        // Append the text that comes before the match
+                        fragment.appendChild(document.createTextNode(text.substring(lastIndex, offset)));
+
+                        // Create the highlighted element for the match
+                        const highlighted = document.createElement('b');
+                        highlighted.className = 'match finder';
+                        highlighted.textContent = match;
+                        fragment.appendChild(highlighted);
+
+                        lastIndex = offset + match.length;
+                    });
+
+                    // Append any remaining text after the last match
+                    fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+                    
+                    // Replace the original text node with our new fragment
+                    node.parentNode.replaceChild(fragment, node);
+                }
+            }
+            // If it's an element node (nodeType === 1), recursively check its children
+            else if (node.nodeType === 1 && node.childNodes && !/^(script|style)$/i.test(node.tagName)) {
+                // We go backwards because the number of child nodes can change during replacement
+                for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                    highlightInNode(node.childNodes[i]);
+                }
+            }
+        }
+
+        // Start the highlighting process from the top of our temporary container
+        highlightInNode(tempContainer);
+
+        // Update the table cell with the safely modified HTML
+        table.cell(rowIdx, index).data(tempContainer.innerHTML);
     }
 });
     });
@@ -464,5 +492,6 @@ $(function () {
 
 </body>
 </html>
+
 
 
