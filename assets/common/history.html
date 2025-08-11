@@ -10,11 +10,48 @@
   <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
   <link href="/assets/css/pages.css" rel="stylesheet" />
-
+<script>
+  (function() {
+    try {
+      var theme = localStorage.getItem('theme');
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+      }
+    } catch (e) { }
+  })();
+</script>
   <!-- SEO -->
   <title id="page-title">История поиска</title>
   <meta name="description" content="Просмотр истории ваших поисковых запросов на Dhamma.gift." id="meta-description">
 
+<!-- Темная тема -->
+<script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
+<script>
+  const darkSwitch = document.getElementById('darkSwitch');
+  const body = document.body;
+
+ /* 
+ const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    body.setAttribute('data-bs-theme', 'dark');
+    darkSwitch.checked = true;
+  }
+  */
+
+// Синхронизируем состояние переключателя с уже установленной темой
+  if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
+    darkSwitch.checked = true;
+  }
+  darkSwitch.addEventListener('change', () => {
+    if (darkSwitch.checked) {
+      body.setAttribute('data-bs-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.setAttribute('data-bs-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
+  });
+</script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -266,29 +303,7 @@
     }
   });
 </script>
-
-<!-- Темная тема -->
-<script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
 <script>
-  const darkSwitch = document.getElementById('darkSwitch');
-  const body = document.body;
-
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    body.setAttribute('data-bs-theme', 'dark');
-    darkSwitch.checked = true;
-  }
-
-  darkSwitch.addEventListener('change', () => {
-    if (darkSwitch.checked) {
-      body.setAttribute('data-bs-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      body.setAttribute('data-bs-theme', 'light');
-      localStorage.setItem('theme', 'light');
-    }
-  });
-
   // Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
@@ -300,6 +315,7 @@
       });
   }
 </script>
+
 <script src="/assets/js/settings.js"></script>
 </body>
 </html>
