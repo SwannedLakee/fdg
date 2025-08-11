@@ -201,6 +201,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const helpButton = document.getElementById('helpMessage');
   const goButton = document.querySelector('.go-button'); // Кнопка "Go"
 
+
+
+function shouldIgnoreKeyEvent() {
+  const activeElement = document.activeElement;
+  return activeElement && activeElement.id === "paliauto" && activeElement.tagName === "INPUT";
+}
+
+
     // Добавляем обработчик сочетания клавиш Alt + Space (физическая клавиша)
   document.addEventListener("keydown", (event) => {
     if ((event.altKey && event.code === "Space") || (event.altKey && event.code === "KeyZ")) {
@@ -211,14 +219,15 @@ document.addEventListener('DOMContentLoaded', function() {
       languageButton.click();
       }
     }
-  });
+ 
+    // Обработчик для Alt+P в любой раскладке
+  // Проверяем Alt и физическое расположение клавиши P (код KeyP)
+  if (event.altKey && event.code === "KeyP") {
+    event.preventDefault();
+    toggleQuickModal();
+  }
 
-function shouldIgnoreKeyEvent() {
-  const activeElement = document.activeElement;
-  return activeElement && activeElement.id === "paliauto" && activeElement.tagName === "INPUT";
-}
-
-document.addEventListener("keydown", (event) => {
+//Ctrl + ArrowRight navigate to next sutta
   if (shouldIgnoreKeyEvent()) return;
 
   if (event.ctrlKey && event.code === "ArrowRight") {
@@ -240,9 +249,8 @@ document.addEventListener("keydown", (event) => {
       }
     }
   }
-});
 
-document.addEventListener("keydown", (event) => {
+//open Dict.Dhamma.Gift New Window
   if (event.altKey && event.code === "KeyN") {
     const inputEl = document.getElementById('paliauto');
     const inputVal = inputEl?.value.trim() || '';
@@ -280,9 +288,8 @@ document.addEventListener("keydown", (event) => {
 
     openDictionaryWindow(url);
   }
-});
 
-document.addEventListener('keydown', function(event) {
+
     if (event.key === 'Escape' || event.code === 'Escape') {
         // --- 1. Close the fdgPopup from openFdg.js ---
         // We look for the fdg-popup element and check if it's visible.
@@ -323,23 +330,94 @@ document.addEventListener('keydown', function(event) {
             }
         }
     }
-});
 
-
-
-
-document.addEventListener("keydown", (event) => {
+//Help + Settings + History
   if (event.altKey && event.code === "KeyH") {
     // Имитируем клик по кнопке
     helpButton.click();
   }
-});
-    document.addEventListener("keydown", (event) => {
+
     if (event.altKey && event.code === "KeyS") {
       // Имитируем клик по кнопке
       settingsButton.click();
     }
-  });
+  
+  if (event.altKey && event.code === "KeyG") {
+    // Получаем текущий URL
+    const currentUrl = window.location.pathname;
+    
+    // Определяем базовый путь и языковой префикс
+    let langPrefix = '';
+    let basePath = '';
+    
+    // Проверяем наличие языкового префикса в URL
+    if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) {
+      langPrefix = currentUrl.split('/')[1] + '/';
+      basePath = `/${langPrefix}`;
+    }
+    
+    // Определяем пути для переключения
+    const historyPhpPath = `${basePath}history.php`;
+    const historyHtmlPath = `${basePath}assets/common/history.html`;
+    
+    // Проверяем, находимся ли мы уже на одной из страниц истории
+    if (currentUrl.endsWith('history.php') || currentUrl.endsWith('history.html')) {
+      // Переключаем между двумя вариантами
+      if (currentUrl.endsWith('history.php')) {
+        window.location.href = historyHtmlPath;
+      } else {
+        window.location.href = historyPhpPath;
+      }
+    } else {
+      // Если не на странице истории, переходим на history.php
+      window.location.href = historyPhpPath;
+    }
+  }
+ 
+ //Language
+  if (event.altKey && event.code === "KeyL") {
+    event.preventDefault(); // Предотвращаем стандартное поведение
+
+    const scriptOptions = ['ISOPali', 'devanagari', 'thai']; // Доступные скрипты
+    const url = new URL(window.location.href);
+    let currentScript = url.searchParams.get('script') || 'ISOPali';
+
+    // Получаем следующий скрипт в списке
+    let nextIndex = (scriptOptions.indexOf(currentScript) + 1) % scriptOptions.length;
+    let nextScript = scriptOptions[nextIndex];
+ 
+    localStorage.removeItem('selectedScript');
+
+    // Обновляем URL
+    if (nextScript === 'ISOPali') {
+      url.searchParams.delete('script'); // Удаляем параметр для ISOPali
+    } else {
+      url.searchParams.set('script', nextScript);
+    }
+
+    window.location.href = url.toString(); // Перезагружаем страницу
+  }
+ 
+  // Для отладки: смотри, что нажимается
+//  console.log('Pressed:', event.code);
+
+  if (event.altKey && (event.code === 'Period' || event.code === 'KeyM')) {
+    event.preventDefault();
+
+    const currentValue = localStorage.getItem("removePunct") === "true";
+    localStorage.setItem("removePunct", currentValue ? "false" : "true");
+
+    location.reload();
+  }
+
+
+  if (event.altKey && (event.code === 'Period' || event.code === 'KeyQ')) {
+    event.preventDefault();
+
+openDictionaries(event);
+  }
+});
+
   
   //setup dictionary 
   
@@ -793,55 +871,6 @@ document.addEventListener("keydown", (event) => {
 });
 
 
-
-document.addEventListener('keydown', (event) => {
-  if (event.altKey && event.code === "KeyL") {
-    event.preventDefault(); // Предотвращаем стандартное поведение
-
-    const scriptOptions = ['ISOPali', 'devanagari', 'thai']; // Доступные скрипты
-    const url = new URL(window.location.href);
-    let currentScript = url.searchParams.get('script') || 'ISOPali';
-
-    // Получаем следующий скрипт в списке
-    let nextIndex = (scriptOptions.indexOf(currentScript) + 1) % scriptOptions.length;
-    let nextScript = scriptOptions[nextIndex];
- 
-    localStorage.removeItem('selectedScript');
-
-    // Обновляем URL
-    if (nextScript === 'ISOPali') {
-      url.searchParams.delete('script'); // Удаляем параметр для ISOPali
-    } else {
-      url.searchParams.set('script', nextScript);
-    }
-
-    window.location.href = url.toString(); // Перезагружаем страницу
-  }
-});
-
-document.addEventListener('keydown', (event) => {
-  // Для отладки: смотри, что нажимается
-//  console.log('Pressed:', event.code);
-
-  if (event.altKey && (event.code === 'Period' || event.code === 'KeyM')) {
-    event.preventDefault();
-
-    const currentValue = localStorage.getItem("removePunct") === "true";
-    localStorage.setItem("removePunct", currentValue ? "false" : "true");
-
-    location.reload();
-  }
-});
-
-
-document.addEventListener('keydown', (event) => {
-  if (event.altKey && (event.code === 'Period' || event.code === 'KeyQ')) {
-    event.preventDefault();
-
-openDictionaries(event);
-  }
-});
-
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.code === 'Digit3') {
     event.preventDefault();
@@ -1192,14 +1221,7 @@ function toggleQuickModal() {
   }
 }
 
-// Обработчик для Alt+P в любой раскладке
-document.addEventListener("keydown", (event) => {
-  // Проверяем Alt и физическое расположение клавиши P (код KeyP)
-  if (event.altKey && event.code === "KeyP") {
-    event.preventDefault();
-    toggleQuickModal();
-  }
-});
+
 
 /*
 
