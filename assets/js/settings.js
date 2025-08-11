@@ -342,37 +342,46 @@ function shouldIgnoreKeyEvent() {
       settingsButton.click();
     }
   
-  if (event.altKey && event.code === "KeyG") {
-    // Получаем текущий URL
-    const currentUrl = window.location.pathname;
-    
-    // Определяем базовый путь и языковой префикс
-    let langPrefix = '';
-    let basePath = '';
-    
-    // Проверяем наличие языкового префикса в URL
-    if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) {
-      langPrefix = currentUrl.split('/')[1] + '/';
-      basePath = `/${langPrefix}`;
-    }
-    
-    // Определяем пути для переключения
-    const historyPhpPath = `${basePath}history.php`;
-    const historyHtmlPath = `${basePath}assets/common/history.html`;
-    
-    // Проверяем, находимся ли мы уже на одной из страниц истории
-    if (currentUrl.endsWith('history.php') || currentUrl.endsWith('history.html')) {
-      // Переключаем между двумя вариантами
-      if (currentUrl.endsWith('history.php')) {
-        window.location.href = historyHtmlPath;
-      } else {
-        window.location.href = historyPhpPath;
-      }
-    } else {
-      // Если не на странице истории, переходим на history.php
-      window.location.href = historyPhpPath;
-    }
+document.addEventListener("keydown", (event) => {
+
+ function handleHistoryToggle() {
+  const currentUrl = window.location.pathname;
+  let historyPhpPath, historyHtmlPath;
+
+  // Если URL содержит языковой префикс (/ru/, /r/, /ml/)
+  if (currentUrl.match(/\/(ru|r|ml)\//)) {
+    const langPrefix = currentUrl.split('/')[1] + '/';
+    historyPhpPath = `/${langPrefix}history.php`;
+    historyHtmlPath = `/${langPrefix}assets/common/history.html`;
+  } 
+  // Если URL содержит /assets/common/ (но без языкового префикса)
+  else if (currentUrl.includes('/assets/common/')) {
+    historyPhpPath = '/history.php';  // Переход в корень
+    historyHtmlPath = '/assets/common/history.html';
   }
+  // Все остальные случаи (корень сайта или другие пути)
+  else {
+    historyPhpPath = '/history.php';
+    historyHtmlPath = '/assets/common/history.html';
+  }
+
+  // Переключение между history.php и history.html
+  if (currentUrl.endsWith('history.php')) {
+    window.location.href = historyHtmlPath;
+  } 
+  else if (currentUrl.endsWith('history.html')) {
+    window.location.href = historyPhpPath;
+  }
+  // Если не на странице истории, идём на history.php
+  else {
+    window.location.href = historyPhpPath;
+  }
+}
+
+  if (event.altKey && event.code === "KeyG") {
+    handleHistoryToggle();
+  }
+});
  
  //Language
   if (event.altKey && event.code === "KeyL") {
