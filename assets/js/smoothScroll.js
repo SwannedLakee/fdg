@@ -8,7 +8,7 @@
 function highlightAllById(elementId) {
     // Находим только один родительский элемент по его ID
     const parentElement = document.getElementById(elementId);
-    if (!parentElement) return; // Если элемент не найден, выходим
+    if (!parentElement) return;
 
     // Сохраняем его оригинальные стили
     const originalBgColor = parentElement.style.backgroundColor;
@@ -35,7 +35,6 @@ function highlightAllById(elementId) {
         }
     }, intervalDuration);
 }
-
 // Функция для выделения элемента по ID (без подсветки дочерних элементов)
 function highlightById(elementId) {
     const element = document.getElementById(elementId);
