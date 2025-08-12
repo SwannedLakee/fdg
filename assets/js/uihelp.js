@@ -1,9 +1,9 @@
     // Целевые посещения
-    var targetVisit = 15;
-    var targetVisitForPWApopup = 5; 
-    var targetVisitForPWA = 7;
-    var targetVisitForGear = 13;
-    var targetVisitForRead = 10;
+    var targetVisit = 20;
+    var targetVisitForPWApopup = 9; 
+    var targetVisitForPWA = 13;
+    var targetVisitForGear = 19;
+    var targetVisitForRead = 18;
     var extraTimes = 0;
 
 

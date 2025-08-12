@@ -88,7 +88,7 @@ function highlightById(elementId) {
     element.style.borderRadius = '10px';
     element.style.transition = 'box-shadow 0.3s ease-in-out';
     let blinkCount = 0;
-    const maxBlinks = 6; // 3 мерцания (вкл/выкл)
+    const maxBlinks = 4; 
     let isWide = false;
 
     // Функция для мерцания

@@ -1002,7 +1002,7 @@ function createQuickModal() {
   let queryBase = urlWithoutParams.endsWith("/ru/") || urlWithoutParams.endsWith("/r/") 
     ? "/r/?q=" 
     : "/read/?q=";
-
+  
   const isDark = document.body.classList.contains("dark");
   const bgColor = isDark ? "#1a252f" : "#ffffff";
   const textColor = isDark ? "#ffffff" : "#212529";
@@ -1134,6 +1134,7 @@ function createQuickModal() {
           <li><a href="${queryBase}sn22.56" target="_blank" style="color: ${linkColorSuccess}; text-decoration: none;">SN 22.56</a></li>
           <li><a href="${queryBase}sn22.79" target="_blank" style="color: ${linkColorSuccess}; text-decoration: none;">SN 22.79</a></li>
           <li><a href="${queryBase}sn22.85" target="_blank" style="color: ${linkColorSuccess}; text-decoration: none;">SN 22.85</a></li>
+          <li><a href="${queryBase}sn22" target="_blank" style="color: ${linkColorSuccess}; text-decoration: none;">SN 22</a></li>       
         </ul>
       </div>
 
@@ -1145,6 +1146,7 @@ function createQuickModal() {
           <li><a href="${queryBase}sn35.229" target="_blank" style="color: ${linkColorWarning}; text-decoration: none;">SN 35.229</a></li>
           <li><a href="${queryBase}sn35.236" target="_blank" style="color: ${linkColorWarning}; text-decoration: none;">SN 35.236</a></li>
           <li><a href="${queryBase}sn35.238" target="_blank" style="color: ${linkColorWarning}; text-decoration: none;">SN 35.238</a></li>
+          <li><a href="${queryBase}sn35" target="_blank" style="color: ${linkColorWarning}; text-decoration: none;">SN 35</a></li>
         </ul>
       </div>
 
@@ -1152,10 +1154,10 @@ function createQuickModal() {
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>Clarify 4-6-X Dhātu:</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
-          <li><a href="${queryBase}sn14" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">SN 14</a></li>
           <li><a href="${queryBase}mn28" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">MN 28</a></li>
           <li><a href="${queryBase}mn115" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">MN 115</a></li>
           <li><a href="${queryBase}mn140" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">MN 140</a></li>
+          <li><a href="${queryBase}sn14" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">SN 14</a></li>
         </ul>
       </div>
 
