@@ -1106,7 +1106,7 @@ function createQuickModal() {
         transition: all 0.2s ease;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         z-index: 10;
-      " title="Закрыть">×</button>
+      " title="Закрыть (Esc)">×</button>
 
       <h5 class="quick-modal-title" style="
         text-align:center;
