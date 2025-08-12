@@ -33,6 +33,48 @@ function highlightAllById(elementId) {
 }
 
 
+// Функция для выделения элемента по ID (без подсветки дочерних элементов)
+function highlightById(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Сохраняем оригинальные стили
+    const originalTransition = element.style.transition;
+    const originalBorderRadius = element.style.borderRadius;
+    const originalBoxShadow = element.style.boxShadow;
+
+    // Настройки анимации
+    element.style.borderRadius = '10px';
+    element.style.transition = 'box-shadow 0.3s ease-in-out';
+    let blinkCount = 0;
+    const maxBlinks = 6; // 3 мерцания (вкл/выкл)
+    let isWide = false;
+
+    // Функция для мерцания
+    const blinkInterval = setInterval(function() {
+        // Подсветка ТОЛЬКО основного элемента
+        element.style.boxShadow = isWide ? '0 0 0 2px grey' : '0 0 0 4px grey';
+        
+        isWide = !isWide;
+        blinkCount++;
+
+        // Останавливаем после 3 мерцаний (6 изменений состояния)
+        if (blinkCount >= maxBlinks) {
+            clearInterval(blinkInterval);
+            
+            // Возвращаем оригинальные стили
+            setTimeout(() => {
+                element.style.boxShadow = originalBoxShadow;
+                element.style.transition = originalTransition;
+                element.style.borderRadius = originalBorderRadius;
+            }, 300);
+        }
+    }, 500);
+}
+
+function highlightMultipleById(ids) {
+    ids.forEach(highlightById);
+}
 
 
 /**
@@ -46,37 +88,43 @@ function intelligentScrollToHash() {
     const hash = window.location.hash;
     if (!hash) return; // Если якоря нет, ничего не делаем
 
-    const elementId = hash.substring(1);
-    
-    const checkInterval = 500; // Проверять каждые 500 мс
-    const totalWaitTime = 8500; // Общее время ожидания 
-    let timeElapsed = 0;
-    
-//    console.log(`[Scroll] Начало поиска элемента: #${elementId}`);
+    const hashContent = hash.substring(1);
 
-    const pollingInterval = setInterval(() => {
-        const element = document.getElementById(elementId);
+    // ПРОВЕРКА: Если в хеше есть запятая, значит, это список ID для подсветки
+    if (hashContent.includes(',')) {
+        const ids = hashContent.split(','); // Разделяем строку на массив ID
+        highlightMultipleById(ids); // Вызываем функцию для подсветки нескольких элементов
 
-        // 1. УСПЕХ: Элемент найден
-        if (element) {
-     //       console.log(`[Scroll] Элемент #${elementId} найден! Прокручиваем.`);
-            clearInterval(pollingInterval); // Останавливаем проверку
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            highlightAllById(elementId);
-            return;
-        }
-
-        // 2. ПРОДОЛЖЕНИЕ: Элемент еще не найден, проверяем время
-        timeElapsed += checkInterval;
+    // ИНАЧЕ: работаем по старой логике с одним элементом
+    } else {
+        const elementId = hashContent;
         
-        // 3. ТАЙМ-АУТ: Время ожидания истекло
-        if (timeElapsed >= totalWaitTime) {
-            console.log(`[Scroll] Элемент #${elementId} не найден за ${totalWaitTime / 1000} секунд. Остановка поиска.`);
-            clearInterval(pollingInterval); // Останавливаем проверку
-        }
-    }, checkInterval);
-}
+        const checkInterval = 500; // Проверять каждые 500 мс
+        const totalWaitTime = 8500; // Общее время ожидания
+        let timeElapsed = 0;
+        
+        const pollingInterval = setInterval(() => {
+            const element = document.getElementById(elementId);
 
+            // 1. УСПЕХ: Элемент найден
+            if (element) {
+                clearInterval(pollingInterval); // Останавливаем проверку
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                highlightAllById(elementId);
+                return;
+            }
+
+            // 2. ПРОДОЛЖЕНИЕ: Элемент еще не найден, проверяем время
+            timeElapsed += checkInterval;
+            
+            // 3. ТАЙМ-АУТ: Время ожидания истекло
+            if (timeElapsed >= totalWaitTime) {
+                console.log(`[Scroll] Элемент #${elementId} не найден за ${totalWaitTime / 1000} секунд. Остановка поиска.`);
+                clearInterval(pollingInterval); // Останавливаем проверку
+            }
+        }, checkInterval);
+    }
+}
 // Запускаем интеллектуальную прокрутку при начальной загрузке страницы...
 window.addEventListener('DOMContentLoaded', intelligentScrollToHash);
 
