@@ -6,32 +6,35 @@
 
 // Функция для подсветки элемента и всех его дочерних элементов
 function highlightAllById(elementId) {
-    const elements = document.querySelectorAll(`[id="${elementId}"], [id="${elementId}"] *`);
-    if (elements.length === 0) return;
+    // Находим только один родительский элемент по его ID
+    const parentElement = document.getElementById(elementId);
+    if (!parentElement) return; // Если элемент не найден, выходим
 
-    elements.forEach(element => {
-        const originalBgColor = element.style.backgroundColor;
-        const originalTransition = element.style.transition;
-        element.style.transition = 'background-color 0.45s ease-in-out';
+    // Сохраняем его оригинальные стили
+    const originalBgColor = parentElement.style.backgroundColor;
+    const originalTransition = parentElement.style.transition;
+    parentElement.style.transition = 'background-color 0.45s ease-in-out';
 
-        let blinkCount = 0;
-        const maxBlinks = 4;
-        const intervalDuration = 500;
-        
-        const blinkInterval = setInterval(() => {
-            element.style.backgroundColor = blinkCount % 2 === 0 ? 'rgba(26, 188, 156, 0.2)' : originalBgColor || 'transparent';
-            blinkCount++;
-            if (blinkCount >= maxBlinks) {
-                clearInterval(blinkInterval);
-                element.style.backgroundColor = originalBgColor || '';
-                setTimeout(() => {
-                    element.style.transition = originalTransition;
-                }, intervalDuration);
-            }
-        }, intervalDuration);
-    });
+    let blinkCount = 0;
+    const maxBlinks = 4;
+    const intervalDuration = 500;
+    
+    // Запускаем интервал для мигания
+    const blinkInterval = setInterval(() => {
+        // Применяем стиль фона только к родительскому элементу
+        parentElement.style.backgroundColor = blinkCount % 2 === 0 ? 'rgba(26, 188, 156, 0.2)' : originalBgColor || 'transparent';
+        blinkCount++;
+
+        // Когда мигание закончено, очищаем стили
+        if (blinkCount >= maxBlinks) {
+            clearInterval(blinkInterval);
+            parentElement.style.backgroundColor = originalBgColor || '';
+            setTimeout(() => {
+                parentElement.style.transition = originalTransition;
+            }, intervalDuration);
+        }
+    }, intervalDuration);
 }
-
 
 // Функция для выделения элемента по ID (без подсветки дочерних элементов)
 function highlightById(elementId) {

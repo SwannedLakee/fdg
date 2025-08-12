@@ -365,19 +365,19 @@ let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: p
 if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">
-            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}<br>
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
             <font class="variant">
-                ${linkToCopyStart} ${varData[segment].trim()} ${linkToCopy}
+                ${linkToCopyStart}${varData[segment].trim()}${linkToCopy}
             </font>
         </span>
 
         <span class="right-column">
             <span class="rus-lang" lang="ru">
-                ${linkToCopyStart} ${transData[segment].trim()} ${linkToCopy}
+                ${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
             </span><br>
 
             <span class="eng-lang" lang="en">
-                <font>${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}</font><br>
+                <font>${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}</font><br>
             </span>
         </span>
     </span>${closeHtml}\n\n`;
@@ -385,15 +385,15 @@ if (engTransData[segment] !== transData[segment] && varData[segment] !== undefin
 } else if (engTransData[segment] !== transData[segment]) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">
-            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
         </span>
         <span class="right-column">
             <span class="rus-lang" lang="ru">
-                ${linkToCopyStart} ${transData[segment].trim()} ${linkToCopy}
+                ${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
             </span><br>
 
             <span class="eng-lang" lang="en">
-                <font>${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}</font><br>
+                <font>${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}</font><br>
             </span>
         </span>
     </span>${closeHtml}\n\n`;
@@ -401,14 +401,14 @@ if (engTransData[segment] !== transData[segment] && varData[segment] !== undefin
 } else if (varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">
-            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}<br>
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
         </span>
         <div class="variant">
-            ${linkToCopyStart} ${varData[segment].trim()} ${linkToCopy}
+            ${linkToCopyStart}${varData[segment].trim()}${linkToCopy}
         </div>
         <span class="right-column">
             <span class="rus-lang" lang="en">
-                ${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}
+                ${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}
             </span>
         </span>
     </span>${closeHtml}\n\n`;
@@ -416,10 +416,10 @@ if (engTransData[segment] !== transData[segment] && varData[segment] !== undefin
 } else {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">
-            ${linkToCopyStart} ${paliData[segment].trim()} ${linkToCopy}
+            ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
         </span>
         <span class="rus-lang" lang="en">
-            ${linkToCopyStart} ${engTransData[segment].trim()} ${linkToCopy}
+            ${linkToCopyStart}${engTransData[segment].trim()}${linkToCopy}
         </span>
     </span>${closeHtml}\n\n`;
 }
