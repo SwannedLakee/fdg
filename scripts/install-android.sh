@@ -344,3 +344,28 @@ rm sc-offline-2016-11-30_16\:03\:42.zip
 #tar -zcf /storage/emulated/0/Download/termux-backup.tar.gz -C /data/data/com.termux/files ./home ./usr
 #restore
 #tar -zxf /storage/emulated/0/Download/termux-backup.tar.gz -C /data/data/com.termux/files --recursive-unlink --preserve-permissions                
+
+
+
+
+#sc sparse checkout 
+
+# 1. Клонируем репо без содержимого (только метаданные)
+git clone --depth 1 --filter=blob:none --no-checkout https://github.com/suttacentral/sc-data.git
+cd sc-data
+
+# 2. Включаем sparse-checkout
+git sparse-checkout init --cone
+
+# 3. Указываем только нужные папки
+git sparse-checkout set \
+  sc_bilara_data/root \
+  sc_bilara_data/translation/en \
+  sc_bilara_data/translation/ru \
+  sc_bilara_data/html \
+  html_text/en \
+  html_text/ru
+
+# 4. Загружаем только эти каталоги
+git checkout
+

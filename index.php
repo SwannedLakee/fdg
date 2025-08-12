@@ -745,11 +745,10 @@ foreach ($slides as $index => $slide) {
 <div style="max-width: 992px;" class="container-lg">
 <h2 class="page-section-heading text-center text-uppercase text-secondary mb-3"><?php echo $headerexamples; ?></h2>  
 <div class="container mb-5">
-<ol class="col-lg-8 col-md-10 ms-auto text-start">
+<ol class="col-lg-8 col-md-10 mx-auto text-start">
 <?php echo $examplelist; ?>
               </ol>
-			  </div>  
-
+              </div>  
   </div>
   
 <!-- Portfolio Section Heading-->
