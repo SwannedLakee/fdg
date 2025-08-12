@@ -30,17 +30,17 @@ function setLanguage(language) {
   }
 }
 function showPaliEnglish() {
-  console.log("showing Pali eng");
+//  console.log("showing Pali eng");
   suttaArea.classList.remove("hide-pali");
   suttaArea.classList.remove("hide-english");
 }
 function showEnglish() {
-  console.log("showing eng");
+//  console.log("showing eng");
   suttaArea.classList.add("hide-pali");
   suttaArea.classList.remove("hide-english");
 }
 function showPali() {
-  console.log("showing pali");
+//  console.log("showing pali");
   suttaArea.classList.remove("hide-pali");
   suttaArea.classList.add("hide-english");
 }

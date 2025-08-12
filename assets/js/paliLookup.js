@@ -568,20 +568,22 @@ function lazyLoadStandaloneScripts(lang = 'en') {
 document.addEventListener('DOMContentLoaded', function() {
     // Минимальная задержка перед началом загрузки
     setTimeout(() => {
-        if (savedDict === "standalone") {
-            requestIdleCallback(() => {
-                lazyLoadStandaloneScripts()
-                    .then(() => console.log('Standalone eng scripts lazy-loaded'))
-                    .catch(err => console.warn('Lazy loading eng scripts warning:', err));
-            }, { timeout: 2000 });
-        }
-        else if (savedDict === "standaloneru") {
-            requestIdleCallback(() => {
-                lazyLoadStandaloneScripts("ru")
-                    .then(() => console.log('Standalone rus scripts lazy-loaded'))
-                    .catch(err => console.warn('Lazy loading rus scripts warning:', err));
-            }, { timeout: 2000 });
-        }
+    if (savedDict === "standalone") {
+        requestIdleCallback(() => {
+            lazyLoadStandaloneScripts()
+                //.then(() => console.log('Standalone eng scripts lazy-loaded'))
+                .then(() => { /* console.log('Standalone eng scripts lazy-loaded'); */ })
+                .catch(err => console.warn('Lazy loading eng scripts warning:', err));
+        }, { timeout: 2000 });
+    }
+    else if (savedDict === "standaloneru") {
+        requestIdleCallback(() => {
+            lazyLoadStandaloneScripts("ru")
+                //.then(() => console.log('Standalone rus scripts lazy-loaded'))
+                .then(() => { /* console.log('Standalone rus scripts lazy-loaded'); */ })
+                .catch(err => console.warn('Lazy loading rus scripts warning:', err));
+        }, { timeout: 2000 });
+    }
     }, 1000); // Небольшая задержка для гарантированного рендеринга
 });
 
