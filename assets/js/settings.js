@@ -342,8 +342,7 @@ function shouldIgnoreKeyEvent() {
       settingsButton.click();
     }
   
-document.addEventListener("keydown", (event) => {
-
+//alt + G history toggle
  function handleHistoryToggle() {
   const currentUrl = window.location.pathname;
   let historyPhpPath, historyHtmlPath;
@@ -379,11 +378,11 @@ document.addEventListener("keydown", (event) => {
 }
 
   if (event.altKey && event.code === "KeyG") {
+    event.preventDefault(); // отключаем стандартное действие
     handleHistoryToggle();
   }
-});
  
- //Language
+ //Language Alt + L
   if (event.altKey && event.code === "KeyL") {
     event.preventDefault(); // Предотвращаем стандартное поведение
 
