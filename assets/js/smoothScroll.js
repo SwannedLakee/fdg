@@ -4,37 +4,76 @@
  * ===================================================================
  */
 
-// Функция для подсветки элемента и всех его дочерних элементов
+/**
+ * Подсвечивает элемент по его ID вместе со всеми потомками равномерно
+ * @param {string} elementId - ID элемента для подсветки
+ */
 function highlightAllById(elementId) {
-    // Находим только один родительский элемент по его ID
-    const parentElement = document.getElementById(elementId);
-    if (!parentElement) return;
+    // 1. Находим элемент по ID
+    const elementToHighlight = document.getElementById(elementId);
+    
+    // 2. Если элемент не существует, ничего не делаем
+    if (!elementToHighlight) {
+        console.log(`[Highlight] Элемент с ID "${elementId}" не найден.`);
+        return;
+    }
 
-    // Сохраняем его оригинальные стили
-    const originalBgColor = parentElement.style.backgroundColor;
-    const originalTransition = parentElement.style.transition;
-    parentElement.style.transition = 'background-color 0.45s ease-in-out';
-
+    // 3. Сохраняем оригинальные стили
+    const originalBgColor = elementToHighlight.style.backgroundColor;
+    const originalTransition = elementToHighlight.style.transition;
+    
+    // 4. Применяем стили для анимации ко всему блоку
+    elementToHighlight.style.transition = 'background-color 0.45s ease-in-out';
+    
     let blinkCount = 0;
     const maxBlinks = 4;
     const intervalDuration = 500;
     
-    // Запускаем интервал для мигания
+    // 5. Создаем временный элемент-обертку для равномерной подсветки
+    const highlightWrapper = document.createElement('div');
+    highlightWrapper.style.position = 'relative';
+    
+    // 6. Клонируем содержимое элемента
+    const contentClone = elementToHighlight.cloneNode(true);
+    
+    // 7. Настраиваем подсветку
+    const highlightEffect = document.createElement('div');
+    highlightEffect.style.position = 'absolute';
+    highlightEffect.style.top = '0';
+    highlightEffect.style.left = '0';
+    highlightEffect.style.width = '100%';
+    highlightEffect.style.height = '100%';
+    highlightEffect.style.zIndex = '0';
+    highlightEffect.style.pointerEvents = 'none';
+    highlightEffect.style.transition = 'background-color 0.45s ease-in-out';
+    
+    // 8. Вставляем элементы в DOM
+    highlightWrapper.appendChild(highlightEffect);
+    highlightWrapper.appendChild(contentClone);
+    elementToHighlight.innerHTML = '';
+    elementToHighlight.appendChild(highlightWrapper);
+    
+    // 9. Запускаем анимацию
     const blinkInterval = setInterval(() => {
-        // Применяем стиль фона только к родительскому элементу
-        parentElement.style.backgroundColor = blinkCount % 2 === 0 ? 'rgba(26, 188, 156, 0.2)' : originalBgColor || 'transparent';
+        highlightEffect.style.backgroundColor = blinkCount % 2 === 0 
+            ? 'rgba(26, 188, 156, 0.2)' 
+            : 'transparent';
+        
         blinkCount++;
 
-        // Когда мигание закончено, очищаем стили
+        // 10. По окончании возвращаем оригинальное состояние
         if (blinkCount >= maxBlinks) {
             clearInterval(blinkInterval);
-            parentElement.style.backgroundColor = originalBgColor || '';
             setTimeout(() => {
-                parentElement.style.transition = originalTransition;
+                elementToHighlight.innerHTML = '';
+                elementToHighlight.appendChild(contentClone);
+                elementToHighlight.style.backgroundColor = originalBgColor;
+                elementToHighlight.style.transition = originalTransition;
             }, intervalDuration);
         }
     }, intervalDuration);
 }
+
 // Функция для выделения элемента по ID (без подсветки дочерних элементов)
 function highlightById(elementId) {
     const element = document.getElementById(elementId);

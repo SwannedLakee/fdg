@@ -80,7 +80,9 @@ $menuhowto = 'Помощь';
 $menuabout = 'О Проекте';
 $menulinks = 'Полезное';
 $menucontact = 'Контакты';
-$copyrightnote = 'Материалы сайта распространяются по модели <a class="text-white text-decoration-none me-0" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="top" title="С указанием авторства-Некоммерческая-С сохранением условий версии 4.0 Международная">CC BY-NC-SA 4.0</a>, но Пали тексты и Английские переводы SuttaCentra.net и работы А. Я. Сыркина и TheBuddhasWords.net подчиняются другим условиям. Для их использования уточняйте условия у правообладателей.';
+$cclink = 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru';
+$copyrightnote = 'Материалы сайта распространяются по модели <a class="text-white text-decoration-none me-0" href="' . $cclink . '" title="С указанием авторства-Некоммерческая-С сохранением условий версии 4.0 Международная" target="_blank">CC BY-NC-SA 4.0</a>, но Пали тексты и Английские переводы SuttaCentra.net и работы А. Я. Сыркина и TheBuddhasWords.net подчиняются другим условиям. Для их использования уточняйте условия у правообладателей.';
+
 $poweredby = 'Powered by DI';
 $tooltippoweredby = 'Дхамма Интеллект, Dhamma Intelligence, Естественный Интеллект, Natural Intelligence';
 
@@ -854,7 +856,8 @@ $toggleLang = 'Toggle En/Ru (Ctrl + 1)';
 
 $manifest = '/manifest.json'; // для английской версии
 
-$copyrightnote = 'The materials on this website are distributed under the <a class="text-white text-decoration-none me-0" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Attribution-NonCommercial-ShareAlike 4.0 International">CC BY-NC-SA 4.0</a> license, but Pali texts and English Translations from SuttaCentra.net, the works of A. Y. Syrkin and TheBuddhasWords.net are subject to different terms. Please check with the copyright holders for their usage conditions.';
+$cclink = 'http://creativecommons.org/licenses/by-nc-sa/4.0';
+$copyrightnote = 'The materials on this website are distributed under the <a class="text-white text-decoration-none me-0" href="' . $cclink . '" target="_blank" title="Attribution-NonCommercial-ShareAlike 4.0 International">CC BY-NC-SA 4.0</a> license, but Pali texts and English Translations from SuttaCentra.net, the works of A. Y. Syrkin and TheBuddhasWords.net are subject to different terms. Please check with the copyright holders for their usage conditions.';
 
 $ifRuLitTrn = '';
 $gearbutton = 'extra settings';
