@@ -713,7 +713,7 @@ foreach ($slides as $index => $slide) {
 <!-- Dukkha section Item 3-->
 <div class="portfolio-item mx-auto mt-4" data-bs-toggle="modal" data-bs-target="#portfolioModal3">
 <div class="font-italic"> 
-<p class="font-italic text-center ">
+<p class="font-italic text-center">
 <?php echo $fntmessage;?>
 </p>
 </div> 
@@ -754,18 +754,18 @@ foreach ($slides as $index => $slide) {
 <!-- Portfolio Section Heading-->
 <h2 id="help" class="page-section-heading text-center text-uppercase text-secondary mb-0"><?php echo $howtoheader; ?></h2>
                 <!-- Icon Divider-->
-                <div class="divider-custom">
-                    <div class="divider-custom-line"></div>
-                        <div class="lock example divider-custom-icon">
-                                        <i class="fa-solid fa-circle example icon-unlock" ></i>
+        <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="lock example divider-custom-icon">
+        <i class="fa-solid fa-circle example icon-unlock" ></i>
  <i class="fa-solid fa-circle icon-lock bigger"></i>
-                      </div>
-                    <div class="divider-custom-line"></div>
-                </div>
+          </div>
+        <div class="divider-custom-line"></div>
+        </div>
                 <!-- Portfolio Grid Items-->
 <div class="row justify-content-center">
 
-<div style="max-width: 600px;" class="container-lg">
+<div style="max-width: 600px;" class="container-lg text-start">
 <div data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title="<?php echo $howtosearchquotetooltip;?>"></div>
 <?php echo $howtosearchquote;?>
 
