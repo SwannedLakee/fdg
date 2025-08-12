@@ -640,6 +640,10 @@ p .copyLink-start {
     font-size: 1.2em; /* или другой желаемый размер */
 }
 
+a.copyLink::before,
+a.copyLink-start::before {
+  content: '✦';
+}
 
 .copyLink {
       opacity: 0;
