@@ -44,6 +44,8 @@ collapseAllBtn.addEventListener('click', () => {
     });
 });
 
+
+if (expandAllBtn) {
 expandAllBtn.addEventListener('click', () => {
     collapseButtons.forEach((btn) => {
         const targetId = btn.getAttribute('data-bs-target');
@@ -55,3 +57,4 @@ expandAllBtn.addEventListener('click', () => {
         }
     });
 });
+}

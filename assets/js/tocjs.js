@@ -44,8 +44,10 @@ collapseAllBtn.addEventListener('click', () => {
   }
 });
 
+
+if (expandAllBtn) {
 expandAllBtn.addEventListener('click', () => {
-  console.log('Expand All Clicked');
+  //console.log('Expand All Clicked');
   collapseButtons.forEach((btn) => {
     const targetId = btn.getAttribute('data-bs-target');
     const targetCollapse = document.querySelector(targetId);
@@ -58,3 +60,4 @@ expandAllBtn.addEventListener('click', () => {
   collapseAllBtn.innerText = '+';
   isCollapsedAll = false;
 });
+}
