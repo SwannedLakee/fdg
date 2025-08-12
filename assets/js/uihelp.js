@@ -150,7 +150,7 @@ else if (path.includes('/result/') || searchParams.get('q')?.trim()) {
                     font-size: 16px;
                     cursor: pointer;
                     padding: 0 0 0 10px;
-                ">×</button>
+                " title="(Esc)">×</button>
             </div>
         `;
 

@@ -291,6 +291,18 @@ function shouldIgnoreKeyEvent() {
 
 
     if (event.key === 'Escape' || event.code === 'Escape') {
+
+      // --- 1. Close the hint popup ---
+        const hintElement = document.querySelector('.hint');
+        if (hintElement && hintElement.offsetParent !== null) { // проверка, что видимо
+            const closeHintButton = document.getElementById('closeHintBtn');
+            if (closeHintButton) {
+                closeHintButton.click();
+                event.preventDefault();
+                return;
+            }
+        }
+        
         // --- 1. Close the fdgPopup from openFdg.js ---
         // We look for the fdg-popup element and check if it's visible.
         const fdgPopupElement = document.querySelector('.fdg-popup');
@@ -1106,7 +1118,7 @@ function createQuickModal() {
         transition: all 0.2s ease;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         z-index: 10;
-      " title="Закрыть (Esc)">×</button>
+      " title="(Esc)">×</button>
 
       <h5 class="quick-modal-title" style="
         text-align:center;
