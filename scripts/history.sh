@@ -12,6 +12,7 @@
 
 source ./config/script_config.sh --source-only
 cd $output 
+#sed -i '/>\\b[0-9]*\./d' .history
 
 listfile=listhtml.tmp
 lsout=lsout.tmp
@@ -52,7 +53,7 @@ cat $templatefolder/ListHeader.html |  sed 's@<title>$title</title>@'"$titleT"'@
 cat $templatefolder/ListTableHeader.html | sed 's@HOMEVAR@'$mainpagebase'@' | sed 's@<h3 class="pl-2 ml-2">$title</h3>@'"$titleH"'@g' | sed 's@$title@'"$title"'@g' | sed 's@$replacehref@'"$replacehref"'@g' | sed 's@$ReplaceMe@'"$buttonname"'@g' 
 
 
-tac $history | grep "<tr>" | head -n $archivenumber
+tac $history | grep -v '>\\b[0-9]*\.'  | grep "<tr>" | head -n $archivenumber
 function switchlink {
 #echo "<a href=\"${mainpagebase}archive.php\">Archive</a>&nbsp;"
 bottomlink=`echo "${mainpagebase}archive.php"` 
