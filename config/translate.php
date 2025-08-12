@@ -859,10 +859,10 @@ $toggleLang = 'Toggle En/Ru (Ctrl + 1)';
 
 $manifest = '/manifest.json'; // для английской версии
 
-$cclink_en = 'https://creativecommons.org/licenses/by-nc-sa/4.0';
-$cctitle_en = 'Attribution-NonCommercial-ShareAlike 4.0 International';
+$cclink = 'https://creativecommons.org/licenses/by-nc-sa/4.0';
+$cctitle = 'Attribution-NonCommercial-ShareAlike 4.0 International';
 
-$copyrightnote_en = 'The materials on this website are distributed under the <a class="text-white text-decoration-none me-0" href="' . $cclink_en . '" target="_blank" title="' . $cctitle_en . '">CC BY-NC-SA 4.0</a> license, but Pali texts and English Translations from SuttaCentra.net, the works of A. Y. Syrkin and TheBuddhasWords.net are subject to different terms. Please check with the copyright holders for their usage conditions.';
+$copyrightnote = 'The materials on this website are distributed under the <a class="text-white text-decoration-none me-0" href="' . $cclink . '" target="_blank" title="' . $cctitle . '">CC BY-NC-SA 4.0</a> license, but Pali texts and English Translations from SuttaCentra.net, the works of A. Y. Syrkin and TheBuddhasWords.net are subject to different terms. Please check with the copyright holders for their usage conditions.';
 
 $ifRuLitTrn = '';
 $gearbutton = 'extra settings';
