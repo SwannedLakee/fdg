@@ -1290,6 +1290,11 @@ p .quoteLink-start {
     font-size: 1.2em; /* или другой желаемый размер */
 }
 
+a.quoteLink::before,
+a.quoteLink-start::before {
+  content: '✦';
+}
+
 
 .quoteLink {
       opacity: 0;

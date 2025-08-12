@@ -23,8 +23,8 @@ sutta=$4
     if ( name == "" ) { 
 name=sutta
 } 
- unhiddenlink="<a target=_blank class=\"fdgLink quoteLink-start text-reset text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦ </a>"
- hiddenlink="<a target=_blank class=\"fdgLink quoteLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\">✦</a>" 
+ unhiddenlink="<a target=_blank class=\"fdgLink quoteLink-start text-reset text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\"></a>"
+ hiddenlink="<a target=_blank class=\"fdgLink quoteLink text-white text-decoration-none\" href=\"\" data-slug=\"" urlwithanchor "\"></a>" 
  if ( textclass == 1 ) {
    language="pi"
    htmlclass="pli-lang"
