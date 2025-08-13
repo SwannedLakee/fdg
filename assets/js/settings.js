@@ -126,7 +126,19 @@ async function saveToHistory(key, url) {
 document.addEventListener('keydown', function(event) {
     // Проверяем именно символ / (код 191 или Slash)
     if (event.key === '/' || event.code === 'Slash') {
-        // Ищем все возможные инпуты
+        // Проверяем, активно ли модальное окно
+        const isModalActive = quickModalIsOpen && document.getElementById('quickSearchInput');
+        
+        // Если модальное окно активно, устанавливаем фокус в его поле ввода
+        if (isModalActive) {
+            const modalInput = document.getElementById('quickSearchInput');
+            event.preventDefault();
+            modalInput.focus();
+            modalInput.setSelectionRange(modalInput.value.length, modalInput.value.length);
+            return; // Прерываем выполнение, так как модальное окно активно
+        }
+        
+        // Ищем все возможные инпуты (оригинальная логика)
         const inputs = document.querySelectorAll(
             '#paliauto[type="search"], #paliauto[type="text"], .dtsb-value.dtsb-input'
         );
@@ -134,7 +146,7 @@ document.addEventListener('keydown', function(event) {
         // Если нет ни одного подходящего инпута - выходим
         if (inputs.length === 0) return;
         
-        // Берем первый подходящий инпут (или можно реализовать более сложную логику выбора)
+        // Берем первый подходящий инпут
         const input = inputs[0];
         
         // Предотвращаем действие по умолчанию только если нашли инпут
@@ -144,7 +156,7 @@ document.addEventListener('keydown', function(event) {
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
     }
-});
+}); 
 
 // Отключаем перехват / когда фокус уже в инпуте
 const handleInputKeydown = (event) => {
@@ -1141,7 +1153,7 @@ function createQuickModal() {
       ">Cattāri Ariyasaccāni</h5>
 
       <form id="quickSearchForm" action="${formAction}" method="GET" style="display: flex; gap: 8px; margin-bottom: 1.5rem; position: relative;">
-          <input type="text" name="q" id="quickSearchInput" placeholder="e.g. Kāyagatā or sn56.11" autocomplete="off" style="
+          <input type="search" name="q" id="quickSearchInput" placeholder="e.g. Kāyagatā or sn56.11" autocomplete="off" style="
               flex-grow: 1;
               border: 1px solid ${isDark ? '#444' : '#ccc'};
               background-color: ${isDark ? '#2c3a47' : '#f8f9fa'};
@@ -1284,12 +1296,17 @@ function createQuickModal() {
       quickSearchInput.style.borderColor = isDark ? '#444' : '#ccc';
   });
 
-  if (!document.getElementById('autopali-script')) {
-    const script = document.createElement('script');
-    script.id = 'autopali-script'; // ID, чтобы избежать повторной загрузки
-    script.src = '/assets/js/autopali.js';
-    document.body.appendChild(script);
+  // Удаляем старый скрипт, если он был добавлен ранее, чтобы избежать дублирования
+  const existingScript = document.getElementById('autopali-modal-script');
+  if (existingScript) {
+    existingScript.remove();
   }
+
+  // Создаем и добавляем новый тег script для модального окна
+  const script = document.createElement('script');
+  script.id = 'autopali-modal-script'; // Даем ID для возможности его удаления
+  script.src = '/assets/js/autopali_modal.js?v=' + new Date().getTime(); // Добавляем параметр для обхода кэша
+  document.body.appendChild(script);
 
 }
 
