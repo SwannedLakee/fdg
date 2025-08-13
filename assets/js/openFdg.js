@@ -32,7 +32,7 @@ function createFdgPopup() {
         popup.style.height = '60%';
         popup.style.top = '20%';
         popup.style.left = '0';
-        popup.style.borderRadius = '0';
+        popup.style.borderRadius = '8px';
     } else {
         const savedWidth = localStorage.getItem('fdgPopupWidth');
         const savedHeight = localStorage.getItem('fdgPopupHeight');
