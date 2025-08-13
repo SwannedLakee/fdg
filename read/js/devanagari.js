@@ -304,7 +304,7 @@ if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== unde
 }
 
 
-  let finder = params.get("s");
+  let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 
 if (finder && finder.trim() !== "") {
   let regex = new RegExp(finder, 'gi'); // 'gi' - игнорировать регистр
@@ -573,7 +573,7 @@ nextName = nextName.replace(/[0-9.]/g, '');
       } else {
      var nextPrint = nextSlugPrint +' ' +nextName;
      }     
-    let finder = params.get("s");
+    let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
           next.innerHTML = nextSlug
           ? `<a href="?q=${nextSlug}${params.has("s") ? `&s=${finder}` : ""}">${nextPrint.trim()}
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body_1" width="15" height="11">
@@ -603,7 +603,7 @@ prevName = prevName.replace(/[0-9.]/g, '');
       } else {
         var prevPrint = prevSlugPrint +' ' +prevName;
      }
-        let finder = params.get("s");
+        let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 
     previous.innerHTML = prevSlug
   ? `<a href="?q=${prevSlug}${finder ? `&s=${finder}` : ""}"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body_1" width="15" height="11">

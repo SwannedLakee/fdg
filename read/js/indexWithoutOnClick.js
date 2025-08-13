@@ -206,7 +206,7 @@ anchor = segment;
 
 var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
 
-  let finder = params.get("s");
+  let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
  //  finder = finder.replace(/\\b/g, '');
 //  finder = finder.replace(/%08/g, '\\b');
  // console.log(finder);
@@ -463,7 +463,7 @@ nextName = nextName.replace(/[0-9.]/g, '');
       } else {
      var nextPrint = nextSlugPrint +' ' +nextName;
      }
-        let finder = params.get("s");
+        let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
          next.innerHTML = nextSlug
           ? `<a href="?q=${nextSlug}${params.has("s") ? `&s=${finder}` : ""}">${nextPrint.trim()}
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body_1" width="15" height="11">
@@ -493,7 +493,7 @@ prevName = prevName.replace(/[0-9.]/g, '');
       } else {
         var prevPrint = prevSlugPrint +' ' +prevName;
      }
-      let finder = params.get("s");
+      let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 
     previous.innerHTML = prevSlug
   ? `<a href="?q=${prevSlug}${params.has("s") ? `&s=${finder}` : ""}">

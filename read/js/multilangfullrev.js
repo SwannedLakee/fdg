@@ -298,7 +298,7 @@ transData[segment] = transData[segment].split('').reverse().join('');
 engTransData[segment] = engTransData[segment].split('').reverse().join('');
 
 let params = new URLSearchParams(document.location.search);
-  let finder = params.get("s");
+  let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
  // finder = finder.replace(/\\b/g, '');
 if (finder && finder.trim() !== "") {
   let regex = new RegExp(finder, 'gi'); // 'gi' - игнорировать регистр

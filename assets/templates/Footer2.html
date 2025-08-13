@@ -267,13 +267,13 @@ $('#pali').find('tbody').find('tr').each(function() {
   // s param и div keyword
  
 let params = new URLSearchParams(document.location.search);
-let finder = params.get("s");
+let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 let keyword;
 
 // Проверяем наличие элемента с классом "keyword"
 let keywordElement = document.querySelector('.keyword');
 if (keywordElement) {
-    keyword = keywordElement.textContent.trim();
+    keyword = keywordElement.textContent.trim().replace(/ṃ/g, "ṁ");
 } else {
     keyword = ""; // Значение по умолчанию, если элемент не найден
 }
