@@ -187,7 +187,7 @@ $('#pali').find('tbody').find('tr').each(function() {
   // s param & div keywprd
    
 let params = new URLSearchParams(document.location.search);
-let finder = params.get("s");
+let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 let keyword;
 
 // check element with class "keyword"
