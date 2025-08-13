@@ -1296,18 +1296,6 @@ function createQuickModal() {
       quickSearchInput.style.borderColor = isDark ? '#444' : '#ccc';
   });
 
-  // Удаляем старый скрипт, если он был добавлен ранее, чтобы избежать дублирования
-  const existingScript = document.getElementById('autopali-modal-script');
-  if (existingScript) {
-    existingScript.remove();
-  }
-
-  // Создаем и добавляем новый тег script для модального окна
-  const script = document.createElement('script');
-  script.id = 'autopali-modal-script'; // Даем ID для возможности его удаления
-  script.src = '/assets/js/autopali_modal.js?v=' + new Date().getTime(); // Добавляем параметр для обхода кэша
-  document.body.appendChild(script);
-
 }
 
 function toggleQuickModal() {
