@@ -5,11 +5,21 @@ Allow: /favicon.ico
 Allow: /assets/img/
 Allow: /assets/svg/
 Allow: /assets/example/
+Allow: /read/index.html
+Allow: /r/index.html
+Allow: /ml/index.html
+Allow: /d/index.html
+Allow: /memorize/index.html
+Allow: /ru/index.php
+Allow: /index.php
+Allow: /read.php
+Allow: /ru/read.php
 
 Disallow: /result/
 Disallow: /ru/result/
 Disallow: /scripts/
 Disallow: /bw/
+Disallow: /tmp/
 Disallow: /db/
 Disallow: /new/
 Disallow: /w.php
@@ -22,4 +32,15 @@ Disallow: /metta.lk/
 Disallow: /buddhadust.net/
 Disallow: /theravada.ru/
 Disallow: /tipitaka.theravada.su/
-
+Disallow: /assets/js/
+Disallow: /assets/html/
+Disallow: /assets/lunar/
+Disallow: /assets/br/
+Disallow: /assets/materials/
+Disallow: /assets/apk/
+Disallow: /assets/diff/
+Disallow: /read/
+Disallow: /r/
+Disallow: /ml/
+Disallow: /d/
+Disallow: /m/
