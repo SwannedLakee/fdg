@@ -1033,6 +1033,7 @@ function createQuickModal() {
   const linkColorSuccess = "#2aa198";
   const linkColorWarning = "#cb4b16";
   const linkColorDanger = "#dc322f";
+  const formAction = window.location.pathname.match(/\/(ru|r)\//) ? '/ru/' : '/';
 
   // Оверлей
   quickOverlay = document.createElement("div");
@@ -1139,8 +1140,36 @@ function createQuickModal() {
         font-weight: 600;
       ">Cattāri Ariyasaccāni</h5>
 
-    <div class="quick-links-container" style="display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: space-between;">
-      <!-- Block 1 -->
+      <form id="quickSearchForm" action="${formAction}" method="GET" style="display: flex; gap: 8px; margin-bottom: 1.5rem; position: relative;">
+          <input type="text" name="q" id="quickSearchInput" placeholder="e.g. Kāyagatā or sn56.11" autocomplete="off" style="
+              flex-grow: 1;
+              border: 1px solid ${isDark ? '#444' : '#ccc'};
+              background-color: ${isDark ? '#2c3a47' : '#f8f9fa'};
+              color: ${textColor};
+              padding: 10px 14px;
+              border-radius: 20px;
+              font-size: 0.95rem;
+              outline: none;
+              transition: border-color 0.2s;
+          ">
+          <button type="submit" id="quickSearchBtn" style="
+              background-color: #025242;
+              color: white;
+              border: none;
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: background-color 0.2s;
+              flex-shrink: 0;
+          ">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+      </form>
+      <div class="quick-links-container" style="display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: space-between;">
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>1st priority:</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
@@ -1150,7 +1179,6 @@ function createQuickModal() {
         </ul>
       </div>
 
-      <!-- Block 2 -->
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>Clarify 5 khandha:</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
@@ -1161,7 +1189,6 @@ function createQuickModal() {
         </ul>
       </div>
 
-      <!-- Block 3 -->
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>Clarify 6 ajjhattāyatana:</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
@@ -1173,7 +1200,6 @@ function createQuickModal() {
         </ul>
       </div>
 
-      <!-- Block 4 -->
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>Clarify 4-6-X Dhātu:</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
@@ -1184,7 +1210,6 @@ function createQuickModal() {
         </ul>
       </div>
 
-      <!-- Block 5 -->
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>Dukkaṁ so abhinandati:</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
@@ -1195,7 +1220,6 @@ function createQuickModal() {
         </ul>
       </div>
 
-      <!-- Block 6 -->
       <div class="quick-links-column" style="flex: 1 1 45%; min-width: 200px;">
         <p><strong>Extra</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
@@ -1212,8 +1236,6 @@ function createQuickModal() {
   </div>
 `;
 
-  // Вставьте здесь остальные блоки ссылок из оригинального кода
-
   document.body.appendChild(quickOverlay);
   document.body.appendChild(quickModal);
 
@@ -1222,6 +1244,7 @@ function createQuickModal() {
     quickOverlay.style.opacity = "1";
     quickModal.style.opacity = "1";
     quickModal.style.transform = "translate(-50%, -50%) scale(1)";
+    document.getElementById('quickSearchInput').focus(); // Auto-focus the new input
   });
 
   // Закрытие
@@ -1241,6 +1264,32 @@ function createQuickModal() {
 
   quickOverlay.addEventListener("click", (e) => e.target === quickOverlay && closeQuickModal());
   quickModal.querySelector("#quickCloseModalBtn").addEventListener("click", closeQuickModal);
+
+  // ADDED: Event listener for the new search form
+  const quickSearchForm = document.getElementById('quickSearchForm');
+  const quickSearchInput = document.getElementById('quickSearchInput');
+  
+  quickSearchForm.addEventListener('submit', function(e) {
+    if (!quickSearchInput.value.trim()) {
+        e.preventDefault(); // Prevent submitting an empty form
+        quickSearchInput.style.borderColor = '#dc322f';
+    }
+    // Form submission proceeds as normal if input is not empty
+  });
+
+  quickSearchInput.addEventListener('focus', () => {
+      quickSearchInput.style.borderColor = '#859900';
+  });
+  quickSearchInput.addEventListener('blur', () => {
+      quickSearchInput.style.borderColor = isDark ? '#444' : '#ccc';
+  });
+
+  if (!document.getElementById('autopali-script')) {
+    const script = document.createElement('script');
+    script.id = 'autopali-script'; // ID, чтобы избежать повторной загрузки
+    script.src = '/assets/js/autopali.js';
+    document.body.appendChild(script);
+  }
 
 }
 

@@ -15,7 +15,8 @@ function uniCoder(textInput) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    let paliauto = document.getElementById("paliauto");
+let paliauto = document.getElementById("paliauto") 
+             || document.getElementById("quickSearchInput");
 
     if (paliauto) {
         paliauto.addEventListener("input", function () {
