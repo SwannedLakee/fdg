@@ -315,6 +315,7 @@ function shouldIgnoreKeyEvent() {
         }
     }
 
+    
       // --- 1. Close the hint popup ---
         const hintElement = document.querySelector('.hint');
         if (hintElement && hintElement.offsetParent !== null) { // проверка, что видимо
@@ -364,6 +365,20 @@ function shouldIgnoreKeyEvent() {
                 return;
             }
         }
+
+
+const closeBtnElements = document.querySelectorAll('.btn-close');
+if (closeBtnElements.length > 0) {
+    closeBtnElements.forEach(button => {
+        if (button.offsetParent !== null) {
+            button.click();
+        }
+    });
+    event.preventDefault();
+    return; 
+}
+    
+        
     }
 
 //Help + Settings + History
