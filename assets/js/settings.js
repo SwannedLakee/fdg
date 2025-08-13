@@ -292,6 +292,17 @@ function shouldIgnoreKeyEvent() {
 
     if (event.key === 'Escape' || event.code === 'Escape') {
 
+    // --- 0. Close PWA banner ---
+    const pwaBanner = document.getElementById('pwa-banner');
+    if (pwaBanner && pwaBanner.offsetParent !== null) { // проверка, что видим
+        const closePwaBtn = document.getElementById('closePwaBanner');
+        if (closePwaBtn) {
+            closePwaBtn.click();
+            event.preventDefault();
+            return;
+        }
+    }
+
       // --- 1. Close the hint popup ---
         const hintElement = document.querySelector('.hint');
         if (hintElement && hintElement.offsetParent !== null) { // проверка, что видимо

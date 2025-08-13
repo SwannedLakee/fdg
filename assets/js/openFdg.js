@@ -58,8 +58,8 @@ function createFdgPopup() {
         } else {
             // По умолчанию для десктопа: справа
             popup.style.width = '45%';
-            popup.style.height = '50%';
-            popup.style.top = '40%';
+            popup.style.height = '60%';
+            popup.style.top = '25%';
             popup.style.left = '53%';
         }
     }
