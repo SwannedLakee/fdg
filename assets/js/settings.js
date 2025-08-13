@@ -315,7 +315,6 @@ function shouldIgnoreKeyEvent() {
         }
     }
 
-    
       // --- 1. Close the hint popup ---
         const hintElement = document.querySelector('.hint');
         if (hintElement && hintElement.offsetParent !== null) { // проверка, что видимо
@@ -367,18 +366,16 @@ function shouldIgnoreKeyEvent() {
         }
 
 
-const closeBtnElements = document.querySelectorAll('.btn-close');
-if (closeBtnElements.length > 0) {
-    closeBtnElements.forEach(button => {
-        if (button.offsetParent !== null) {
-            button.click();
+        const closeBtnElements = document.querySelectorAll('.btn-close');
+        if (closeBtnElements.length > 0) {
+            closeBtnElements.forEach(button => {
+                if (button.offsetParent !== null) {
+                    button.click();
+                }
+            });
+            event.preventDefault();
+            return; 
         }
-    });
-    event.preventDefault();
-    return; 
-}
-    
-        
     }
 
 //Help + Settings + History
@@ -804,14 +801,14 @@ document.addEventListener("keydown", (event) => {
     let newUrl;
     let defaultLanguage = localStorage.getItem('siteLanguage') || "en"; // Получаем язык из localStorage или используем "en" по умолчанию
 
-	let defaultLanguageLinkPart;
-		if (defaultLanguage === "ru") {
-		  defaultLanguageLinkPart = "/r/";
-		} else if (defaultLanguage === "th") {
-		  defaultLanguageLinkPart = "/th/read/";
-		} else {
-		  defaultLanguageLinkPart = "/read/";
-		}
+    let defaultLanguageLinkPart;
+        if (defaultLanguage === "ru") {
+          defaultLanguageLinkPart = "/r/";
+        } else if (defaultLanguage === "th") {
+          defaultLanguageLinkPart = "/th/read/";
+        } else {
+          defaultLanguageLinkPart = "/read/";
+        }
 
 
     // Проверяем, содержит ли URL /r/
@@ -822,7 +819,7 @@ document.addEventListener("keydown", (event) => {
     } else if (urlWithoutParams.endsWith("/read/")) {
       newUrl = urlWithoutParams.replace("/read/", "/r/"); // Меняем на /r/
     } 
-	else {
+    else {
       // Если URL не содержит ни /r/, ни /read/, выбираем начальный вариант
       if (localStorage.siteLanguage && localStorage.siteLanguage === 'ru') {
         newUrl = window.location.origin + "/r/";
@@ -1311,6 +1308,18 @@ function createQuickModal() {
       quickSearchInput.style.borderColor = isDark ? '#444' : '#ccc';
   });
 
+  // Удаляем старый скрипт, если он был добавлен ранее, чтобы избежать дублирования
+  const existingScript = document.getElementById('autopali-modal-script');
+  if (existingScript) {
+    existingScript.remove();
+  }
+
+  // Создаем и добавляем новый тег script для модального окна
+  const script = document.createElement('script');
+  script.id = 'autopali-modal-script'; // Даем ID для возможности его удаления
+  script.src = '/assets/js/autopali_modal.js?v=' + new Date().getTime(); // Добавляем параметр для обхода кэша
+  document.body.appendChild(script);
+
 }
 
 function toggleQuickModal() {
@@ -1322,4 +1331,63 @@ function toggleQuickModal() {
     quickModalIsOpen = true;
   }
 }
+
+
+
+/*
+
+const openQuickModalBtn = document.createElement("button");
+openQuickModalBtn.innerText = "≡"; // или иконку по желанию
+openQuickModalBtn.setAttribute("aria-label", "Открыть окно Cattāri Ariyasaccāni");
+openQuickModalBtn.style.cssText = `
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10001;
+  background-color: #859900;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+`;
+
+openQuickModalBtn.addEventListener("click", toggleQuickModal);
+document.body.appendChild(openQuickModalBtn);
+
+
+
+
+if (!document.getElementById("openQuickModalBtn")) {
+  const openQuickModalBtn = document.createElement("button");
+
+  openQuickModalBtn.addEventListener("click", toggleQuickModal);
+
+}
+
+
+<button onclick="toggleQuickModal()" aria-label="Открыть Cattāri Ariyasaccāni" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10001;
+  background-color: #859900;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+">
+  ≡
+</button>
+
+
+*/
 
