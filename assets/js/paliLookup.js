@@ -800,6 +800,14 @@ function createPopup() {
             }
         </style>
     `;
+    
+    // --- ИЗМЕНЕНИЕ: ДОБАВЛЕНЫ НОВЫЕ ЭЛЕМЕНТЫ ДЛЯ РЕСАЙЗА ПО КРАЯМ ---
+    const resizeHandleRight = document.createElement('div');
+    resizeHandleRight.style.cssText = 'position: absolute; right: 0; top: 0; width: 5px; height: 100%; cursor: ew-resize; z-index: 9;';
+
+    const resizeHandleBottom = document.createElement('div');
+    resizeHandleBottom.style.cssText = 'position: absolute; left: 0; bottom: 0; width: 100%; height: 5px; cursor: ns-resize; z-index: 9;';
+
 
     popup.appendChild(header);
     popup.appendChild(dictBtn);
@@ -807,6 +815,9 @@ function createPopup() {
     popup.appendChild(closeBtn);
     popup.appendChild(iframe);
     popup.appendChild(resizeHandle);
+    // --- ИЗМЕНЕНИЕ: ДОБАВЛЕНЫ НОВЫЕ ЭЛЕМЕНТЫ В DOM ---
+    popup.appendChild(resizeHandleRight);
+    popup.appendChild(resizeHandleBottom);
 
     document.body.appendChild(overlay);
     document.body.appendChild(popup);
@@ -814,36 +825,29 @@ function createPopup() {
     // Состояния для управления событиями
     let isDragging = false;
     let isResizing = false;
+    // --- ИЗМЕНЕНИЕ: ДОБАВЛЕНА ПЕРЕМЕННАЯ ДЛЯ ТИПА РЕСАЙЗА ---
+    let currentResizeType = 'corner';
 
     // Перетаскивание окна
     let startX, startY, initialLeft, initialTop;
     let isFirstDrag = localStorage.getItem('isFirstDrag') === 'false' ? false : true;
 
     if (isFirstDrag) {
-
-if (savedDict && savedDict.includes("standalone")) {
-
-        popup.style.top = '50%';
-        popup.style.left = '50%';
-        popup.style.width = '749px';
-        popup.style.height = '600px';
-        popup.style.transform = 'translate(-50%, -50%)';
-    } else {
-
-        popup.style.width = '500px';
-        popup.style.height = '500px';
-        // Динамические отступы
-        const rightMargin = isMobileLike ? 0 : 15;
-        // Позиционирование
-        popup.style.right = `${rightMargin}px`;
-        popup.style.top = `${window.innerHeight - 510}px`;
-        popup.style.transform = 'none';
+        if (savedDict && savedDict.includes("standalone")) {
+            popup.style.top = '50%';
+            popup.style.left = '50%';
+            popup.style.width = '749px';
+            popup.style.height = '600px';
+            popup.style.transform = 'translate(-50%, -50%)';
+        } else {
+            popup.style.width = '500px';
+            popup.style.height = '500px';
+            const rightMargin = isMobileLike ? 0 : 15;
+            popup.style.right = `${rightMargin}px`;
+            popup.style.top = `${window.innerHeight - 510}px`;
+            popup.style.transform = 'none';
+        }
     }
-
-    }
-
-
-
 
     function startDrag(e) {
         isDragging = true;
@@ -886,9 +890,11 @@ if (savedDict && savedDict.includes("standalone")) {
 
     // Изменение размера окна
     let startWidth, startHeight, startResizeX, startResizeY;
-
-    function startResize(e) {
+    
+    // --- ИЗМЕНЕНИЕ: МОДИФИЦИРОВАННЫЕ ФУНКЦИИ РЕСАЙЗА ---
+    function startResize(e, resizeType = 'corner') {
         isResizing = true;
+        currentResizeType = resizeType; // Сохраняем тип ресайза
         iframe.style.pointerEvents = 'none';
         popup.classList.add('resizing');
 
@@ -907,9 +913,17 @@ if (savedDict && savedDict.includes("standalone")) {
         const currentX = e.clientX || e.touches[0].clientX;
         const currentY = e.clientY || e.touches[0].clientY;
 
-        const newWidth = startWidth + (currentX - startResizeX);
-        const newHeight = startHeight + (currentY - startResizeY);
+        let newWidth = startWidth;
+        let newHeight = startHeight;
 
+        // В зависимости от типа ресайза, меняем нужные размеры
+        if (currentResizeType === 'corner' || currentResizeType === 'right') {
+            newWidth = startWidth + (currentX - startResizeX);
+        }
+        if (currentResizeType === 'corner' || currentResizeType === 'bottom') {
+            newHeight = startHeight + (currentY - startResizeY);
+        }
+        
         const minWidth = 200;
         const minHeight = 150;
         const maxWidth = window.innerWidth * 0.9;
@@ -930,8 +944,10 @@ if (savedDict && savedDict.includes("standalone")) {
            savePopupState();
         }
     }
-
-    // Обработчики событий
+    
+    // --- ИЗМЕНЕНИЕ: ЗАМЕНА СТАРОГО БЛОКА ОБРАБОТЧИКОВ НА НОВЫЙ ---
+    
+    // Обработчики для перетаскивания (Drag)
     header.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', moveDrag);
     document.addEventListener('mouseup', stopDrag);
@@ -939,8 +955,17 @@ if (savedDict && savedDict.includes("standalone")) {
     document.addEventListener('touchmove', moveDrag);
     document.addEventListener('touchend', stopDrag);
 
-    resizeHandle.addEventListener('mousedown', startResize);
-    resizeHandle.addEventListener('touchstart', startResize);
+    // Обработчики для ресайза (Resize)
+    resizeHandle.addEventListener('mousedown', (e) => startResize(e, 'corner'));
+    resizeHandle.addEventListener('touchstart', (e) => startResize(e, 'corner'));
+
+    resizeHandleRight.addEventListener('mousedown', (e) => startResize(e, 'right'));
+    resizeHandleRight.addEventListener('touchstart', (e) => startResize(e, 'right'));
+
+    resizeHandleBottom.addEventListener('mousedown', (e) => startResize(e, 'bottom'));
+    resizeHandleBottom.addEventListener('touchstart', (e) => startResize(e, 'bottom'));
+
+    // Глобальные обработчики для выполнения и остановки ресайза
     document.addEventListener('mousemove', doResize);
     document.addEventListener('touchmove', doResize);
     document.addEventListener('mouseup', stopResize);
@@ -954,6 +979,7 @@ if (savedDict && savedDict.includes("standalone")) {
 
     return { overlay, popup, closeBtn, iframe };
 }
+
 // Вставка popup на страницу
 const { overlay, popup, closeBtn, iframe } = createPopup();
 

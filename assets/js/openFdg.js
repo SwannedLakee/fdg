@@ -1,5 +1,3 @@
-// --- НАЧАЛО: УТИЛИТЫ ДЛЯ POPUP ---
-
 function saveFdgPopupState(popup) {
     localStorage.setItem('fdgPopupWidth', popup.style.width);
     localStorage.setItem('fdgPopupHeight', popup.style.height);
@@ -11,11 +9,6 @@ function clearFdgPopupParams() {
     const keys = ['fdgPopupWidth', 'fdgPopupHeight', 'fdgPopupTop', 'fdgPopupLeft', 'fdgWindowWidth', 'fdgWindowHeight', 'isFdgFirstDrag'];
     keys.forEach(key => localStorage.removeItem(key));
 }
-
-// --- КОНЕЦ: УТИЛИТЫ ДЛЯ POPUP ---
-
-
-// --- НАЧАЛО: КОД ДЛЯ СОЗДАНИЯ POPUP ОКНА ---
 
 function createFdgPopup() {
     const popup = document.createElement('div');
@@ -108,9 +101,9 @@ function createFdgPopup() {
     const iframe = document.createElement('iframe');
     iframe.className = 'fdg-iframe';
     iframe.src = '';
-    iframe.style.cssText = 'width: 100%; height: 100%; border: none; background-color: #eaf0f0;';
+    iframe.style.cssText = 'width: 100%; height: calc(100% - 5px); border: none; background-color: #eaf0f0;';
 
-    // Уголок для изменения размера
+     // Уголок для изменения размера
     const resizeHandle = document.createElement('div');
     resizeHandle.className = 'fdg-resize-handle';
     resizeHandle.style.cssText = 'position: absolute; right: 0; bottom: 0; width: 20px; height: 20px; cursor: nwse-resize; z-index: 10; background-color: transparent;';
@@ -130,17 +123,30 @@ function createFdgPopup() {
         </style>
     `;
 
+    // --- ИЗМЕНЕНИЕ 1: Добавляем невидимые ручки для ресайза ---
+    const resizeHandleRight = document.createElement('div');
+    resizeHandleRight.style.cssText = 'position: absolute; right: 0; top: 0; width: 5px; height: 100%; cursor: ew-resize; z-index: 9;';
+
+    const resizeHandleBottom = document.createElement('div');
+    resizeHandleBottom.style.cssText = 'position: absolute; left: 0; bottom: 0; width: 100%; height: 5px; cursor: ns-resize; z-index: 9;';
+
+
     // Сборка попапа
     popup.appendChild(iframe);
     popup.appendChild(header);
     popup.appendChild(openNewWindowBtn);
     popup.appendChild(closeBtn);
     popup.appendChild(resizeHandle);
+    // --- ИЗМЕНЕНИЕ 2: Добавляем новые ручки в попап ---
+    popup.appendChild(resizeHandleRight);
+    popup.appendChild(resizeHandleBottom);
     document.body.appendChild(popup);
 
     // --- Логика перетаскивания и изменения размера ---
     let isDragging = false, isResizing = false;
     let startX, startY, initialLeft, initialTop, startWidth, startHeight, startResizeX, startResizeY;
+    // --- ИЗМЕНЕНИЕ 3: Переменная для хранения типа ресайза ---
+    let currentResizeType = 'corner';
 
     function startDrag(e) {
         if (isFirstDrag) {
@@ -174,8 +180,10 @@ function createFdgPopup() {
         }
     }
 
-    function startResize(e) {
+    // --- ИЗМЕНЕНИЕ 4: Модифицируем startResize, чтобы он принимал тип ---
+    function startResize(e, resizeType = 'corner') {
         isResizing = true;
+        currentResizeType = resizeType; // Сохраняем тип
         iframe.style.pointerEvents = 'none';
         startWidth = parseInt(document.defaultView.getComputedStyle(popup).width, 10);
         startHeight = parseInt(document.defaultView.getComputedStyle(popup).height, 10);
@@ -186,14 +194,24 @@ function createFdgPopup() {
         e.stopPropagation();
     }
 
+    // --- ИЗМЕНЕНИЕ 5: Модифицируем doResize, чтобы он учитывал тип ---
     function doResize(e) {
         if (!isResizing) return;
         if (isMobile) {
             popup.style.borderRadius = '8px';
         }
         const touch = e.touches ? e.touches[0] : e;
-        const newWidth = startWidth + (touch.clientX - startResizeX);
-        const newHeight = startHeight + (touch.clientY - startResizeY);
+        
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (currentResizeType === 'corner' || currentResizeType === 'right') {
+            newWidth = startWidth + (touch.clientX - startResizeX);
+        }
+        if (currentResizeType === 'corner' || currentResizeType === 'bottom') {
+            newHeight = startHeight + (touch.clientY - startResizeY);
+        }
+        
         popup.style.width = `${Math.max(300, newWidth)}px`;
         popup.style.height = `${Math.max(200, newHeight)}px`;
     }
@@ -206,6 +224,7 @@ function createFdgPopup() {
         }
     }
 
+    // --- ИЗМЕНЕНИЕ 6: Обновляем обработчики событий ---
     header.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', moveDrag);
     document.addEventListener('mouseup', stopDrag);
@@ -213,12 +232,21 @@ function createFdgPopup() {
     document.addEventListener('touchmove', moveDrag, { passive: false });
     document.addEventListener('touchend', stopDrag);
     
-    resizeHandle.addEventListener('mousedown', startResize);
+    // Старые и новые обработчики ресайза
+    resizeHandle.addEventListener('mousedown', (e) => startResize(e, 'corner'));
+    resizeHandleRight.addEventListener('mousedown', (e) => startResize(e, 'right'));
+    resizeHandleBottom.addEventListener('mousedown', (e) => startResize(e, 'bottom'));
+
     document.addEventListener('mousemove', doResize);
     document.addEventListener('mouseup', stopResize);
-    resizeHandle.addEventListener('touchstart', startResize, { passive: false });
+    
+    resizeHandle.addEventListener('touchstart', (e) => startResize(e, 'corner'), { passive: false });
+    resizeHandleRight.addEventListener('touchstart', (e) => startResize(e, 'right'), { passive: false });
+    resizeHandleBottom.addEventListener('touchstart', (e) => startResize(e, 'bottom'), { passive: false });
+
     document.addEventListener('touchmove', doResize, { passive: false });
     document.addEventListener('touchend', stopResize);
+
 
     return { popup, closeBtn, openNewWindowBtn, iframe };
 }
