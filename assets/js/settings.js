@@ -1100,7 +1100,7 @@ function createQuickModal() {
   // Стили для мобильных устройств
   const styleTag = document.createElement("style");
   styleTag.textContent = `
-    @media (max-width: 768px) {
+    @media (max-width: 500px) {
       .quick-modal-container {
         top: 0 !important;
         left: 0 !important;
@@ -1116,6 +1116,7 @@ function createQuickModal() {
         height: 100% !important;
         border-radius: 0 !important;
         padding: 1rem !important;
+        overflow-y: auto; /* Добавлено для скролла внутри контента */
       }
       .quick-links-container {
         flex-direction: column !important;
@@ -1327,6 +1328,7 @@ function createQuickModal() {
   document.body.appendChild(script);
 
 }
+
 
 function toggleQuickModal() {
   if (quickModalIsOpen) {
