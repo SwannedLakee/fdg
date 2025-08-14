@@ -221,8 +221,91 @@ function shouldIgnoreKeyEvent() {
 }
 
 
+
+window.addEventListener("keydown", (event) => {
+    if (event.key === 'Escape' || event.code === 'Escape') {
+
+    // --- 0. Close PWA banner ---
+    const pwaBanner = document.getElementById('pwa-banner');
+    if (pwaBanner && pwaBanner.offsetParent !== null) { // проверка, что видим
+        const closePwaBtn = document.getElementById('closePwaBanner');
+        if (closePwaBtn) {
+            closePwaBtn.click();
+            event.preventDefault();
+            return;
+        }
+    }
+
+      // --- 1. Close the hint popup ---
+        const hintElement = document.querySelector('.hint');
+        if (hintElement && hintElement.offsetParent !== null) { // проверка, что видимо
+            const closeHintButton = document.getElementById('closeHintBtn');
+            if (closeHintButton) {
+                closeHintButton.click();
+                event.preventDefault();
+                return;
+            }
+        }
+        
+        // --- 1. Close the fdgPopup from openFdg.js ---
+        // We look for the fdg-popup element and check if it's visible.
+        const fdgPopupElement = document.querySelector('.fdg-popup');
+        if (fdgPopupElement && fdgPopupElement.style.display === 'block') {
+            // If the popup is open, we simulate a click on its close button.
+            const fdgCloseButton = fdgPopupElement.querySelector('.fdg-close-btn');
+            if (fdgCloseButton) {
+                fdgCloseButton.click();
+                event.preventDefault(); // Prevent any other action.
+                return; // Stop further execution.
+            }
+        }
+
+        // --- 2. Close the main dictionary popup from paliLookup.js ---
+        // We look for the main lookup popup element and check its visibility.
+        const paliLookupPopupElement = document.querySelector('.popup');
+        if (paliLookupPopupElement && paliLookupPopupElement.style.display === 'block') {
+            // If the popup is open, we simulate a click on its close button.
+            const paliLookupCloseButton = paliLookupPopupElement.querySelector('.close-btn');
+            if (paliLookupCloseButton) {
+                paliLookupCloseButton.click();
+                event.preventDefault();
+                return;
+            }
+        }
+
+        // --- 3. Close the Quick Modal (Cattāri Ariyasaccāni) ---
+        // We check if the quick modal is open by looking for its overlay.
+        const quickOverlayElement = document.querySelector('.quick-overlay-element');
+        if (quickOverlayElement && quickOverlayElement.style.opacity === '1') {
+            // If the modal is open, we call its close function.
+            // This assumes toggleQuickModal handles closing if it's already open.
+             if (typeof toggleQuickModal === 'function') {
+                toggleQuickModal(); // This will close it if it's open.
+                event.preventDefault();
+                return;
+            }
+        }
+
+
+        const closeBtnElements = document.querySelectorAll('.btn-close');
+        if (closeBtnElements.length > 0) {
+            closeBtnElements.forEach(button => {
+                if (button.offsetParent !== null) {
+                    button.click();
+                }
+            });
+            event.preventDefault();
+            return; 
+        }
+    }
+ }, true);
+
+
+
+
+
     // Добавляем обработчик сочетания клавиш Alt + Space (физическая клавиша)
-  document.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
     if ((event.altKey && event.code === "Space") || (event.altKey && event.code === "KeyZ")) {
         const languageButton = document.getElementById("language-button");
       if (languageButton) {
@@ -300,83 +383,6 @@ function shouldIgnoreKeyEvent() {
 
     openDictionaryWindow(url);
   }
-
-
-    if (event.key === 'Escape' || event.code === 'Escape') {
-
-    // --- 0. Close PWA banner ---
-    const pwaBanner = document.getElementById('pwa-banner');
-    if (pwaBanner && pwaBanner.offsetParent !== null) { // проверка, что видим
-        const closePwaBtn = document.getElementById('closePwaBanner');
-        if (closePwaBtn) {
-            closePwaBtn.click();
-            event.preventDefault();
-            return;
-        }
-    }
-
-      // --- 1. Close the hint popup ---
-        const hintElement = document.querySelector('.hint');
-        if (hintElement && hintElement.offsetParent !== null) { // проверка, что видимо
-            const closeHintButton = document.getElementById('closeHintBtn');
-            if (closeHintButton) {
-                closeHintButton.click();
-                event.preventDefault();
-                return;
-            }
-        }
-        
-        // --- 1. Close the fdgPopup from openFdg.js ---
-        // We look for the fdg-popup element and check if it's visible.
-        const fdgPopupElement = document.querySelector('.fdg-popup');
-        if (fdgPopupElement && fdgPopupElement.style.display === 'block') {
-            // If the popup is open, we simulate a click on its close button.
-            const fdgCloseButton = fdgPopupElement.querySelector('.fdg-close-btn');
-            if (fdgCloseButton) {
-                fdgCloseButton.click();
-                event.preventDefault(); // Prevent any other action.
-                return; // Stop further execution.
-            }
-        }
-
-        // --- 2. Close the main dictionary popup from paliLookup.js ---
-        // We look for the main lookup popup element and check its visibility.
-        const paliLookupPopupElement = document.querySelector('.popup');
-        if (paliLookupPopupElement && paliLookupPopupElement.style.display === 'block') {
-            // If the popup is open, we simulate a click on its close button.
-            const paliLookupCloseButton = paliLookupPopupElement.querySelector('.close-btn');
-            if (paliLookupCloseButton) {
-                paliLookupCloseButton.click();
-                event.preventDefault();
-                return;
-            }
-        }
-
-        // --- 3. Close the Quick Modal (Cattāri Ariyasaccāni) ---
-        // We check if the quick modal is open by looking for its overlay.
-        const quickOverlayElement = document.querySelector('.quick-overlay-element');
-        if (quickOverlayElement && quickOverlayElement.style.opacity === '1') {
-            // If the modal is open, we call its close function.
-            // This assumes toggleQuickModal handles closing if it's already open.
-             if (typeof toggleQuickModal === 'function') {
-                toggleQuickModal(); // This will close it if it's open.
-                event.preventDefault();
-                return;
-            }
-        }
-
-
-        const closeBtnElements = document.querySelectorAll('.btn-close');
-        if (closeBtnElements.length > 0) {
-            closeBtnElements.forEach(button => {
-                if (button.offsetParent !== null) {
-                    button.click();
-                }
-            });
-            event.preventDefault();
-            return; 
-        }
-    }
 
 //Help + Settings + History
   if (event.altKey && event.code === "KeyH") {

@@ -211,6 +211,10 @@ function createFdgPopup() {
 
 const { popup: fdgPopup, closeBtn: fdgCloseBtn, openNewWindowBtn: fdgOpenNewWindowBtn, iframe: fdgIframe } = createFdgPopup();
 
+fdgIframe.addEventListener('mouseover', () => {
+    window.focus();
+})
+
 const closeFdgPopup = () => {
     fdgPopup.style.display = 'none';
     fdgIframe.src = 'about:blank';
