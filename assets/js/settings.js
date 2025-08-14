@@ -846,7 +846,6 @@ newUrl = params ? `${newUrl}?${params}` : `${newUrl}?q=sn56.11`;
     }
   }
   
-
 });
 
 
@@ -884,10 +883,6 @@ document.addEventListener("keydown", (event) => {
     }
   }
 });
-
-
-
-
 
 document.addEventListener("keydown", (event) => {
   if (event.altKey && event.code === "Digit7") { // Проверяем, что нажаты Alt и 7
@@ -955,8 +950,6 @@ document.addEventListener('keydown', function(event) {
     window.location.href = targetUrl;
   }
 });
-
-
 
 document.addEventListener("keydown", function (event) {
   const isCtrlPressed = event.ctrlKey || event.metaKey;
@@ -1329,7 +1322,6 @@ function createQuickModal() {
 
 }
 
-
 function toggleQuickModal() {
   if (quickModalIsOpen) {
     const closeEvent = new Event('click');
@@ -1340,10 +1332,7 @@ function toggleQuickModal() {
   }
 }
 
-
-
 /*
-
 const openQuickModalBtn = document.createElement("button");
 openQuickModalBtn.innerText = "≡"; // или иконку по желанию
 openQuickModalBtn.setAttribute("aria-label", "Открыть окно Cattāri Ariyasaccāni");
@@ -1366,16 +1355,10 @@ openQuickModalBtn.style.cssText = `
 openQuickModalBtn.addEventListener("click", toggleQuickModal);
 document.body.appendChild(openQuickModalBtn);
 
-
-
-
 if (!document.getElementById("openQuickModalBtn")) {
   const openQuickModalBtn = document.createElement("button");
-
   openQuickModalBtn.addEventListener("click", toggleQuickModal);
-
 }
-
 
 <button onclick="toggleQuickModal()" aria-label="Открыть Cattāri Ariyasaccāni" style="
   position: fixed;
@@ -1395,7 +1378,4 @@ if (!document.getElementById("openQuickModalBtn")) {
 ">
   ≡
 </button>
-
-
 */
-
