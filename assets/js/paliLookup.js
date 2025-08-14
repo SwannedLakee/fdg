@@ -983,6 +983,10 @@ function createPopup() {
 // Вставка popup на страницу
 const { overlay, popup, closeBtn, iframe } = createPopup();
 
+fdgIframe.addEventListener('mouseover', () => {
+    window.focus();
+})
+
 // Закрытие popup при нажатии на кнопку или на overlay
 closeBtn.addEventListener('click', () => {
       event.stopPropagation(); // Останавливаем всплытие события
