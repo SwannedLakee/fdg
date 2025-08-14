@@ -983,7 +983,7 @@ function createPopup() {
 // Вставка popup на страницу
 const { overlay, popup, closeBtn, iframe } = createPopup();
 
-fdgIframe.addEventListener('mouseover', () => {
+iframe.addEventListener('mouseover', () => {
     window.focus();
 })
 
