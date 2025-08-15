@@ -226,7 +226,7 @@ document.addEventListener('click', function(event) {
     if (fdgPopup.style.display === 'block') {
         const isClickInside = fdgPopup.contains(event.target);
         const isMobile = window.innerWidth <= 768;
-        if (!isClickInside && isMobile) {
+        if (!isClickInside) { //&& isMobile
             closeFdgPopup();
         }
     }
