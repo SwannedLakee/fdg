@@ -2153,6 +2153,30 @@ Bookmark or share the link to save and reuse your setup anytime.</li>
 document.addEventListener('DOMContentLoaded', function() {
 
 
+// --- НАЧАЛО КОДА ДЛЯ ЧАСОВ В ЗАГОЛОВКЕ ---
+
+    // Сохраняем оригинальный заголовок страницы
+    const originalTitle = document.title;
+
+    // Функция для обновления времени в заголовке
+    function updateTitleClock() {
+        const now = new Date();
+        // Форматируем время, чтобы всегда было два знака (например, 08 вместо 8)
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        const timeString = `${hours}:${minutes}:${seconds}`;
+
+        // Устанавливаем новый заголовок, добавляя время к оригинальному
+        document.title = `${timeString} | ${originalTitle}`;
+    }
+
+    // Запускаем функцию обновления каждую секунду (1000 миллисекунд)
+    setInterval(updateTitleClock, 1000);
+
+    // --- КОНЕЦ КОДА ДЛЯ ЧАСОВ В ЗАГОЛОВКЕ ---
+
 
 
   const inputs = document.querySelectorAll('input[type="number"]');
