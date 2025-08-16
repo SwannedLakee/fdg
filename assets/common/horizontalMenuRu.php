@@ -439,10 +439,15 @@ echo '<!--
        </div>
          </li>   
      
+         <li>
+         <div class="dropdown-item "> 
+         <a class="text-reset" target="_blank" href="/assets/repeat-timer/">Loop Timer</a>
+         <a class="text-reset" target="_blank" href="/assets/pomodoro-timer/">Pomodoro Timer</a>  
+       </div>
+    </li>  
+         
    <li><a class="dropdown-item" href="/ru/assets/linebyline.html">Создание Построчных Файлов</a></li>
   
-   <li><a class="dropdown-item" href="/assets/repeat-timer/">Таймер</a></li>
-
    <li><a class="dropdown-item" href="/ru/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
   <li><a class="dropdown-item" href="/assets/listdiff.html">Сравнить Два Списка</a></li>
 

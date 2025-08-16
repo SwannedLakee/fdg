@@ -411,8 +411,15 @@ echo '<!--
        </div>
     </li>  
          
+    <li>
+         <div class="dropdown-item "> 
+         <a class="text-reset" target="_blank"  href="/assets/repeat-timer/">Loop Timer</a>
+         <a class="text-reset" target="_blank"  href="/assets/pomodoro-timer/">Pomodoro Timer</a>  
+       </div>
+    </li>  
+         
+
    <li><a class="dropdown-item" href="/assets/linebyline.html">Line-by-line Translation Tool</a></li>   
-      <li><a class="dropdown-item" href="/assets/repeat-timer/">Timer</a></li>
 
 <li><a class="dropdown-item" href="/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
   <li><a class="dropdown-item" href="/assets/listdiff.html">List Difference</a></li>
