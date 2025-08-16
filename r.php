@@ -495,7 +495,7 @@ body.dark .dt-buttons .btn-secondary:hover {
  <script src="/assets/js/paliLookup.js"></script>
  <script src="/assets/js/settings.js"></script>
  <script src="/assets/js/smoothScroll.js" defer></script>
- <script src="/assets/js/copyToClipboard.js" defer></script>
+ <!-- <script src="/assets/js/copyToClipboard.js" defer></script> -->
 <script>
 function goToSlug() {
   const slug = document.getElementById('paliauto').value.trim().toLowerCase();
