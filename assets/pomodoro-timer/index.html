@@ -2687,7 +2687,7 @@ function intervalCountDownTimer() {
   // --- ОБНОВЛЯЕМ ЗАГОЛОВОК (РАБОТА) ---
   const minutesForTitle = String(m.value).padStart(2, '0');
   const secondsForTitle = String(s.value).padStart(2, '0');
-  document.title = `Work: ${minutesForTitle}:${secondsForTitle} | ${originalTitle}`;
+  document.title = `${minutesForTitle}:${secondsForTitle} Work | ${originalTitle}`;
 }
 
 function intervalCountDownTimerB() {
@@ -2718,7 +2718,7 @@ function intervalCountDownTimerB() {
   // --- ОБНОВЛЯЕМ ЗАГОЛОВОК (ПЕРЕРЫВ) ---
   const minutesForTitle = String(mb.value).padStart(2, '0');
   const secondsForTitle = String(sb.value).padStart(2, '0');
-  document.title = `Break: ${minutesForTitle}:${secondsForTitle} | ${originalTitle}`;
+  document.title = `${minutesForTitle}:${secondsForTitle} Break | ${originalTitle}`;
 }
 
 function resetTimer() {
