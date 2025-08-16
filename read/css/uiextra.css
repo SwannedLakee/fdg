@@ -42,6 +42,10 @@ article {
   font-size: 1.1rem; 
 }
 
+#sutta h1 {
+  text-align: center;
+}
+
 #sutta hr { 
 display: none;
 }
