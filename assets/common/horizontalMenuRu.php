@@ -207,7 +207,16 @@ echo '<!--
            </div>
          </li>
 
-         <li>
+    <li>
+         <div class="dropdown-item ">
+         <i class="' . $iconimportant . '"></i>
+         <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a>
+         + <a class="text-reset" target="_blank" href="https://dharmamitra.org/nexus/db/pa
+">Nexus</a>
+           </div>
+         </li>
+
+<li>
    <a class="dropdown-item" href="#" title="Открыть слово в словарях PTS/Cone/DPD/DPR/CPD/Skr+/Wisdomlib (Alt + Q)" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Открыть PTS/Cone/DPD/CPD/Skr+/Wisdoml</a>
    <script src="/assets/js/openDicts.js"></script>
 
@@ -267,15 +276,6 @@ echo '<!--
          <a class="text-reset" target="_blank" href="  https://buddhistuniversity.net/content/reference/pali-thai-english-sanskrit-dictionary
 ">Buddhist University</a>
         <a class="text-reset"  target="_blank" href="http://dictionary.tamilcube.com/pali-dictionary.aspx">Англ-Пали</a>
-           </div>
-         </li>
-  
-    <li>
-         <div class="dropdown-item ">
-         <i class="' . $iconimportant . '"></i>
-         <a class="text-reset" target="_blank" href="javascript:void(0)" onclick="openWithQuery(event, \'https://dharmamitra.org/?target_lang=english-explained&input_sentence={{q}}\')">Mitra Translator</a>
-         + <a class="text-reset" target="_blank" href="https://dharmamitra.org/nexus/db/pa
-">Nexus</a>
            </div>
          </li>
 
