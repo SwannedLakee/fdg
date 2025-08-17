@@ -47,9 +47,9 @@ else if ( textclass == 4 ) {
     } 
 if (NR == 1 || (file_name != prev_file && textclass == 1)) {
     
-        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" unhiddenlink " " quote, hiddenlink "</span>;;;<br class=\"styled\">;;;"
+        print texttype "@" urlwithanchor "@" file_name "@" sutta "@<td><p><span class=\"" htmlclass " quote\" lang=\"" language "\">" unhiddenlink " " quote, hiddenlink "</span><br class=\"styled " htmlclass " quote\" lang=\"" language "\">;;;"
     } else {
-        print "<span class=\"" htmlclass " quote\" lang=\"" language "\">"  unhiddenlink " " quote, hiddenlink  "</span><br class=\"styled\">;;;"
+        print "<span class=\"" htmlclass " quote\" lang=\"" language "\">"  unhiddenlink " " quote, hiddenlink  "</span><br class=\"styled " htmlclass " quote\" lang=\"" language "\">;;;"
     }
 
     prev_file = $2
