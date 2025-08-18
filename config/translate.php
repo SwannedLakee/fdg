@@ -409,7 +409,7 @@ $premail = ' Особенности Dhamma.Gift';
 $prekeyfeatures = 'keyFeaturesRu.html';
 
 $headerexamples = 'Примеры';
-$examplelist = '<li>Определение понятия <a href="/ru/?q=-la1+Kata.*,+dukkhaṁ[,\\\\?]">dukkha</a> на Пали и Русском. Запрос: <a href="/ru/?q=-la1+Kata.*,+dukkhaṁ[,\\\\?]">-la1 Kata.*, dukkhaṁ[,\\\\?]</a>
+$examplelist = '<li>Определение понятия <a href="/ru/?q=-la2+Kata.*,+dukkhaṁ[,\\\\?]">dukkha</a> на Пали и Русском. Запрос: <a href="/ru/?q=-la2+Kata.*,+dukkhaṁ[,\\\\?]">-la2 Kata.*, dukkhaṁ[,\\\\?]</a>
              </li>
 <li>Сутта, в которой Будда говорит, что не делает <a href="/ru/?q=dvayagāminī">двусмысленных (dvayagāminī) утверждений</a> на Пали со ссылками на Русский перевод</li>
            
@@ -1181,7 +1181,7 @@ $premail = ' Dhamma.Gift key features';
 $prekeyfeatures = 'keyFeatures.html';
 
 $headerexamples = 'Examples';
-$examplelist = '<li>Definition of the <a href="/?q=-la1+Kata.*,+dukkhaṁ[,\\\\?]">dukkha</a> in Pali with quotes in English. Query is: <a href="/?q=-la1+Kata.*,+dukkhaṁ[,\\\\?]">-la1 Kata.*, dukkhaṁ[,\\\\?]</a>
+$examplelist = '<li>Definition of the <a href="/?q=-la2+Kata.*,+dukkhaṁ[,\\\\?]">dukkha</a> in Pali with quotes in English. Query is: <a href="/?q=-la2+Kata.*,+dukkhaṁ[,\\\\?]">-la2 Kata.*, dukkhaṁ[,\\\\?]</a>
 </li>
 
  <li>Sutta where Buddha says that he doesn\'t make <a href="/?q=dvayagāminī">ambiguous (dvayagāminī) statements</a> in Pali with English quote</li>

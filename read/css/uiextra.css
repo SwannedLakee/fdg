@@ -679,5 +679,11 @@ h1.sutta-title > span,
 header ul li > span {
   position: relative;
   display: inline-block;
-  vertical-align: top; /* Добавлено для лучшего выравнивания */
+  vertical-align: top; 
+}
+
+header ul .pli-lang,
+header ul .rus-lang,
+header ul .eng-lang {
+    white-space: nowrap;
 }

@@ -11,7 +11,6 @@ if ( preg_match('/Android/', $uname)  ) {
 $basedir = "/data/data/com.termux/files/usr/share/apache2/default-site/htdocs/";
 $fontawesomejs = '<script src="/assets/js/fontawesome.6.6.all.js"></script>';
 
-
 //converter.php
 
 //$adapterscriptlocation = '/data/data/com.termux/files/home/aksharamukha/bin/python3 /data/data/com.termux/files/usr/share/apache2/default-site/htdocs/scripts/aksharamukha-adapter.py';
