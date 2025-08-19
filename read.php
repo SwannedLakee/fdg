@@ -4324,7 +4324,7 @@ clearBtn.style.display = 'block';
 </div>
 	 </div>
 <div class="level3">
-	 <h4><a href=# data-bs-toggle="collapse" data-bs-target="#sn20Collapse">20. Opammasaṁyuttaṁ</a> <a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=sn20">📗</a></h4>
+	 <h4><a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=sn20">20.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#sn20Collapse">Opammasaṁyuttaṁ</a></h4>
 	 </div>
 	 <div class="collapse" id="sn20Collapse">
 	 <div class="my-3">
@@ -4394,7 +4394,7 @@ clearBtn.style.display = 'block';
 </div>
 	 </div>
 <div class="level3">
-	 <h4><a href=# data-bs-toggle="collapse" data-bs-target="#sn21Collapse">21. Bhikkhusaṁyuttaṁ</a> <a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=sn21">📗</a></h4>
+	 <h4><a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=sn21">21.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#sn21Collapse">Bhikkhusaṁyuttaṁ</a></h4>
 	 </div>
 	 <div class="collapse" id="sn21Collapse">
 	 <div class="my-3">
@@ -4467,7 +4467,7 @@ clearBtn.style.display = 'block';
  <h3>Khandhavaggasaṁyuttapāḷi</h3>
 </div>
 <div class="level3">
-	 <h4><a href=# data-bs-toggle="collapse" data-bs-target="#sn22Collapse">22. Khandhasaṁyuttaṁ</a> <a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=sn22">📗</a></h4>
+	 <h4><a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=sn22">22.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#sn22Collapse">Khandhasaṁyuttaṁ</a> </h4>
 	 </div>
 	 <div class="collapse" id="sn22Collapse">
 	 <div class="my-3">
@@ -11743,7 +11743,7 @@ clearBtn.style.display = 'block';
  </div>
 	 <div class="collapse right-text reverse-order" id="anCollapse">
 <div class="level2">
-	 <h3><a href=# data-bs-toggle="collapse" data-bs-target="#an1Collapse">1. Ekakanipāta </a> <a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=an1">📗</a></h3>
+	 <h3><a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=an1">1.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#an1Collapse">Ekakanipāta </a> </h3>
 	 </div> 
 	 <div class="collapse" id="an1Collapse">
 	 <div class="my-3">
@@ -12029,7 +12029,7 @@ clearBtn.style.display = 'block';
 </div> <!-- nipata collapse close prev nipata div -->
 </div> <!-- nipata collapse close prev nipata div -->
 <div class="level2">
-	 <h3><a href=# data-bs-toggle="collapse" data-bs-target="#an2Collapse">2. Dukanipāta</a> <a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=an2">📗</a></h3>
+	 <h3><a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=an2">2.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#an2Collapse">Dukanipāta</a> </h3>
 	 </div> 
 	 <div class="collapse" id="an2Collapse">
 	 <div class="my-3">
