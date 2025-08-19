@@ -197,10 +197,10 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dict.dhamma.gift/?q=";
+ dictUrl = "https://dict.dhamma.gift/search_html?q=";
    //   dictUrl = "https://dict.dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/?q=";
+  dictUrl = "https://dict.dhamma.gift/ru/search_html?q=";
   //dictUrl = "https://dict.dhamma.gift/ru/?q=";
 // before this line:
 }
