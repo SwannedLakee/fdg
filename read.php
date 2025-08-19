@@ -18282,7 +18282,7 @@ clearBtn.style.display = 'block';
 </div> <!-- nipata collapse close prev nipata div -->
 </div> <!-- nipata collapse close prev nipata div -->
 <div class="level2">
-	 <h3><a class="text-decoration-none" href="<?php echo $mainpagenoslash;?>/r.php?q=an11">11.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#an11Collapse">Ekādasako nipāta</a></h3>
+	 <h3><a href="<?php echo $mainpagenoslash;?>/r.php?q=an11">11.</a> <a href=# data-bs-toggle="collapse" data-bs-target="#an11Collapse">Ekādasako nipāta</a></h3>
 	 </div> 
 	 <div class="collapse" id="an11Collapse">
 	 <div class="my-3">
