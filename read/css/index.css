@@ -4,7 +4,7 @@
 }
 
 :root {
-  --off-white: rgb(221, 221, 221);
+  --off-white: rgb(192 190 190); /*rgb(221, 221, 221);*/
   --light-off-white: rgb(253, 253, 253);
   --off-black: rgb(4, 1, 19);
   --dark-gray: #5a5a5a;
