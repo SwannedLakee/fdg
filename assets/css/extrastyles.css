@@ -1317,3 +1317,7 @@ a.quoteLink-start::before {
 .quoteLink-start:focus {
     opacity: 0.9;
 }
+
+#pali td:first-child {
+    white-space: nowrap;
+}
