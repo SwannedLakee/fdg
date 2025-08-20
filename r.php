@@ -148,10 +148,10 @@ function load_all_languages_interleaved($slug) {
 }
 $result = $slug ? load_all_languages_interleaved($slug) : [
 'content' => "<p class='p-3'>Enter 
-<a href='<?php echo $mainpagenoslash; ?>/r.php?q=sn1'><strong>sn1</strong></a>, 
-<a href='<?php echo $mainpagenoslash; ?>/r.php?q=mn1'><strong>mn1</strong></a>, 
-<a href='<?php echo $mainpagenoslash; ?>/r.php?q=dn1'><strong>dn1</strong></a> 
-or <a href='<?php echo $mainpagenoslash; ?>/r.php?q=an1'><strong>an</strong></a>.
+<a href='$mainpagenoslash/r.php?q=sn1'><strong>sn1</strong></a>, 
+<a href='$mainpagenoslash/r.php?q=mn1'><strong>mn1</strong></a>, 
+<a href='$mainpagenoslash/r.php?q=dn1'><strong>dn1</strong></a> 
+or href='$mainpagenoslash/r.php?q=an1'><strong>an</strong></a>.
 </p>",
   'title' => ''
 ];
