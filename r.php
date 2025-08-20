@@ -147,7 +147,12 @@ function load_all_languages_interleaved($slug) {
   return ['content' => $html_output, 'title' => $found_title];
 }
 $result = $slug ? load_all_languages_interleaved($slug) : [
-  'content' => "<p class='p-3'>Пожалуйста, укажите идентификатор сутты в строке поиска, например, <strong>dn1</strong> или <strong>sn</strong>.</p>",
+'content' => "<p class='p-3'>Enter 
+<a href='<?php echo $mainpagenoslash; ?>/r.php?q=sn1'><strong>sn1</strong></a>, 
+<a href='<?php echo $mainpagenoslash; ?>/r.php?q=mn1'><strong>mn1</strong></a>, 
+<a href='<?php echo $mainpagenoslash; ?>/r.php?q=dn1'><strong>dn1</strong></a> 
+or <a href='<?php echo $mainpagenoslash; ?>/r.php?q=an1'><strong>an</strong></a>.
+</p>",
   'title' => ''
 ];
 $content = $result['content'];
