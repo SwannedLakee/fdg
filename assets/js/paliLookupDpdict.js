@@ -136,8 +136,7 @@ function createDictSearchUrl(word) {
             : `goldendict://${encodeURIComponent(word)}`;
     }
     // This part remains the same
-      return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
-  //  return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?q=${encodeURIComponent(word)}`;
+      return `https://${savedDict.includes("ru") ? "ru." : ""}dpdict.net/search_html?q=${encodeURIComponent(word)}`;
 }
 
 
@@ -153,16 +152,16 @@ let inNewWindow = false;
 if (isLocalhost) {
     dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
-  dictUrl = "https://dict.dhamma.gift";
+  dictUrl = "https://dpdict.net";
 //dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
     dhammaGift = 'https://dhamma.gift';
-    dictUrl = "https://dict.dhamma.gift";
+    dictUrl = "https://dpdict.net";
     //dictUrl = "https://dpdict.net";
   }
   else {
     dhammaGift = 'https://dhamma.gift';
-    dictUrl = "https://dict.dhamma.gift";
+    dictUrl = "https://dpdict.net";
 }
 
 if (window.location.href.includes('/r/') || window.location.href.includes('/ru/') || window.location.href.includes('/ml/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
@@ -197,11 +196,9 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dict.dhamma.gift/search_html?q=";
-   //   dictUrl = "https://dict.dhamma.gift/?q=";
+ dictUrl = "https://dpdict.net/search_html?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/search_html?q=";
-  //dictUrl = "https://dict.dhamma.gift/ru/?q=";
+  dictUrl = "https://ru.dpdict.net/search_html?q=";
 // before this line:
 }
 
@@ -758,7 +755,7 @@ function createPopup() {
     dictBtn.style.justifyContent = 'center';
     dictBtn.style.textDecoration = 'none';
     dictBtn.target = '_blank';
-    dictBtn.title = 'Open in dict.dhamma.gift';
+    dictBtn.title = 'Open in dpdict.net';
     dictBtn.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
 
     const iframe = document.createElement('iframe');
