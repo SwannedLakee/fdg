@@ -307,14 +307,6 @@ if (searchValue !== "") {
                 <script src="/assets/js/openBw.js"></script>
                 
         
-      <script defer>
-           //to enable bootstrap tooltip    
-$(function () {
-        $('[data-bs-toggle="tooltip"]').tooltip();
-    });
-</script>    
-
-  
 <script>
 // Получение всех чекбоксов
 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -356,10 +348,12 @@ checkboxes.forEach(function(checkbox) {
 });
 
 
-
-</script>
-        <script src="/assets/js/paliLookup.js"></script>
-                
+//to enable bootstrap tooltip    
+$(function () {
+$('[data-bs-toggle="tooltip"]').tooltip();
+});
+</script>    
+<script src="/assets/js/paliLookup.js"></script>
 </body>
 </html>
 
