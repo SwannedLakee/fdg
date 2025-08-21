@@ -153,11 +153,9 @@ if (isLocalhost) {
     dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
   dictUrl = "https://dpdict.net";
-//dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
     dhammaGift = 'https://dhamma.gift';
     dictUrl = "https://dpdict.net";
-    //dictUrl = "https://dpdict.net";
   }
   else {
     dhammaGift = 'https://dhamma.gift';
