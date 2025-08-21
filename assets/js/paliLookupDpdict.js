@@ -173,7 +173,7 @@ dgParams = '&p=-kn';
 
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
-    dictUrl += "ru.";
+    dictUrl = "https://ru.dpdict.net";
   }
 
   if (savedDict.includes("full")) {
