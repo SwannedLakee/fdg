@@ -1321,3 +1321,8 @@ a.quoteLink-start::before {
 #pali td:first-child {
     white-space: nowrap;
 }
+
+
+#pali > tbody > tr > td:first-child:last-child {
+  white-space: normal;
+}
