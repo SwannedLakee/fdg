@@ -1318,6 +1318,20 @@ a.quoteLink-start::before {
     opacity: 0.9;
 }
 
+#pali td {
+    white-space: normal;
+    word-break: break-word;
+}
+
+#pali tr:not(.child) td:first-child {
+    white-space: nowrap;
+}
+
+#pali tr:not(.child) td:nth-child(2) {
+    white-space: normal !important;
+}
+
+/*
 #pali td:first-child {
     white-space: nowrap;
 }
@@ -1326,3 +1340,5 @@ a.quoteLink-start::before {
 #pali > tbody > tr > td:first-child:last-child {
   white-space: normal;
 }
+*/
+
