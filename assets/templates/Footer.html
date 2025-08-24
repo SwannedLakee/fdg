@@ -16,13 +16,19 @@
    var dataSrc = [];
    var filterValue = new URLSearchParams(window.location.search).get('f');
 
+var desktopDom = '<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-5"p><"col-sm-12 col-md-3"f>>rt<"row"<"col-sm-12 col-md-4"i><"col-sm-12 col-md-8"p>><""Q><"footerlike"B>';
+
+var mobileDom = '<"row"<"col-sm-6"l><"col-sm-6"f>><"row"<"col-sm-12"p>>rt<"row"<"col-sm-12"i><"col-sm-12"p>><""Q><"footerlike"B>';
+
+     var tableDom = $(window).width() > 768 ? desktopDom : mobileDom;
 
 	 var table = $('#pali').DataTable({
 	 /*  'autoWidth': true,*/
 	   'stateSave': true,
-    dom: '<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-5"p><"col-sm-12 col-md-3"f>>rt<"row"<"col-sm-12 col-md-4"i><"col-sm-12 col-md-8"p>><""Q><"footerlike"B>',
+    dom: tableDom,
       language: {
         search: '',
+        lengthMenu: '_MENU_ per page',
         searchPlaceholder: 'Filter...'
     },
         buttons: {
