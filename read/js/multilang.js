@@ -434,6 +434,8 @@ if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o.html>o</a> с Пали';
 } else if (translator === "sv") {
   translatorforuser = 'SV theravada.ru с Англ';
+} else if (translator === "adelina") {
+  translatorforuser = 'Adel NamaRupa с Англ';
 } else if ((translator === "" && texttype === "sutta" ) || (translator === "sujato" )) {
   translatorforuser = 'Bhikkhu Sujato';
 } else if ((translator === "" && texttype === "vinaya") || (translator === "brahmali" ))  {
