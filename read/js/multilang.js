@@ -163,6 +163,10 @@ if (slug.includes("mn"))  {
 } else if (slug.match(/bu-pm|bi-pm/)) {
   let translator = "o";
 
+  if (slug.match(/bi-pm/)) {
+     translator = "adelina";
+  }
+
  if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {
 //	     var rootpath = `/assets/texts/${texttype}/${slug}_root-pli-ms.json`;
 var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slug}_rootd-pli-ms.json`

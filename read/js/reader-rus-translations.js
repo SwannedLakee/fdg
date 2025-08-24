@@ -146,7 +146,9 @@ if (slug.includes("mn"))  {
     //let translator = "thanissaro+o";
     let translator = "o";
 //  console.log(trnpath);
-	
+	if (slug.match(/bi-pm/)) {
+     translator = "adelina";
+  }
 	
  if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {
 //	     var rootpath = `/assets/texts/${texttype}/${slug}_root-pli-ms.json`;
