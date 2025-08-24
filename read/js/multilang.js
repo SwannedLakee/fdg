@@ -161,7 +161,7 @@ if (slug.includes("mn"))  {
   // console.log(`${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`);
   var trnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 } else if (slug.match(/bu-pm|bi-pm/)) {
-  let translator = "o";
+let translator = "o";
 
   if (slug.match(/bi-pm/)) {
      translator = "adelina";
@@ -430,6 +430,9 @@ if (engTransData[segment] !== transData[segment] && varData[segment] !== undefin
 
     });
 
+  if (slug.match(/bi-pm/)) {
+     translator = "adelina";
+  }
 if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o.html>o</a> с Пали';
 } else if (translator === "sv") {

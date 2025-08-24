@@ -367,6 +367,10 @@ if (paliData[segment] !== undefined && transData[segment] !== undefined && varDa
 
 //console.log('before ' + translator) ;
 
+  if (slug.match(/bi-pm/)) {
+     translator = "adelina";
+  }
+  
 if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o.html>o</a> с Пали';
 } else if (translator === "sv") {
