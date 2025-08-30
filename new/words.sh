@@ -56,7 +56,7 @@ if [[ "$searchlang" == *"pi"* ]]; then
 cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
 grep -Eri "$keyword" ./sutta/ ./vinaya/ | sed -e 's@./sutta/kn@khudakka\@/@g' -e 's@./sutta/@dhamma\@/@g' -e 's@./vinaya/@vinaya\@/@g' | sed -e 's/_variant-pli-ms.json:/@/g' -e 's/": "/@/g'  -e 's/@ *"/@/g' | sed 's/",$//g' | sed 's/"$//g' | sort -t@ -k1,1 -k2V | awk -F/ '{print $NF}'| awk -F@ '{
   anch = $2 ; gsub(":", "#", anch); 
-  link = "<strong><a class=\"fdgLink\" href=\"\" data-slug=\"" anch "\">" $1 "</a></strong>"}
+  link = "<strong><a class=\"fdgLink quote\" target=\"_blank\" href=\"\" data-slug=\"" anch "\">" $1 "</a></strong>"}
   {print link, $3 "<br>"}'  > $tmpdir/${prefix}variantsReport
 #| sed -i 's/_variant-pli-ms.json//g' 
 fi 
@@ -105,7 +105,7 @@ cat $tmpdir/${prefix}threetables | awk -v keyword="$keyword" -v filename="$filen
     linkCount = split(linkslistArray, linksArray, " ")
     linksHTML = ""
     for (i = 1; i <= linkCount; i++) {
-        linksHTML = linksHTML "<a class=\"fdgLink\" href=\"\" data-slug=\"" linksArray[i] "\" data-filter=\"" word "\">" linksArray[i] "</a> "
+        linksHTML = linksHTML "<a class=\"fdgLink quote\" target=\"_blank\" href=\"\" data-slug=\"" linksArray[i] "\" data-filter=\"" word "\">" linksArray[i] "</a> "
     }
 
     # Вывод форматированной строки
@@ -127,7 +127,7 @@ cat $tmpdir/${prefix}threetables | awk -v keyword="$htmlkeyword" -v source="$sou
     linkCount = split(linkslistArray, linksArray, " ")
     linksHTML = ""
     for (i = 1; i <= linkCount; i++) {
-        linksHTML = linksHTML "<a class=\"fdgLink\" href=\"\" data-slug=\"" linksArray[i] "\" data-filter=\"" word "\">" linksArray[i] "</a> "
+        linksHTML = linksHTML "<a class=\"fdgLink quote\" target=\"_blank\" href=\"\" data-slug=\"" linksArray[i] "\" data-filter=\"" word "\">" linksArray[i] "</a> "
     }
 
     # Вывод форматированной строки
@@ -143,7 +143,7 @@ escapedKeyword=$(echo "$keyword" | sed 's/\\/\\\\/g')
 
 if [[ "$@" == *"-oru"* ]]
 then
-quotesLinkToReplace="/s.php?s=${escapedKeyword}\&d=$source\&p=-oru"
+quotesLinkToReplace="/ru/s.php?s=${escapedKeyword}\&d=$source\&p=-oru"
 else
 quotesLinkToReplace="/s.php?s=${escapedKeyword}\&d=$source"
 fi
@@ -198,9 +198,9 @@ countmatches=$4
 linkslistArray=$NF
 
 <tr><td> word </td><td><a href=/s.php?&s=" htmlkeyword "f=" word ">" counttexts "</a></td><td>" countmatches "</td><td>
-<a class='fdgLink' href='' data-slug='" linkfromArray1 "'>" linkfromaArray1 "</a>
-<a class='fdgLink' href='' data-slug='" linkfromArray2 "'>" linkfromaArray2 "</a>
-<a class='fdgLink' href='' data-slug='" etc "'>" etc "</a>
+<a class='fdgLink quote' target='_blank' href='' data-slug='" linkfromArray1 "'>" linkfromaArray1 "</a>
+<a class='fdgLink quote' target='_blank' href='' data-slug='" linkfromArray2 "'>" linkfromaArray2 "</a>
+<a class='fdgLink quote' target='_blank' href='' data-slug='" etc "'>" etc "</a>
 </td>
 </tr>
 

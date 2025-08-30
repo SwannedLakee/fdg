@@ -220,8 +220,8 @@ var regex = new RegExp(searchValue + '(?![^<]*>)', 'gi');
 });
   </script>
   <script src="/assets/js/themeswitch.js"></script>
-        <script src="/assets/js/openFdg.js"></script>
-	  <script src="/assets/js/smoothScroll.js"defer></script>
+  <script src="/assets/js/openFdg.js"></script>
+	<script src="/assets/js/smoothScroll.js"defer></script>
 	  <script defer>
 $(function () {
         $('[data-bs-toggle="tooltip"]').tooltip();

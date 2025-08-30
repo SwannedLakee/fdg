@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 error_reporting(E_ERROR | E_PARSE);
 include_once('config/config.php');
