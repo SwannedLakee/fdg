@@ -414,10 +414,6 @@ echo "server kz"
 ssh -p1000 root@94.126.201.8 "cd /var/www/html 
 git pull 
 echo
-echo offline-data
-cd /var/www/offline-data
-git pull
-echo 
 echo dpd-ui
 cd /var/www/dpd-ui
 git pull
@@ -486,9 +482,3 @@ apa; bash scripts/checknewlinebylineinscrepo.sh | grep -v done ; cd - >/dev/null
 
 alias dpd='cd /data/data/com.termux/files/usr/share/apache2/default-site/dpd-ui'
 apachectl start
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
-nvm use 20
-
