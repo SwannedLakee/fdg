@@ -721,10 +721,10 @@ keyword="$pattern"
 
 if [[ "$language" == *"Pali"* ]]; then
 
-#cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
-#grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g' | cleanuphtml > $tmpdir/${prefix}initrun-var
-#cd $apachesitepath/assets/texts/variant/
-#grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g'  | cleanuphtml >> $tmpdir/${prefix}initrun-var
+cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
+grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g' | cleanuphtml > $tmpdir/${prefix}initrun-var
+cd $apachesitepath/assets/texts/variant/
+grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g'  | cleanuphtml >> $tmpdir/${prefix}initrun-var
 
 cd $suttapath/sc-data/sc_bilara_data/root/pli/ms/
 
