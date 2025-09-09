@@ -721,17 +721,17 @@ keyword="$pattern"
 
 if [[ "$language" == *"Pali"* ]]; then
 
-cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
-grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g' | cleanuphtml > $tmpdir/${prefix}initrun-var
-cd $apachesitepath/assets/texts/variant/
-grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g'  | cleanuphtml >> $tmpdir/${prefix}initrun-var
+#cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
+#grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g' | cleanuphtml > $tmpdir/${prefix}initrun-var
+#cd $apachesitepath/assets/texts/variant/
+#grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g'  | cleanuphtml >> $tmpdir/${prefix}initrun-var
 
 cd $suttapath/sc-data/sc_bilara_data/root/pli/ms/
 
-if [ -s "$tmpdir/${prefix}initrun-var" ]; then
-cat $tmpdir/${prefix}initrun-var | awk '{ print $2 }' | sed 's@\"@\\"@g' | awk 'BEGIN {OFS=""; printf "grep -Eir \"("} { printf $1"|"}' |  sed '$ s@|$@)"  '"$searchIn"' \n@' > $tmpdir/${prefix}cmndFromVar
-bash $tmpdir/${prefix}cmndFromVar | sed 's/<[^>]*>//g'> $tmpdir/${prefix}initrun-pi
-fi
+#if [ -s "$tmpdir/${prefix}initrun-var" ]; then
+#cat $tmpdir/${prefix}initrun-var | awk '{ print $2 }' | sed 's@\"@\\"@g' | awk 'BEGIN {OFS=""; printf "grep -Eir \"("} { printf $1"|"}' |  sed '$ s@|$@)"  '"$searchIn"' \n@' > $tmpdir/${prefix}cmndFromVar
+#bash $tmpdir/${prefix}cmndFromVar | sed 's/<[^>]*>//g'> $tmpdir/${prefix}initrun-pi
+#fi
 grep -riE -B${linesbefore} -A${linesafter} "$pattern" $searchIn  | cleanuphtml | grep '": "'| sed 's/json./json:/g' |  grep -v "^--$" >> $tmpdir/${prefix}initrun-pi
 cp $tmpdir/${prefix}initrun-pi $tmpdir/pli
 
