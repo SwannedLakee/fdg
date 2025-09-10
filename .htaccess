@@ -68,7 +68,25 @@ RewriteRule ^/$ / [L,R=302]
 
 
 <IfModule mod_headers.c>
-    # Изображения — кэшировать на полгода (6 месяцев), с immutable
+    # Отключаем кэширование для всех HTML-файлов в / и /ru/
+    <FilesMatch "^[^/]+\.html$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    <FilesMatch "^ru/[^/]+\.html$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    # Остальные html/json — кэшируем (1 день)
+    <FilesMatch "\.(html|json)$">
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
+    
+# Изображения — кэшировать на полгода (6 месяцев), с immutable
     <FilesMatch "\.(jpg|jpeg|png|gif|svg)$">
         Header set Cache-Control "public, max-age=15552000, immutable"
     </FilesMatch>
@@ -88,10 +106,6 @@ RewriteRule ^/$ / [L,R=302]
         Header set Cache-Control "public, max-age=604800"
     </FilesMatch>
 
-    # HTML и JSON — 1 день
-    <FilesMatch "\.(html|json)$">
-        Header set Cache-Control "public, max-age=86400"
-    </FilesMatch>
 </IfModule>
 
 # Включить генерацию ETag
