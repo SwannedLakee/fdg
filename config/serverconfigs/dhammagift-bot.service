@@ -1,0 +1,17 @@
+[Unit]
+Description=Telegram Dhammagift Bot Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/telegram_bot
+Environment="PATH=/var/www/telegram_bot/telegram/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/var/www/telegram_bot/telegram/bin/python /var/www/telegram_bot/main.py /var/www/telegram_bot/config.dhammagift_bot.json
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
