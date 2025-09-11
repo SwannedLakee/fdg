@@ -150,6 +150,11 @@ if (isPWA) {
 
 <script src="/assets/js/jquery-3.7.0.min.js"></script>
 <script src="/assets/js/jquery-ui.min.js"></script>
+<script
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  async
+  defer
+></script>
 
 <?php echo $fontawesomejs;?> 
 </head>
@@ -640,9 +645,12 @@ window.addEventListener('pageshow', function(event) {
 
     document.getElementById('spinner').style.display = 'none';
 </script>
-
   <!-- extra options end -->
-</form>
+ <div class="cf-turnstile"
+       data-sitekey="0x4AAAAAAB0og59GrVkGiLLD"
+       data-size="invisible">
+  </div>
+  </form>
 
 <div class="hideOnMobile">
   <p><br>
