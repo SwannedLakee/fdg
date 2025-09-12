@@ -1530,12 +1530,12 @@ then
 sed -i '/<button.*>Words</s@type="button">@type="button" style="display: none;">@g' $table
 fi 
 
-linenumbers=`cat -n $history | grep -E "$table" | grep daterow | grep "${fortitle^}" | grep ">$language<" | awk '{print $1}' | tac`
+#linenumbers=`cat -n $history | grep -E "$table" | grep daterow | grep "${fortitle^}" | grep ">$language<" | awk '{print $1}' | tac`
 
-for i in $linenumbers
-do 
-sed -i "${i}d" $history 
-done 
+#for i in $linenumbers
+#do 
+#sed -i "${i}d" $history 
+#done 
 
 if [[ $excludepattern != "" ]]
 then
