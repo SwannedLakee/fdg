@@ -178,12 +178,12 @@ cp $output/${prefix}r.html $output/$table
 #head $tmpdir/${prefix}readyforawk | awk -F@ '{print $1, $2, $3}' 
 #wc -l $tmpdir/${prefix}counts $tmpdir/${prefix}afterawk
 
-linenumbers=`cat -n $history | grep -E "$table" | grep daterow | grep "$searchInForUser" | grep "$searchlangForUser/$langtwo" | awk '{print $1}' | tac`
+#linenumbers=`cat -n $history | grep -E "$table" | grep daterow | grep "$searchInForUser" | grep "$searchlangForUser/$langtwo" | awk '{print $1}' | tac`
 
-for i in $linenumbers
-do 
-sed -i "${i}d" $history 
-done 
+#for i in $linenumbers
+#do 
+#sed -i "${i}d" $history 
+#done 
 
 updateHistory
 #cleanupTempFiles
