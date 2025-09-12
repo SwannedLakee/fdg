@@ -896,10 +896,10 @@ then
 	cat -n $history | grep -E "$table" | grep daterow | grep -i "${fortitle^}" | grep ">$language<" | tac > updatehistorytmp 
 	linenumbers=`cat updatehistorytmp | awk '{print $1}'`
 
-for i in $linenumbers
-do 
-sed -i "${i}d" $history 
-done 
+#for i in $linenumbers
+#do 
+#sed -i "${i}d" $history 
+#done 
 
 sed -i 's@[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]@'$dateforhist'@g' updatehistorytmp
 cat updatehistorytmp | tac | head -1 | awk '{print substr($0, index($0, $2))}' >> $history
@@ -1598,12 +1598,12 @@ sed -i 's@$quotesLinkToReplace@'./$table'@' ./$tempfilewords
 sed -i 's@$wordLinkToReplace@'./$tempfilewords'@' ./$table
 fi 
 
-linenumbers=`cat -n $history | grep -E "$table" | grep daterow | grep "${fortitle^}" | grep ">$language<" | awk '{print $1}' | tac`
+#linenumbers=`cat -n $history | grep -E "$table" | grep daterow | grep "${fortitle^}" | grep ">$language<" | awk '{print $1}' | tac`
 
-for i in $linenumbers
-do 
-sed -i "${i}d" $history 
-done 
+#for i in $linenumbers
+#do 
+#sed -i "${i}d" $history 
+#done 
 
 if [[ $excludepattern != "" ]]
 then
