@@ -996,10 +996,10 @@ then
 	cat -n $history | grep -E "$table" | grep daterow | grep -i "${fortitle^}" | grep ">$language<" | tac > updatehistorytmp 
 	linenumbers=`cat updatehistorytmp | awk '{print $1}'`
 
-for i in $linenumbers
-do 
-sed -i "${i}d" $history 
-done 
+#for i in $linenumbers
+#do 
+#sed -i "${i}d" $history 
+#done 
 
 sed -i 's@[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]@'$dateforhist'@g' updatehistorytmp
 cat updatehistorytmp | tac | head -1 | awk '{print substr($0, index($0, $2))}' >> $history
