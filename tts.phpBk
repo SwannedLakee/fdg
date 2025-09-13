@@ -1,10 +1,7 @@
 <?php
-// Параметры запроса
+// Параметры запроса 
 $slug = strtolower($_GET['q'] ?? '');
 $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
-
-// Новые параметры для выбора переводчика
-$translator_param = $_GET['translator'] ?? '';
 
 // Модификация slug для случаев bi- и bu-
 if (preg_match('/^(bi-|bu-)(.+)/', $slug, $matches)) {
@@ -12,8 +9,8 @@ if (preg_match('/^(bi-|bu-)(.+)/', $slug, $matches)) {
 }
 
 // Определяем язык
-$is_ru_url = (strpos($_SERVER['REQUEST_URI'], '/ru/') !== false) ||
-             (strpos($_SERVER['REQUEST_URI'], '/r/') !== false) ||
+$is_ru_url = (strpos($_SERVER['REQUEST_URI'], '/ru/') !== false) || 
+             (strpos($_SERVER['REQUEST_URI'], '/r/') !== false) || 
              (strpos($_SERVER['REQUEST_URI'], '/ml/') !== false);
 
 if ($type === 'pali') {
@@ -24,14 +21,6 @@ if ($type === 'pali') {
     $lang = $is_ru_url ? 'ru' : 'en';
     $content_type = $is_ru_url ? 'ru' : 'en';
     $title_lang = $is_ru_url ? 'Russian' : 'English';
-
-    // Установка типа контента на основе параметра translator
-    if ($lang === 'en' && $translator_param === 'bs') {
-        $content_type = 'en-sujato';
-    } elseif ($lang === 'en') {
-        $content_type = 'en-bodhi'; // 'en-bodhi' теперь по умолчанию
-    }
-
 } else {
     $lang = 'ru';
     $content_type = 'ru';
@@ -49,30 +38,27 @@ $title = htmlspecialchars(
 // Загрузка контента с HTML-форматированием
 function loadContent($slug, $type) {
     include_once('config/config.php');
-
+    
     // **ИСПРАВЛЕНИЕ 1: Добавлен пробел в конце строки jq для разделения сегментов**
     $jq = 'jq -r \'to_entries[] | "<a id=\"\(.key)\"></a><span>\(.value)</span> " \' | sed "s/' . $slug . '://"';
 
-    if (!in_array($type, ['pali', 'ru', 'en-bodhi', 'en-sujato'])) {
-        return ['content' => ($type === 'pali' ? "Pali text not found for: $slug" : "Content not found for: $slug"),
-                'file' => '',
+    if (!in_array($type, ['pali', 'ru', 'en'])) {
+        return ['content' => ($type === 'pali' ? "Pali text not found for: $slug" : "Content not found for: $slug"), 
+                'file' => '', 
                 'translator' => ''];
     }
 
     // Определяем путь к файлу в зависимости от типа
     if ($type === 'pali') {
         $script = $_GET['script'] ?? 'dev';
-        $cmd = $script === 'lat'
+        $cmd = $script === 'lat' 
             ? "find $basedir/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/ -name \"{$slug}_*\" -print -quit"
             : "find $basedir/assets/texts/devanagari/root/pli/ms/ -name \"{$slug}_*\" -print -quit";
-    }
+    } 
     elseif ($type === 'ru') {
         $cmd = "find $basedir/assets/texts/ru/sutta/ $basedir/assets/texts/ru/vinaya/ -name \"{$slug}_*\" -print -quit";
     }
-    elseif ($type === 'en-bodhi') {
-        $cmd = "find $basedir/assets/texts/en/sutta/ $basedir/assets/texts/en/vinaya/ -name \"{$slug}_translation*\" -print -quit";
-    }
-    else { // en-sujato
+    else { // en
         $cmd = "find $basedir/suttacentral.net/sc-data/sc_bilara_data/translation/en/ -name \"{$slug}_*\" -print -quit";
     }
 
@@ -84,7 +70,7 @@ function loadContent($slug, $type) {
     // Загрузка HTML-шаблонов
     $html_file = shell_exec("find $basedir/suttacentral.net/sc-data/sc_bilara_data/html/pli/ms/ -name \"{$slug}_html.json\" -print -quit");
     $html_templates = [];
-
+    
     if ($html_file) {
         $html_content = shell_exec("cat " . escapeshellarg(trim($html_file)));
         $html_templates = json_decode($html_content, true) ?: [];
@@ -143,16 +129,9 @@ if ($lang === 'pi') {
     $script = $_GET['script'] ?? 'dev';
     if ($script === 'lat') {
         $sourceInfo = 'Mahāsaṅgīti Pāḷi';
-    }
+    } 
 } else {
-    // Обновляем отображение переводчика на основе content_type
-    if ($content_type === 'en-sujato') {
-        $sourceInfo = 'Translator: Bhikkhu Sujato';
-    } elseif ($content_type === 'en-bodhi') {
-        $sourceInfo = 'Translator: Bhikkhu Bodhi';
-    } else {
-        $sourceInfo = $lang === 'ru' ? "Перевод: $translator" : "Translator: $translator";
-    }
+    $sourceInfo = $lang === 'ru' ? "Перевод: $translator" : "Translator: $translator";
 }
 ?>
 <!DOCTYPE html>
@@ -212,47 +191,34 @@ function updateUrl(lang) {
     const currentUrl = new URL(window.location.href);
     const pathParts = currentUrl.pathname.split('/');
     const slug = currentUrl.searchParams.get('q') || '';
-    const currentTranslator = currentUrl.searchParams.get('translator') || '';
-
+    
     // Очищаем путь от языковых префиксов
     let newPath = pathParts.filter(part => !['ru', 'r', 'ml', 'en'].includes(part)).join('/');
-
+    
     // Добавляем нужный языковой префикс
     if (lang === 'ru') {
         newPath = newPath.replace(/^\//, '/ru/');
     } else if (lang === 'en') {
-        // Убрали префикс '/en/', т.к. он не нужен для англ. перевода
+        newPath = newPath.replace(/^\/(ru|r|ml)\//, '/');
     }
     // Для pi не меняем путь
-
-    // Обновляем параметры type и translator
+    
+    // Обновляем параметры type
     currentUrl.searchParams.delete('type');
-    currentUrl.searchParams.delete('translator');
-
     if (lang === 'pi') {
-        currentUrl.searchParams.set('type', 'pali');
+        //currentUrl.searchParams.set('type', 'pali');
     } else {
         currentUrl.searchParams.set('type', 'trn');
     }
-
-    if (lang === 'en') {
-        // Логика переключения между переводчиками Бодхи и Суджато
-        if (currentTranslator === 'bb' || currentTranslator === '') {
-            currentUrl.searchParams.set('translator', 'bs');
-        } else {
-            currentUrl.searchParams.set('translator', 'bb');
-        }
-    }
-
+    
     // Собираем новый URL
     currentUrl.pathname = newPath;
     return currentUrl.toString();
 }
 
 function setLanguage(lang) {
-    const newUrl = updateUrl(lang);
-    history.pushState({}, '', newUrl);
-    location.reload();
+    history.pushState({}, '', updateUrl(lang));
+    location.reload(); // теперь безопасно
 }
 
 function togglePaliScript() {
@@ -270,53 +236,47 @@ function togglePaliScript() {
     window.location.href = url.toString();
 }
 
-// Обновленная функция для определения текущего языка и переводчика
-function detectLanguage() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const type = urlParams.get('type');
-    const translator = urlParams.get('translator');
-
-    if (type === 'pali' || type === null) return 'pi';
-
-    const currentUrl = window.location.pathname.toLowerCase();
-    if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) return 'ru';
-
-    // Теперь, если это английский, мы смотрим на параметр translator
-    if (translator === 'bs') {
-        return 'en-sujato';
-    }
-    // По умолчанию 'en-bodhi'
-    return 'en-bodhi';
-}
-
 function updateLanguageSwitcher(lang) {
     const switcher = document.querySelector('.lang-switcher');
 
-    let piClass = "btn btn-sm btn-outline-secondary rounded-pill text-decoration-none";
-    let ruClass = "btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1";
-    let enClass = "btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1";
-
-    if (lang === 'pi') {
-        piClass = "btn btn-sm btn-primary rounded-pill btn-outline-secondary active";
-    } else if (lang === 'ru') {
-        ruClass = "btn btn-sm btn-primary rounded-pill btn-outline-secondary active ms-1";
-    } else { // en-bodhi или en-sujato
-        enClass = "btn btn-sm btn-primary rounded-pill btn-outline-secondary active ms-1";
+    if (lang === 'ru') {
+        switcher.innerHTML = `
+             <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none " href="#" title="Devanagari / Roman Script" onclick="setLanguage('pi'); return false;">pi</a>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1" title="English" href="#" onclick="setLanguage('en'); return false;">en</a>
+            <a class="btn btn-sm btn-primary rounded-pill btn-outline-secondary active ms-1" title="Russian">ru</a>
+        `;
+    } 
+    
+    else if (lang === 'pi') {
+        switcher.innerHTML = `
+       <a class="btn btn-sm btn-primary rounded-pill btn-outline-secondary active" href="#" onclick="togglePaliScript(); return false;" title="Devanagari / Roman Script">pi</a>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1" href="#" onclick="setLanguage('en'); return false;" title="English">en</a>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1" href="#" onclick="setLanguage('ru'); return false;" title="Russian">ru</a>
+        `;
     }
-
-    switcher.innerHTML = `
-        <a class="${piClass}" href="#" onclick="setLanguage('pi'); return false;" title="Pali / Devanagari / Roman Script">pi</a>
-        <a class="${enClass}" href="#" onclick="setLanguage('en'); return false;" title="English: ${lang === 'en-sujato' ? 'Sujato' : 'Bodhi'}">en</a>
-        <a class="${ruClass}" href="#" onclick="setLanguage('ru'); return false;" title="Russian">ru</a>
-
-    `;
-
-    // Обновляем title для кнопки Pali, если она активна
-    if (lang === 'pi') {
-        const paliBtn = switcher.querySelector('.active');
-        paliBtn.onclick = () => { togglePaliScript(); return false; };
+    else {
+        switcher.innerHTML = `
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none " href="#" onclick="setLanguage('pi'); return false;" title="Devanagari / Roman Script">pi</a> 
+            <span class="btn btn-sm btn-primary rounded-pill btn-outline-secondary active ms-1" title="English">en</span>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none ms-1" href="#" onclick="setLanguage('ru'); return false;" title="Russian">ru</a>
+        `;
     }
 }
+
+function detectLanguage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+
+    if (type === 'pali' || type === null) return 'pi'; // ← ключевой момент
+
+    const currentUrl = window.location.pathname.toLowerCase();
+    if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) return 'ru';
+    if (currentUrl.includes('/en/')) return 'en';
+
+    return 'en';
+}
+
+const lang = '<?= $lang ?>'; // ← передаём PHP переменную
 
 function updateLinks(lang) {
     const readLink = document.getElementById('readLink');
@@ -325,7 +285,7 @@ function updateLinks(lang) {
     if (lang === 'ru') {
         readLink.href = '/ru/read.php';
         homeLink.href = '/ru';
-    } else if (lang.startsWith('en')) {
+    } else if (lang === 'en') {
         readLink.href = '/read.php';
         homeLink.href = '/';
     }
@@ -333,14 +293,14 @@ function updateLinks(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const lang = detectLanguage();
-    updateLanguageSwitcher(lang);
-    updateLinks(lang);
+    updateLanguageSwitcher(detectLanguage());
+    updateLinks(lang); // ← теперь lang определён
 
     document.getElementById('darkSwitch').addEventListener('change', function() {
         document.body.classList.toggle('dark-mode');
     });
 });
+
 </script>
 <div class="container mt-3">
   <div class="d-flex flex-wrap align-items-center justify-content-between">
@@ -360,9 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
       <img src="/assets/svg/comment.svg" class="dictIcon">
     </a>
 
-<a href="#"
-   onclick="toggleSpeech('voiceTextContent'); return false;"
-   class="text-decoration-none text-black me-1"
+<a href="#" 
+   onclick="toggleSpeech('voiceTextContent'); return false;" 
+   class="text-decoration-none text-black me-1" 
    id="speechToggleBtn">
   🔊
 </a>
@@ -381,8 +341,8 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <form id="slugForm" class="d-flex align-items-center flex-nowrap order-3 order-sm-2 mx-auto flex-grow-0" onsubmit="return goToSlug();" style="min-width: 140px; max-width: 250px;">
-  <input type="search" class="form-control form-control-sm rounded-pill me-1 flex-grow-1"
-         id="paliauto" name="q" value="<?= htmlspecialchars($slug) ?>"
+  <input type="search" class="form-control form-control-sm rounded-pill me-1 flex-grow-1" 
+         id="paliauto" name="q" value="<?= htmlspecialchars($slug) ?>" 
          placeholder="e.g. an3.76" style="min-width: 100px;" autofocus>
   <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle p-1 flex-shrink-0">
     Go
@@ -411,18 +371,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обновляем параметры запроса
     url.searchParams.set('q', slug);
 
-    if (lang.startsWith('pi')) {
+    if (lang === 'pi') {
         url.searchParams.set('type', 'pali');
     } else {
         url.searchParams.set('type', 'trn');
-    }
-
-    // Если текущий язык - английский, сохраняем параметр переводчика
-    if (lang.startsWith('en')) {
-        const translator = lang === 'en-sujato' ? 'bs' : 'bb';
-        url.searchParams.set('translator', translator);
-    } else {
-        url.searchParams.delete('translator');
     }
 
     // Обновляем URL
@@ -486,7 +438,7 @@ const pageLogger = {
   logs: [],
   maxLogs: 50,
   container: null,
-
+  
   init: function(showByDefault = false) {
     // Создаем контейнер для логов
     this.container = document.createElement('div');
@@ -507,7 +459,7 @@ const pageLogger = {
     this.container.style.fontSize = '12px';
     this.container.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
     this.container.style.display = showByDefault ? 'block' : 'none';
-
+    
     // Кнопка закрытия (вверху справа)
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '×';
@@ -526,7 +478,7 @@ const pageLogger = {
       const toggleBtn = document.getElementById('loggerToggleBtn');
       if (toggleBtn) toggleBtn.textContent = '📜';
     };
-
+    
     // Кнопка управления логгером (только если debugVoices в URL)
     if (new URLSearchParams(window.location.search).has('debugVoices')) {
       const toggleBtn = document.createElement('button');
@@ -547,7 +499,7 @@ const pageLogger = {
       toggleBtn.style.alignItems = 'center';
       toggleBtn.style.justifyContent = 'center';
       toggleBtn.style.fontSize = '16px';
-
+      
       toggleBtn.addEventListener('click', () => {
         if (this.container.style.display === 'none') {
           this.container.style.display = 'block';
@@ -557,27 +509,27 @@ const pageLogger = {
           toggleBtn.textContent = '📜';
         }
       });
-
+      
       document.body.appendChild(toggleBtn);
     }
-
+    
     this.container.appendChild(closeBtn);
     document.body.appendChild(this.container);
-
+    
     // Перехватываем console.log
     const originalConsoleLog = console.log;
     console.log = (...args) => {
       this.addLog('log', ...args);
       originalConsoleLog.apply(console, args);
     };
-
+    
     // Перехватываем console.error
     const originalConsoleError = console.error;
     console.error = (...args) => {
       this.addLog('error', ...args);
       originalConsoleError.apply(console, args);
     };
-
+    
     // Перехватываем console.warn
     const originalConsoleWarn = console.warn;
     console.warn = (...args) => {
@@ -585,34 +537,34 @@ const pageLogger = {
       originalConsoleWarn.apply(console, args);
     };
   },
-
+  
   addLog: function(type, ...args) {
     const logEntry = {
       type,
       timestamp: new Date().toISOString().substr(11, 12),
-      messages: args.map(arg =>
+      messages: args.map(arg => 
         typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
       )
     };
-
+    
     this.logs.push(logEntry);
     if (this.logs.length > this.maxLogs) {
       this.logs.shift();
     }
-
+    
     this.updateView();
   },
-
+  
   updateView: function() {
     if (!this.container) return;
-
+    
     this.container.innerHTML = this.logs.map(log => {
       const color = {
         log: 'inherit',
         warn: 'orange',
         error: 'red'
       }[log.type];
-
+      
       return `
         <div style="margin-bottom: 5px; border-bottom: 1px solid var(--bs-border-color); padding-bottom: 5px;">
           <span style="color: ${color}; font-weight: bold;">${log.type.toUpperCase()}</span>
@@ -621,7 +573,7 @@ const pageLogger = {
         </div>
       `;
     }).join('');
-
+    
     // Автоскролл к новым сообщениям
     this.container.scrollTop = this.container.scrollHeight;
   }
@@ -631,7 +583,7 @@ const pageLogger = {
 document.addEventListener('DOMContentLoaded', () => {
   const showByDefault = new URLSearchParams(window.location.search).has('debugVoices');
   pageLogger.init(showByDefault);
-
+  
   if (showByDefault) {
     console.log('Логгер инициализирован. Все console.log будут отображаться здесь.');
   }
@@ -640,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Функция для отображения доступных голосов в консоли и на странице
 function debugVoices() {
   const voices = window.speechSynthesis.getVoices();
-
+  
   // Выводим в логгер
   console.log('Доступные голоса:', voices.map(v => ({
     name: v.name,
@@ -648,22 +600,22 @@ function debugVoices() {
     default: v.default,
     local: v.localService
   })));
-
+  
   // Показываем логгер, если он скрыт
   if (pageLogger.container.style.display === 'none') {
     pageLogger.container.style.display = 'block';
     const toggleBtn = document.getElementById('loggerToggleBtn');
     if (toggleBtn) toggleBtn.textContent = '✕';
   }
-
+  
   // Определяем текущую тему
-  const isDarkMode = document.body.classList.contains('dark-mode') ||
+  const isDarkMode = document.body.classList.contains('dark-mode') || 
                      document.body.getAttribute('data-theme') === 'dark';
-
+  
   // Удаляем предыдущий debugDiv если он есть
   const oldDebug = document.querySelector('#voiceDebugContainer');
   if (oldDebug) oldDebug.remove();
-
+  
   // Создаем основной контейнер
   const debugContainer = document.createElement('div');
   debugContainer.id = 'voiceDebugContainer';
@@ -673,7 +625,7 @@ function debugVoices() {
   debugContainer.style.zIndex = '9999';
   debugContainer.style.width = '350px';
   debugContainer.style.maxWidth = '90vw';
-
+  
   // Создаем кнопку закрытия (фиксированную в правом верхнем углу контейнера)
   const closeBtn = document.createElement('button');
   closeBtn.innerHTML = '×';
@@ -694,7 +646,7 @@ function debugVoices() {
   closeBtn.style.fontWeight = 'bold';
   closeBtn.style.zIndex = '10000';
   closeBtn.onclick = () => debugContainer.remove();
-
+  
   // Создаем контентное окно
   const debugContent = document.createElement('div');
   debugContent.style.backgroundColor = isDarkMode ? '#222' : '#fff';
@@ -705,7 +657,7 @@ function debugVoices() {
   debugContent.style.maxHeight = '80vh';
   debugContent.style.overflow = 'auto';
   debugContent.style.boxShadow = '0 2px 15px rgba(0,0,0,0.3)';
-
+  
   // Добавляем заголовок и содержимое
   debugContent.innerHTML = `
     <h3 style="margin:0 0 10px 0;padding-right:20px;">Доступные голоса (${voices.length})</h3>
@@ -716,33 +668,33 @@ function debugVoices() {
       local: v.localService
     })), null, 2)}</pre>
   `;
-
+  
   // Собираем все вместе
   debugContainer.appendChild(closeBtn);
   debugContainer.appendChild(debugContent);
   document.body.appendChild(debugContainer);
-
+  
   // Делаем окно перемещаемым
   let isDragging = false;
   let offsetX, offsetY;
-
+  
   const header = debugContent.querySelector('h3');
   header.style.cursor = 'move';
-
+  
   header.addEventListener('mousedown', (e) => {
     isDragging = true;
     offsetX = e.clientX - debugContainer.getBoundingClientRect().left;
     offsetY = e.clientY - debugContainer.getBoundingClientRect().top;
     debugContainer.style.userSelect = 'none';
   });
-
+  
   document.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     debugContainer.style.left = (e.clientX - offsetX) + 'px';
     debugContainer.style.top = (e.clientY - offsetY) + 'px';
     debugContainer.style.right = 'auto';
   });
-
+  
   document.addEventListener('mouseup', () => {
     isDragging = false;
     debugContainer.style.userSelect = '';
@@ -792,7 +744,7 @@ async function speakTextFromElement(elementId) {
     }
 
     const voices = await loadVoices();
-
+    
     let langCode;
     let selectedVoice = null;
     let rate = 1.0;
@@ -800,10 +752,10 @@ async function speakTextFromElement(elementId) {
     switch (htmlLang) {
       case 'ru':
         langCode = 'ru-RU';
-        selectedVoice = voices.find(v =>
-          v.lang === 'ru-RU' &&
+        selectedVoice = voices.find(v => 
+          v.lang === 'ru-RU' && 
           (v.name.includes('Pavel') || v.name.includes('Павел'))
-        ) ||
+        ) || 
         voices.find(v => v.lang === 'ru-RU');
         break;
 
@@ -858,7 +810,7 @@ async function speakTextFromElement(elementId) {
       isPaused = false;
       document.getElementById('speechToggleBtn').textContent = '🔊';
       releaseWakeLock(); // Снимаем блокировку в случае ошибки
-
+      
       if (langCode !== 'en-US') {
         utterance.lang = 'en-US';
         utterance.voice = null;
@@ -873,9 +825,9 @@ async function speakTextFromElement(elementId) {
     return utterance;
 
   } catch (e) {
-      console.error('Ошибка в speakTextFromElement:', e);
-      releaseWakeLock(); // Убедимся, что блокировка снята, если произошла ошибка
-      return null;
+    console.error('Ошибка в speakTextFromElement:', e);
+    releaseWakeLock(); // Убедимся, что блокировка снята, если произошла ошибка
+    return null;
   }
 }
 
@@ -888,7 +840,7 @@ async function toggleSpeech(elementId) {
     document.getElementById('speechToggleBtn').textContent = '▶️';
     console.log('На паузе');
     await releaseWakeLock(); // Снимаем блокировку при паузе
-  }
+  } 
   else if (isPaused) {
     // Продолжение воспроизведения
     await acquireWakeLock(); // Активируем блокировку при возобновлении
