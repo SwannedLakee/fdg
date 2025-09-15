@@ -482,12 +482,3 @@ apa; bash scripts/checknewlinebylineinscrepo.sh | grep -v done ; cd - >/dev/null
 
 alias dpd='cd /data/data/com.termux/files/usr/share/apache2/default-site/dpd-ui'
 apachectl start
-
-usage=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
-if [ "$usage" -ge 90 ]; then
-
-for i in {1..5}
-do 
-    echo "WARNING: Root filesystem usage is ${usage}%!"
-done
-fi
