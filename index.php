@@ -393,6 +393,11 @@ Add <strong>Dhamma.Gift</strong> to your Home Screen?
   <div data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title='<?php echo $tooltipla;?>'><?php echo $checkboxla;?><span class="text-muted">*</span></div>
   </div>
   
+<div style="display:none;">
+  <label for="hpfield"></label>
+  <input type="text" id="hpfield" name="hpfield" tabindex="-1" autocomplete="off">
+</div>
+
          <div style="max-width: 300px;" class="my-2"> 
     
 <div class="align-items-center form-check-inline mt-3">
