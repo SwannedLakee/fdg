@@ -1,6 +1,12 @@
 <?php
 header("Cache-Control: public, max-age=3600"); // Кэшировать на 1 час
 header("Expires: " . gmdate("D, d M Y H:i:s", time() + 3600) . " GMT");
+if (!empty($_GET['ssearch'])) {
+    // Кто-то заполнил honeypot → считаем ботом и не обрабатываем
+    http_response_code(400);
+    exit('Not found.');
+}
+
 ?>
 <!DOCTYPE html>
 <?php
@@ -318,6 +324,13 @@ $(document).ready(function() {
   <div data-bs-toggle="tooltip" style="cursor: pointer;" data-bs-placement="bottom" title='<?php echo $tooltipla;?>'><?php echo $checkboxla;?></div>
   </div>
   
+
+<div style="display:none;">
+  <label for="ssearch"></label>
+  <input type="text" id="ssearch" name="ssearch" tabindex="-1" autocomplete="off">
+</div>
+
+
 <div class="align-items-center form-check-inline mt-3">
   <div class="mb-2"><button class="btn btn-secondary rounded-pill insert-letter" data-letter="ā" autocomplete="off">ā</button>
   <button class="btn btn-secondary rounded-pill insert-letter" data-letter="ṁ" autocomplete="off">ṁ</button>

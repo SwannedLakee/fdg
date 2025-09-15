@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <?php
+
 error_reporting(E_ERROR | E_PARSE);
+if (!empty($_GET['ssearch'])) {
+    // Кто-то заполнил honeypot → считаем ботом и не обрабатываем
+    http_response_code(400);
+    exit('Not found.');
+}
+
+
 include_once('config/config.php');
 include_once('config/translate.php');
 include 'scripts/opentexts.php';
@@ -213,6 +221,12 @@ $(document).ready(function() {
   <input class="form-check-input" type="checkbox" id="laCheckbox" name="la" <?php if (isset($extra) && $extra=="-la$defaultla ") echo "checked";?>  value='<?php echo "-la$defaultla"?>'>
   <div data-bs-toggle="tooltip" data-bs-placement="top" title='<?php echo $tooltipla;?>'><?php echo $checkboxla;?></div>
   </div>
+
+
+  <div style="display:none;">
+  <label for="ssearch"></label>
+  <input type="text" id="ssearch" name="ssearch" tabindex="-1" autocomplete="off">
+</div>
   
          <div style="max-width: 300px;" class="my-2"> 
     

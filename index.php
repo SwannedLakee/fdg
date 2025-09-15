@@ -1,10 +1,10 @@
 <?php
 header("Cache-Control: public, max-age=3600"); // Кэшировать на 1 час
 header("Expires: " . gmdate("D, d M Y H:i:s", time() + 3600) . " GMT");
-if (!empty($_GET['hpfield'])) {
+if (!empty($_GET['ssearch'])) {
     // Кто-то заполнил honeypot → считаем ботом и не обрабатываем
     http_response_code(400);
-    exit('Bot detected.');
+    exit('Not found.');
 }
 
 
@@ -403,8 +403,8 @@ Add <strong>Dhamma.Gift</strong> to your Home Screen?
   </div>
   
 <div style="display:none;">
-  <label for="hpfield"></label>
-  <input type="text" id="hpfield" name="hpfield" tabindex="-1" autocomplete="off">
+  <label for="ssearch"></label>
+  <input type="text" id="ssearch" name="ssearch" tabindex="-1" autocomplete="off">
 </div>
 
          <div style="max-width: 300px;" class="my-2"> 
