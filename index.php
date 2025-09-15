@@ -1,6 +1,13 @@
 <?php
 header("Cache-Control: public, max-age=3600"); // Кэшировать на 1 час
 header("Expires: " . gmdate("D, d M Y H:i:s", time() + 3600) . " GMT");
+if (!empty($_GET['hpfield'])) {
+    // Кто-то заполнил honeypot → считаем ботом и не обрабатываем
+    http_response_code(400);
+    exit('Bot detected.');
+}
+
+
 ?>
 <!DOCTYPE html>
 <?php
@@ -12,6 +19,8 @@ include_once('config/config.php');
 include_once('config/translate.php');
 include 'scripts/search-handler.php';
 //echo basename($_SERVER['REQUEST_URI']);
+
+
 ?>
 <html lang="<?php echo $htmllang;?>" data-bs-theme="dark">
 <meta name="theme-color" content="#2E3E50">

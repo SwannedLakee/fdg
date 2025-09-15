@@ -5,11 +5,6 @@ function getRanges($string) {
   include_once('./config/config.php');
   $check = shell_exec("grep -m1 -i \"{$string}_\" $indexesfile | awk '{print \$0}'");
 
-if (!empty($_GET['hpfield'])) {
-    // Кто-то заполнил honeypot → считаем ботом и не обрабатываем
-    http_response_code(400);
-    exit('Bot detected.');
-}
 
 //if this empty then find range
 if (empty($check)) {
