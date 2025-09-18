@@ -721,17 +721,17 @@ keyword="$pattern"
 
 if [[ "$language" == *"Pali"* ]]; then
 
-#cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
-#grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g' | cleanuphtml > $tmpdir/${prefix}initrun-var
-#cd $apachesitepath/assets/texts/variant/
-#grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g'  | cleanuphtml >> $tmpdir/${prefix}initrun-var
+cd $suttapath/sc-data/sc_bilara_data/variant/pli/ms/
+grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g' | cleanuphtml > $tmpdir/${prefix}initrun-var
+cd $apachesitepath/assets/texts/variant/
+grep -riE "$pattern" $searchIn | sed 's/{//g' | sed 's/}//g'  | cleanuphtml >> $tmpdir/${prefix}initrun-var
 
 cd $suttapath/sc-data/sc_bilara_data/root/pli/ms/
 
-#if [ -s "$tmpdir/${prefix}initrun-var" ]; then
-#cat $tmpdir/${prefix}initrun-var | awk '{ print $2 }' | sed 's@\"@\\"@g' | awk 'BEGIN {OFS=""; printf "grep -Eir \"("} { printf $1"|"}' |  sed '$ s@|$@)"  '"$searchIn"' \n@' > $tmpdir/${prefix}cmndFromVar
-#bash $tmpdir/${prefix}cmndFromVar | sed 's/<[^>]*>//g'> $tmpdir/${prefix}initrun-pi
-#fi
+if [ -s "$tmpdir/${prefix}initrun-var" ]; then
+cat $tmpdir/${prefix}initrun-var | awk '{ print $2 }' | sed 's@\"@\\"@g' | awk 'BEGIN {OFS=""; printf "grep -Eir \"("} { printf $1"|"}' |  sed '$ s@|$@)"  '"$searchIn"' \n@' > $tmpdir/${prefix}cmndFromVar
+bash $tmpdir/${prefix}cmndFromVar | sed 's/<[^>]*>//g'> $tmpdir/${prefix}initrun-pi
+fi
 grep -riE -B${linesbefore} -A${linesafter} "$pattern" $searchIn  | cleanuphtml | grep '": "'| sed 's/json./json:/g' |  grep -v "^--$" >> $tmpdir/${prefix}initrun-pi
 cp $tmpdir/${prefix}initrun-pi $tmpdir/pli
 
@@ -1070,7 +1070,7 @@ sed -i 's/":/@/g'  $tmpdir/${prefix}initrun* $tmpdir/$basefile
 sed -i -e 's@.*sutta/kn@khudakka\@/@g' -e 's@.*sutta/@dhamma\@/@g' -e 's@.*vinaya/@vinaya\@/@g' $tmpdir/${prefix}initrun* $tmpdir/$basefile
 sed -i -e 's@.*/sutta/kn@khudakka\@/@g' -e 's@.*/sutta/@dhamma\@/@g' -e 's@.*/vinaya/@vinaya\@/@g' $tmpdir/$basefile
    
-cat $tmpdir/${prefix}initrun* | sed 's/<[^>]*>//g'  | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g' | sed 's^@/^@^g' |  sort -t'@' -k2V,2 -k4V,4 -k2n,3 | uniq > $tmpdir/${prefix}readyforawk
+cat $tmpdir/${prefix}initrun* | sed 's/<[^>]*>//g'  | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g' | sed 's^@/^@^g' |  sort -t'@' -k2V,2 -k4V,4 -k2n,3  > $tmpdir/${prefix}readyforawk
 
 
 
@@ -1208,7 +1208,7 @@ sed -i -e 's@.*/sutta/kn@khudakka\@/@g' -e 's@.*/sutta/@dhamma\@/@g' -e 's@.*/vi
    
 #cat $tmpdir/$basefile | sed 's/<[^>]*>//g' | sed 's^@/^@^g' | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g'| awk -F@ '{OFS = "@"} {print $1, $2, $3, "", $4}' | sort -t'@' -k2V,2 -k4V,4 -k2n,3 | uniq > $tmpdir/${prefix}readyforawk
 
-cat $tmpdir/$basefile | sed 's/<[^>]*>//g' | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g'| awk -F@ '{OFS = "@"} {print $1, $2, $3, "", $4}' | sed 's^@/^@^g' |  sort -t'@' -k2V,2 -k4V,4 -k2n,3 | uniq > $tmpdir/${prefix}readyforawk
+cat $tmpdir/$basefile | sed 's/<[^>]*>//g' | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g'| awk -F@ '{OFS = "@"} {print $1, $2, $3, "", $4}' | sed 's^@/^@^g' |  sort -t'@' -k2V,2 -k4V,4 -k2n,3 > $tmpdir/${prefix}readyforawk
 
 
 # |  для доп колонки |  awk -F/ '{print $NF}' | sed 's@\@/.*/@\@@g' |
@@ -1660,4 +1660,4 @@ echo "</p></td>
 </tr>" 
 #&#8200
 
-cat $tmpdir/$basefile | sed 's/<[^>]*>//g' | awk -F: 'BEGIN {OFS = ":"} {$2 = gensub("/", "", "g", $2); print $1, $2}' | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g' | awk -F@ '{OFS = "@"} {quote=$4 ; gsub("/", "", quote); print $1, $2, $3, $2, quote}' | sort -t'@' -k2V,2 -k4V,4 -k2n,3 | uniq > $tmpdir/${prefix}readyforawk
+cat $tmpdir/$basefile | sed 's/<[^>]*>//g' | awk -F: 'BEGIN {OFS = ":"} {$2 = gensub("/", "", "g", $2); print $1, $2}' | sed 's/@ *"/@/g' | sed 's/",$//g' | sed 's/ "$//g' | sed 's@/.*/@@g' | awk -F@ '{OFS = "@"} {quote=$4 ; gsub("/", "", quote); print $1, $2, $3, $2, quote}' | sort -t'@' -k2V,2 -k4V,4 -k2n,3  > $tmpdir/${prefix}readyforawk
