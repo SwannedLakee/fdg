@@ -16,7 +16,7 @@ if (!empty($_GET['ssearch'])) {
 error_reporting(E_ERROR | E_PARSE);
 include_once('config/config.php');
 include_once('config/translate.php');
-include 'search.php';
+include 'scripts/search-handler.php';
 //echo basename($_SERVER['REQUEST_URI']);
 
 
@@ -272,7 +272,7 @@ function updateURL(params) {
                 -->
 </div>
 
-<form method="GET" id="searchForm" action="search.php" class="justify-content-center">
+<form method="GET" id="searchForm" action="" class="justify-content-center">
 <div class="mb-3 form-group input-group ui-widget dropup rounded-pill">
 
 <label class="sr-only dropup rounded-pill" for="paliauto"></label>
