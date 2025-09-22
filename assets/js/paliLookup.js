@@ -302,15 +302,21 @@ if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
     const wordLink = `<strong>${createClickableLink(word)}</strong>`;
 
     // Подставляем готовую ссылку в сообщение
-    translation = isRussian ?
-        `<div style="padding: 10px;">
-            ${wordLink} не найдено во встроенном словаре.
-            <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать онлайн</a>
-        </div>` :
-        `<div style="padding: 10px;">
-            ${wordLink} is not found in the built-in dictionary.
-            <br><br><a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search online</a>
-        </div>`;
+translation = isRussian ?
+    `<div style="padding: 10px;">
+        ${wordLink} не найдено во встроенном словаре.
+        <br><br>
+        <a href="https://dhamma.gift/ru/?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на dhamma.gift</a>
+        <br>
+        <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать в интернете</a>
+    </div>` :
+    `<div style="padding: 10px;">
+        ${wordLink} is not found in the built-in dictionary.
+        <br><br>
+        <a href="https://dhamma.gift/?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on dhamma.gift</a>
+        <br>
+        <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on the internet</a>
+    </div>`;
 }
 
 
