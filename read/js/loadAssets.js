@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const assetMap = {
         "d": { js: "./js/devanagari.js", css: "./css/thai.css" },
         "memorize": { js: "./js/memorize.js", css: "./css/rus-multi.css" },
+        "mt": { js: "./js/multitran.js", css: "./css/rus-multi.css" },      
         "ml": { js: "./js/multilang.js", css: "./css/rus-multi.css" },      
         "rev": { js: "./js/multilangrev.js", css: "./css/rus-multi.css" },      
         "frev": { js: "./js/multilangfullrev.js", css: "./css/rus-multi.css" },      
