@@ -107,7 +107,7 @@ else {
   var engtrnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/en/sujato/${texttype}/${slugReady}_translation-en-sujato.json`;
   var alttrnpath = `/assets/texts/mt/${texttype}/${slugReady}_translation-ru-${translator}.json`;
 }
-console.log('engtrnpath line108', engtrnpath);
+//console.log('engtrnpath line108', engtrnpath);
 
 var htmlpath = `${Sccopy}/sc-data/sc_bilara_data/html/pli/ms/${texttype}/${slugReady}_html.json`;
 
@@ -181,6 +181,7 @@ var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slug}
    
     var trnpath = `/assets/texts/ru/${texttype}/${slug}_translation-${pathLang}-${translator}.json`;
     var engtrnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/en/brahmali/${texttype}/${slug}_translation-en-brahmali.json`;
+    var alttrnpath = `/assets/texts/mt/${texttype}/${slug}_translation-${pathLang}-${translator}.json`;
 
     var htmlpath = `/assets/html/${texttype}/${slug}_html.json`;
     console.log(rootpath, trnpath, htmlpath);
@@ -198,7 +199,7 @@ if (vinayaranges.indexOf(slug) !== -1) {
   console.log('vinaya case');
   console.log(trnpath);
   console.log(engtrnpath);
-
+  console.log(alttrnpath);
 }  
 
 var varpath = `${Sccopy}/sc-data/sc_bilara_data/variant/pli/ms/${texttype}/${slugReady}_variant-pli-ms.json`
@@ -248,7 +249,18 @@ const rootResponse = fetch(rootpath)
   return {}; // Если все пути недоступны
 }
 
+
+
 const translationResponse = fetchTranslation(); 
+
+ const alttranslationResponse = fetch(alttrnpath).then(response => response.json())    .
+  catch(error => {
+ console.log('note:no english translation found');   
+// console.log(varpath); 
+return {};
+  } 
+    );
+
 
  const engtranslationResponse = fetch(engtrnpath).then(response => response.json())    .
   catch(error => {
@@ -281,8 +293,8 @@ async function fetchVariant() {
 
 const varResponse = fetchVariant();    
     
-  Promise.all([rootResponse, translationResponse, engtranslationResponse, htmlResponse, varResponse]).then(responses => {
-    const [paliData, transData, engTransData, htmlData, varData] = responses;
+  Promise.all([rootResponse, translationResponse, alttranslationResponse, engtranslationResponse, htmlResponse, varResponse]).then(responses => {
+    const [paliData, transData, altTransData, engTransData, htmlData, varData] = responses;
 
     Object.keys(htmlData).forEach(segment => {
       if (transData[segment] === undefined) {
@@ -328,8 +340,10 @@ if (transData[segment] === undefined) {
 if (engTransData[segment] === undefined) {
   engTransData[segment] = "";
 }
-
-
+if (altTransData[segment] === undefined) {
+  altTransData[segment] = "";
+}
+  console.log(alttrnpath);
 if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== undefined) {
     paliData[segment] = paliData[segment].replace(/[-—–]/g, ' ');  
     paliData[segment] = paliData[segment].replace(/[:;“”‘’,"']/g, '');  
@@ -367,7 +381,7 @@ let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: p
 // console.log(`transData[${segment}]: ${transData[segment]}`);
 // console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
 
-if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
+if (altTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">
             ${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
