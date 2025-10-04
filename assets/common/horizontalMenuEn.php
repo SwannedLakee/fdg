@@ -89,7 +89,7 @@ echo '<!--
          <div class="dropdown-item ">
 		   <a class="text-reset" target="_blank"  href="https://suttacentral.net/pitaka/sutta?lang=en" title="Mahāsaṅgīti Edition at SuttaCentral.net">SuttaCentral</a>
 
-                <a class="text-reset" target="_blank"  href="https://suttacentral.net/pitaka/vinaya?lang=en">Виная</a>
+                <a class="text-reset" target="_blank"  href="https://suttacentral.net/pitaka/vinaya?lang=en">Vinaya</a>
          <a class="text-reset" target="_blank"  href="https://www.sc-voice.net/">Voice</a>
         <a class="text-reset" target="_blank"  href="' . $linksclegacy . '">Legacy</a>
          </div>
