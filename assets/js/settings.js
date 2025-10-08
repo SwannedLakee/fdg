@@ -1248,9 +1248,9 @@ function createQuickModal() {
         <p><strong>Extra</strong></p>
         <ul style="padding-left: 1rem; font-size: 0.9rem;">
           <li><a href="${queryBase}an3.70" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">AN 3.70</a></li>
-          <li><a href="${queryBase}an3.80" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">AN 3.80</a></li>
           <li><a href="${queryBase}an8.9" target="_blank" style="color: ${linkColorDanger}; text-decoration: none;">AN 8.9</a></li>
           <li><a href="${queryBase}an10.46" target="_blank" style="color: ${linkColorPrimary}; text-decoration: none;">AN 10.46</a></li>
+          <li><a href="${queryBase}an10.176" target="_blank" style="color: ${linkColorPrimary}; text-decoration: none;">AN 10.176</a></li>
           <li><a href="${queryBase}snp3.2" target="_blank" style="color: ${linkColorPrimary}; text-decoration: none;">Snp 3.2</a></li>
           <li><a href="${queryBase}iti61" target="_blank" style="color: ${linkColorPrimary}; text-decoration: none;">Iti 61</a></li>
           <li><a href="${queryBase}an4.199" target="_blank" style="color: ${linkColorPrimary}; text-decoration: none;">an4.199</a></li>

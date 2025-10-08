@@ -343,7 +343,7 @@ let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: p
 if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
             <font class="variant">${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
         </span>
     </span>${closeHtml}\n\n`;
@@ -351,20 +351,20 @@ if (engTransData[segment] !== transData[segment] && varData[segment] !== undefin
 } else if (engTransData[segment] !== transData[segment]) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
     </span>${closeHtml}\n\n`;
 
 } else if (varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
-        <span class="greyedout eng-lang" lang="en">${linkToCopyStart}${paliData[segment].trim()}${linkWithDataSet}</span><br>
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkWithDataSet}</span><br>
         <font class="variant">${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
     </span>${closeHtml}\n\n`;
 
 } else {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
     </span>${closeHtml}\n\n`;
 }
 
