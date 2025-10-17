@@ -280,7 +280,7 @@ def autocomplete(prefix: str, max_results: int = 29) -> list[str]:
         return []
 # === Создание клавиатуры с кнопками ===
 def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> InlineKeyboardMarkup:
-    base = "https://dhamma.gift"
+    base = "https://f.dhamma.gift"
     search_url = f"{base}/{'' if lang == 'en' else 'ru/'}?p=-kn&q={query.replace(' ', '+')}"
     dict_url = f"https://dict.dhamma.gift/{'' if lang == 'en' else 'ru/'}search_html?q={query.replace(' ', '+')}"
 
@@ -304,7 +304,7 @@ def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> In
 
 # === Форматирование текста с кликабельными ссылками ===
 def format_message_with_links(text: str, query: str, lang: str = "en") -> str:
-    base = "https://dhamma.gift"
+    base = "https://f.dhamma.gift"
     search_url = f"{base}/{'' if lang == 'en' else 'ru/'}?p=-kn&q={query.replace(' ', '+')}"
     dict_url = f"https://dict.dhamma.gift/{'' if lang == 'en' else 'ru/'}search_html?q={query.replace(' ', '+')}"
 
@@ -321,7 +321,7 @@ async def set_menu_button(update: Update, lang: str):
     """Устанавливает кнопку меню в зависимости от языка"""
     user_id = update.effective_user.id
     button_text = "DG ru" if lang == "ru" else "DG en"
-    button_url = "https://dhamma.gift/ru/?source=pwa" if lang == "ru" else "https://dhamma.gift/?source=pwa"
+    button_url = "https://f.dhamma.gift/ru/?source=pwa" if lang == "ru" else "https://f.dhamma.gift/?source=pwa"
     
     # Создаем объект WebAppInfo с URL
     web_app_info = WebAppInfo(url=button_url)
@@ -339,7 +339,7 @@ async def set_menu_button(update: Update, lang: str):
 async def update_menu_button(user_id: int, lang: str, bot):
     """Обновляет кнопку меню в списке чатов"""
     button_text = "DG ru" if lang == "ru" else "DG en"
-    button_url = "https://dhamma.gift/ru/?source=pwa" if lang == "ru" else "https://dhamma.gift/?source=pwa"
+    button_url = "https://f.dhamma.gift/ru/?source=pwa" if lang == "ru" else "https://f.dhamma.gift/?source=pwa"
     
     menu_button = MenuButtonWebApp(
         text=button_text,
