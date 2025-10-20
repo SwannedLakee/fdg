@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var normalize = function(term) {
                 var ret = "";
+                term = term.toLowerCase(); 
                 for (var i = 0; i < term.length; i++) {
                     ret += accentMap[term.charAt(i)] || term.charAt(i);
                 }
