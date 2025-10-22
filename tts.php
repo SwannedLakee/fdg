@@ -322,6 +322,10 @@ function updateLinks(lang) {
     const readLink = document.getElementById('readLink');
     const homeLink = document.getElementById('homeLink');
 
+    // извлекаем q-параметр из текущего URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const qParam = urlParams.get('q');
+
     if (lang === 'ru') {
         readLink.href = '/ru/read.php';
         homeLink.href = '/ru';
@@ -329,7 +333,10 @@ function updateLinks(lang) {
         readLink.href = '/read.php';
         homeLink.href = '/';
     }
-    // Если pi — не менять ссылки
+    if (qParam) {
+        const separator = homeLink.href.includes('?') ? '&' : '?';
+        homeLink.href += `${separator}q=${encodeURIComponent(qParam)}`;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
