@@ -287,8 +287,11 @@ $mainscrollmodal = '<p >Из <a href=/r/?q=dn22&s=dukkha&lang=pli-rus#18.18>dn22
 $carouseltitle = 'Интересные Запросы';
 
 $slides = [
-         
-        
+               [
+        'title' => 'Pārami в Дхамме',
+        'desc' => 'не совпадают по всем пунктам с "современными" pārami',
+        'link' => '/ru/?q=p%C4%81rami',
+    ],        
           [
         'title' => 'Эквивалент SWOT-анализа в Дхамме',
         'desc' => 'Привлекательность, Недостаток-опасность, "Спасение" и явления, которые следует изучить в этом ключе',
@@ -1031,6 +1034,11 @@ $carouseltitle = 'Top Interesting Queries';
 $slides = [
 
 [
+  [
+    'title' => 'Pāramī in the Dhamma',
+    'desc' => 'do not correspond at all to the "modern" pāramīs',
+    'link' => '/en/?q=p%C4%81rami',
+],
     'title' => 'The Dhamma Equivalent of a SWOT Analysis',
     'desc' => 'Attractiveness, Danger-Drawback, "Escape", and phenomena to be examined through this lens',
     'link' => '/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
