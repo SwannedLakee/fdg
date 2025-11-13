@@ -21,7 +21,7 @@ if ( preg_match('/\/ru/', $actual_link)) {
   $base = "/ru/";
   $readerlang = "/r/";
   $aksharatext = "На латинице вы искали ";
-  function afterAkhsaramukhaResponse($convertedStr) {
+  function afterAksharamukhaResponse($convertedStr) {
     echo "На латинице вы искали $convertedStr<br><br>";
   }
 }
@@ -31,7 +31,7 @@ else if ( preg_match('/\/th/', $actual_link)) {
   $base = "/th/";
   $readerlang = $base . "read/";
   $aksharatext = "You search ";
-  function afterAkhsaramukhaResponse($convertedStr) {
+  function afterAksharamukhaResponse($convertedStr) {
     echo "in Latin script $convertedStr<br><br>";
   }
 }
@@ -42,7 +42,7 @@ else {
     $base = "/";
   $readerlang = $base . "read/";
     $aksharatext = "Romanized string is ";
-    function afterAkhsaramukhaResponse($convertedStr) {
+    function afterAksharamukhaResponse($convertedStr) {
     echo "Romanized string is $convertedStr<br><br>";
   }
     }
