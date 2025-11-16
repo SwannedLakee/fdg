@@ -11,6 +11,22 @@ export function buildSutta(slug, suttaArea, language) {
   }
   slug = slug.toLowerCase();
 
+
+function normalizeRoot(text) {
+  if (!text) return "";
+
+  // заменить все виды дефисов на пробел
+  text = text.replace(/[-—–]/g, ' ');
+
+  // убрать : ; “ ” ‘ ’ , " '
+  text = text.replace(/[:;“”‘’,"']/g, '');
+
+  // заменить . ? ! на |
+  text = text.replace(/[.?!]/g, ' | ');
+
+  return text;
+}
+
   if (slug.match(/bu|bi|kd|pvr/)) {
     translator = "brahmali";
     slug = slug.replace(/bu([psan])/, "bu-$1");
@@ -46,10 +62,17 @@ export function buildSutta(slug, suttaArea, language) {
         }
         let [openHtml, closeHtml] = html_text[segment].split(/{}/);
 
-        html += `${openHtml}${root ? root_text[segment] : translation_text[segment]}${closeHtml}<br>\n`;
-      });
 
-      const scLink = `<p class="sc-link"><a href="/read/?q=${slug}" title="SC Light"><img width="20px" alt="SC light" src="/read/images/favicon-sc-mn.png"></a> <a href="https://suttacentral.net/${slug}"><img height="20px" src="/assets/img/favicon-sc.png"></img></a></p>`;
+  // Чистим ТОЛЬКО root_text
+  const cleanRoot = normalizeRoot(root_text[segment]);
+
+
+  html += `${openHtml}${root ? cleanRoot : translation_text[segment]}${closeHtml}<br>\n`;
+});
+
+
+
+      const scLink = `<p class="sc-link"><a href="/read/?q=${slug}" title="DG read"><img width="20px" alt="DG read" src="/read/images/favicon-sc-mn.png"></a> <a href="https://suttacentral.net/${slug}"><img height="20px" src="/assets/img/favicon-sc.png"></img></a></p>`;
       
 
       const translatorByline =
