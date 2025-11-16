@@ -1,6 +1,11 @@
 <?php
 // Параметры запроса
 $slug = strtolower($_GET['q'] ?? '');
+
+$slug = preg_replace('/(\d+)\s+(\d+)/', '$1.$2', $slug);
+
+$slug = preg_replace('/([a-zA-Z]+)\s+(\d)/', '$1$2', $slug);
+
 $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 
 // Новые параметры для выбора переводчика
