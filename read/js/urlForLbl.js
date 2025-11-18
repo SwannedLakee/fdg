@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (q) {
         const diffLink = document.querySelector('a[href="/assets/diff"]');
         if (diffLink) {
-            diffLink.href = `/assets/diff/?one=${encodeURIComponent(q)}`;
+            diffLink.href = `/assets/diff/?one=${encodeURIComponent(q)}&two=${encodeURIComponent(q)}`;
         }
     }
 
