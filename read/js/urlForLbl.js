@@ -21,7 +21,7 @@
 }
 
 */
-
+/*
 document.addEventListener("DOMContentLoaded", () => {
     const q = new URLSearchParams(location.search).get("q");
 
@@ -47,3 +47,41 @@ document.addEventListener("DOMContentLoaded", () => {
         el.href = finalUrl;
     });
 });
+
+*/
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Обработчик клика для всех ссылок с data-href
+    document.querySelectorAll('.q-link').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault(); // предотвращаем стандартный переход
+
+            const baseUrl = el.getAttribute("data-href");
+            if (!baseUrl) return;
+
+            // Получаем q на момент клика
+            const q = new URLSearchParams(window.location.search).get("q");
+
+            let finalUrl = baseUrl;
+            if (q) {
+                finalUrl += (baseUrl.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(q);
+            }
+
+            // Переход по ссылке
+            window.location.href = finalUrl;
+        });
+    });
+
+    // Если нужно для конкретной ссылки "/assets/diff"
+    const diffLink = document.querySelector('a[href="/assets/diff"]');
+    if (diffLink) {
+        diffLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const q = new URLSearchParams(window.location.search).get("q");
+            const finalUrl = `/assets/diff/?one=${encodeURIComponent(q)}&two=${encodeURIComponent(q)}`;
+            window.location.href = finalUrl;
+        });
+    }
+});
+
