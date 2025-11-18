@@ -121,7 +121,9 @@ function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?tar
     });
   }
 
-  const url = base.replace('{{q}}', encodeURIComponent(query));
+//  const url = base.replace('{{q}}', encodeURIComponent(query));
+    const url = base.replace(/{{q}}/g, encodeURIComponent(query));
+
   const el = event.currentTarget;
 
   el.href = url;

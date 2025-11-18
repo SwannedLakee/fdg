@@ -213,7 +213,7 @@ echo '<!--
 
    <li>
   <a class="dropdown-item" title="Open word in PTS/Cone/DPD/DPR/CPD/Skr+/Wisdomlib (Alt + Q)" href="#" onclick="openDictionaries(event)"><i class="' . $iconimportant . '"></i> Open Pali + Skr + Wisdoml</a>
-<script src="/assets/js/openDicts.js"></script>
+<script src="/assets/js/openDicts.js" defer></script>
 </li>  
 
 <li>
@@ -425,6 +425,9 @@ echo '<!--
 
    <li><a class="dropdown-item" href="javascript:void(0)" target="_blank"  onclick="openWithQuery(event, \'/assets/diff/?lang=pl&one={{q}}&two={{q}}\')">' . $anamesdiff . '</a></li>
   
+    <li><a class="dropdown-item" href="/assets/listdiff.html">List Difference</a></li>
+
+
 <li><a class="dropdown-item" href="/assets/makelist.html">
   <i class="' . $iconimportant . '"></i>
 ' . $head5makelist . '</a></li>  
