@@ -21,38 +21,11 @@
 }
 
 */
-/*
+
 document.addEventListener("DOMContentLoaded", () => {
-    const q = new URLSearchParams(location.search).get("q");
-
-    // --- 1. Обновляем ссылку "/assets/diff" ---
-    if (q) {
-        const diffLink = document.querySelector('a[href="/assets/diff"]');
-        if (diffLink) {
-            diffLink.href = `/assets/diff/?one=${encodeURIComponent(q)}&two=${encodeURIComponent(q)}`;
-        }
-    }
-
-    // --- 2. Обновляем все ссылки с class="q-link" ---
-    document.querySelectorAll('.q-link').forEach(el => {
-        const baseUrl = el.getAttribute("data-href");
-        if (!baseUrl) return;
-
-        let finalUrl = baseUrl;
-
-        if (q) {
-            finalUrl += (baseUrl.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(q);
-        }
-
-        el.href = finalUrl;
-    });
-});
-
-*/
-
-
-    // Обработчик клика для всех ссылок с data-href
-    document.querySelectorAll('.q-link').forEach(el => {
+            const q = new URLSearchParams(window.location.search).get("q");
+     
+	 document.querySelectorAll('.q-link').forEach(el => {
         el.addEventListener('click', (e) => {
             e.preventDefault(); // предотвращаем стандартный переход
 
@@ -60,8 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!baseUrl) return;
 
             // Получаем q на момент клика
-            //const q = new URLSearchParams(window.location.search).get("q");
-			const q = document.getElementById('paliauto')?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
+			//const q = document.getElementById('paliauto')?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
 
             let finalUrl = baseUrl;
             if (q) {
@@ -78,10 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (diffLink) {
         diffLink.addEventListener('click', (e) => {
             e.preventDefault();
-            const q = new URLSearchParams(window.location.search).get("q");
             const finalUrl = `/assets/diff/?one=${encodeURIComponent(q)}&two=${encodeURIComponent(q)}`;
             window.location.href = finalUrl;
         });
     }
-});
 
+});
