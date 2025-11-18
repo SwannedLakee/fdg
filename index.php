@@ -1461,6 +1461,7 @@ const resources = [...commonResources, langSpecific];
     }, 5000);
 });
 </script>
+<script src="/read/js/urlForLbl.js" defer></script>
 
 <script src="/assets/js/settings.js"></script>
 

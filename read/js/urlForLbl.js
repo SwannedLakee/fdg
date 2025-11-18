@@ -61,7 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!baseUrl) return;
 
             // Получаем q на момент клика
-            const q = new URLSearchParams(window.location.search).get("q");
+            //const q = new URLSearchParams(window.location.search).get("q");
+			const q = document.getElementById('paliauto')?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
 
             let finalUrl = baseUrl;
             if (q) {
