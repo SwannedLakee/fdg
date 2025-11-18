@@ -446,7 +446,7 @@ echo '<!--
        </div>
     </li>  
          
-   <li><a class="dropdown-item" href="/ru/assets/linebyline.html">Создание Построчных Файлов</a></li>
+   <li><a class="dropdown-item q-link" href="/ru/assets/linebyline.html">Создание Построчных Файлов</a></li>
   
    <li><a class="dropdown-item" href="/ru/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
   <li><a class="dropdown-item" href="/assets/listdiff.html">Сравнить Два Списка</a></li>

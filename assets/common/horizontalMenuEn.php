@@ -420,7 +420,7 @@ echo '<!--
     </li>  
          
 
-   <li><a class="dropdown-item" href="/assets/linebyline.html">Line-by-line Translation Tool</a></li>   
+   <li><a class="dropdown-item q-link" href="/assets/linebyline.html">Line-by-line Translation Tool</a></li>   
 
 <li><a class="dropdown-item" href="/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
   <li><a class="dropdown-item" href="/assets/listdiff.html">List Difference</a></li>
