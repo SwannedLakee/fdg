@@ -446,9 +446,13 @@ echo '<!--
        </div>
     </li>  
          
-   <li><a class="dropdown-item q-link" href="/ru/assets/linebyline.html">Создание Построчных Файлов</a></li>
+   <li><a class="dropdown-item" href="javascript:void(0)" target="_blank"  onclick="openWithQuery(event, \'/ru/assets/linebyline.html?q={{q}}\')">Редактировать Перевод</a></li>
   
-   <li><a class="dropdown-item" href="/ru/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
+  
+  
+   <li><a class="dropdown-item" href="javascript:void(0)" target="_blank"  onclick="openWithQuery(event, \'/ru/assets/diff/?lang=pl&one={{q}}&two={{q}}\')">' . $anamesdiff . '</a></li>
+  
+
   <li><a class="dropdown-item" href="/assets/listdiff.html">Сравнить Два Списка</a></li>
 
  <li><a class="dropdown-item" href="/ru/assets/makelist.html">

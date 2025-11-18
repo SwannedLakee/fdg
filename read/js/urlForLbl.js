@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
 */
 
 
-document.addEventListener("DOMContentLoaded", () => {
     // Обработчик клика для всех ссылок с data-href
     document.querySelectorAll('.q-link').forEach(el => {
         el.addEventListener('click', (e) => {

@@ -420,12 +420,11 @@ echo '<!--
     </li>  
          
 
-   <li><a class="dropdown-item q-link" href="/assets/linebyline.html">Line-by-line Translation Tool</a></li>   
+   <li><a class="dropdown-item" href="javascript:void(0)" target="_blank"  onclick="openWithQuery(event, \'/assets/linebyline.html?q={{q}}\')">Line-by-line Translation Tool</a></li>   
 
-<li><a class="dropdown-item" href="/assets/diff/?lang=pl">' . $anamesdiff . '</a></li>
-  <li><a class="dropdown-item" href="/assets/listdiff.html">List Difference</a></li>
-      
 
+   <li><a class="dropdown-item" href="javascript:void(0)" target="_blank"  onclick="openWithQuery(event, \'/assets/diff/?lang=pl&one={{q}}&two={{q}}\')">' . $anamesdiff . '</a></li>
+  
 <li><a class="dropdown-item" href="/assets/makelist.html">
   <i class="' . $iconimportant . '"></i>
 ' . $head5makelist . '</a></li>  
