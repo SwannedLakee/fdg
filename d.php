@@ -627,7 +627,7 @@ $('#custom-search-filter').on('keyup input', function() {
 });
   // Перемещаем кнопки в controls-container
 $('.dt-buttons')
-  .addClass('me-2') 
+  .addClass('me-auto') 
   .prependTo('#datatables-controls-placeholder');
 
   // --- НОВАЯ ЛОГИКА ДЛЯ ПРОКРУТКИ К ЯКОРЮ ---
