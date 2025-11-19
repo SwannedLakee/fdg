@@ -182,6 +182,10 @@ $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
   transition: background-color 0.3s, border-color 0.3s;
 }
 
+* {
+    text-align: left;
+}
+
 #sutta-table td h1,
 #sutta-table td h2 {
   font-size: 1.8rem;
