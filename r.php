@@ -153,7 +153,7 @@ $result = $slug ? load_all_languages_interleaved($slug) : [
 <a href='$mainpagenoslash/r.php?q=mn1'><strong>mn1</strong></a>, 
 <a href='$mainpagenoslash/r.php?q=dn1'><strong>dn1</strong></a> 
 or <a href='$mainpagenoslash/r.php?q=an1'><strong>an1</strong></a>.<br><br>
-<a href='$mainpagenoslash/d.php'><strong>देवनगरि पाऌइ  </strong> / Devanagari Pali</a>
+<a href='$mainpagenoslash/d.php'><strong>देवनगरि पाऌइ</strong> / Devanagari Pali</a>
 
 </p>",
   'title' => ''
@@ -465,35 +465,55 @@ body.dark .dt-buttons .btn-secondary:hover {
 }
  </style>
 </head>
-<body data-bs-theme="light"> <div class="container-fluid controls-container">
- <div class="d-flex flex-wrap align-items-center justify-content-between">
-  <div class="d-flex align-items-center mb-2 mb-sm-0">
+<body data-bs-theme="light"> 
+<body data-bs-theme="light"> 
+<div class="container-fluid controls-container">
+ <div class="d-flex flex-wrap align-items-center">
+  <!-- Левый блок -->
+  <div class="d-flex align-items-center mb-2 mb-sm-0 me-auto flex-wrap">
+   
    <a href="/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
-    <svg fill="#979797" xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 0 547.596 547.596" stroke="#979797"><g><path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path></g></svg>
+    <svg fill="#979797" xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 0 547.596 547.596" stroke="#979797">
+     <g><path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path></g>
+    </svg>
    </a>
-   <a href="/" title="Home" class="me-2"><img width="24px" alt="dhamma.gift icon" src="/assets/img/gray-white.png"></a>
+
+   <a href="/" title="Home" class="me-2">
+    <img width="24px" alt="dhamma.gift icon" src="/assets/img/gray-white.png">
+   </a>
+
    <form id="slugForm" class="d-flex align-items-center flex-nowrap me-2" onsubmit="goToSlug(); return false;">
-    <input type="search" class="form-control form-control-sm rounded-pill" id="paliauto" name="q" value="<?= htmlspecialchars($slug) ?>" placeholder="e.g. dn9" style="width: 120px;" autofocus>
-    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-1 flex-shrink-0" style="width:30px; height:30px;">Go</button>
+    <input type="search" class="form-control form-control-sm rounded-pill" id="paliauto" name="q"
+           value="<?= htmlspecialchars($slug) ?>" placeholder="e.g. dn9" style="width: 120px;" autofocus>
+    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-1 flex-shrink-0"
+            style="width:30px; height:30px;">Go</button>
    </form>
-   <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)" class="toggle-dict-btn text-decoration-none text-dark me-2">
+
+   <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)"
+      class="toggle-dict-btn text-decoration-none text-dark me-2">
     <img src="/assets/svg/comment.svg" class="dictIcon" style="width: 20px; height: 20px;">
    </a>
+
    <a href="/tts.php" class="text-decoration-none text-dark me-2" title="Text-to-Speech Mode">🔊</a>
+
    <div class="form-check form-switch me-2">
     <input type="checkbox" class="form-check-input" id="darkSwitch">
    </div>
-  </div>
-  
-     <a href="/d.php" class="text-decoration-none text-dark" title="Devanagari Mode">
+
+   <a href="/d.php" class="text-decoration-none text-dark" title="Devanagari Mode">
     <img src="/assets/svg/devanagari_d.svg" style="width: 35px; height: 35px;">
-     </a> 
-     
+   </a>
+
+  </div>
+
+  <!-- Правый блок -->
   <div id="datatables-controls-placeholder" class="d-flex align-items-center">
     <input type="search" id="custom-search-filter" class="form-control form-control-sm" placeholder="Filter...">
   </div>
+
  </div>
 </div>
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
