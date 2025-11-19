@@ -148,12 +148,16 @@ function load_all_languages_interleaved($slug) {
   return ['content' => $html_output, 'title' => $found_title];
 }
 $result = $slug ? load_all_languages_interleaved($slug) : [
-'content' => "<p class='p-3'>Enter 
-<a href='$mainpagenoslash/d.php?q=sn1'><strong>sn1</strong></a>, 
-<a href='$mainpagenoslash/d.php?q=mn1'><strong>mn1</strong></a>, 
-<a href='$mainpagenoslash/d.php?q=dn1'><strong>dn1</strong></a> 
-or <a href='$mainpagenoslash/d.php?q=an1'><strong>an1</strong></a>.<br>
-<a href='$mainpagenoslash/r.php'><strong>Romanized Pali</strong></a>
+'content' => "<p class='p-3'><a href='$mainpagenoslash/d.php?q=sn1'><strong>स्न्१</strong></a> वा 
+ 
+<a href='$mainpagenoslash/d.php?q=mn1'><strong>म्न्१</strong></a>
+वा
+<a href='$mainpagenoslash/d.php?q=dn1'><strong>द्न्१</strong></a> 
+वा <a href='$mainpagenoslash/d.php?q=an1'><strong>अन्१</strong></a>
+वा | 
+<br>
+<br>
+<a href='$mainpagenoslash/r.php'><strong>रोमञ्ञ पाऌइ </strong> / Romanized Pali</a>
 </p>",
   'title' => ''
 ];
