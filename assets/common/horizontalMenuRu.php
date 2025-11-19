@@ -408,7 +408,7 @@ echo '<!--
 <a href="/r.php" class="text-reset" target="Читать Книгами или Главами"
    onclick="
        (function(e){
-           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase().replace(/ṁ/g,'ṃ') || '';
+           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase()|| \'\';
            let match = q.match(/^([a-z]+[0-9]+)/i);
            let base = match ? match[1] : q;
            return openWithQuery(e, \'/r.php?q=\' + encodeURIComponent(base) + \'#\' + encodeURIComponent(q));
@@ -416,7 +416,8 @@ echo '<!--
    ">Read+</a>
 
 
-       <!--  <a class="text-reset" target=""  href="/new/">new</a> -->                   <a class="text-reset" target="" href="' . $readerPage . '"> индекс</a>   
+       <!--  <a class="text-reset" target=""  href="/new/">new</a> -->                 
+	   <a class="text-reset" target="" href="' . $readerPage . '"> индекс</a>   
             <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">sutta</a>        
       <a class="text-reset" target="" href="/ru/pm.php?expand=true">bupm</a>        
       <a class="text-reset" target="" href="/ru/bipm.php?expand=true">bipm</a> 

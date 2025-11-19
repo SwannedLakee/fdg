@@ -376,7 +376,7 @@ echo '<!--
 <a href="/r.php" class="text-reset" target="Read by Books or Chapters"
    onclick="
        (function(e){
-           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase().replace(/ṁ/g,'ṃ') || '';
+           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase() || \'\';
            let match = q.match(/^([a-z]+[0-9]+)/i);
            let base = match ? match[1] : q;
            return openWithQuery(e, \'/r.php?q=\' + encodeURIComponent(base) + \'#\' + encodeURIComponent(q));
