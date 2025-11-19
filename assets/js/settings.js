@@ -1003,6 +1003,36 @@ document.addEventListener("keydown", function (event) {
     const targetUrl = determineTargetUrl(false);
     window.location.href = targetUrl;
   }
+  
+  // === Ctrl + 3: клик по "Читать Главами" ===
+if (isCtrlPressed && event.key === "3") {
+    event.preventDefault();
+
+    const input = document.getElementById('paliauto');
+    const q = input?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || '';
+
+    // Если q пустое, ничего не делаем
+    if (!q) return;
+
+    // Корень для ?q=
+    const match = q.match(/^([a-z]+[0-9]+)/i);
+    const base = match ? match[1] : q;
+
+    // Находим кнопку (она может быть /ru/r.php или /r.php)
+    const chapterBtn = document.querySelector('#chapter-button a');
+    if (!chapterBtn) return;
+
+    const href = chapterBtn.getAttribute("href");
+
+    // Формируем итоговый URL
+    const finalUrl =
+        `${href}?q=${encodeURIComponent(base)}#${encodeURIComponent(q)}`;
+
+    window.location.href = finalUrl;
+}
+
+  
+  
 });
 
 document.addEventListener("keydown", function (event) {
@@ -1012,12 +1042,12 @@ document.addEventListener("keydown", function (event) {
 
   if (event.ctrlKey && event.shiftKey && event.code === "Digit1") {
     event.preventDefault();
-    console.log("Сочетание Ctrl+Shift+1 поймано!");
+ //   console.log("Сочетание Ctrl+Shift+1 поймано!");
 
     const url = new URL(window.location.href);
     let path = url.pathname;
 
-    console.log("Текущий путь:", path);
+   // console.log("Текущий путь:", path);
 
     let newUrlStr;
 
