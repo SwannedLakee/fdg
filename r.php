@@ -483,6 +483,11 @@ body.dark .dt-buttons .btn-secondary:hover {
     <input type="checkbox" class="form-check-input" id="darkSwitch">
    </div>
   </div>
+  
+     <a href="/d.php" class="text-decoration-none text-dark me-2" title="Devanagari Mode">
+    <img src="/assets/svg/devanagari_d.svg" style="width: 25px; height: 25px;">
+     </a> 
+     
   <div id="datatables-controls-placeholder" class="d-flex align-items-center">
     <input type="search" id="custom-search-filter" class="form-control form-control-sm" placeholder="Filter...">
   </div>

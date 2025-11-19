@@ -149,10 +149,10 @@ function load_all_languages_interleaved($slug) {
 }
 $result = $slug ? load_all_languages_interleaved($slug) : [
 'content' => "<p class='p-3'>Enter 
-<a href='$mainpagenoslash/r.php?q=sn1'><strong>sn1</strong></a>, 
-<a href='$mainpagenoslash/r.php?q=mn1'><strong>mn1</strong></a>, 
-<a href='$mainpagenoslash/r.php?q=dn1'><strong>dn1</strong></a> 
-or <a href='$mainpagenoslash/r.php?q=an1'><strong>an1</strong></a>.<br>
+<a href='$mainpagenoslash/d.php?q=sn1'><strong>sn1</strong></a>, 
+<a href='$mainpagenoslash/d.php?q=mn1'><strong>mn1</strong></a>, 
+<a href='$mainpagenoslash/d.php?q=dn1'><strong>dn1</strong></a> 
+or <a href='$mainpagenoslash/d.php?q=an1'><strong>an1</strong></a>.<br>
 <a href='$mainpagenoslash/r.php'><strong>Romanized Pali</strong></a>
 </p>",
   'title' => ''
@@ -483,6 +483,10 @@ body.dark .dt-buttons .btn-secondary:hover {
     <input type="checkbox" class="form-check-input" id="darkSwitch">
    </div>
   </div>
+      <a href="/r.php" class="text-decoration-none text-dark me-2" title="Romanized Mode">
+    <img src="/assets/svg/devanagari_r.svg" style="width: 25px; height: 25px;">
+     </a>  
+  
   <div id="datatables-controls-placeholder" class="d-flex align-items-center">
     <input type="search" id="custom-search-filter" class="form-control form-control-sm" placeholder="Filter...">
   </div>
