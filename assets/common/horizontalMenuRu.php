@@ -402,13 +402,19 @@ echo '<!--
          <a class="text-reset" target=""  href="/old.php">old</a> 
         <a class="text-reset" target="" target="TTS Текст-в-речь" href="/ru/tts.php" onclick="return openWithQuery(event, \'/ru/tts.php?q={{q}}\')" >TTS</a>  
 
-<!--      <a href="/ru/r.php" class="text-reset" target="Читать Никаи или Саньютты целиком на одной странице" onclick="return openWithQuery(event, \'/ru/r.php?q={{q}}\')" >Read+</a>  -->
+<!--  <a href="/ru/r.php" id="chapter-button" class="text-reset" target="Читать Книгами или Главами" >Read+</a>  
+	  <script src="/read/js/urlForLbl.js" defer></script> -->
 
-      <a href="/ru/r.php" id="chapter-button" class="text-reset" target="Читать Книгами или Главами (Ctrl+3)" >Read+</a>  
-	  
-	  <script src="/read/js/urlForLbl.js" defer></script>
+<a href="/r.php" class="text-reset" target="Читать Книгами или Главами"
+   onclick="
+       (function(e){
+           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase().replace(/ṁ/g,'ṃ') || '';
+           let match = q.match(/^([a-z]+[0-9]+)/i);
+           let base = match ? match[1] : q;
+           return openWithQuery(e, \'/r.php?q=\' + encodeURIComponent(base) + \'#\' + encodeURIComponent(q));
+       })(event)
+   ">Read+</a>
 
-	  
 
        <!--  <a class="text-reset" target=""  href="/new/">new</a> -->                   <a class="text-reset" target="" href="' . $readerPage . '"> индекс</a>   
             <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">sutta</a>        

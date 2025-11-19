@@ -373,10 +373,16 @@ echo '<!--
           <a class="text-reset" target=""   href="/old.php">old</a>
         <a class="text-reset" target="TTS Text-to-speech" href="/tts.php" onclick="return openWithQuery(event, \'/tts.php?q={{q}}\')" >TTS</a>  
 
-      <a href="/r.php" id="chapter-button" class="text-reset" target="Read by Books or Chapters (Ctrl+3)" >Read+</a>  
-	  
-	  <script src="/read/js/urlForLbl.js" defer></script>
-
+<a href="/r.php" class="text-reset" target="Read by Books or Chapters"
+   onclick="
+       (function(e){
+           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase().replace(/ṁ/g,'ṃ') || '';
+           let match = q.match(/^([a-z]+[0-9]+)/i);
+           let base = match ? match[1] : q;
+           return openWithQuery(e, \'/r.php?q=\' + encodeURIComponent(base) + \'#\' + encodeURIComponent(q));
+       })(event)
+   ">Read+</a>
+   
 	       <!--  <a class="text-reset" target=""  href="/new/">new</a> --> 
                   <a class="text-reset" target=""  href="' . $readerPage . '">index</a>  
 <a class="text-reset" target=""  href="/assets/texts/sutta.php">sutta</a>                       
