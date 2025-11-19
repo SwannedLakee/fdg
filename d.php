@@ -487,9 +487,26 @@ body.dark .dt-buttons .btn-secondary:hover {
     <input type="checkbox" class="form-check-input" id="darkSwitch">
    </div>
   </div>
-      <a href="/r.php" class="text-decoration-none text-dark" title="Romanized Mode">
+      <a href="/r.php" class="mode-switch text-decoration-none text-dark" title="Romanized Mode">
     <img src="/assets/svg/devanagari_r.svg" style="width: 35px; height: 35px;">
      </a>  
+
+
+<script>
+  document.querySelectorAll('.mode-switch').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const target = this.getAttribute('href');   // /r.php или /d.php
+        const url = new URL(window.location.href);
+
+        // меняем только имя файла
+        url.pathname = url.pathname.replace(/(d|r)\.php$/, target.replace('/', ''));
+
+        window.location.href = url.toString();
+    });
+});
+</script>
   
   <div id="datatables-controls-placeholder" class="d-flex align-items-center">
     <input type="search" id="custom-search-filter" class="form-control form-control-sm" placeholder="Filter...">
