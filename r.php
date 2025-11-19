@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 // reader.php
 // --- ПАРАМЕТРЫ ---
 // Получаем slug и очищаем его от возможных якорей (например, #ll)
