@@ -487,8 +487,8 @@ body.dark .dt-buttons .btn-secondary:hover {
     <input type="checkbox" class="form-check-input" id="darkSwitch">
    </div>
   </div>
-      <a href="/r.php" class="text-decoration-none text-dark me-2" title="Romanized Mode">
-    <img src="/assets/svg/devanagari_r.svg" style="width: 25px; height: 25px;">
+      <a href="/r.php" class="text-decoration-none text-dark" title="Romanized Mode">
+    <img src="/assets/svg/devanagari_r.svg" style="width: 35px; height: 35px;">
      </a>  
   
   <div id="datatables-controls-placeholder" class="d-flex align-items-center">

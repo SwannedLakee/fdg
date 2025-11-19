@@ -485,8 +485,8 @@ body.dark .dt-buttons .btn-secondary:hover {
    </div>
   </div>
   
-     <a href="/d.php" class="text-decoration-none text-dark me-2" title="Devanagari Mode">
-    <img src="/assets/svg/devanagari_d.svg" style="width: 25px; height: 25px;">
+     <a href="/d.php" class="text-decoration-none text-dark" title="Devanagari Mode">
+    <img src="/assets/svg/devanagari_d.svg" style="width: 35px; height: 35px;">
      </a> 
      
   <div id="datatables-controls-placeholder" class="d-flex align-items-center">
