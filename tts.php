@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 // Параметры запроса
 $slug = strtolower($_GET['q'] ?? '');
 
@@ -326,36 +327,6 @@ function updateLanguageSwitcher(lang) {
     }
 }
 
-function updateLinks(lang) {
-    const readLink = document.getElementById('readLink');
-    const homeLink = document.getElementById('homeLink');
-
-    // извлекаем q-параметр из текущего URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const qParam = urlParams.get('q');
-
-    if (lang === 'ru') {
-        readLink.href = '/ru/read.php';
-        homeLink.href = '/ru';
-    } else if (lang.startsWith('en')) {
-        readLink.href = '/read.php';
-        homeLink.href = '/';
-    }
-    if (qParam) {
-        const separator = homeLink.href.includes('?') ? '&' : '?';
-        homeLink.href += `${separator}q=${encodeURIComponent(qParam)}`;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const lang = detectLanguage();
-    updateLanguageSwitcher(lang);
-    updateLinks(lang);
-
-    document.getElementById('darkSwitch').addEventListener('change', function() {
-        document.body.classList.toggle('dark-mode');
-    });
-});
 </script>
 <div class="container mt-3">
   <div class="d-flex flex-wrap align-items-center justify-content-between">
@@ -367,9 +338,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </svg>
       </a>
 
-      <a id="homeLink" href="/" title="Sutta and Vinaya search" rel="noreferrer" class="me-1">
+      <a id="homeLink" href="/" title="Sutta and Vinaya search" rel="noreferrer" class="me-0">
         <img width="24px" alt="dhamma.gift icon" class="me-1" src="/assets/img/gray-white.png">
       </a>
+
+	<div id="chapter-button" class="mode-switch me-1">
+<a href="/r.php" title="Read Chapters (Ctrl+3)" rel="noreferrer"
+><img width="28px"
+ alt="Read by Chapters" src="/assets/svg/book.svg"></a>
+</div>
 
     <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)" class="toggle-dict-btn text-decoration-none text-black me-1">
       <img src="/assets/svg/comment.svg" class="dictIcon">
@@ -385,7 +362,11 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="ms-1 form-check form-switch">
         <input type="checkbox" class="form-check-input" id="darkSwitch">
       </div>
-      <a href="/assets/common/ttsHelp.html" class="text-decoration-none text-muted ms-2">?</a>
+      <a href="/assets/common/ttsHelp.html" class="text-decoration-none text-muted ms-0">
+<img width="15px"
+ alt="Help" src="/assets/svg/question.svg"></a>
+        
+      </a>
     </div>
 
     <div class="d-inline-flex align-items-center lang-switcher order-2 order-sm-3 mb-2 mb-sm-0">
@@ -934,8 +915,10 @@ window.speechSynthesis.onvoiceschanged = function() {
 };
 </script>
   <script src="/assets/js/autopali.js" defer></script>
+  <script src="/assets/js/extraReadingModes.js" defer></script>
       <script src="/assets/js/smoothScroll.js" defer></script>
       <script src="/assets/js/paliLookup.js"></script>
       <script src="/assets/js/settings.js"></script>
+      <script src="/read/js/urlForLbl.js" defer></script>
 </body>
 </html>
