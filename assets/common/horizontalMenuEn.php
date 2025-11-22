@@ -409,7 +409,7 @@ echo '<!--
          </li>   
 		 
 		               <li>
-         <div class="dropdown-item ">Principles
+         <div class="dropdown-item ">Principles:
          <a class="text-reset" target="_blank"   href="/assets/common/o-en.html">Translation</a>
                    <a class="text-reset" target="" href="/assets/common/rationale-en.html">Rationale</a>  
        </div>

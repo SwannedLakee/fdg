@@ -445,7 +445,7 @@ echo '<!--
      
               <li>
          <div class="dropdown-item ">Принципы
-         <a class="text-reset" target="_blank"   href="/assets/common/o.html">Перевод</a>
+         <a class="text-reset" target="_blank"   href="/assets/common/o.html">Перевода</a>
                    <a class="text-reset" target="" href="/assets/common/rationale.html">Проблематика</a>  
        </div>
          </li>   
