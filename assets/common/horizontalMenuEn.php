@@ -407,6 +407,13 @@ echo '<!--
                    <a class="text-reset" target="_blank"  href="https://benmneb.github.io/pts-converter/">#2</a>  
        </div>
          </li>   
+		 
+		               <li>
+         <div class="dropdown-item ">Principles
+         <a class="text-reset" target="_blank"   href="/assets/common/o-en.html">Translation</a>
+                   <a class="text-reset" target="" href="/assets/common/rationale-en.html">Rationale</a>  
+       </div>
+         </li>   
 
      <li>
          <div class="dropdown-item "> 
