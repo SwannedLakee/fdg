@@ -27,7 +27,7 @@ const records = [
 "abl    pl      pron       tvaṃ    -       tumhehi",
 "gen    pl      pron       tvaṃ    -       tumhaṃ tumhākaṃ vo",
 "loc    pl      pron       tvaṃ    -       tumhesu",
-"nom    sgta      -       sa so",
+"nom    sg      pron      ta      -       sa so",
 "acc    sg      pron      ta      -       taṃ naṃ",
 "instr  sg      pron      ta      -       tena nena",
 "dat    sg      pron      ta      -       tassa nassa",
