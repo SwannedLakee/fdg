@@ -99,7 +99,7 @@ function loadContent($slug, $type) {
     // Загрузка основного контента
     $content = shell_exec("cat " . escapeshellarg($file) . " | $jq");
     $json_content = json_decode(shell_exec("cat " . escapeshellarg($file)), true) ?: [];
-
+/*
     // Применяем HTML-форматирование, если есть шаблоны
     $formatted_content = '';
     if (!empty($json_content)) {
@@ -116,6 +116,34 @@ function loadContent($slug, $type) {
     // Если нет HTML-шаблонов, используем обычное форматирование из $content
     if (empty($html_templates)) {
         $formatted_content = trim($content);
+    }
+
+*/
+
+// Применяем HTML-форматирование, если есть шаблоны
+    $formatted_content = '';
+    if (!empty($json_content)) {
+        // Проверяем, является ли скрипт Devanagari (по умолчанию dev, если не lat и тип pali)
+        $isDevanagari = ($type === 'pali' && ($_GET['script'] ?? 'dev') !== 'lat');
+
+        foreach ($json_content as $key => $text) {
+            
+            // Логика обработки текста для Devanagari (аналог JS)
+            if ($isDevanagari) {
+                // 1. Замена тире и дефисов на пробел
+                $text = str_replace(['-', '—', '–'], ' ', $text);
+                // 2. Удаление пунктуации и кавычек
+                $text = str_replace([':', ';', '“', '”', '‘', '’', ',', '"', "'"], '', $text);
+                // 3. Замена знаков конца предложения на вертикальную черту
+                $text = str_replace(['.', '?', '!'], ' | ', $text);
+            }
+
+            $template = $html_templates[$key] ?? '<p>{}</p>';
+            // **ИСПРАВЛЕНИЕ 2: Добавлен пробел после каждого сегмента**
+            $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
+        }
+        // Удаляем лишний пробел в конце всей строки
+        $formatted_content = trim($formatted_content);
     }
 
     // Получаем информацию о переводчике
