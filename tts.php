@@ -109,7 +109,7 @@ function loadContent($slug, $type) {
             $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
         }
         // Удаляем лишний пробел в конце всей строки
-        $formatted_content = trim($formatted_content);
+  //      $formatted_content = trim($formatted_content);
     }
 
 
