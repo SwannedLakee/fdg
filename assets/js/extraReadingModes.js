@@ -36,16 +36,28 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-  document.querySelectorAll('.mode-switch').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.preventDefault();
+    const scriptBtn = document.getElementById('script-toggle');
+    
+    if (scriptBtn) {
+        scriptBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Отменяем стандартный переход по ссылке
 
-        const target = this.getAttribute('href');   // /r.php или /d.php
-        const url = new URL(window.location.href);
+            // Парсим текущий URL
+            const url = new URL(window.location.href);
 
-        // меняем только имя файла
-        url.pathname = url.pathname.replace(/(d|r)\.php$/, target.replace('/', ''));
+            // Проверяем, включен ли сейчас режим dev
+            if (url.searchParams.get('script') === 'dev') {
+                // Если включен -> удаляем параметр (возврат к латинице)
+                url.searchParams.delete('script');
+            } else {
+                // Если выключен -> добавляем параметр (переход к деванагари)
+                url.searchParams.set('script', 'dev');
+            }
 
-        window.location.href = url.toString();
-    });
-});
+            // Перезагружаем страницу с обновленным URL
+            window.location.href = url.toString();
+        });
+    }
+
+
+

@@ -3,9 +3,9 @@ error_reporting(E_ERROR | E_PARSE);
 // reader.php
 
 // --- ПАРАМЕТРЫ ---
-// Получаем slug и очищаем его от якорей
+// Получаем slug и очищаем его от якорей и лишних символов
 $raw_slug = $_GET['q'] ?? '';
-$slug = strtolower(preg_replace('/#.*$/', '', $raw_slug));
+$slug = strtolower(preg_replace('/[#?].*$/', '', $raw_slug));
 
 // Получаем режим скрипта (dev - Деванагари, иначе - латиница)
 $script_param = $_GET['script'] ?? '';
@@ -42,16 +42,14 @@ function load_all_languages_interleaved($slug, $is_dev) {
       ],
     ];
 
-    // Логика для PALI путей отличается в зависимости от режима
+    // Логика для PALI путей
     if ($type === 'pali') {
         if ($is_dev) {
-            // Пути для Деванагари
             $base_paths['pali'] = [
                 "$basedir/assets/texts/devanagari/root/pli/ms/sutta/",
                 "$basedir/assets/texts/devanagari/root/pli/ms/vinaya/"
             ];
         } else {
-            // Пути для Латиницы (стандартные)
             $base_paths['pali'] = [
                 "$basedir/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/sutta/",
                 "$basedir/suttacentral.net/sc-data/sc_bilara_data/root/pli/ms/vinaya/"
@@ -64,7 +62,6 @@ function load_all_languages_interleaved($slug, $is_dev) {
    
     $escaped_search_paths = implode(' ', array_map('escapeshellarg', $search_paths));
     
-    // Поиск директории
     $dir_check_cmd = "find $escaped_search_paths -type d -name " . escapeshellarg($slug) . " -print -quit";
     $found_dir = shell_exec($dir_check_cmd);
     $is_directory_search = !empty(trim($found_dir));
@@ -79,7 +76,7 @@ function load_all_languages_interleaved($slug, $is_dev) {
           $file_pattern = "{$slug}_html.json";
           break;
         case 'pali':
-          // Выбор паттерна файла в зависимости от режима
+          // Выбор файла: _rootd (Devanagari) или _root (Roman)
           if ($is_dev) {
               $file_pattern = "{$slug}_rootd-pli-ms.json";
           } else {
@@ -134,18 +131,21 @@ function load_all_languages_interleaved($slug, $is_dev) {
       $row_id = htmlspecialchars($key);
       $template = $data_sources['html'][$key] ?? '{}';
 
-      // --- ОБРАБОТКА ТЕКСТА (Для обоих режимов: и Dev, и Lat) ---
+      // --- ПОЛУЧЕНИЕ И ОБРАБОТКА ПАЛИ ---
       $raw_pali = $data_sources['pali'][$key] ?? '';
 
-      // 1. Замена тире и дефисов на пробел
-      $raw_pali = str_replace(['-', '—', '–'], ' ', $raw_pali);
-      // 2. Удаление пунктуации и кавычек
-      $raw_pali = str_replace([':', ';', '“', '”', '‘', '’', ',', '"', "'"], '', $raw_pali);
-      // 3. Замена знаков конца предложения на вертикальную черту
-      $raw_pali = str_replace(['.', '?', '!'], ' | ', $raw_pali);
+      // Применяем очистку ТОЛЬКО если включен режим Devanagari
+      if ($is_dev) {
+          // 1. Замена тире и дефисов на пробел
+          $raw_pali = str_replace(['-', '—', '–'], ' ', $raw_pali);
+          // 2. Удаление пунктуации и кавычек
+          $raw_pali = str_replace([':', ';', '“', '”', '‘', '’', ',', '"', "'"], '', $raw_pali);
+          // 3. Замена знаков конца предложения на вертикальную черту
+          $raw_pali = str_replace(['.', '?', '!'], ' | ', $raw_pali);
+      }
 
       $pali_text = htmlspecialchars($raw_pali, ENT_QUOTES, 'UTF-8');
-      // --- КОНЕЦ ОБРАБОТКИ ---
+      // ------------------------------------
 
       $en_text = htmlspecialchars($data_sources['en'][$key] ?? '', ENT_QUOTES, 'UTF-8');
       $ru_text = htmlspecialchars($data_sources['ru'][$key] ?? '', ENT_QUOTES, 'UTF-8');
@@ -186,9 +186,8 @@ function load_all_languages_interleaved($slug, $is_dev) {
 if ($slug) {
     $result = load_all_languages_interleaved($slug, $is_dev);
 } else {
-    // Стартовая страница (пустой slug)
+    // Стартовая страница
     if ($is_dev) {
-        // Приветствие для режима Devanagari
         $welcome_msg = "<p class='p-3'><a href='$mainpagenoslash/r.php?q=sn1&script=dev'><strong>स्न्१</strong></a> वा 
         <a href='$mainpagenoslash/r.php?q=mn1&script=dev'><strong>म्न्१</strong></a> वा
         <a href='$mainpagenoslash/r.php?q=dn1&script=dev'><strong>द्न्१</strong></a> वा 
@@ -196,7 +195,6 @@ if ($slug) {
         <br><br>
         <a href='$mainpagenoslash/r.php'><strong>रोमञ्ञ पाऌइ </strong> / Romanized Pali</a></p>";
     } else {
-        // Приветствие для режима Roman
         $welcome_msg = "<p class='p-3'>Enter 
         <a href='$mainpagenoslash/r.php?q=sn1'><strong>sn1</strong></a>, 
         <a href='$mainpagenoslash/r.php?q=mn1'><strong>mn1</strong></a>, 
@@ -210,16 +208,14 @@ if ($slug) {
 $content = $result['content'];
 $title = !empty($result['title']) ? $result['title'] : strtoupper($slug);
 
-// Логика кнопки переключения (URL и иконка)
+// --- ВИЗУАЛЬНАЯ НАСТРОЙКА КНОПКИ (URL формирует JS) ---
 if ($is_dev) {
-    // Если сейчас Dev, кнопка ведет на обычный (удаляем script)
-    $toggle_script_url = "/r.php" . ($slug ? "?q=$slug" : "");
-    $toggle_icon = "/assets/svg/devanagari_r.svg"; // Иконка "R" (вернуться к Roman)
+    // Если сейчас Dev, показываем иконку для перехода в Roman
+    $toggle_icon = "/assets/svg/devanagari_r.svg";
     $toggle_title = "Romanized Mode";
 } else {
-    // Если сейчас Roman, кнопка ведет на Dev
-    $toggle_script_url = "/r.php?script=dev" . ($slug ? "&q=$slug" : "");
-    $toggle_icon = "/assets/svg/devanagari_d.svg"; // Иконка "D" (включить Devanagari)
+    // Если сейчас Roman, показываем иконку для перехода в Dev
+    $toggle_icon = "/assets/svg/devanagari_d.svg";
     $toggle_title = "Devanagari Mode";
 }
 ?>
@@ -394,7 +390,7 @@ body.dark .dt-buttons .btn-secondary:hover {
   min-width: 150px;
 }
 
-/* --- СТИЛИ ТАБЛИЦЫ С РАВНОМЕРНЫМ РАСПРЕДЕЛЕНИЕМ КОЛОНОК --- */
+/* --- СТИЛИ ТАБЛИЦЫ --- */
 #sutta-table {
   table-layout: fixed;
   width: 100%;
@@ -410,13 +406,11 @@ body.dark .dt-buttons .btn-secondary:hover {
   hyphens: auto;
 }
 
-/* Базовые стили для текстовых колонок */
 #sutta-table th:not(:nth-child(1)), 
 #sutta-table td:not(:nth-child(1)) {
   width: auto;
 }
 
-/* Случай 1: Только одна текстовая колонка видна */
 #sutta-table th:nth-child(2):last-child,
 #sutta-table td:nth-child(2):last-child,
 #sutta-table th:nth-child(3):last-child,
@@ -426,7 +420,6 @@ body.dark .dt-buttons .btn-secondary:hover {
   width: 95% !important;
 }
 
-/* Случай 2: Две текстовые колонки видны */
 #sutta-table th:nth-child(2):nth-last-child(2),
 #sutta-table td:nth-child(2):nth-last-child(2),
 #sutta-table th:nth-child(3):nth-last-child(1),
@@ -438,7 +431,6 @@ body.dark .dt-buttons .btn-secondary:hover {
   width: 47.5% !important;
 }
 
-/* Случай 3: Все три текстовые колонки видны */
 #sutta-table th:nth-child(2):nth-last-child(3),
 #sutta-table td:nth-child(2):nth-last-child(3),
 #sutta-table th:nth-child(3):nth-last-child(2),
@@ -449,67 +441,36 @@ body.dark .dt-buttons .btn-secondary:hover {
 }
 
 @media (max-width: 768px) {
-  #sutta-table thead {
-    display: none;
-  }
+  #sutta-table thead { display: none; }
   #sutta-table, #sutta-table tbody, #sutta-table tr, #sutta-table td {
-    display: block;
-    width: 100% !important;
+    display: block; width: 100% !important;
   }
   #sutta-table tr {
-    margin-bottom: 1rem;
-    border: 1px solid var(--bs-border-color, #dee2e6);
-    border-radius: 0.25rem;
-    overflow: hidden;
+    margin-bottom: 1rem; border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.25rem; overflow: hidden;
   }
   #sutta-table td {
-    text-align: left;
-    border: none;
-    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
-    padding: 0.75rem;
+    text-align: left; border: none; border-bottom: 1px solid var(--bs-border-color, #dee2e6); padding: 0.75rem;
   }
-  #sutta-table tr td:last-child {
-    border-bottom: none;
-  }
+  #sutta-table tr td:last-child { border-bottom: none; }
   #sutta-table td[data-column]::before {
-    content: attr(data-column);
-    font-weight: bold;
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--bs-body-color);
+    content: attr(data-column); font-weight: bold; display: block; margin-bottom: 0.5rem; color: var(--bs-body-color);
   }
-  #sutta-table tr + tr td[data-column]::before {
-    display: none;
-  }
-  .controls-container {
-    position: static;
-  }
-  #sutta-table th:nth-child(2):last-child,
-  #sutta-table td:nth-child(2):last-child,
-  #sutta-table th:nth-child(3):last-child,
-  #sutta-table td:nth-child(3):last-child,
-  #sutta-table th:nth-child(4):last-child,
-  #sutta-table td:nth-child(4):last-child {
-    width: 100% !important;
-  }
-  #sutta-table th:nth-child(2):nth-last-child(2),
-  #sutta-table td:nth-child(2):nth-last-child(2),
-  #sutta-table th:nth-child(3):nth-last-child(1),
-  #sutta-table td:nth-child(3):nth-last-child(1),
-  #sutta-table th:nth-child(3):nth-last-child(2),
-  #sutta-table td:nth-child(3):nth-last-child(2),
-  #sutta-table th:nth-child(4):nth-last-child(1),
-  #sutta-table td:nth-child(4):nth-last-child(1) {
-    width: 100% !important;
-  }
-  #sutta-table th:nth-child(2):nth-last-child(3),
-  #sutta-table td:nth-child(2):nth-last-child(3),
-  #sutta-table th:nth-child(3):nth-last-child(2),
-  #sutta-table td:nth-child(3):nth-last-child(2),
-  #sutta-table th:nth-child(4):nth-last-child(1),
-  #sutta-table td:nth-child(4):nth-last-child(1) {
-    width: 100% !important;
-  }
+  #sutta-table tr + tr td[data-column]::before { display: none; }
+  .controls-container { position: static; }
+  
+  #sutta-table th:nth-child(2):last-child, #sutta-table td:nth-child(2):last-child,
+  #sutta-table th:nth-child(3):last-child, #sutta-table td:nth-child(3):last-child,
+  #sutta-table th:nth-child(4):last-child, #sutta-table td:nth-child(4):last-child { width: 100% !important; }
+
+  #sutta-table th:nth-child(2):nth-last-child(2), #sutta-table td:nth-child(2):nth-last-child(2),
+  #sutta-table th:nth-child(3):nth-last-child(1), #sutta-table td:nth-child(3):nth-last-child(1),
+  #sutta-table th:nth-child(3):nth-last-child(2), #sutta-table td:nth-child(3):nth-last-child(2),
+  #sutta-table th:nth-child(4):nth-last-child(1), #sutta-table td:nth-child(4):nth-last-child(1) { width: 100% !important; }
+
+  #sutta-table th:nth-child(2):nth-last-child(3), #sutta-table td:nth-child(2):nth-last-child(3),
+  #sutta-table th:nth-child(3):nth-last-child(2), #sutta-table td:nth-child(3):nth-last-child(2),
+  #sutta-table th:nth-child(4):nth-last-child(1), #sutta-table td:nth-child(4):nth-last-child(1) { width: 100% !important; }
 }
  </style>
 </head>
@@ -537,7 +498,7 @@ body.dark .dt-buttons .btn-secondary:hover {
    </div>
   </div>
   
-  <a href="<?= $toggle_script_url ?>" class="mode-switch text-decoration-none text-dark" title="<?= $toggle_title ?>">
+  <a href="#" id="script-toggle" class="mode-switch text-decoration-none text-dark" title="<?= $toggle_title ?>">
     <img src="<?= $toggle_icon ?>" style="width: 35px; height: 35px;">
   </a> 
 
@@ -568,10 +529,11 @@ body.dark .dt-buttons .btn-secondary:hover {
  <script src="/assets/js/smoothScroll.js" defer></script>
  
 <script>
+// Функция поиска (Go)
 function goToSlug() {
   const slug = document.getElementById('paliauto').value.trim().toLowerCase();
   if (!slug) return;
-  // Сохраняем параметр script, если он есть в текущем URL
+  // Сохраняем параметр script, если он есть
   const urlParams = new URLSearchParams(window.location.search);
   const scriptMode = urlParams.get('script');
   
@@ -581,6 +543,23 @@ function goToSlug() {
   }
   window.location.search = newUrl;
 }
+
+// Логика кнопки переключения Devanagari/Roman (JS only)
+document.addEventListener("DOMContentLoaded", function() {
+    const scriptBtn = document.getElementById('script-toggle');
+    if (scriptBtn) {
+        scriptBtn.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('script') === 'dev') {
+                url.searchParams.delete('script');
+            } else {
+                url.searchParams.set('script', 'dev');
+            }
+            window.location.href = url.toString();
+        });
+    }
+});
 
 // Инициализация переключателя темы
 document.addEventListener("DOMContentLoaded", function () {
