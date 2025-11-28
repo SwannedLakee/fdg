@@ -108,6 +108,38 @@ function load_all_languages_interleaved($slug) {
   if (empty($all_keys) && !empty($slug)) {
     // Оставим пустым, DataTables покажет сообщение "No data available"
   } else {
+ 
+foreach ($all_keys as $key) {
+      if (strpos($key, ':') === false) continue;
+      
+      $row_id = htmlspecialchars($key);
+      $template = $data_sources['html'][$key] ?? '{}';
+
+      // --- НАЧАЛО ИЗМЕНЕНИЙ: Обработка Devanagari ---
+      $raw_pali = $data_sources['pali'][$key] ?? '';
+
+      // 1. Замена тире и дефисов на пробел
+      $raw_pali = str_replace(['-', '—', '–'], ' ', $raw_pali);
+      // 2. Удаление пунктуации и кавычек
+      $raw_pali = str_replace([':', ';', '“', '”', '‘', '’', ',', '"', "'"], '', $raw_pali);
+      // 3. Замена знаков конца предложения на вертикальную черту
+      $raw_pali = str_replace(['.', '?', '!'], ' | ', $raw_pali);
+
+      $pali_text = htmlspecialchars($raw_pali, ENT_QUOTES, 'UTF-8');
+      // --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
+      $en_text = htmlspecialchars($data_sources['en'][$key] ?? '', ENT_QUOTES, 'UTF-8');
+      $ru_text = htmlspecialchars($data_sources['ru'][$key] ?? '', ENT_QUOTES, 'UTF-8');
+      
+      $pali_col_html = str_replace('{}', $pali_text, $template);
+      $en_col_html = str_replace('{}', $en_text, $template);
+      $ru_col_html = str_replace('{}', $ru_text, $template);
+      
+      // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлен ID к <tr> и data-column атрибуты к <td> ---
+      $html_output .= "<tr id='{$row_id}'>";
+
+
+/*
     foreach ($all_keys as $key) {
       if (strpos($key, ':') === false) continue;
       
@@ -122,6 +154,9 @@ function load_all_languages_interleaved($slug) {
       
       // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлен ID к <tr> и data-column атрибуты к <td> ---
       $html_output .= "<tr id='{$row_id}'>";
+
+*/
+
       $html_output .= "<td data-column='ID'>" . htmlspecialchars($key) . "</td>";
       $html_output .= "<td data-column='Pali' class='pali-text copyLink' lang='pi'>{$pali_col_html}</td>";
       $html_output .= "<td data-column='English' class='en-text copyLink' lang='en'>{$en_col_html}</td>";
