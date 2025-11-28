@@ -124,7 +124,7 @@ function loadContent($slug, $type) {
     $formatted_content = '';
     if (!empty($json_content)) {
         // Проверяем, является ли скрипт Devanagari (по умолчанию dev, если не lat и тип pali)
-        $isDevanagari = ($type === 'pali' && ($_GET['script'] ?? 'dev') !== 'lat');
+        $isDevanagari = ($type === 'pali');
 
         foreach ($json_content as $key => $text) {
             
