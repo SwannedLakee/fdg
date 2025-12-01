@@ -1,3 +1,8 @@
+
+while read -r ID; do     [ -z "$ID" ] && continue;      echo ">>> Обрабатываю ID: $ID";      FILES=$(grep -rl "$ID" "$SEARCH_DIR");      for FILE in $FILES; do         echo "    - Вношу замену в: $FILE";          sed -i "/$ID/ s/почтенные/господа/gI" "$FILE";     done;  done < "$ID_FILE"
+
+exit 0
+
 outputfile=/storage/emulated/0/Download/mn9.txt
 rm $outputfile
 
