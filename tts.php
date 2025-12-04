@@ -115,7 +115,7 @@ function loadContent($slug, $type) {
 
     // Если нет HTML-шаблонов, используем обычное форматирование из $content
     if (empty($html_templates)) {
-        $formatted_content = trim($content);
+        $formatted_content = $content;
     }
 
 */
@@ -143,7 +143,7 @@ function loadContent($slug, $type) {
             $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
         }
         // Удаляем лишний пробел в конце всей строки
-        $formatted_content = trim($formatted_content);
+        $formatted_content = $formatted_content;
     }
 
     // Получаем информацию о переводчике
