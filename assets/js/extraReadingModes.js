@@ -1,64 +1,70 @@
-// Функция определения языка (Добавлена, чтобы работать на r.php и других страницах)
+// Функция определения языка
 function detectLanguage() {
-    // 1. Если на странице уже есть глобальная переменная lang (как в r.php), используем её
     if (typeof lang !== 'undefined') {
         return lang;
     }
-
-    // 2. Иначе определяем язык по URL (логика для tts.php и других)
     const urlParams = new URLSearchParams(window.location.search);
     const type = urlParams.get('type');
-    
     if (type === 'pali') return 'pi';
 
     const path = window.location.pathname.toLowerCase();
     if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) return 'ru';
     
-    // Проверяем переводчика
     const translator = urlParams.get('translator');
     if (translator === 'bs') return 'en-sujato';
     
-    return 'en-bodhi'; // Default
+    return 'en-bodhi'; 
 }
 
 function updateLinks(lang) {
     const readLink = document.getElementById('readLink');
     const homeLink = document.getElementById('homeLink');
+    const ttsLink = document.getElementById('ttsLink'); // Ищем кнопку TTS
 
-    if (!readLink || !homeLink) return; // Защита от ошибок, если элементов нет
-
-    // извлекаем q-параметр из текущего URL
+    // Получаем текущий q параметр
     const urlParams = new URLSearchParams(window.location.search);
     const qParam = urlParams.get('q');
 
-    if (lang === 'ru') {
-        readLink.href = '/r';
-        if (homeLink.getAttribute('href') !== '/') { // Не перезаписывать, если это ссылка на корень
-             homeLink.href = '/ru/read.php';
+    // --- Логика для кнопок чтения и домой ---
+    if (readLink && homeLink) {
+        if (lang === 'ru') {
+            readLink.href = '/r';
+            if (homeLink.getAttribute('href') !== '/') homeLink.href = '/ru/read.php';
+        } else if (lang && lang.startsWith('en')) {
+            readLink.href = '/read';
+            if (homeLink.getAttribute('href') !== '/') homeLink.href = '/read.php';
+        } else {
+            readLink.href = '/read';
         }
-    } else if (lang && lang.startsWith('en')) {
-        readLink.href = '/read';
-         if (homeLink.getAttribute('href') !== '/') {
-            homeLink.href = '/read.php';
-         }
-    } else {
-        // Fallback
-        readLink.href = '/read';
+
+        if (qParam) {
+            const separator = readLink.href.includes('?') ? '&' : '?';
+            readLink.href += `${separator}q=${encodeURIComponent(qParam)}`;
+        }
     }
-    
-    // Добавляем параметр q, если он есть
-    if (qParam) {
-        // Проверяем, есть ли уже параметры в ссылке
-        const separator = readLink.href.includes('?') ? '&' : '?';
-        readLink.href += `${separator}q=${encodeURIComponent(qParam)}`;
+
+    // --- Логика для кнопки TTS ---
+    // Проверка: "Если кнопка существует И есть параметр q"
+    if (ttsLink && qParam) {
+        const separator = ttsLink.href.includes('?') ? '&' : '?';
+        ttsLink.href += `${separator}q=${encodeURIComponent(qParam)}`;
+        
+        // Опционально: передача типа языка в TTS
+        /*
+        if (lang === 'pi') {
+             ttsLink.href += '&type=pali';
+        } else if (lang === 'ru') {
+             ttsLink.href += '&type=trn'; // Русский определится по URL /ru/
+        } else {
+             ttsLink.href += '&type=trn';
+        }
+        */
     }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Теперь эта функция гарантированно существует
     const currentLang = detectLanguage();
     
-    // Проверяем существование функции перед вызовом (т.к. в r.php её может не быть)
     if (typeof updateLanguageSwitcher === 'function') {
         updateLanguageSwitcher(currentLang);
     }
@@ -72,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Логика переключения скрипта (Devanagari/Latin)
     const scriptBtn = document.getElementById('script-toggle');
     if (scriptBtn) {
         scriptBtn.addEventListener('click', function(e) {
