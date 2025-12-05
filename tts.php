@@ -374,7 +374,7 @@ function updateLanguageSwitcher(lang) {
    onclick="toggleSpeech('voiceTextContent'); return false;"
    class="text-decoration-none text-black me-1"
    id="speechToggleBtn">
-  🔊
+   <img src="/assets/svg/volume-high.svg" style="width: 20px; height: 20px;">
 </a>
 
       <div class="ms-1 form-check form-switch">

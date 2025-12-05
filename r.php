@@ -511,7 +511,9 @@ body.dark .dt-buttons .btn-secondary:hover {
    <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)" class="toggle-dict-btn text-decoration-none text-dark me-2">
     <img src="/assets/svg/comment.svg" class="dictIcon" style="width: 20px; height: 20px;">
    </a>
-   <a id="ttsLink" href="/tts.php" class="mode-switch text-decoration-none text-dark me-2" title="Text-to-Speech Mode">🔊</a>
+   <a id="ttsLink" href="/tts.php" class="mode-switch text-decoration-none text-dark me-2" title="Text-to-Speech Mode">
+      <img src="/assets/svg/volume-high.svg" style="width: 20px; height: 20px;">
+   </a>
    <div class="form-check form-switch me-2">
     <input type="checkbox" class="form-check-input" id="darkSwitch">
    </div>
