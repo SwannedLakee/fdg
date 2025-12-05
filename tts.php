@@ -12,10 +12,18 @@ $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 // Новые параметры для выбора переводчика
 $translator_param = $_GET['translator'] ?? '';
 
-// Модификация slug для случаев bi- и bu-
-if (preg_match('/^(bi-|bu-)(.+)/', $slug, $matches)) {
+
+if ($slug === 'pm' || preg_match('/^bu[\s-]?pm$/', $slug)) {
+    $slug = 'pli-tv-bu-pm';
+}
+elseif (preg_match('/^bi[\s-]?pm$/', $slug)) {
+    $slug = 'pli-tv-bi-pm';
+}
+// Срабатывает только если не подошло под правила выше
+elseif (preg_match('/^(bi-|bu-)(.+)/', $slug, $matches)) {
     $slug = 'pli-tv-' . substr($matches[1], 0, 2) . '-vb-' . $matches[2];
 }
+
 
 // Определяем язык
 $is_ru_url = (strpos($_SERVER['REQUEST_URI'], '/ru/') !== false) ||

@@ -7,6 +7,25 @@ error_reporting(E_ERROR | E_PARSE);
 $raw_slug = $_GET['q'] ?? '';
 $slug = strtolower(preg_replace('/[#?].*$/', '', $raw_slug));
 
+// 1. Убираем лишние пробелы (например, "bu pj1" -> "bupj1" или "mn 10" -> "mn10")
+$slug = preg_replace('/(\d+)\s+(\d+)/', '$1.$2', $slug);
+$slug = preg_replace('/([a-zA-Z]+)\s+(\d)/', '$1$2', $slug);
+
+// 2. Модификация slug для случаев bi- и bu- (Vinaya)
+// Превращает 'bu-pj1' в 'pli-tv-bu-vb-pj1'
+
+if ($slug === 'pm' || preg_match('/^bu[\s-]?pm$/', $slug)) {
+    $slug = 'pli-tv-bu-pm';
+}
+elseif (preg_match('/^bi[\s-]?pm$/', $slug)) {
+    $slug = 'pli-tv-bi-pm';
+}
+// Срабатывает только если не подошло под правила выше
+elseif (preg_match('/^(bi-|bu-)(.+)/', $slug, $matches)) {
+    $slug = 'pli-tv-' . substr($matches[1], 0, 2) . '-vb-' . $matches[2];
+}
+
+
 // Получаем режим скрипта (dev - Деванагари, иначе - латиница)
 $script_param = $_GET['script'] ?? '';
 $is_dev = ($script_param === 'dev');
