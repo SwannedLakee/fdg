@@ -1,3 +1,23 @@
+// Обновленная функция для определения текущего языка и переводчика
+function detectLanguage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const translator = urlParams.get('translator');
+
+    if (type === 'pali' || type === null) return 'pi';
+
+    const currentUrl = window.location.pathname.toLowerCase();
+    if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) return 'ru';
+
+    // Теперь, если это английский, мы смотрим на параметр translator
+    if (translator === 'bs') {
+        return 'en-sujato';
+    }
+    // По умолчанию 'en-bodhi'
+    return 'en-bodhi';
+}
+
+
 function updateLinks(lang) {
     const readLink = document.getElementById('readLink');
     const homeLink = document.getElementById('homeLink');
