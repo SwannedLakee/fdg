@@ -12,7 +12,6 @@ $type = $_GET['type'] ?? 'pali'; // 'pali' или 'trn' (translation)
 // Новые параметры для выбора переводчика
 $translator_param = $_GET['translator'] ?? '';
 
-
 if ($slug === 'pm' || preg_match('/^bu[\s-]?pm$/', $slug)) {
     $slug = 'pli-tv-bu-pm';
 }
@@ -117,13 +116,13 @@ function loadContent($slug, $type) {
             $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
         }
         // Удаляем лишний пробел в конце всей строки
-  //      $formatted_content = trim($formatted_content);
+  //      $formatted_content = ;
     }
 
 
     // Если нет HTML-шаблонов, используем обычное форматирование из $content
     if (empty($html_templates)) {
-        $formatted_content = $content;
+        $formatted_content = trim($content);
     }
 
 */
@@ -315,6 +314,24 @@ function togglePaliScript() {
     window.location.href = url.toString();
 }
 
+// Обновленная функция для определения текущего языка и переводчика
+function detectLanguage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const translator = urlParams.get('translator');
+
+    if (type === 'pali' || type === null) return 'pi';
+
+    const currentUrl = window.location.pathname.toLowerCase();
+    if (currentUrl.includes('/ru/') || currentUrl.includes('/r/') || currentUrl.includes('/ml/')) return 'ru';
+
+    // Теперь, если это английский, мы смотрим на параметр translator
+    if (translator === 'bs') {
+        return 'en-sujato';
+    }
+    // По умолчанию 'en-bodhi'
+    return 'en-bodhi';
+}
 
 function updateLanguageSwitcher(lang) {
     const switcher = document.querySelector('.lang-switcher');
@@ -861,7 +878,10 @@ async function speakTextFromElement(elementId) {
     utterance.onend = () => {
       isSpeaking = false;
       isPaused = false;
-      document.getElementById('speechToggleBtn').textContent = '🔊';
+document.getElementById('speechToggleBtn').innerHTML =
+  '<img src="/assets/svg/volume-high.svg" alt="tts" style="width: 25px; height: 25px;">';
+  
+  
       console.log('Воспроизведение завершено');
       releaseWakeLock(); // Снимаем блокировку
     };
@@ -870,7 +890,8 @@ async function speakTextFromElement(elementId) {
       console.error('Ошибка синтеза:', event);
       isSpeaking = false;
       isPaused = false;
-      document.getElementById('speechToggleBtn').textContent = '🔊';
+document.getElementById('speechToggleBtn').innerHTML =
+  '<img src="/assets/svg/volume-high.svg" alt="tts" style="width: 25px; height: 25px;">';
       releaseWakeLock(); // Снимаем блокировку в случае ошибки
 
       if (langCode !== 'en-US') {
@@ -899,7 +920,8 @@ async function toggleSpeech(elementId) {
     // Пауза воспроизведения
     window.speechSynthesis.pause();
     isPaused = true;
-    document.getElementById('speechToggleBtn').textContent = '▶️';
+document.getElementById('speechToggleBtn').innerHTML =
+  '<img src="/assets/svg/play-grey.svg" alt="play" style="width:25px;height:25px;display:block">';
     console.log('На паузе');
     await releaseWakeLock(); // Снимаем блокировку при паузе
   }
@@ -908,7 +930,8 @@ async function toggleSpeech(elementId) {
     await acquireWakeLock(); // Активируем блокировку при возобновлении
     window.speechSynthesis.resume();
     isPaused = false;
-    document.getElementById('speechToggleBtn').textContent = '⏸️';
+document.getElementById('speechToggleBtn').innerHTML =
+  '<img src="/assets/svg/pause-grey.svg" alt="pause" style="width:25px;height:25px;display:block">';
     console.log('Продолжено');
   }
   else {
@@ -919,7 +942,8 @@ async function toggleSpeech(elementId) {
     if (currentUtterance) {
       isSpeaking = true;
       isPaused = false;
-      document.getElementById('speechToggleBtn').textContent = '⏸️';
+document.getElementById('speechToggleBtn').innerHTML =
+  '<img src="/assets/svg/pause-grey.svg" alt="pause" style="width:25px;height:25px;display:block">';
     } else {
       // Если воспроизведение не началось, снимаем блокировку
       await releaseWakeLock();

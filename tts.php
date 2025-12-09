@@ -822,97 +822,117 @@ async function speakTextFromElement(elementId) {
       return null;
     }
 
-    const voices = await loadVoices();
+    // Пытаемся загрузить голоса, но не блокируем работу, если их нет
+    let voices = [];
+    try {
+        voices = await loadVoices();
+    } catch (e) {
+        console.warn('Не удалось загрузить список голосов, используем системные настройки по умолчанию');
+    }
 
-    let langCode;
+    let langCode = 'en-US'; // Дефолт
     let selectedVoice = null;
     let rate = 1.0;
+    let pitch = 1.0;
 
+    // Логика выбора языка и голоса
     switch (htmlLang) {
       case 'ru':
         langCode = 'ru-RU';
-        selectedVoice = voices.find(v =>
-          v.lang === 'ru-RU' &&
-          (v.name.includes('Pavel') || v.name.includes('Павел'))
-        ) ||
-        voices.find(v => v.lang === 'ru-RU');
+        // 1. Ищем Павла или Google Русский
+        selectedVoice = voices.find(v => v.lang === 'ru-RU' && (v.name.includes('Pavel') || v.name.includes('Google')));
+        // 2. Если нет, любой русский
+        if (!selectedVoice) selectedVoice = voices.find(v => v.lang === 'ru-RU');
         break;
 
       case 'pi':
+        // Проверка на Деванагари
         if (/[\u0900-\u097F]/.test(text)) {
-          const saVoice = voices.find(v => v.lang === 'sa-IN');
+          // Приоритет 1: Санскрит
+          let saVoice = voices.find(v => v.lang === 'sa-IN');
+          // Приоритет 2: Хинди
+          let hiVoice = voices.find(v => v.lang === 'hi-IN');
+          
           if (saVoice) {
             langCode = 'sa-IN';
             selectedVoice = saVoice;
+          } else if (hiVoice) {
+             langCode = 'hi-IN';
+             selectedVoice = hiVoice;
+             rate = 0.8; // Хинди часто быстрый, замедляем
           } else {
-            langCode = 'hi-IN';
-            selectedVoice = voices.find(v => v.lang === 'hi-IN');
-            rate = 0.4;
+             // Если голосов в списке нет, просто просим систему читать как Хинди
+             langCode = 'hi-IN';
+             rate = 0.8; 
           }
-        } else {
+        } else { 
+          // Латиница (Pali Roman)
+          // Индонезийский или Итальянский часто читают пали лучше, чем Английский
+          // Но оставим английский для стабильности, если хотите
           langCode = 'en-US';
-          selectedVoice = voices.find(v => v.lang === 'en-US');
+          selectedVoice = voices.find(v => v.lang === 'en-US' && !v.name.includes('Zira')); // Избегаем плохих голосов если нужно
         }
         break;
 
       default:
         langCode = 'en-US';
-        selectedVoice = voices.find(v => v.lang === 'en-US');
+        selectedVoice = voices.find(v => v.lang.startsWith('en'));
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
+    
+    // ВАЖНО: Установка lang критична для мобильных устройств
     utterance.lang = langCode;
     utterance.rate = rate;
+    utterance.pitch = pitch;
 
-    if (langCode === 'hi-IN') {
-      utterance.pitch = 0.9;
-      utterance.volume = 0.9;
-    }
-
+    // Устанавливаем голос ТОЛЬКО если мы реально нашли объект
     if (selectedVoice) {
       utterance.voice = selectedVoice;
-      console.log('Используется голос:', selectedVoice.name);
+      console.log('Выбран конкретный голос:', selectedVoice.name);
+    } else {
+      console.log('Конкретный голос не найден, используется системный дефолт для:', langCode);
     }
 
-    // ИЗМЕНЕНИЕ: Добавлены вызовы releaseWakeLock() в обработчики событий
+    // Обработчики событий
     utterance.onend = () => {
       isSpeaking = false;
       isPaused = false;
-document.getElementById('speechToggleBtn').innerHTML =
-  '<img src="/assets/svg/volume-high.svg" alt="tts" style="width: 25px; height: 25px;">';
-  
-  
+      document.getElementById('speechToggleBtn').innerHTML =
+        '<img src="/assets/svg/volume-high.svg" alt="tts" style="width: 25px; height: 25px;">';
       console.log('Воспроизведение завершено');
-      releaseWakeLock(); // Снимаем блокировку
+      releaseWakeLock();
     };
 
     utterance.onerror = (event) => {
       console.error('Ошибка синтеза:', event);
-      isSpeaking = false;
-      isPaused = false;
-document.getElementById('speechToggleBtn').innerHTML =
-  '<img src="/assets/svg/volume-high.svg" alt="tts" style="width: 25px; height: 25px;">';
-      releaseWakeLock(); // Снимаем блокировку в случае ошибки
-
-      if (langCode !== 'en-US') {
-        utterance.lang = 'en-US';
-        utterance.voice = null;
-        utterance.rate = 1.0;
-        window.speechSynthesis.speak(utterance);
+      // Не сбрасываем интерфейс сразу, иногда ошибка "interrupted" возникает при смене языка
+      if (event.error !== 'interrupted' && event.error !== 'canceled') {
+          isSpeaking = false;
+          isPaused = false;
+          document.getElementById('speechToggleBtn').innerHTML =
+            '<img src="/assets/svg/volume-high.svg" alt="tts" style="width: 25px; height: 25px;">';
+          releaseWakeLock();
       }
     };
 
+    // Сброс перед началом (фикс для iOS)
     window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+    
+    // Небольшая задержка для iOS иногда помогает
+    setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+    }, 10);
 
     return utterance;
 
   } catch (e) {
-      console.error('Ошибка в speakTextFromElement:', e);
-      releaseWakeLock(); // Убедимся, что блокировка снята, если произошла ошибка
+      console.error('Критическая ошибка в speakTextFromElement:', e);
+      releaseWakeLock();
       return null;
   }
 }
+
 
 // ИЗМЕНЕНИЕ: Функция для тоггла воспроизведения обновлена для управления блокировкой
 async function toggleSpeech(elementId) {
