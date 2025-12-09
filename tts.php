@@ -63,7 +63,6 @@ $title = htmlspecialchars(
 function loadContent($slug, $type) {
     include_once('config/config.php');
 
-    // **ИСПРАВЛЕНИЕ 1: Добавлен пробел в конце строки jq для разделения сегментов**
     $jq = 'jq -r \'to_entries[] | "<a id=\"\(.key)\"></a><span>\(.value)</span> " \' | sed "s/' . $slug . '://"';
 
     if (!in_array($type, ['pali', 'ru', 'en-bodhi', 'en-sujato'])) {
@@ -106,28 +105,8 @@ function loadContent($slug, $type) {
     // Загрузка основного контента
     $content = shell_exec("cat " . escapeshellarg($file) . " | $jq");
     $json_content = json_decode(shell_exec("cat " . escapeshellarg($file)), true) ?: [];
-/*
+
     // Применяем HTML-форматирование, если есть шаблоны
-    $formatted_content = '';
-    if (!empty($json_content)) {
-        foreach ($json_content as $key => $text) {
-            $template = $html_templates[$key] ?? '<p>{}</p>';
-            // **ИСПРАВЛЕНИЕ 2: Добавлен пробел после каждого сегмента**
-            $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
-        }
-        // Удаляем лишний пробел в конце всей строки
-  //      $formatted_content = ;
-    }
-
-
-    // Если нет HTML-шаблонов, используем обычное форматирование из $content
-    if (empty($html_templates)) {
-        $formatted_content = trim($content);
-    }
-
-*/
-
-// Применяем HTML-форматирование, если есть шаблоны
     $formatted_content = '';
     if (!empty($json_content)) {
         // Проверяем, является ли скрипт Devanagari (по умолчанию dev, если не lat и тип pali)
@@ -146,10 +125,8 @@ function loadContent($slug, $type) {
             }
 
             $template = $html_templates[$key] ?? '<p>{}</p>';
-            // **ИСПРАВЛЕНИЕ 2: Добавлен пробел после каждого сегмента**
             $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
         }
-        // Удаляем лишний пробел в конце всей строки
         $formatted_content = $formatted_content;
     }
 
@@ -238,7 +215,7 @@ h1 {
   padding-left: 0;
 }
 
-li { /*.division  text-align: center;*/
+li { 
   list-style-type: none;
   padding-left: 0;
  text-align: center;
@@ -265,7 +242,7 @@ function updateUrl(lang) {
     if (lang === 'ru') {
         newPath = newPath.replace(/^\//, '/ru/');
     } else if (lang === 'en') {
-        // Убрали префикс '/en/', т.к. он не нужен для англ. перевода
+        // Убрали префикс '/en/'
     }
     // Для pi не меняем путь
 
@@ -394,7 +371,27 @@ function updateLanguageSwitcher(lang) {
       <img src="/assets/svg/volume-high.svg" style="width: 25px; height: 25px;">
 </a>
 
-      <div class="ms-1 form-check form-switch">
+<div class="position-relative d-inline-block me-1" id="speedContainer">
+    <button id="speedToggleBtn" onclick="toggleSpeedMenu()" class="btn btn-sm btn-light border rounded-pill px-2 py-0" style="font-size: 0.8rem; font-weight: bold; min-width: 45px;">
+        1.0x
+    </button>
+    
+    <div id="speedMenu" class="position-absolute bg-white border rounded shadow p-2 mt-1" style="display: none; z-index: 1000; left: 50%; transform: translateX(-50%); min-width: 160px;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small text-muted fw-bold">Speed</span>
+            <a href="#" onclick="resetSpeed(); return false;" class="text-primary text-decoration-none small" style="font-size: 0.75rem;">Reset</a>
+        </div>
+        
+        <input type="range" class="form-range mb-1" id="rateRange" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" onchange="applySpeedChange()">
+        
+        <div class="d-flex justify-content-between text-muted" style="font-size: 0.7rem;">
+            <span>0.5x</span>
+            <span>2.0x</span>
+        </div>
+    </div>
+
+</div>
+<div class="ms-1 form-check form-switch">
         <input type="checkbox" class="form-check-input" id="darkSwitch">
       </div>
       <a href="/assets/common/ttsHelp.html" class="text-decoration-none text-muted ms-0">
@@ -468,6 +465,43 @@ let isSpeaking = false;
 let isPaused = false;
 let currentUtterance = null;
 let pausedPosition = 0;
+let currentRate = 1.0; // Новая переменная скорости
+
+// --- НОВЫЕ ФУНКЦИИ ДЛЯ СКОРОСТИ ---
+function toggleSpeedMenu() {
+    const menu = document.getElementById('speedMenu');
+    if (menu.style.display === 'none') {
+        menu.style.display = 'block';
+        document.addEventListener('click', closeSpeedMenuOutside);
+    } else {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closeSpeedMenuOutside);
+    }
+}
+
+function closeSpeedMenuOutside(event) {
+    const menu = document.getElementById('speedMenu');
+    const btn = document.getElementById('speedToggleBtn');
+    if (!menu.contains(event.target) && !btn.contains(event.target)) {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closeSpeedMenuOutside);
+    }
+}
+
+function updateSpeed(val) {
+    currentRate = parseFloat(val);
+    document.getElementById('speedToggleBtn').innerText = currentRate + 'x';
+}
+
+function applySpeedChange() {
+    if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        setTimeout(() => {
+            speakTextFromElement('voiceTextContent');
+        }, 50);
+    }
+}
+// ----------------------------------
 
 // ИЗМЕНЕНИЕ: Начало блока кода для Wake Lock API
 let wakeLock = null;
@@ -832,7 +866,7 @@ async function speakTextFromElement(elementId) {
 
     let langCode = 'en-US'; // Дефолт
     let selectedVoice = null;
-    let rate = 1.0;
+    let rate = currentRate; // <--- БЕРЕМ ТЕКУЩУЮ СКОРОСТЬ
     let pitch = 1.0;
 
     // Логика выбора языка и голоса
@@ -859,16 +893,16 @@ async function speakTextFromElement(elementId) {
           } else if (hiVoice) {
              langCode = 'hi-IN';
              selectedVoice = hiVoice;
-             rate = 0.8; // Хинди часто быстрый, замедляем
+             // Если это Хинди, мы корректируем БАЗОВУЮ скорость, 
+             // умножая её на пользовательский выбор
+             rate = 0.8 * currentRate; 
           } else {
              // Если голосов в списке нет, просто просим систему читать как Хинди
              langCode = 'hi-IN';
-             rate = 0.8; 
+             rate = 0.8 * currentRate; 
           }
         } else { 
           // Латиница (Pali Roman)
-          // Индонезийский или Итальянский часто читают пали лучше, чем Английский
-          // Но оставим английский для стабильности, если хотите
           langCode = 'en-US';
           selectedVoice = voices.find(v => v.lang === 'en-US' && !v.name.includes('Zira')); // Избегаем плохих голосов если нужно
         }
@@ -975,6 +1009,22 @@ document.getElementById('speechToggleBtn').innerHTML =
 window.speechSynthesis.onvoiceschanged = function() {
   console.log('Доступные голоса обновлены:', window.speechSynthesis.getVoices());
 };
+
+// Функция сброса скорости
+function resetSpeed() {
+    const defaultRate = 1.0;
+    currentRate = defaultRate;
+    
+    // Обновляем ползунок
+    document.getElementById('rateRange').value = defaultRate;
+    
+    // Обновляем текст на главной кнопке
+    document.getElementById('speedToggleBtn').innerText = defaultRate + 'x';
+    
+    // Применяем изменения (перезапуск речи, если она идет)
+    applySpeedChange();
+}
+
 </script>
   <script src="/assets/js/autopali.js" defer></script>
   <script src="/assets/js/extraReadingModes.js" defer></script>
@@ -984,3 +1034,5 @@ window.speechSynthesis.onvoiceschanged = function() {
       <script src="/read/js/urlForLbl.js" defer></script>
 </body>
 </html>
+
+
