@@ -155,6 +155,7 @@ $playerHtml = "<span class='voice-dropdown'>
         } elseif ($fileExt === 'wav') {
             $mimeType = 'audio/wav';
         }
+$playIcon = "<img src='/assets/svg/play-grey.svg' style='width: 17px; height: 17px; vertical-align: middle;' alt='Play'>";
 
 $playerHtml = "<span class='voice-dropdown'>
     <a href='javascript:void(0)' class='voice-link' title='Text-to-Speech Options' >Voice</a>
@@ -163,8 +164,13 @@ $playerHtml = "<span class='voice-dropdown'>
             <source src='$voicefile' type='$mimeType'>
             Your browser does not support the audio element.
         </audio><br>
-            Pali <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Copy</a> <a href='$pali_link' title='Open Pali'>Open</a> |
-            Trn <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Copy</a> <a href='$trn_link' title='Open Translation' >Open</a> |
+            Pali 
+                 <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>
+       
+            <a href='$pali_link' title='Open Pali'>Open</a> <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Cp</a> |
+            Trn  
+               <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
+            <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> |
             <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
