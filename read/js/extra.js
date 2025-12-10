@@ -66,7 +66,9 @@ function speakRawText(text, langType, button) {
   // Настройка языка
   if (langType === 'ru') {
     utterance.lang = 'ru-RU';
-  } else if (langType === 'pi') {
+  } else if (langType === 'th') {
+    utterance.lang = 'th-TH';
+    } else if (langType === 'pi') {
     // Хинди для деванагари, Английский для латиницы
     utterance.lang = /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-US';
     if (utterance.lang === 'hi-IN') utterance.rate = 0.8;
@@ -185,6 +187,8 @@ function handleSuttaClick(e) {
       const path = window.location.pathname;
       if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) {
         langType = 'ru';
+      } else if (path.includes('/th/') || path.includes('/mlth/') || path.includes('/thml/')) {
+        langType = 'th';
       } else {
         langType = 'en';
       }
