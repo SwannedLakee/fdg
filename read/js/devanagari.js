@@ -156,7 +156,16 @@ if (slug.includes("mn"))  {
   // console.log(`${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`);
   var trnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 } else if (slug.match(/bu-pm|bi-pm/)) {
-  let translator = "o";
+  
+  if (slug.match(/bu-pm/)) {
+  let translator = "gemini";  
+  }  
+  else if (slug.match(/bi-pm/)) {
+  let translator = "adelina";  
+  } else {
+  let translator = "o";  
+  }
+  
 var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slug}_root-pli-ms.json`
 
  if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {

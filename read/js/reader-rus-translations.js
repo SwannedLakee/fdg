@@ -144,7 +144,8 @@ if (slug.includes("mn"))  {
   var trnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 } else if (slug.match(/bu-pm|bi-pm/)) {
     //let translator = "thanissaro+o";
-    let translator = "o";
+    //let translator = "o";
+    let translator = "gemini";
 //  console.log(trnpath);
 	if (slug.match(/bi-pm/)) {
      translator = "adelina";
