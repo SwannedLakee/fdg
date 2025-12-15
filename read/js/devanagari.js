@@ -203,8 +203,8 @@ var varpath = `${Sccopy}/sc-data/sc_bilara_data/variant/pli/ms/${texttype}/${slu
 var varpathLocal = `/assets/texts/variant/${texttype}/${slugReady}_variant-pli-ms.json`
   const rootResponse = fetch(rootpath).then(response => response.json());
  const rootDevResponse = fetch(rootDevanagaripath).then(response => response.json());
- const translationResponse = fetch(trnpath).then(response => response.json());
-  const engtranslationResponse = fetch(engtrnpath).then(response => response.json());
+ //const translationResponse = fetch(trnpath).then(response => response.json());
+ // const engtranslationResponse = fetch(engtrnpath).then(response => response.json());
   const htmlResponse = fetch(htmlpath).then(response => response.json());
 
 async function fetchVariant() {
@@ -227,14 +227,12 @@ async function fetchVariant() {
 }
 
 const varResponse = fetchVariant();    
-    
-  Promise.all([rootResponse, rootDevResponse, translationResponse, engtranslationResponse, htmlResponse, varResponse]).then(responses => {
-    const [paliData, paliDevanagariData, transData, engTransData, htmlData, varData] = responses;
+    //translationResponse, engtranslationResponse, 
+  Promise.all([rootResponse, rootDevResponse, htmlResponse, varResponse]).then(responses => {
+    const [paliData, paliDevanagariData, htmlData, varData] = responses;
 
     Object.keys(htmlData).forEach(segment => {
-      if (transData[segment] === undefined) {
-        transData[segment] = "";
-      }
+
       let [openHtml, closeHtml] = htmlData[segment].split(/{}/);
       /* openHtml = openHtml.replace(/^<span class='verse-line'>/, "<br><span class='verse-line'>"); inputscript-IASTPali 
       Roman (IAST)     	IAST
@@ -257,12 +255,8 @@ var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
 if (paliData[segment] === undefined) {
   paliData[segment] = "";
 }
-if (transData[segment] === undefined) {
-  transData[segment] = "";
-}
-if (engTransData[segment] === undefined) {
-  engTransData[segment] = "";
-}
+
+
 
 let params = new URLSearchParams(document.location.search);
 
@@ -324,11 +318,7 @@ if (finder && finder.trim() !== "") {
     console.error("Ошибка при выделении совпадений в paliData:", error);
   }
 
-  try {
-    transData[segment] = transData[segment]?.replace(regex, match => `<b class="match finder">${match}</b>`);
-  } catch (error) {
-    console.error("Ошибка при выделении совпадений в transData:", error);
-  }
+
 
   if (varData[segment] !== undefined) {  
     try {
@@ -348,10 +338,7 @@ let linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" s
 let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
 let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`;
 
-// console.log(`transData[${segment}]: ${transData[segment]}`);
-// console.log(`engTransData[${segment}]: ${engTransData[segment]}`);
-
-if (engTransData[segment] !== transData[segment] && varData[segment] !== undefined) {
+if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
         <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
@@ -359,7 +346,7 @@ if (engTransData[segment] !== transData[segment] && varData[segment] !== undefin
         </span>
     </span>${closeHtml}\n\n`;
 
-} else if (engTransData[segment] !== transData[segment]) {
+} else if (paliData[segment] !== paliData[segment]) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
         <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
