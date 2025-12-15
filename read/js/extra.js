@@ -67,8 +67,9 @@ function speakRawText(text, langType, button) {
   if (langType === 'ru') {
     utterance.lang = 'ru-RU';
   } else if (langType === 'th') {
-    // Настройка для тайского языка
+    // --- ДОБАВЛЕНО: Настройка для тайского ---
     utterance.lang = 'th-TH';
+	utterance.rate = 0.8;
   } else if (langType === 'pi') {
     // Хинди для деванагари, Английский для латиницы
     utterance.lang = /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-US';
@@ -179,21 +180,20 @@ function handleSuttaClick(e) {
 
   if (isPlay) {
     // Определение языка для TTS
-    const path = window.location.pathname;
     let langType = 'en'; // По умолчанию
+    const path = window.location.pathname;
 
-    // 1. Приоритетная проверка на тайский язык в URL
-    // Если находим тайские маркеры, то И пали, И перевод читаем тайским голосом
+    // --- ИЗМЕНЕНО: Проверка на Тайский язык в URL ---
+    // Это условие стоит первым. Если в URL есть тайские маркеры, 
+    // то и Пали, и Перевод будут читаться тайским голосом.
     if (path.includes('/th/') || path.includes('/thml/') || path.includes('/mlth/')) {
-      langType = 'th';
+        langType = 'th';
     } 
-    // 2. Если не тайский, проверяем, является ли это Пали
+    // Если не тайский, проверяем стандартные условия
     else if (isPaliTarget) {
       langType = 'pi';
-    } 
-    // 3. Если это перевод (не Пали и не тайский URL)
-    else {
-      // Проверяем URL на наличие русского языка
+    } else {
+      // Для перевода проверяем URL: /ru/, /r/ или /ml/ -> Русский
       if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) {
         langType = 'ru';
       } else {
