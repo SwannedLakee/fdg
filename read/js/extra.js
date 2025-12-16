@@ -280,3 +280,4 @@ async function copyToClipboard(text) {
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
 });
+
