@@ -1743,7 +1743,7 @@
 "sn6.3":{"pi":"Brahmadevasutta ","en":"With Brahmadeva ","mtph":1,"ru":"Брахмадэва "},
 "sn6.4":{"pi":"Bakabrahmasutta ","en":"With Baka the Brahmā ","mtph":1,"ru":"Брахма Бака "},
 "sn6.5":{"pi":"Aññatarabrahmasutta ","en":"A Certain Brahmā ","mtph":8,"ru":"Некий Брахма "},
-"sn6.6":{"pi":"Brahmalokasutta ","en":"The Negligent Brahmā ","mtph":1,"ru":"Беспечность "},
+"sn6.6":{"pi":"Brahmalokasutta ","en":"The Negligent Brahmā ","mtph":1,"ru":"Мир Брахмы "},
 "sn6.7":{"pi":"Kokālikasutta ","en":"About Kokālika ","mtph":"","ru":"Кокалика "},
 "sn6.8":{"pi":"Katamodakatissasutta ","en":"About Katamorakatissaka ","mtph":"","ru":"Тиссака "},
 "sn6.9":{"pi":"Turūbrahmasutta ","en":"With the Brahmā Tudu ","mtph":"","ru":"Брахма Туду "},
