@@ -756,8 +756,9 @@ if (!hasNumbersInQ && !window.location.pathname.match(/\/(ml|d|memorize|rev|frev
   const demoLinks = {
     stDemo: baseUrl, // Используем baseUrl для stDemo
     mlDemo: window.location.origin + "/ml/",
-    dDemo: window.location.origin + "/d/",
     memDemo: window.location.origin + "/memorize/",
+    dDemo: window.location.origin + "/d/",
+    thDemo: window.location.origin + "/th/read/",
     rvDemo: window.location.origin + "/rev/",
     frDemo: window.location.origin + "/frev/"
   };
@@ -853,10 +854,11 @@ newUrl = params ? `${newUrl}?${params}` : `${newUrl}?q=sn56.11`;
 const demoLinks = {
  // 1: "stDemo", // Alt + 1
   2: "mlDemo", // Alt + 2
-  3: "dDemo",  // Alt + 3
-  4: "memDemo", // Alt + 4
-  5: "rvDemo", // Alt + 5
-  6: "frDemo"  // Alt + 6
+  3: "memDemo",  // Alt + 3
+  4: "dDemo", // Alt + 4
+  5: "thDemo ", // Alt + 5
+  6: "rvDemo",  // Alt + 6
+  7: "frDemo"  // Alt + 7
 };
 
 // Обработчик события нажатия клавиш
