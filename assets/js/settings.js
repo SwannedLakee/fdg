@@ -907,7 +907,7 @@ if (demoLinks.hasOwnProperty(digit)) {
   }
 });
 
-/*
+
 document.addEventListener("keydown", (event) => {
   if (event.altKey && event.code === "Digit8") { // Проверяем, что нажаты Alt и 7
             event.preventDefault();
@@ -928,7 +928,7 @@ document.addEventListener("keydown", (event) => {
     }
   }
 });
-*/
+
 
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.code === 'Digit3') {
