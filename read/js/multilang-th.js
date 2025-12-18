@@ -166,24 +166,7 @@ else if (slug.match(/ja/)) {
   var trnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slugReady}_translation-${pathLang}-${translator}.json`;
 } else if (slug.match(/bu-pm|bi-pm/)) {
   
-  
       let translator = "jayasaro";
-let params = new URLSearchParams(document.location.search);
- let script = params.get("script");
- 
-   const savedScript = localStorage.getItem('selectedScript');
-   const siteLanguage = localStorage.getItem('siteLanguage');
-
- if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {
-var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slug}_rootd-pli-ms.json`
- } 
- else if (( script === "thai" ) || ( savedScript === "Thai" ) || (siteLanguage === "th")) {
-var  rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slug}_rootth-pli-ms.json`
-
- } 
-else {
-var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slug}_root-pli-ms.json`
- }
 
     var trnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/${pathLang}/${translator}/${texttype}/${slug}_translation-${pathLang}-${translator}.json`;
     var engtrnpath = `${Sccopy}/sc-data/sc_bilara_data/translation/en/brahmali/${texttype}/${slug}_translation-en-brahmali.json`;
@@ -361,17 +344,16 @@ let params = new URLSearchParams(document.location.search);
    const savedScript = localStorage.getItem('selectedScript');
    const siteLanguage = localStorage.getItem('siteLanguage');
 
- if (( script === "devanagari" ) || ( savedScript === "Devanagari" ) ) {
-var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slugReady}_rootd-pli-ms.json`;
- } 
- else if (( script === "thai" ) || ( savedScript === "Thai" ) || (siteLanguage === "th")) {
-var  rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`
- } else if ( script === "isopali" ) {
-var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugReady}_root-pli-ms.json`
- }
+if (script === "isopali" || savedScript === "ISOPali") {
+    var rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugReady}_root-pli-ms.json`;
+} 
+else if (script === "devanagari" || savedScript === "Devanagari") {
+    var rootpath = `/assets/texts/devanagari/root/pli/ms/${texttype}/${slugReady}_rootd-pli-ms.json`;
+} 
 else {
-var  rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`;
- }
+    // Для тайского раздела по умолчанию всегда отдаем Thai
+    var rootpath = `/assets/texts/th/root/pli/ms/${texttype}/${slugReady}_rootth-pli-ms.json`;
+}
 
   let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
  //  finder = finder.replace(/\\b/g, '');
