@@ -887,27 +887,6 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.altKey && event.code === "Digit7") { // Проверяем, что нажаты Alt и 7
-          event.preventDefault();
-    let currentUrl = window.location.href; // Получаем текущий URL
-
-    // Шаг 1: Удаляем всё после первого / (оставляем базовую часть)
-    let base = currentUrl.split('/')[0] + '//' + currentUrl.split('/')[2];
-
-    // Шаг 2: Удаляем всё перед ? (оставляем параметры, если они есть)
-    let params = currentUrl.split('?')[1] || '';
-
-    // Шаг 3: Собираем новый URL
-    let newUrl = `${base}/th/read/${params ? `?${params}` : ''}`;
-
-    if (newUrl !== currentUrl) { // Проверяем, изменился ли URL
-      history.pushState(null, "", newUrl); // Добавляем запись в историю
-      location.href = newUrl; // Принудительно переходим по новому URL
-    }
-  }
-});
-
-document.addEventListener("keydown", (event) => {
   if (event.altKey && event.code === "Digit8") { // Проверяем, что нажаты Alt и 7
             event.preventDefault();
     let currentUrl = window.location.href; // Получаем текущий URL
