@@ -1592,7 +1592,305 @@ $mainpage = '/th';
 $mainpagenoslash = '/th';
 $readerPage = $mainpage . '/read';
 $mainreadlink = '/th/read.php';
+
+    $installpwa = "ติดตั้ง DG";
+    $canonicalPage = "https://Dhamma.Gift/";
+    $installpwalong = "ติดตั้ง DG แอปพลิเคชัน";
+    $searchcaption = 'ค้นหา';
+    $clearaption = 'ล้าง';
+
+    $btnsave = 'ตั้งค่าเริ่มต้น';
+    $btnreset = 'รีเซ็ต';
+
+    $toggleLangRead = 'สลับ ไทย/อังกฤษ (Ctrl + 2)';
+    $toggleLang = 'สลับ ไทย/อังกฤษ (Ctrl + 1)';
+
+    $manifest = '/manifest.json'; 
+
+    $cclink = 'https://creativecommons.org/licenses/by-nc-sa/4.0';
+    $cctitle = 'Attribution-NonCommercial-ShareAlike 4.0 International';
+
+    $copyrightnote = 'เนื้อหาในเว็บไซต์นี้เผยแพร่ภายใต้สัญญาอนุญาต <a class="text-white text-decoration-none me-0" href="' . $cclink . '" target="_blank" title="' . $cctitle . '">CC BY-NC-SA 4.0</a> อย่างไรก็ตาม พระไตรปิฎกบาลีและคำแปลภาษาอังกฤษจาก SuttaCentral.net, ผลงานของ A. Y. Syrkin และ TheBuddhasWords.net อาจมีเงื่อนไขที่แตกต่างกัน โปรดตรวจสอบกับผู้ถือลิขสิทธิ์สำหรับเงื่อนไขการใช้งาน';
+
+    $ifRuLitTrn = '';
+    $gearbutton = 'การตั้งค่าเพิ่มเติม';
+
+    $maintitle = 'การค้นหาที่แม่นยำในพระไตรปิฎกบาลีและพระวินัย';
+    $metadesc = 'ค้นหาคำสอนของพระพุทธเจ้าอย่างแม่นยำในพระสูตรและพระวินัยภาษาบาลี เครื่องมือค้นหาเพื่อความพ้นทุกข์ มุมมองรอบด้านเกี่ยวกับธรรมะของพระอริยเจ้า ค้นหาคำแปลที่หลากหลาย';
+    $metakeywords = 'พระพุทธเจ้า, ธรรมะ, พระไตรปิฎก, พระสูตร, พระวินัย, ปาติโมกข์, พุทธศาสนา, บาลี, dharma';
+    $titletwit = 'การค้นหาที่แม่นยำในพระธรรมวินัย พระสูตรบาลี และพระวินัย';
+    $ogdesc = 'เครื่องมือค้นหาเพื่อความพ้นทุกข์ ค้นหาในพระธรรมวินัย พระสูตร และพระวินัย ในภาษาบาลี อังกฤษ รัสเซีย และไทย';
+    $oglocale = 'th_TH';
+    $ogshare = 'https://Dhamma.Gift/assets/img/social_sharing_gift.jpg';
+
+    $linksothermat = 'https://drive.google.com/drive/folders/1nrNtb_4s27nJGq61tpigf_b2sO_KOnVG';
+
+    $menu = 'เมนู';
+    $menumain = 'หน้าแรก';
+
+    $menuread = 'อ่าน';
+    $menuhist = 'ประวัติการค้นหา';
+    $menuhowto = 'วิธีใช้';
+    $menuabout = 'เกี่ยวกับ';
+    $menulinks = 'ลิงก์ที่มีประโยชน์';
+    $menucontact = 'ติดต่อ';
+
+    $poweredby = 'ขับเคลื่อนโดย NI';
+    $tooltippoweredby = 'Dhamma Intelligence, Natural Intelligence';
+
+    $tooltiptitle = 'ในภาษาบาลี, อังกฤษ, รัสเซีย, สิงหล และ ไทย';
+
+    $tooltippli = 'การค้นหาเริ่มต้น ในพระสูตรของ อังคุตตรนิกาย, สังยุตตนิกาย, มัชฌิมนิกาย, ทีฆนิกาย และบางส่วนของขุททกนิกาย';
+    $radiopli = '4 นิกาย';
+    $tooltipdef = 'ค้นหาคำนิยามใน 4 นิกายหลักภาษาบาลี ค้นหาความหมาย จำนวน ประเภท และอุปมาที่เกี่ยวข้องกับคำนั้น หากไม่พบในพระสูตร ระบบจะค้นหาในพระวินัยโดยอัตโนมัติ';
+    $radiodef = 'นิยาม';
+
+    $tooltipsml = 'ค้นหาอุปมา อุปไมย และสัญลักษณ์ที่เกี่ยวข้องกับคำค้นหาใน 4 นิกายหลักภาษาบาลี';
+    $radiosml = 'อุปมา';
+
+    $tooltipsearchbar = '<strong>การแนะนำคำอัตโนมัติ</strong>: พิมพ์อย่างน้อย 3 ตัวอักษร - คำแนะนำจะปรากฏขึ้นพร้อมกับคำบาลีฉบับ Mahasangiti จาก 4 นิกายหลัก (DN, MN, SN, AN) และบางส่วนของ KN (Dhp, Iti, Ud, Snp) รวมถึงพระวินัยทั้งหมด
+    <br><br>
+    <strong>Match count</strong> เช่น mettā 27 แสดงจำนวนครั้งที่คำปรากฏในข้อความข้างต้น เพื่อผลลัพธ์ที่กว้างขึ้น ให้ค้นหาคำในรูปพื้นฐานโดยไม่มีอุปสรรคหรือวิภัตติปัจจัย
+    <br><br>
+    <strong>เปิดข้อความ</strong>: ใส่รหัสอ้างอิง เช่น sn56.11, DN 22, Sn 12 2, an10.46, mn141 - คุณจะเห็นชื่อพระสูตรบาลีในคำแนะนำด้วย
+    <br><br>
+    <strong>ประวัติการค้นหาและการอ่าน</strong>: คลิกที่แถบค้นหาว่างๆ หรือกด Spacebar ประวัตินี้จะถูกเก็บไว้ในอุปกรณ์นี้เท่านั้น
+    <br><br>
+    <strong>ค้นหาจากประวัติ</strong>: เมื่อป้อน 1-2 ตัวอักษร ประวัติการค้นหาและการอ่านของคุณจะถูกกรองแสดงขึ้นมา
+    <br><br>
+    <strong>ปุ่มลัด (Hotkeys):</strong><br>
+    <strong>กด /</strong> เพื่อเปิดช่องค้นหา
+    <br>
+    <strong>Ctrl + 1</strong> สลับหน้าค้นหาหลัก (อังกฤษ / รัสเซีย)
+    <br>
+    <strong>Ctrl + 2</strong> สลับหน้าสารบัญการอ่าน (อังกฤษ / รัสเซีย)
+    <br>
+    <strong>Ctrl + 3</strong> เปิด Dict.Dhamma.Gift
+    <br>
+    <strong>Alt + 1</strong> อินเทอร์เฟซการอ่าน (อังกฤษ / รัสเซีย)
+    <br>
+    <strong>Alt + N</strong> เปิดคำศัพท์ในหน้าต่างใหม่ของ Dict.Dhamma.Gift
+    <br>
+    <strong>Alt + Q</strong> ค้นหาคำปัจจุบันในพจนานุกรมหลายฉบับ
+    ';
+
+    $tooltiptextype = '<strong>บาลี*</strong> - 4 นิกาย + 6 เล่มของขุททกนิกาย: อุทาน (Ud), ธรรมบท (Dhp), อิติวุตตกะ (Iti), สุตตนิปาต (Snp), เถรคาถา (Thag), เถรีคาถา (Thig)<br><br>
+    <strong>4 นิกาย</strong> - อังคุตตรนิกาย (AN), สังยุตตนิกาย (SN), มัชฌิมนิกาย (MN), ทีฆนิกาย (DN) ค้นหาในข้อความดั้งเดิม (Mula)
+    <br><br>
+    <strong>พระวินัย*</strong> - ค้นหาในวินัยวิภังค์และปาติโมกข์ ภาษาบาลีและอังกฤษ<br><br>
+    <strong>+ 6 เล่มขุททกนิกาย</strong> - 4 นิกาย + 6 เล่มพื้นฐานของขุททกนิกาย<br><br>
+    <strong>+ ขุททกนิกายทั้งหมด</strong> - 4 นิกาย + ค้นหาในภาษาบาลีของทุกเล่มในขุททกนิกาย<br><br>
+    <strong>+ Kd & Pvr</strong> - พระวินัย + ขันธกะและปริวาร<br><br>
+    <strong>TBW</strong> - ค้นหาในเนื้อหาของ theBuddhasWords.net<br><br>
+    <strong>SC.net</strong> - ค้นหาในคำแปลภาษาอังกฤษของ SuttaCentral.net
+    <br><br>
+    <strong>Theravada.ru</strong> - ค้นหาคำแปลภาษารัสเซียใน theravada.ru';
+    $tooltipknread = 'ส่วนหนึ่งของขุททกนิกาย';
+    $tooltipsearchtype = '<strong>ค่าเริ่มต้น</strong> - ผลลัพธ์ทั้งหมดกลุ่มตามข้อความ<br><br>
+    <strong>พจนานุกรม</strong> - ค้นหาคำใน Dict.Dhamma.Gift<br><br>
+    <strong>คำศัพท์</strong> - ผลลัพธ์กลุ่มตามคำศัพท์ (ใช้ได้เฉพาะบาลีใน 4 นิกายหลัก)<br><br>
+    <strong>นิยาม</strong> - ค้นหาคำนิยามหลักใน 4 นิกายบาลี (คืออะไร มีเท่าไหร่ ประเภทไหน อุปมา)<br><br>
+    <strong>อุปมา</strong> - ค้นหาอุปมา อุปไมย สัญลักษณ์ ของคำที่ค้นหาใน 4 นิกายบาลี<br><br>
+    <strong>นิยามทั้งหมด</strong> - ค้นหาคำนิยามทั้งหมด แนะนำให้ศึกษาพระสูตรที่เกี่ยวข้องทั้งหมดเพื่อมุมมองรอบด้าน<br><br>
+    <strong>Top-5 หรือ 10</strong> - รายชื่อพระสูตรที่มีคำค้นหาปรากฏมากที่สุด
+    ';
+    $listdefall  = "นิยามทั้งหมด";
+    $listnm10 = "10 อันดับแรก";
+    $listnm = "5 อันดับแรก";
+    $listdef = "นิยาม";
+    $dictLookup = "พจนานุกรม";
+    $listwords = "คำศัพท์";
+    $listsml = "อุปมา";
+    $liststd = "ผลลัพธ์ทั้งหมด";
+
+    $tooltipvin = 'ค้นหาในพระวินัยบาลี';
+    $radiovin = 'พระวินัย*';
+    $tooltipkn = '+ ค้นหาในขุททกนิกายภาษาบาลี: dhp, iti, ud, snp, thag, thig';
+    $radiokn = 'บาลี*';
+
+    $tooltiponl = 'X Y ... ค้นหาข้อความที่มีทั้ง X และ Y โดยไม่จำกัดระยะห่าง หากไม่เลือก จะพบเฉพาะข้อความที่ X และ Y อยู่ติดกัน';
+    $checkboxonl = 'ไม่จำกัดระยะห่าง';
+    $tooltipnonl = 'ค้นหา X Y ... ในระยะห่างใดก็ได้ภายในหนึ่งข้อความ โดยค่าเริ่มต้นจะค้นหาเฉพาะ X Y ที่อยู่ติดกันเท่านั้น';
+    $checkboxnonl = 'A B';
+    $tooltipen = 'ค้นหาใน 4 นิกายหลักจากคำแปลภาษาอังกฤษของ B. Sujato ใน Suttacentral.net';
+    $radioen = 'SC.net';
+    $radiotru = 'Theravada.ru';
+    $tooltipltr= "+ ค้นหาบาลีในทุกเล่มของขุททกนิกาย รวมถึงคัมภีร์ยุคหลัง";
+    $radioltr = "+ ขุททกนิกายทั้งหมด";
+    $radiovinall = "+ Kd & Pvr";
+    $tooltipth = "(ทางเลือก) ค้นหาใน 4 นิกายหลักจากคำแปลภาษาไทยใน Suttacentral.net";
+    $radioth = "ไทย";
+    $tooltipru = "(ทางเลือก) ค้นหาใน 4 นิกายหลักจากคำแปลภาษารัสเซียใน Suttacentral.net";
+    $radioru = "Rus";
+    $tooltiptbw = "ค้นหาเนื้อหาทั้งหมดใน TheBuddhasWords.net";
+    $radiotbw = "TBW";
+
+    $monktype = array("พระภิกษุ" => "imassa ca bhikkhuno",
+    "พระเถระ" => "tassa ca therassa",
+    "พระสงฆ์" => "tassa ca saṅghassa"
+    );
+
+    $randomKey = array_rand($monktype);
+    $randomValue = $monktype[$randomKey];
+
+    $howtosearchquotetooltip = '';
+    $howtosearchquote = '<p class="pli-lang">Tāni ce sutte osāriyamānāni vinaye sandassiyamānāni na ceva sutte osaranti, na ca vinaye sandissanti, niṭṭhamettha gantabbaṃ: "addhā, idaṃ na ceva tassa bhagavato vacanaṃ; ' . $randomValue . ' duggahita"nti. Iti hetaṁ, bhikkhave, chaḍḍeyyātha.</p>
+    <p>หากคำสอนเหล่านั้น (คำสอน การปฏิบัติ วิธีการ คำคม เรื่องราว หรือสิ่งใดก็ตามที่เกี่ยวข้องกับพระพุทธเจ้า) ไม่ปรากฏในพระสูตร และไม่ปรากฏในพระวินัย พึงลงข้อสรุปว่า: ‘ชัดเจนว่านี่ไม่ใช่พระดำรัสของพระผู้มีพระภาคเจ้า เป็นสิ่งที่' . $randomKey . 'ท่านนั้นเข้าใจผิดมา’ และด้วยเหตุนี้ ภิกษุทั้งหลาย พวกเธอพึงทิ้งคำสอนนั้นเสีย
+    </p>
+    <p class="text-end"><a target=_blank href=/read/?q=dn16&s=Tāni&lang=pli-rus#4.8.6>dn16</a> <a target=_blank href=/read/?q=an4.180&s=Tāni&lang=pli-rus#2.7>an4.180</a></p>';
+    $tooltipvindef = 'ค้นหาคำนิยามในพระวินัยบาลี แนะนำให้ศึกษาพระธรรมวินัยที่เกี่ยวข้องทั้งหมดเพื่อความเข้าใจที่สมบูรณ์';
+    $radiovindef = "นิยามวินัย";
+    $tooltipla = "เพิ่มบรรทัดก่อนและหลังผลลัพธ์ที่พบ $defaultla บรรทัด";
+    $checkboxla = "+" . $defaultla . " บรรทัด";
+    $regexMemoh5 = 'บันทึก RegEx';
+
+    $lax = "ค้นหา X, เพิ่มผลลัพธ์บรรทัดถัดไป $defaultla บรรทัดหลังจากบรรทัดที่มี X";
+    $lbx = "ค้นหา X, เพิ่มผลลัพธ์บรรทัดก่อนหน้า $defaultla บรรทัดก่อนบรรทัดที่มี X";
+    $exc = "ค้นหา X, ยกเว้น Y และ Z";
+    $excfew = 'ค้นหา X, ยกเว้น Y ที่ลงท้ายด้วย "ti" และ "nti"';
+    $begin = 'เริ่มต้นด้วย X หรือ';
+    $end = 'ลงท้าย';
+    $anynumber = 'สัญลักษณ์จำนวนเท่าใดก็ได้ระหว่าง X และ Y';
+    $fewsymbols = 'ตั้งแต่ 0 ถึง 10 สัญลักษณ์';
+    $nextwords = 'คำถัดไปคือ X และ Y โดยที่คำลงท้ายของ X เปลี่ยนแปลงได้';
+    $fewwords = 'ระยะห่าง 0 ถึง 2 คำระหว่าง X (ลงท้ายแบบใดก็ได้) และ Y';
+    $variants = 'หลายรูปแบบ';
+    $optionalletter = 'ตัวอักษรใน [ ]? จะมีหรือไม่ก็ได้';
+    $variantsexc = 'ค้นหา tatt โดยยกเว้น tatth';
+    $metaphorssmlletter = 'ค้นหาอุปมาทั้งหมดในสังยุตตนิกาย 56';
+    $searchfewwords = 'ค้นหาหลายรูปแบบพร้อมกัน';
+    $inallnikaya = 'ค้นหา X ในมัชฌิมนิกายทั้งหมด';
+    $inonesutta = 'ค้นหา Y ใน DN22 เท่านั้น';
+    $regexlink = 'AI สามารถช่วยสร้าง RegEx สำหรับ grep -Ei ได้ เช่น <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href=" https://claude.ai/" target=_blank>Claude AI</a><br>';
+
+    $regexMemo = '<p style="text-align: left;"></p>';
+    $titlehowtovideo = 'วิดีโอแนะนำวิธีใช้';
+    $linkhowtovideo = 'https://youtu.be/Jle0XDs_roc?si=-FJFTpdOwZ4lIdo3';
+    $titledeschowtovideo = 'วิธีค้นหาในพระสูตรและพระวินัยบาลีด้วย Dhamma.Gift';
+
+    $carouseltitle = 'คำค้นหาที่น่าสนใจ';
+
+    $slides = [
+        [
+            [
+                'title' => 'ปารมี (Pāramī) ในพระธรรม',
+                'desc' => 'ความแตกต่างระหว่างปารมีในคัมภีร์ดั้งเดิมกับความหมายในปัจจุบัน',
+                'link' => '/en/?q=p%C4%81rami',
+            ],
+            'title' => 'การวิเคราะห์แบบ SWOT ในทางธรรม',
+            'desc' => 'อัสสาทะ (คุณ), อาทีนวะ (โทษ), นิสสรณะ (การสลัดออก)',
+            'link' => '/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
+        ],
+        // ... (โครงสร้างลิ้งค์สไลด์อื่นๆ สามารถคงไว้ตามเดิม หรือแปลส่วน title/desc ตามความเหมาะสม)
+    ];
+
+    $read = 'อ่าน';
+
+    $fntmessage = 'มุมมองรอบด้านเกี่ยวกับอริยสัจ 4<br>
+                ในพระสูตรและพระวินัยบาลี<br>
+                เข้าใจความหมายที่แท้จริง<br>
+                ของอริยสัจ 4<br>
+                และดับความทุกข์';
+        
+    $mainscrollmodalheader = 'นิยามของทุกข์ในพระสูตร';
+
+    $mainscrollmodal = '<p class="">จาก <a href="/read/?q=dn22&s=dukkha&lang=pli-eng#18.18">dn22</a> <a href="/read/?q=mn141&s=dukkha&lang=pli-eng#16.1">mn141</a></br>
+    <h4 class="pli-lang">Katamañca, bhikkhave, dukkhaṁ?</h4>ภิกษุทั้งหลาย ทุกข์เป็นอย่างไร?</br></br><p class="pli-lang">Yaṁ kho, bhikkhave, <strong>kāyikaṁ</strong> dukkhaṁ <strong>kāyikaṁ</strong> asātaṁ kāyasamphassajaṁ dukkhaṁ asātaṁ vedayitaṁ,</p><p>ภิกษุทั้งหลาย ความทุกข์ทาง <strong>กาย</strong> ความไม่สบายทาง <strong>กาย</strong> ความเสวยอารมณ์อันไม่สบายที่เป็นทุกข์อันเกิดแต่กายสัมผัส อันใด </p></br>
+    <p class="pli-lang">idaṁ vuccati, bhikkhave, dukkhaṁ.</p>
+    <p>นี้เรียกว่า ทุกข์</p>
+    </br>
+    <h4 class="pli-lang">Katamañca, bhikkhave, domanassaṁ?</h4>
+    <p>ภิกษุทั้งหลาย โทมนัสเป็นอย่างไร?</p></br>
+
+    <p class="pli-lang">Yaṁ kho, bhikkhave, <strong>cetasikaṁ</strong> dukkhaṁ <strong>cetasikaṁ</strong> asātaṁ manosamphassajaṁ dukkhaṁ asātaṁ vedayitaṁ,</p>
+    <p>ภิกษุทั้งหลาย ความทุกข์ทาง <strong>ใจ</strong> ความไม่สบายทาง <strong>ใจ</strong> ความเสวยอารมณ์อันไม่สบายที่เป็นทุกข์อันเกิดแต่มโนสัมผัส อันใด</p>
+    </br>
+    <p class="pli-lang">idaṁ vuccati, bhikkhave, domanassaṁ.</p>
+    <p>นี้เรียกว่า โทมนัส</p>';
+
+    $transwarning = '<i class="fa-solid fa-triangle-exclamation "></i> <b>โปรดระลึกไว้เสมอ!</b><br><br> คำแปล พจนานุกรม และอรรถกถาไม่ได้ถูกสร้างขึ้นโดยพระพุทธเจ้า! โปรดใช้ความระมัดระวังและวิจารณญาณในการอ่าน<br><br> 
+    หลักการสำคัญของคำสอนของพระพุทธเจ้าเรียนรู้ได้ดีที่สุด<strong>ด้วยตนเองจากพระสูตรภาษาบาลี</strong> จุดเริ่มต้นที่มั่นคงคือการปฏิบัติสายกลางและอริยสัจ 4 เช่น ข้อความบางส่วนจาก <strong>sn56.11</strong>';
+
+    $anamemlearnpali = 'คู่มือเรียนบาลี';
+    $anamelearnsanskrit = 'James Whelan. บาลีและสันสกฤต';
+
+    $anamemolds = 'คำแปลโดย M. Olds';
+    $anameasc = 'บทความจาก Dhammadana.org';
+    $anameati = 'Accesstoinsight.org ปาติโมกข์';
+    $anamehist = 'ประวัติ';
+    $anameuseful = 'ลิงก์ที่มีประโยชน์';
+    $anamedpd = 'Pali สำหรับ mDict';
+
+    $aboutheader = 'เกี่ยวกับโครงการ';
+   
+	$aboutprp = '
+<div class="col-lg-4 ms-auto">
+  <p class="lead">
+    Dhamma.Gift คือเสิร์ชเอนจินเพื่อการหลุดพ้น (Liberation Search Engine) สำหรับพระธรรมและพระวินัย ซึ่งเป็นแก่นของพระไตรปิฎกภาษาบาลี
+    <br><br>
+    ผลการค้นหาจะแสดงในรูปแบบตารางที่ให้ข้อมูลอย่างเป็นระบบ พร้อมคำแปลทีละบรรทัด และลิงก์อ้างอิงไปยังแหล่งข้อมูลภายนอก
+    ผู้ใช้สามารถค้นหาได้ทั้งภาษาบาลี อังกฤษ รัสเซีย และไทย เพื่อค้นหาความหมาย คำจำกัดความ อุปมาอุปไมย
+    คำอธิบาย บุคคล สถานที่ และหัวข้อต่าง ๆ ตามที่ปรากฏในพระสูตรและพระวินัย
+  </p>
+</div>
+
+<div class="col-lg-4 me-auto">
+  <p class="lead">
+    ขณะนี้โครงการกำลังมองหาผู้ที่สามารถช่วยด้าน
+    <strong>การแปลและการปรับเนื้อหาเป็นภาษาไทย (Thai localization)</strong>
+    ไม่ว่าจะเป็นพระ นักวิชาการ นักแปล นักพัฒนา หรือผู้สนใจทั่วไปที่ต้องการมีส่วนร่วมในการเผยแผ่พระธรรม
+    <br><br>
+    โครงการนี้ไม่จำเป็นต้องได้รับการสนับสนุนทางการเงิน
+    อย่างไรก็ตาม หากท่านประสงค์จะช่วยเหลือด้านค่าใช้จ่ายของโดเมน
+    หรือมีความประสงค์จะร่วมพัฒนาเว็บไซต์และเนื้อหาภาษาไทย
+    สามารถติดต่อได้ผ่านช่องทางต่าง ๆ ที่ระบุไว้ในส่วน
+    “Contacts” ด้านล่าง
+  </p>
+</div>';
+	
+    $prongh = ' โครงการบน GitHub';
+    $premail = ' ฟีเจอร์หลักของ Dhamma.Gift';
+    $prekeyfeatures = 'keyFeatures.html';
+
+    $headerexamples = 'ตัวอย่างการค้นหา';
+    $examplelist = '<li>นิยามของ <a href="/?q=-la2+Kata.*,+dukkhaṁ[,\\\\?]">dukkha</a> ในภาษาบาลีพร้อมคำอธิบายภาษาอังกฤษ: <a href="/?q=-la2+Kata.*,+dukkhaṁ[,\\\\?]">-la2 Kata.*, dukkhaṁ[,\\\\?]</a></li>
+    <li>พระสูตรที่พระพุทธเจ้าตรัสว่าพระองค์ไม่ตรัส <a href="/?q=dvayagāminī">วาจาที่มีความหมายสองทาง (dvayagāminī)</a></li>
+    <li>รูปแบบทั้งหมดของคำว่า <a href="/?q=paṭiccasamuppād">paṭiccasamuppado</a> (ปฏิจจสมุปบาท)</li>
+    <li>พระสูตรทั้งหมดเกี่ยวกับ <a href="/?q=eightfold">มรรคมีองค์แปด</a> ในภาษาอังกฤษ</li>
+    <li>พระสูตรทั้งหมดที่เกิดขึ้นใน <a href="/assets/example/สาวัตถี_suttanta_th_913-1168.html">สาวัตถี</a> ในภาษาไทย</li>
+    <li>พระสูตรทั้งหมดที่มีการกล่าวถึง <a href="/ru/?q=Сарипутт">พระสารีบุตร</a> ในภาษารัสเซีย</li>';
+
+    $contactheader = 'ติดต่อ';
+    $contaccalltoaction = 'ค้นหาอริยมรรคมีองค์แปด<br>
+    ทำความเข้าใจอริยสัจ 4<br>ธรรมะคือความจริงแท้';
+    $demovideo = 'วิดีโอสาธิต';
+    $basics = 'เคล็ดลับและเทคนิค';
+    $advanced = 'ขั้นสูง';
+    $closemodal = 'ปิดหน้าต่าง';
+    
+    $header5fdgoffline = 'Dhamma.Gift ฉบับออฟไลน์';
+    $pfdg = 'การค้นหาที่ครอบคลุมในพระสูตรและพระวินัยทั้งหมด';
+    $pfdgoffline = 'เวอร์ชันออฟไลน์และวิธีติดตั้ง (Android, Linux, Windows)';
+
+    $head5words = 'คำบาลีทั้งหมดจากพระสูตร (ยกเว้นขุททกนิกาย) และพระวินัย';
+    $pwords = 'เรียงตามตัวอักษรพร้อมจำนวนครั้งที่พบ';
+
+    $head5plikeyboard = 'แป้นพิมพ์บาลี';
+    $pplikeyboard = 'ติดตั้ง "O keyboard" ก่อนติดตั้งปลั๊กอิน';
+    $smplikeyboard = 'วิธีเพิ่มบาลี: Language - Transliteration - Pali (IAST)';
+
+    $head5suttadiff = 'เปรียบเทียบสองพระสูตร';
+    $psuttadiff = 'ค้นหาความแตกต่างระหว่างสองข้อความ';
+    $head5listdiff = 'เปรียบเทียบรายการพระสูตร';
+    $plistdiff = 'ค้นหาความแตกต่างระหว่างรายการพระสูตร เช่น sn56.22 dn22 sn12.2';
+    
+    $title404 = 'ข้อผิดพลาด 404';
+    $p404 = ' ไม่พบหน้านี้ แต่';
+    $hreftext404 = 'กลับหน้าแรก';
 }
+
+
+
 
 
 
