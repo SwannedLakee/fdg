@@ -754,8 +754,8 @@ if (document.location.search) {
     language = lang;
     console.log("in the initializing " + lang);
     setLanguage(lang);
-  } else if  (localStorage.paliToggleRu) {
-    	language = localStorage.paliToggleRu; 
+  } else if  (localStorage.paliToggle) {
+    	language = localStorage.paliToggle; 
 		  console.log('read from ls ' + language);
 setLanguage(language);
   } 
@@ -900,23 +900,23 @@ function toggleThePali() {
 
  
 	 // initial state
- if (!localStorage.paliToggleRu) {
-    localStorage.paliToggleRu = "pli-rus";
+ if (!localStorage.paliToggle) {
+    localStorage.paliToggle = "pli-rus";
   }   
 
   languageButton.addEventListener("click", () => {
     if (language === "pli-rus") {
      showPali();
       language = "pli";
-      localStorage.paliToggleRu = "pli";
+      localStorage.paliToggle = "pli";
     } else if (language === "rus") {
       showPaliEnglish();
       language = "pli-rus";    
-      localStorage.paliToggleRu = "pli-rus";
+      localStorage.paliToggle = "pli-rus";
     } else if (language === "pli") {
 	  showEnglish();
       language = "rus";
-      localStorage.paliToggleRu = "rus";  
+      localStorage.paliToggle = "rus";  
     }
   });
   
