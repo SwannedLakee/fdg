@@ -856,7 +856,7 @@ const demoLinks = {
   2: "mlDemo", // Alt + 2
   3: "memDemo",  // Alt + 3
   4: "dDemo", // Alt + 4
-  5: "thDemo ", // Alt + 5
+  5: "thDemo", // Alt + 5
   6: "rvDemo",  // Alt + 6
   7: "frDemo"  // Alt + 7
 };
