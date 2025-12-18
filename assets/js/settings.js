@@ -868,8 +868,25 @@ document.addEventListener("keydown", (event) => {
   // Проверяем, что нажата клавиша Alt и одна из цифр от 1 до 6
   if (event.altKey && event.code.startsWith("Digit")) {
               event.preventDefault();
-    // Извлекаем цифру из event.code (например, "Digit1" -> 1)
-    const digit = parseInt(event.code.replace("Digit", ""), 10);
+
+// Извлекаем цифру из event.code (например, "Digit1" -> 1)
+const digit = parseInt(event.code.replace("Digit", ""), 10);
+
+// Проверяем, существует ли такая цифра в нашем объекте demoLinks
+if (demoLinks.hasOwnProperty(digit)) {
+    event.preventDefault(); // Предотвращаем системное действие только если ключ совпал
+    
+    const linkId = demoLinks[digit];
+    const linkElement = document.getElementById(linkId);
+
+    if (linkElement) {
+        linkElement.click();
+    } else {
+        console.error(`Ссылка с id "${linkId}" не найдена!`);
+    }
+}
+			  
+/*			  
     // Проверяем, что цифра находится в диапазоне от 1 до 7
     if (digit >= 2 && digit <= 7) {
       // Получаем id ссылки из объекта demoLinks
@@ -885,6 +902,8 @@ document.addEventListener("keydown", (event) => {
         console.error(`Ссылка с id "${linkId}" не найдена!`);
       }
     }
+	
+	*/
   }
 });
 
