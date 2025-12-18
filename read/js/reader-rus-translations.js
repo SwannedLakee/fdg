@@ -346,8 +346,9 @@ let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: p
 
 if (paliData[segment] !== undefined && transData[segment] !== undefined && varData[segment] !== undefined) {
               html += `${openHtml}<span id="${anchor}">
-            <span class="pli-lang " lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}<br>
+            <span class="pli-lang " lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
       <font class="variant">
+	  <br>
       ${linkToCopyStart}${varData[segment].trim()}${linkToCopy}   
       </font>     
             </span>
