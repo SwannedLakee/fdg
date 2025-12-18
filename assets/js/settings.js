@@ -760,7 +760,8 @@ if (!hasNumbersInQ && !window.location.pathname.match(/\/(ml|d|memorize|rev|frev
     dDemo: window.location.origin + "/d/",
     thDemo: window.location.origin + "/th/read/",
     rvDemo: window.location.origin + "/rev/",
-    frDemo: window.location.origin + "/frev/"
+    frDemo: window.location.origin + "/frev/",
+	mlthDemo: window.location.origin + "/mlth/"
   };
 
   // Обновляем ссылки
@@ -858,7 +859,8 @@ const demoLinks = {
   4: "dDemo", // Alt + 4
   5: "thDemo", // Alt + 5
   6: "rvDemo",  // Alt + 6
-  7: "frDemo"  // Alt + 7
+  7: "frDemo",  // Alt + 7
+  8: "mlthDemo"  // Alt + 7
 };
 
 // Обработчик события нажатия клавиш
