@@ -868,8 +868,8 @@ document.addEventListener("keydown", (event) => {
               event.preventDefault();
     // Извлекаем цифру из event.code (например, "Digit1" -> 1)
     const digit = parseInt(event.code.replace("Digit", ""), 10);
-    // Проверяем, что цифра находится в диапазоне от 1 до 6
-    if (digit >= 2 && digit <= 6) {
+    // Проверяем, что цифра находится в диапазоне от 1 до 7
+    if (digit >= 2 && digit <= 7) {
       // Получаем id ссылки из объекта demoLinks
       const linkId = demoLinks[digit];
 
