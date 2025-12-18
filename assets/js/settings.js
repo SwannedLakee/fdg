@@ -860,7 +860,7 @@ const demoLinks = {
   5: "thDemo", // Alt + 5
   6: "rvDemo",  // Alt + 6
   7: "frDemo",  // Alt + 7
-  8: "mlthDemo"  // Alt + 7
+  8: "mlthDemo"  // Alt + 8
 };
 
 // Обработчик события нажатия клавиш
@@ -907,6 +907,7 @@ if (demoLinks.hasOwnProperty(digit)) {
   }
 });
 
+/*
 document.addEventListener("keydown", (event) => {
   if (event.altKey && event.code === "Digit8") { // Проверяем, что нажаты Alt и 7
             event.preventDefault();
@@ -927,7 +928,7 @@ document.addEventListener("keydown", (event) => {
     }
   }
 });
-
+*/
 
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.code === 'Digit3') {
