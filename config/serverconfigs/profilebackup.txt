@@ -421,22 +421,6 @@ echo
 echo audio
 cd /var/www/html/assets/audio
 git pull "
-echo amz aws
-ssh -i "/storage/emulated/0/Documents/dpd-ui-eu.pem" \
-ubuntu@ec2-3-125-254-158.eu-central-1.compute.amazonaws.com \
-"sudo bash \
-cd /var/www/html  \
- git pull  \
- echo 
-echo dpd-ui  \
- cd /var/www/dpd-ui  \
- git pull  \
- echo \
-echo audio  \
- cd /var/www/html/assets/audio  \
- git pull"
-
-
 }
 
 
