@@ -287,12 +287,17 @@ $mainscrollmodal = '<p >Из <a href=/r/?q=dn22&s=dukkha&lang=pli-rus#18.18>dn22
 $carouseltitle = 'Интересные Запросы';
 
 $slides = [
-               [
+    [
+        'title' => '\"Так следует тренироваться...\"',
+        'desc' => 'Практические наставления для всех видов практикующих',
+        'link' => '/ru/?q=sikkhitabb&p=-kn&la=-la1',
+    ],  	
+    [
         'title' => 'Pārami в Дхамме',
         'desc' => 'не совпадают по всем пунктам с "современными" pārami',
         'link' => '/ru/?q=p%C4%81rami',
     ],        
-          [
+    [
         'title' => 'Эквивалент SWOT-анализа в Дхамме',
         'desc' => 'Привлекательность, Недостаток-опасность, "Спасение" и явления, которые следует изучить в этом ключе',
         'link' => '/ru/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
@@ -1032,13 +1037,17 @@ $titledeschowtovideo = 'How to search in Pali Suttas and Vinaya with Dhamma.Gift
 $carouseltitle = 'Top Interesting Queries';
 
 $slides = [
-
-[
-  [
+	[
+        'title' => '"Thus one should train..."',
+		'desc'  => 'Practical guidance for all kinds of practitioners',
+        'link' => '/?q=sikkhitabb&p=-kn&la=-la1',
+    ],  
+	[
     'title' => 'Pāramī in the Dhamma',
     'desc' => 'do not correspond at all to the "modern" pāramīs',
     'link' => '/en/?q=p%C4%81rami',
-],
+	],
+[
     'title' => 'The Dhamma Equivalent of a SWOT Analysis',
     'desc' => 'Attractiveness, Danger-Drawback, "Escape", and phenomena to be examined through this lens',
     'link' => '/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
@@ -1771,14 +1780,12 @@ $mainreadlink = '/th/read.php';
     $carouseltitle = 'คำค้นหาที่น่าสนใจ';
 
 $slides = [
-
-[
   [
     'title' => 'ปารมีในพระธรรม',
     'desc'  => 'การอธิบายความหมายของปารมีในพระธรรมวินัย ตามที่ปรากฏในพระสูตร ซึ่งมีลักษณะเฉพาะแตกต่างจากการอธิบายในแนวร่วมสมัยบางประการ',
     'link'  => '/en/?q=p%C4%81rami',
 ],
-    'title' => 'การพิจารณาธรรมในลักษณะที่เทียบเคียงกับ SWOT',
+[    'title' => 'การพิจารณาธรรมในลักษณะที่เทียบเคียงกับ SWOT',
     'desc'  => 'การพิจารณาอัสสาทะ โทษ ทางออก และสภาวธรรมต่าง ๆ ผ่านกรอบแห่งการใคร่ครวญนี้',
     'link'  => '/?q=%5Cbko%5Cb.%2Aass%C4%81d.%2A%C4%81d%C4%ABnav.%2Anissara%E1%B9%87&p=-kn',
 ],
