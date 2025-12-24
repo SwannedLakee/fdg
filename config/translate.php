@@ -1039,7 +1039,7 @@ $carouseltitle = 'Top Interesting Queries';
 $slides = [
 	[
         'title' => '"Thus one should train..."',
-		'desc'  => 'Practical guidance for all kinds of practitioners',
+		'desc'  => 'Instructions on practice for all audiences',
         'link' => '/?q=sikkhitabb&p=-kn&la=-la1',
     ],  
 	[
