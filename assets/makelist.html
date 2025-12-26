@@ -4,18 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Transformation</title>
+    <title>Make List from Text</title>
     <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
     <link href="/assets/css/extrastyles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="/assets/img/favico-noglass.png" />
-<script src="/assets/js/jquery-3.7.0.min.js"></script>
+    <script src="/assets/js/jquery-3.7.0.min.js"></script>
+    <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
 
- <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
+    <style>
+        .table {
+            color: initial;
+            background-color: initial;
+        }
 
-  <style>
-.table {
-  color: initial;  background-color: initial; 
-}
         #resultOutput {
             white-space: pre-wrap;
         }
@@ -38,41 +39,48 @@
             font-weight: bold;
             border-radius: 5px;
             display: none;
-			
-			.toggle-switch {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
+        }
+
+        .toggle-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
     </style>
 </head>
 
 <body>
     <div class="container mt-5">
-	<div class="align-items-center align-items-center toggle-switch input-group-append">
-    <div id="" class="input-group">
-        <a href="../../read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
-<svg fill="#979797" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="26px" viewBox="0 0 547.596 547.596" xml:space="preserve" stroke="#979797"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="3.285576"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path> </g> </g></svg>
-        </a>
+        <div class="align-items-center align-items-center toggle-switch input-group-append">
+            <div id="" class="input-group">
+                <a href="../../read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
+                    <svg fill="#979797" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="26px" viewBox="0 0 547.596 547.596" xml:space="preserve" stroke="#979797">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="3.285576"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <g>
+                                <path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path>
+                            </g>
+                        </g>
+                    </svg>
+                </a>
 
-        <a href="../../" title="Sutta and Vinaya search" rel="noreferrer" class="me-1">
-            <img width="24px" alt="dhamma.gift icon" src="/assets/img/gray-white.png">
-        </a>
-		
-        <div class="ms-1 form-check form-switch">
-            <input type="checkbox" class="form-check-input" id="darkSwitch">
+                <a href="../../" title="Sutta and Vinaya search" rel="noreferrer" class="me-1">
+                    <img width="24px" alt="dhamma.gift icon" src="/assets/img/gray-white.png">
+                </a>
+
+                <div class="ms-1 form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="darkSwitch">
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="paliTextInput">Pali Text:</label>
-                    <textarea class="form-control full-width" id="paliTextInput" rows="5"
-                        placeholder="e.g. sammādiṭṭhi, sammāsaṅkappo, sammāvācā, sammākammanto, sammāājīvo, sammāvāyāmo, sammāsati, sammāsamādhi"></textarea>
+                    <textarea class="form-control full-width" id="paliTextInput" rows="5" placeholder="e.g. sammādiṭṭhi, sammāsaṅkappo, sammāvācā, sammākammanto, sammāājīvo, sammāvāyāmo, sammāsati, sammāsamādhi"></textarea>
                 </div>
             </div>
         </div>
@@ -80,8 +88,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="otherTextInput">Other Language Text:</label>
-                    <textarea class="form-control full-width" id="otherTextInput" rows="5"
-                        placeholder="e.g. правильный взгляд, правильная заготовка=привычка+намерение, правильная речь, правильный поступок, правильный быт, правильное старание, правильная фокусировка-памятование, правильное объединение опыта"></textarea>
+                    <textarea class="form-control full-width" id="otherTextInput" rows="5" placeholder="e.g. правильный взгляд, правильная заготовка=привычка+намерение, правильная речь, правильный поступок, правильный быт, правильное старание, правильная фокусировка-памятование, правильное объединение опыта"></textarea>
                 </div>
             </div>
         </div>
@@ -96,52 +103,133 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="delimiterInput">Custom Delimiter:</label>
-                    <input type="text" class="form-control full-width" id="delimiterInput" placeholder="Enter delimiter"
-                        value=".,:;?!—…">
+                    <input type="text" class="form-control full-width" id="delimiterInput" placeholder="Enter delimiter" value=".,:;?!—…">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="delimiterBeforeWord">Delimiter Before Word:</label>
-                    <input type="text" class="form-control full-width" id="delimiterBeforeWord"
-                        placeholder="Delimiter before word e.g. or">
+                    <input type="text" class="form-control full-width" id="delimiterBeforeWord" placeholder="Delimiter before word e.g. or">
                 </div>
             </div>
         </div>
-<div class="form-group my-2">
-    <label for="checkbox" >With Headers:</label>
-    <input type="checkbox" id="checkbox" checked>
-</div>
+        <div class="form-group my-2">
+            <label for="checkbox">With Headers:</label>
+            <input type="checkbox" id="checkbox" checked>
+        </div>
 
         <div class="row">
             <div class="col-md-12">
                 <div class="btn-group">
                     <button class="btn btn-primary" id="transformButton">Transform</button>
                     <button class="btn btn-secondary" id="clearButton">Clear</button>
-                    <a href="#" class="btn btn-success" id="downloadButton" download="result.csv"
-                        style="display: none;">Download CSV</a>
+                    <a href="#" class="btn btn-success" id="downloadButton" download="result.csv" style="display: none;">Download CSV</a>
                 </div>
             </div>
         </div>
-		
-		
+
+
         <div class="row mt-4">
             <div class="col-md-12">
                 <h5>Result:</h5>
                 <div id="resultOutput"></div>
             </div>
         </div>
-		
-		
-		
 
     </div>
 
     <div class="copy-success">Copied to Clipboard</div>
 
 
-</div>
+    </div>
     <script>
+        // --- LOCAL STORAGE FUNCTIONS ---
+
+        function saveToStorage() {
+            localStorage.setItem('mk_paliText', document.getElementById('paliTextInput').value);
+            localStorage.setItem('mk_otherText', document.getElementById('otherTextInput').value);
+            localStorage.setItem('mk_delimiter', document.getElementById('delimiterInput').value);
+            localStorage.setItem('mk_delimiterBefore', document.getElementById('delimiterBeforeWord').value);
+            localStorage.setItem('mk_checkbox', document.getElementById('checkbox').checked);
+            localStorage.setItem('mk_result', document.getElementById('resultOutput').innerHTML);
+
+            // Save additional inputs as a JSON array
+            const additionalTexts = [];
+            document.querySelectorAll('.additional-text').forEach(el => {
+                additionalTexts.push(el.value);
+            });
+            localStorage.setItem('mk_additional', JSON.stringify(additionalTexts));
+        }
+
+        function loadFromStorage() {
+            if (localStorage.getItem('mk_paliText') !== null) {
+                document.getElementById('paliTextInput').value = localStorage.getItem('mk_paliText');
+            }
+            if (localStorage.getItem('mk_otherText') !== null) {
+                document.getElementById('otherTextInput').value = localStorage.getItem('mk_otherText');
+            }
+            if (localStorage.getItem('mk_delimiter') !== null) {
+                document.getElementById('delimiterInput').value = localStorage.getItem('mk_delimiter');
+            }
+            if (localStorage.getItem('mk_delimiterBefore') !== null) {
+                document.getElementById('delimiterBeforeWord').value = localStorage.getItem('mk_delimiterBefore');
+            }
+            if (localStorage.getItem('mk_checkbox') !== null) {
+                document.getElementById('checkbox').checked = (localStorage.getItem('mk_checkbox') === 'true');
+            }
+            
+             // Restore Result if it exists (optional, but good for persistence)
+            if (localStorage.getItem('mk_result')) {
+                 document.getElementById('resultOutput').innerHTML = localStorage.getItem('mk_result');
+                 // If there is a result, show the download button
+                 if(document.getElementById('resultOutput').innerHTML.trim() !== "") {
+                      // Re-generate the blob link logic if needed, or user just hits transform again.
+                      // Usually better to let user hit transform again to get the CSV link, 
+                      // but visual restoration is helpful.
+                 }
+            }
+
+
+            // Restore additional inputs
+            const additionalJSON = localStorage.getItem('mk_additional');
+            if (additionalJSON) {
+                const additionalTexts = JSON.parse(additionalJSON);
+                additionalTexts.forEach(text => {
+                    addAdditionalInput(text);
+                });
+            }
+        }
+
+        // --- EVENT LISTENERS FOR AUTO-SAVE ---
+
+        const inputsToTrack = ['paliTextInput', 'otherTextInput', 'delimiterInput', 'delimiterBeforeWord', 'checkbox'];
+        inputsToTrack.forEach(id => {
+            document.getElementById(id).addEventListener('input', saveToStorage);
+            document.getElementById(id).addEventListener('change', saveToStorage); // For checkbox
+        });
+
+        // Initialize on load
+        window.addEventListener('load', loadFromStorage);
+
+
+        // --- MAIN LOGIC ---
+
+        // Helper function to create additional input (used by Button and Load)
+        function addAdditionalInput(value = '') {
+            var additionalInputs = document.getElementById('additionalInputs');
+            var textArea = document.createElement('textarea');
+            textArea.setAttribute('class', 'form-control full-width additional-text mb-2'); // added mb-2 for spacing
+            textArea.setAttribute('rows', '5');
+            textArea.setAttribute('placeholder', 'e.g. additional text');
+            textArea.value = value;
+            
+            // Add save listener to this new dynamic input
+            textArea.addEventListener('input', saveToStorage);
+            
+            additionalInputs.appendChild(textArea);
+        }
+
+
         document.getElementById('transformButton').addEventListener('click', function () {
             var delimiter = document.getElementById('delimiterInput').value;
             var delimiterBeforeWord = document.getElementById('delimiterBeforeWord').value;
@@ -196,6 +284,9 @@
 
             var resultTable = generateResultTable(csv);
             document.getElementById('resultOutput').innerHTML = resultTable;
+            
+            // Save result immediately
+            saveToStorage();
 
             document.getElementById('downloadButton').style.display = 'block';
             var blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
@@ -203,59 +294,52 @@
             document.getElementById('downloadButton').href = url;
         });
 
-
-/*
-
         document.getElementById('clearButton').addEventListener('click', function () {
-            document.getElementById('paliTextInput').value = '';
-            document.getElementById('otherTextInput').value = '';
-
-            var additionalInputs = document.getElementById('additionalInputs');
-            while (additionalInputs.lastChild) {
-                additionalInputs.removeChild(additionalInputs.lastChild);
+            if (confirm('This will erase all text. Sure?')) {
+                // Remove specific keys to avoid clearing other apps on localhost if any
+                localStorage.removeItem('mk_paliText');
+                localStorage.removeItem('mk_otherText');
+                localStorage.removeItem('mk_delimiter');
+                localStorage.removeItem('mk_delimiterBefore');
+                localStorage.removeItem('mk_checkbox');
+                localStorage.removeItem('mk_additional');
+                localStorage.removeItem('mk_result');
+                
+                location.reload(); 
             }
-
-            document.getElementById('resultOutput').innerHTML = '';
-            document.getElementById('downloadButton').style.display = 'none';
         });
-*/
-
-
-document.getElementById('clearButton').addEventListener('click', function () {
-    location.reload(); // Перезагрузка страницы
-});
-
 
         document.getElementById('addInputButton').addEventListener('click', function () {
-            var additionalInputs = document.getElementById('additionalInputs');
-            var textArea = document.createElement('textarea');
-            textArea.setAttribute('class', 'form-control full-width additional-text');
-            textArea.setAttribute('rows', '5');
-            textArea.setAttribute('placeholder', 'e.g. additional text');
-            additionalInputs.appendChild(textArea, additionalInputs.firstChild);
+            addAdditionalInput(); // Call the helper function
+            saveToStorage(); // Save the state (that there is a new empty input)
         });
 
         document.getElementById('removeInputButton').addEventListener('click', function () {
             var additionalInputs = document.getElementById('additionalInputs');
             if (additionalInputs.childElementCount > 0) {
                 additionalInputs.removeChild(additionalInputs.lastChild);
+                saveToStorage(); // Save the state
             }
         });
 
         function generateResultTable(csv) {
             var lines = csv.split('\n');
-            
+
             var tableHtml = '<table class="table table-bordered">';
             tableHtml += '<tr>';
 
-     // Получение заголовков столбцов
-    var headerLine = lines[0];
-    var headers = headerLine.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-    for (var j = 0; j < headers.length; j++) {           
+            // Получение заголовков столбцов
+            var headerLine = lines[0];
+            // Fix: handle empty result if text is empty
+            if(!headerLine) return ''; 
+            
+            var headers = headerLine.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            for (var j = 0; j < headers.length; j++) {
                 tableHtml += '<th><button class="btn btn-sm btn-secondary copy-button copy-column-button" data-column-index="' + j + '">Copy</button></th>';
             }
             tableHtml += '</tr>';
             for (var i = 0; i < lines.length; i++) {
+                if(lines[i].trim() === "") continue;
                 tableHtml += '<tr>';
                 var columns = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                 for (var j = 0; j < columns.length; j++) {
@@ -313,9 +397,8 @@ document.getElementById('clearButton').addEventListener('click', function () {
             }
         });
     </script>
-	<script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
+    <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
 
 </body>
 
 </html>
-

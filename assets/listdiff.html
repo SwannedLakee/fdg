@@ -2,8 +2,7 @@
 <html>
 <head>
   <title>Text Links Diff</title>
-  <!-- Include required libraries -->
- <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
+  <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
   <link href="/assets/css/extrastyles.css" rel="stylesheet" />
 <script src="/assets/js/jquery-3.7.0.min.js"></script>
 <link href="/assets/css/paliLookup.css" rel="stylesheet" />
@@ -100,10 +99,43 @@
       clearForm();
     });
 
+    // --- LOCAL STORAGE LOGIC START ---
+
+    // 1. Restore data on page load
+    window.addEventListener('load', function() {
+        const savedString1 = localStorage.getItem("diff_string1");
+        const savedString2 = localStorage.getItem("diff_string2");
+
+        if (savedString1) {
+            document.getElementById('string1').value = savedString1;
+        }
+        if (savedString2) {
+            document.getElementById('string2').value = savedString2;
+        }
+    });
+
+    // 2. Save data as you type (Input Event)
+    document.getElementById('string1').addEventListener('input', function() {
+        localStorage.setItem("diff_string1", this.value);
+    });
+
+    document.getElementById('string2').addEventListener('input', function() {
+        localStorage.setItem("diff_string2", this.value);
+    });
+
+    // --- LOCAL STORAGE LOGIC END ---
+
   function processForm() {
     // Get the input values
-    var string1 = document.getElementById('string1').value.trim();
-    var string2 = document.getElementById('string2').value.trim();
+    var string1Raw = document.getElementById('string1').value;
+    var string2Raw = document.getElementById('string2').value;
+
+    // Save to localStorage (redundant but safe)
+    localStorage.setItem("diff_string1", string1Raw);
+    localStorage.setItem("diff_string2", string2Raw);
+
+    var string1 = string1Raw.trim();
+    var string2 = string2Raw.trim();
 
     // Remove prefixes before colon if present
     if (string1.includes(":")) {
@@ -171,8 +203,15 @@ if (onlyIn1.length === 0 && onlyIn2.length === 0) {
   }
 
     function clearForm() {
-      document.getElementById('textLinksForm').reset();
-      document.getElementById('result').innerHTML = "";
+      // Add confirmation like in memo
+      if (confirm('This will erase the text from both lists. Sure?')) {
+          document.getElementById('textLinksForm').reset();
+          document.getElementById('result').innerHTML = "";
+          
+          // Clear localStorage
+          localStorage.removeItem("diff_string1");
+          localStorage.removeItem("diff_string2");
+      }
     }
   </script>
   <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
@@ -180,5 +219,3 @@ if (onlyIn1.length === 0 && onlyIn2.length === 0) {
 
 </body>
 </html>
-
-
