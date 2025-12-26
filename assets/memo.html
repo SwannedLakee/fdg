@@ -1,19 +1,30 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/assets/img/favico-noglass.png" />
-  <title>Mpdify Text for Memorisation</title>
-  <!-- Подключение Bootstrap CSS -->
-    <!-- Подключение Bootstrap 5 CSS -->
+    <title>Modify Text for Memorisation</title>
     <link href="/assets/css/styles.css" rel="stylesheet" />
     <link href="/assets/css/extrastyles.css" rel="stylesheet" />
+    <style>
+        .copy-success {
+            z-index: 1000;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-      <div class="container mt-3">
+    <div class="container mt-3">
         <div class="align-items-center align-items-center toggle-switch input-group-append">
             <div id="" class="input-group">
                 <a href="/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
@@ -27,12 +38,9 @@
                 <div class="ms-1 form-check form-switch">
                     <input type="checkbox" class="form-check-input" id="darkSwitch">
                 </div>
-                 <a href="/memorize/?q=sn56.11&lang=pli" title="Sutta and Vinaya search" rel="noreferrer" class="me-2 text-decoration-none text-muted">sn5.12.2.1
-                </a>    
-                 <a href="/assets/texts/dn2.9.html" title="Sutta and Vinaya search" rel="noreferrer" class="me-2 text-decoration-none text-muted">dn2.9
-                </a>                            
-                 <a href="/memorize/?q=sn12.2&lang=pli" title="Sutta and Vinaya search" rel="noreferrer" class="me-2 text-decoration-none text-muted">sn2.1.1.2
-                </a>                    
+                <a href="/memorize/?q=sn56.11&lang=pli" title="Sutta and Vinaya search" rel="noreferrer" class="me-2 text-decoration-none text-muted">sn5.12.2.1</a>
+                <a href="/assets/texts/dn2.9.html" title="Sutta and Vinaya search" rel="noreferrer" class="me-2 text-decoration-none text-muted">dn2.9</a>
+                <a href="/memorize/?q=sn12.2&lang=pli" title="Sutta and Vinaya search" rel="noreferrer" class="me-2 text-decoration-none text-muted">sn2.1.1.2</a>
             </div>
         </div>
     </div>
@@ -40,165 +48,152 @@
         <div class="row ">
             <div class="col-12 text-center">
                 <h1 class="mt-3 mb-4">Memorizer</h1>
-              <p class="text-muted">To speed up memorization of some text it is helpful to reduce it to first letters only. Give it a try. E.g.: Yaṁ kiñci samudayadhammaṁ sabbaṁ taṁ nirodhadhamman.
-              <br><br>Will become: Y k s s t n.</p> 
-               
+                <p class="text-muted">To speed up memorization of some text it is helpful to reduce it to first letters only. Give it a try. E.g.: Yaṁ kiñci samudayadhammaṁ sabbaṁ taṁ nirodhadhamman.
+                    <br><br>Will become: Y k s s t n.</p>
+
                 <h5 class="mb-4">Open Any Sutta this way <a href="/memorize/">Here</a></h5>
-                <h6 class="mb-4"><a href="/memorize/?q=sn47.42&lang=pli-eng">Example on sn47.42</a></h6>                
-                
+                <h6 class="mb-4"><a href="/memorize/?q=sn47.42&lang=pli-eng">Example on sn47.42</a></h6>
+
                 <textarea id="inputText" class="form-control mb-3 inputdiv" rows="10" placeholder="Paste text that you want to memorize"></textarea>
-             <!--   <div class="form-check"> 
-                    <input type="checkbox" class="form-check-input" id="checkbox1">
-                    <label class="form-check-label" for="checkbox1">Фича 1</label>
-                </div>
-                <div class="form-check"> 
-                    <input type="checkbox" class="form-check-input" id="checkbox2">
-                    <label class="form-check-label" for="checkbox2">Фича 2</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="checkbox3">
-                    <label class="form-check-label" for="checkbox3">Фича 3</label>
-                </div> -->
-<button class="btn btn-primary mt-3" onclick="преобразоватьТекст()">Transform</button>
-<button class="btn btn-primary mt-3" onclick="копироватьРезультат()">Copy</button>
-<button type="button" class="btn btn-secondary mt-3" data-bs-toggle="collapse" data-bs-target="#linkList" aria-expanded="false">
-        Links
-    </button> 
-	<button class="btn btn-danger mt-3" onclick="очистить()">Clear</button>
 
-    <div class="collapse mt-2" id="linkList">
-        <ul class="list-group">
-            <li class="list-group-item"><a href="/memorize/">Open any Sutta in this way</a></li>          
-            <li class="list-group-item"><a href="/ru/assets/texts/pm.php">Bhikkhupātimokkha</a></li>
-            <li class="list-group-item"><a href="/ru/assets/texts/bipm.php">Bhikkhunīpātimokkha</a></li>
-            <li class="list-group-item"><a href="/ru/assets/materials/prat.html">Dhamma.ru Patimokkha</a></li>
-            <li class="list-group-item"><a href="/bw/vi/vi.html#content">TBW Patimokkha</a></li>
-            <li class="list-group-item"><a href="/accesstoinsight.org/tipitaka/vin/sv/index.html">ATI Patimokkha</a></li>
-            
-<li class="list-group-item">
- Selfcheck: <a href="./rr.html">Bhikkhu</a>
-  <a href="./rrbi.html" >Bhikkhuni</a>
-  </li>
+                <button class="btn btn-primary mt-3" onclick="преобразоватьТекст()">Transform</button>
+                <button class="btn btn-primary mt-3" onclick="копироватьРезультат()">Copy</button>
+                <button type="button" class="btn btn-secondary mt-3" data-bs-toggle="collapse" data-bs-target="#linkList" aria-expanded="false">
+                    Links
+                </button>
+                <button class="btn btn-danger mt-3" onclick="очистить()">Clear</button>
 
-        </ul>
-    </div>
-   
-    
-   <div class="modal fade" id="copyPopup" tabindex="-1" role="dialog" aria-labelledby="copyPopupLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                Copied Results!
-            </div>
-        </div>
-    </div>
-</div>
-             
+                <div class="collapse mt-2" id="linkList">
+                    <ul class="list-group">
+					
+
+                        <li class="list-group-item">Tips & Tricks for Memorizaiton
+						<a href="https://docs.google.com/document/d/1JWHEFqcaNhYwYneWBnTp9rkgWecDB4IIHX1l3AxSiWM/edit?tab=t.0#heading=h.j8yrupzfcw9i">Eng</a>
+						<a href="https://docs.google.com/document/d/12A4jNFrSQywZubM7bL2pgQK0fOtr6LEBJMjGb7nTNlw/edit?tab=t.0#heading=h.j8yrupzfcw9i">Rus</a>
+						
+						</li>
+                        <li class="list-group-item"><a href="/memorize/">Open any Sutta in this way</a></li>
+                        <li class="list-group-item"><a href="/ru/assets/texts/pm.php">Bhikkhupātimokkha</a></li>
+                        <li class="list-group-item"><a href="/ru/assets/texts/bipm.php">Bhikkhunīpātimokkha</a></li>
+                        <li class="list-group-item"><a href="/ru/assets/materials/prat.html">Dhamma.ru Patimokkha</a></li>
+                        <li class="list-group-item"><a href="/bw/vi/vi.html#content">TBW Patimokkha</a></li>
+                        <li class="list-group-item"><a href="/accesstoinsight.org/tipitaka/vin/sv/index.html">ATI Patimokkha</a></li>
+
+                        <li class="list-group-item">
+                            Selfcheck: <a href="./rr.html">Bhikkhu</a>
+                            <a href="./rrbi.html">Bhikkhuni</a>
+                        </li>
+                    </ul>
+                </div>
+
                 <div class="mt-4">
-              <h3>
-              Result:   
-              </h3>     
-<div id="результат" class="display-7 mb-5"></div>
+                    <h3>Result:</h3>
+                    <div id="результат" class="display-7 mb-5"></div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div class="copy-success">Copied to Clipboard</div>
 
     <script>
-function преобразоватьТекст() {
-    const входнойТекст = document.getElementById("inputText").value;
+        function преобразоватьТекст() {
+            const входнойТекст = document.getElementById("inputText").value;
+            localStorage.setItem("входнойТекст", входнойТекст);
 
-    localStorage.setItem("входнойТекст", входнойТекст);
+            // Разбиваем текст на строки
+            const строкиСКавычками = входнойТекст.split('\n');
 
-    // Разбиваем текст на строки
-    const строкиСКавычками = входнойТекст.split('\n');
+            const строки = строкиСКавычками.map(строка => {
+                return строка.replace(/"/g, ' " ').replace(/—/g, ' — ').replace(/“/g, ' “ ').replace(/‘/g, " ‘ ").replace(/\?/g, " ? ").replace(/,/g, " , ").replace(/\./g, " . ").replace(/:/g, " : ").replace(/;/g, " ; ");
+            });
 
-const строки = строкиСКавычками.map(строка => {
-    return строка.replace(/"/g, ' " ').replace(/—/g, ' — ').replace(/“/g, ' “ ').replace(/‘/g, " ‘ " ).replace(/\?/g, " ? " ).replace(/,/g, " , " ).replace(/\./g, " . " ).replace(/:/g, " : " ).replace(/;/g, " ; " );
-    
-});
+            const результат = строки.map(строка => {
+                // Разбиваем каждую строку на слова
+                const слова = строка.split(/\s+/);
 
-    const результат = строки.map(строка => {
-        // Разбиваем каждую строку на слова
-        const слова = строка.split(/\s+/);
-        
-        // Преобразуем каждое слово в первую букву или пустую строку
-const преобразованныеСлова = слова.map(word => {
-    const перваяБуква = word.match(/^\p{L}/u); // Используйте \p{L} для букв из разных языков
-    if (перваяБуква) {
-        return перваяБуква[0];
-    } else {
-        const диакритическиеСимволы = word.match(/^[\p{M}\p{N}\p{S}\p{P}]/u);
-        return диакритическиеСимволы ? диакритическиеСимволы[0] : '';
-    }
-});
+                // Преобразуем каждое слово в первую букву или пустую строку
+                const преобразованныеСлова = слова.map(word => {
+                    const перваяБуква = word.match(/^\p{L}/u); // Используйте \p{L} для букв из разных языков
+                    if (перваяБуква) {
+                        return перваяБуква[0];
+                    } else {
+                        const диакритическиеСимволы = word.match(/^[\p{M}\p{N}\p{S}\p{P}]/u);
+                        return диакритическиеСимволы ? диакритическиеСимволы[0] : '';
+                    }
+                });
 
+                // Объединяем преобразованные слова снова в строку
+                return преобразованныеСлова.join(' ').replace(/ \?/g, "?").replace(/“ /g, '').replace(/ ,/g, ", ").replace(/ \. /g, ". ").replace(/ : /g, ": ").replace(/ ; /g, "; ").replace(/ ‘ /g, " ");
+            }).join('\n'); // Объединяем строки с переносами
 
-        // Объединяем преобразованные слова снова в строку
-        return преобразованныеСлова.join(' ').replace(/ \?/g, "?" ).replace(/“ /g, '').replace(/ ,/g, ", " ).replace(/ \. /g, ". " ).replace(/ : /g, ": " ).replace(/ ; /g, "; " ).replace(/ ‘ /g, " " );
-    }).join('\n'); // Объединяем строки с переносами
+            document.getElementById("результат").innerText = результат;
 
-    document.getElementById("результат").innerText = результат;
-
-    // Сохраняем результат в Local Storage
-    localStorage.setItem("результат", результат);
-}
-
-    
-window.addEventListener('load', function () {
-    const входнойТекст = localStorage.getItem("входнойТекст");
-    const результат = localStorage.getItem("результат");
-
-    if (входнойТекст) {
-        document.getElementById("inputText").value = входнойТекст;
-    }
-
-    if (результат) {
-        document.getElementById("результат").innerText = результат;
-    }
-});
-
-function очистить() {
-    // Очищаем поле ввода и результат
-      if (confirm('This will erase the text. Sure?')) {
-    document.getElementById("inputText").value = "";
-    document.getElementById("результат").innerText = "";
-
-    // Очищаем данные в Local Storage
-    localStorage.removeItem("входнойТекст");
-    localStorage.removeItem("результат");
-      }
-}
+            // Сохраняем результат в Local Storage
+            localStorage.setItem("результат", результат);
+        }
 
 
-function копироватьРезультат() {
-    const результат = document.getElementById("результат").innerText;
+        window.addEventListener('load', function() {
+            const входнойТекст = localStorage.getItem("входнойТекст");
+            const результат = localStorage.getItem("результат");
 
-    if (результат) {
-        // Create a temporary textarea element to hold the result text
-        const tempTextarea = document.createElement("textarea");
-        tempTextarea.value = результат;
+            if (входнойТекст) {
+                document.getElementById("inputText").value = входнойТекст;
+            }
 
-        // Append the textarea to the document
-        document.body.appendChild(tempTextarea);
+            if (результат) {
+                document.getElementById("результат").innerText = результат;
+            }
+        });
 
-        // Select and copy the text
-        tempTextarea.select();
-        document.execCommand("copy");
+        function очистить() {
+            // Очищаем поле ввода и результат
+            if (confirm('This will erase the text. Sure?')) {
+                document.getElementById("inputText").value = "";
+                document.getElementById("результат").innerText = "";
 
-        // Remove the temporary textarea
-        document.body.removeChild(tempTextarea);
+                // Очищаем данные в Local Storage
+                localStorage.removeItem("входнойТекст");
+                localStorage.removeItem("результат");
+            }
+        }
 
-        // Show the copy success popup
-        $('#copyPopup').modal('show');
-    }
-}
+        function копироватьРезультат() {
+            const результат = document.getElementById("результат").innerText;
 
+            if (результат) {
+                // Create a temporary textarea element to hold the result text
+                const tempTextarea = document.createElement("textarea");
+                tempTextarea.value = результат;
+
+                // Append the textarea to the document
+                document.body.appendChild(tempTextarea);
+
+                // Select and copy the text
+                tempTextarea.select();
+                document.execCommand("copy");
+
+                // Remove the temporary textarea
+                document.body.removeChild(tempTextarea);
+
+                // Показываем новое уведомление (как в makelist)
+                showCopySuccess();
+            }
+        }
+
+        // Новая функция из makelist.html
+        function showCopySuccess() {
+            var copySuccess = document.querySelector('.copy-success');
+            copySuccess.style.display = 'block';
+            setTimeout(function() {
+                copySuccess.style.display = 'none';
+            }, 1500);
+        }
     </script>
-    
-        <!-- Подключение Bootstrap 5 JS (необходим для работы кнопки и collapse) -->
+
     <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
     <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
-    
+
 </body>
 </html>
