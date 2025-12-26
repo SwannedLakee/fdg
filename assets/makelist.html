@@ -30,6 +30,7 @@
         }
 
         .copy-success {
+		z-index:1000;
             position: fixed;
             top: 10px;
             right: 10px;
@@ -124,6 +125,7 @@
                     <button class="btn btn-primary" id="transformButton">Transform</button>
                     <button class="btn btn-secondary" id="clearButton">Clear</button>
                     <a href="#" class="btn btn-success" id="downloadButton" download="result.csv" style="display: none;">Download CSV</a>
+                    <button class="btn btn-warning" id="copyAllButton" style="display: none;">Copy All</button>
                 </div>
             </div>
         </div>
@@ -144,6 +146,10 @@
     </div>
     <script>
         // --- LOCAL STORAGE FUNCTIONS ---
+
+        // Глобальные переменные для хранения контента
+        let generatedCsvContent = ""; // Для скачивания файла (CSV)
+        let generatedTsvContent = ""; // Для копирования в буфер (TSV - для Excel/Google Sheets)
 
         function saveToStorage() {
             localStorage.setItem('mk_paliText', document.getElementById('paliTextInput').value);
@@ -178,17 +184,10 @@
                 document.getElementById('checkbox').checked = (localStorage.getItem('mk_checkbox') === 'true');
             }
             
-             // Restore Result if it exists (optional, but good for persistence)
+             // Restore Result if it exists
             if (localStorage.getItem('mk_result')) {
                  document.getElementById('resultOutput').innerHTML = localStorage.getItem('mk_result');
-                 // If there is a result, show the download button
-                 if(document.getElementById('resultOutput').innerHTML.trim() !== "") {
-                      // Re-generate the blob link logic if needed, or user just hits transform again.
-                      // Usually better to let user hit transform again to get the CSV link, 
-                      // but visual restoration is helpful.
-                 }
             }
-
 
             // Restore additional inputs
             const additionalJSON = localStorage.getItem('mk_additional');
@@ -205,7 +204,7 @@
         const inputsToTrack = ['paliTextInput', 'otherTextInput', 'delimiterInput', 'delimiterBeforeWord', 'checkbox'];
         inputsToTrack.forEach(id => {
             document.getElementById(id).addEventListener('input', saveToStorage);
-            document.getElementById(id).addEventListener('change', saveToStorage); // For checkbox
+            document.getElementById(id).addEventListener('change', saveToStorage); 
         });
 
         // Initialize on load
@@ -214,18 +213,15 @@
 
         // --- MAIN LOGIC ---
 
-        // Helper function to create additional input (used by Button and Load)
         function addAdditionalInput(value = '') {
             var additionalInputs = document.getElementById('additionalInputs');
             var textArea = document.createElement('textarea');
-            textArea.setAttribute('class', 'form-control full-width additional-text mb-2'); // added mb-2 for spacing
+            textArea.setAttribute('class', 'form-control full-width additional-text mb-2'); 
             textArea.setAttribute('rows', '5');
             textArea.setAttribute('placeholder', 'e.g. additional text');
             textArea.value = value;
             
-            // Add save listener to this new dynamic input
             textArea.addEventListener('input', saveToStorage);
-            
             additionalInputs.appendChild(textArea);
         }
 
@@ -255,7 +251,8 @@
             var paliLines = paliText.split(new RegExp(pattern, 'g'));
             var otherLines = otherText.split(new RegExp(pattern, 'g'));
 
-            var csv = '';
+            var csv = ''; // Сюда собираем CSV (для файла)
+            var tsv = ''; // Сюда собираем TSV (для копирования)
 
             var maxLines = Math.max(paliLines.length, otherLines.length);
             for (var j = 0; j < additionalLines.length; j++) {
@@ -265,38 +262,70 @@
             for (var i = 0; i < maxLines; i++) {
                 var paliPart = paliLines[i] ? paliLines[i].trim() : '';
                 var otherPart = otherLines[i] ? otherLines[i].trim() : '';
+                
+                // Временные массивы для сбора строки
+                var rowCsv = [];
+                var rowTsv = [];
+
+                // 1. Обработка индекса/заголовка
                 if (document.getElementById('checkbox').checked) {
                     if (i === 0) {
-                        csv += '#' + ',' + escapeCommas(paliPart) + ',' + escapeCommas(otherPart);
+                        rowCsv.push('#');
+                        rowTsv.push('#');
                     } else {
-                        csv += i + ',' + escapeCommas(paliPart) + ',' + escapeCommas(otherPart);
+                        rowCsv.push(i);
+                        rowTsv.push(i);
                     }
                 } else {
-                    csv += (i + 1) + ',' + escapeCommas(paliPart) + ',' + escapeCommas(otherPart);
+                    rowCsv.push(i + 1);
+                    rowTsv.push(i + 1);
                 }
 
+                // 2. Основные колонки
+                // Для CSV экранируем запятые и кавычки
+                rowCsv.push(escapeCommas(paliPart));
+                rowCsv.push(escapeCommas(otherPart));
+                
+                // Для TSV (копирования) оставляем текст как есть, это чище для блокнота
+                rowTsv.push(paliPart);
+                rowTsv.push(otherPart);
+
+                // 3. Дополнительные колонки
                 for (var j = 0; j < additionalLines.length; j++) {
                     var additionalPart = additionalLines[j][i] ? additionalLines[j][i].trim() : '';
-                    csv += ',' + escapeCommas(additionalPart);
+                    rowCsv.push(escapeCommas(additionalPart));
+                    rowTsv.push(additionalPart);
                 }
-                csv += '\n';
+
+                // Собираем строки
+                csv += rowCsv.join(',') + '\n';
+                tsv += rowTsv.join('\t') + '\n';
             }
 
-            var resultTable = generateResultTable(csv);
+            // Сохраняем в глобальные переменные
+            generatedCsvContent = csv;
+            generatedTsvContent = tsv;
+
+            var resultTable = generateResultTable(csv); // Таблица строится на основе CSV логики (split по запятым), это ок
             document.getElementById('resultOutput').innerHTML = resultTable;
             
-            // Save result immediately
             saveToStorage();
 
             document.getElementById('downloadButton').style.display = 'block';
+            document.getElementById('copyAllButton').style.display = 'block';
+
             var blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
             var url = URL.createObjectURL(blob);
             document.getElementById('downloadButton').href = url;
         });
 
+        // COPY ALL BUTTON: Использует generatedTsvContent
+        document.getElementById('copyAllButton').addEventListener('click', function() {
+            copyToClipboard(generatedTsvContent);
+        });
+
         document.getElementById('clearButton').addEventListener('click', function () {
             if (confirm('This will erase all text. Sure?')) {
-                // Remove specific keys to avoid clearing other apps on localhost if any
                 localStorage.removeItem('mk_paliText');
                 localStorage.removeItem('mk_otherText');
                 localStorage.removeItem('mk_delimiter');
@@ -310,15 +339,15 @@
         });
 
         document.getElementById('addInputButton').addEventListener('click', function () {
-            addAdditionalInput(); // Call the helper function
-            saveToStorage(); // Save the state (that there is a new empty input)
+            addAdditionalInput(); 
+            saveToStorage(); 
         });
 
         document.getElementById('removeInputButton').addEventListener('click', function () {
             var additionalInputs = document.getElementById('additionalInputs');
             if (additionalInputs.childElementCount > 0) {
                 additionalInputs.removeChild(additionalInputs.lastChild);
-                saveToStorage(); // Save the state
+                saveToStorage(); 
             }
         });
 
@@ -328,9 +357,7 @@
             var tableHtml = '<table class="table table-bordered">';
             tableHtml += '<tr>';
 
-            // Получение заголовков столбцов
             var headerLine = lines[0];
-            // Fix: handle empty result if text is empty
             if(!headerLine) return ''; 
             
             var headers = headerLine.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -371,6 +398,7 @@
                     columnData.push(cells[columnIndex].innerText);
                 }
             }
+            // Для копирования отдельной колонки оставляем просто перенос строки
             var columnText = columnData.join('\n');
             copyToClipboard(columnText);
         }
