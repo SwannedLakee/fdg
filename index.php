@@ -424,6 +424,15 @@ Add <strong>Dhamma.Gift</strong> to your Home Screen?
 </div>
 
 <div class="mt-3">
+  <a 
+  type="button"
+  onclick="toggleQuickModal()" 
+  aria-label="Open Cattāri Ariyasaccāni" 
+  class="common-size-icon4" 
+  style="cursor: pointer; height: 25px">
+  <i class="fa-solid fa-compass"></i>
+</a>
+
 <button type="button" class="btn btn-sm btn-primary rounded-pill" onclick="savePreferences()"><?php echo $btnsave;?></button>
 <button type="button" class="btn btn-sm btn-secondary rounded-pill" onclick="resetPreferences()"><?php echo $btnreset;?></button>
 
@@ -464,14 +473,7 @@ Add <strong>Dhamma.Gift</strong> to your Home Screen?
 
   <?php echo $regexlink;?> 
   
-<a 
-  type="button"
-  onclick="toggleQuickModal()" 
-  aria-label="Открыть Cattāri Ariyasaccāni" 
-  class="common-size-icon4" 
-  style="cursor: pointer; height: 25px">
-  <i class="fa-solid fa-compass"></i>
-</a> 
+
 
 <script>
 const openQuickModalBtn = document.getElementById("openQuickModalBtn");

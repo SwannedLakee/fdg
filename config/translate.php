@@ -217,7 +217,7 @@ $metaphorssmlletter = 'искать все сравнения, метафоры 
 $searchfewwords = 'искать несколько отдельных слов одновременно';
 $inallnikaya = 'искать X во всей Мадджхимма Никае';
 $inonesutta = 'искать Y в одной Сутте ДН22';
-$regexlink = 'ИИ может сгенерировать регулярное выражение для grep -Ei, к примеру <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href=" https://claude.ai/" target=_blank>Claude AI</a>, <a class="text-white" href="https://codepal.ai/regex-generator" target=_blank>Codepal.ai</a>
+$regexlink = 'ИИ может сгенерировать регулярное выражение для grep -Ei, к примеру <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href="https://gemini.google.com/app" target=_blank>Gemini AI</a>, <a class="text-white" href="https://codepal.ai/regex-generator" target=_blank>Codepal.ai</a>
 <br>';
 
 $regexMemo = '<p style="text-align: left;">
@@ -646,11 +646,12 @@ $defaults = '
 <a title="Настройки" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings" href="javascript:void(0);" class="toggle-icon text-decoration-none text-muted">
 <img id="gearRead" alt="Настройки" src="/assets/svg/gear.svg" class="common-size-icon4"></img>
 </a>
-
-<div class="">
 <a title="Помощь" data-bs-toggle="modal" data-bs-target="#paliLookupInfo" id="helpMessage" href="javascript:void(0);" class="toggle-icon text-decoration-none text-muted">
 <img id="helpsc" alt="Помощь" src="/assets/svg/question.svg" class="common-size-icon4"></img>
 </a>
+
+<div class="">
+
 <!-- Модальное окно "Настройки" -->
 <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true" data-bs-focus="false">
 <div class="modal-dialog modal-dialog-centered">
@@ -1023,7 +1024,7 @@ $metaphorssmlletter = 'search for all metaphors in Samyutta 56';
 $searchfewwords = 'search for few different patterns at the same time';
 $inallnikaya = 'find X in all Majjhimma Nikaya';
 $inonesutta = 'find Y in DN22 only';
-$regexlink = 'AI can generate RegEx for grep -Ei, e.g. <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href=" https://claude.ai/" target=_blank>Claude AI</a>, <a class="text-white" href="https://codepal.ai/regex-generator" target=_blank>Codepal.ai</a><br>';
+$regexlink = 'AI can generate RegEx for grep -Ei, e.g. <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href="https://gemini.google.com/app" target=_blank>Gemini AI</a>, <a class="text-white" href="https://codepal.ai/regex-generator" target=_blank>Codepal.ai</a><br>';
 
 $regexMemo = '
           <p style="text-align: left;">
@@ -1345,7 +1346,6 @@ $defaults = '<!-- Dictionary OnClick Popup -->
 <a alt="Settings" title="Settings" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings" href="javascript:void(0);" class="toggle-icon text-decoration-none text-muted">
 <img id="gearRead" src="/assets/svg/gear.svg" class="common-size-icon4"></img>
 </a>
-
 
 <!-- Модальное окно "Настройки" -->
 <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true" data-bs-focus="false">
@@ -1770,7 +1770,7 @@ $mainreadlink = '/th/read.php';
     $searchfewwords = 'ค้นหาหลายรูปแบบพร้อมกัน';
     $inallnikaya = 'ค้นหา X ในมัชฌิมนิกายทั้งหมด';
     $inonesutta = 'ค้นหา Y ใน DN22 เท่านั้น';
-    $regexlink = 'AI สามารถช่วยสร้าง RegEx สำหรับ grep -Ei ได้ เช่น <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href=" https://claude.ai/" target=_blank>Claude AI</a><br>';
+    $regexlink = 'AI สามารถช่วยสร้าง RegEx สำหรับ grep -Ei ได้ เช่น <a class="text-white" href="https://chat.openai.com/" target=_blank>ChatGPT</a>, <a class="text-white" href="https://chat.deepseek.com/" target=_blank>DeepSeek</a>, <a class="text-white" href="https://gemini.google.com/app" target=_blank>Gemini AI</a><br>';
 
     $regexMemo = '<p style="text-align: left;"></p>';
     $titlehowtovideo = 'วิดีโอแนะนำวิธีใช้';

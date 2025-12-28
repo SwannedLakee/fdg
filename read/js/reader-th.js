@@ -544,7 +544,7 @@ const isWarningClosed = localStorage.getItem('warningClosed');
 const warning = `
   <div style="max-width: 600px; margin: 0 auto; text-align: center;" class="warning-container">
     <p class='warning'>
-    <strong>Note:</strong><a style='cursor: pointer;' class='text-decoration-none' target='' href='${dUrl}'>&nbsp;</a>Translations, dictionaries and commentaries were not made by the Blessed One.<a style='cursor: pointer;' class='text-decoration-none' target='' href='${dUrl}'>&nbsp;</a>Cross-check with Pali in 4 main nikayas.<a class='text-decoration-none' target='' href='${rvUrl}'>&nbsp;</a>
+    <strong>Note:</strong><a style='cursor: pointer;' class='text-decoration-none' target='' href='${dUrl}'>&nbsp;</a>Translations, dictionaries and commentaries were not made by the Blessed One.<a style='cursor: pointer;' class='text-decoration-none' target='' href='${dUrl}'>&nbsp;</a>Cross-check with Pali in 4 main nikayas.
            ${canShowClose && !isWarningClosed ? `<span class="close-warning">×</span>` : ''} 
     </p>
   </div>

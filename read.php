@@ -348,6 +348,15 @@ $(document).ready(function() {
 </div>
 
 <div class="mt-3">
+  <a 
+  type="button"
+  onclick="toggleQuickModal()" 
+  aria-label="Open Cattāri Ariyasaccāni" 
+  class="common-size-icon4" 
+  style="cursor: pointer; height: 25px">
+  <i class="fa-solid fa-compass"></i>
+</a>
+
 <button type="button" class="btn btn-sm btn-primary rounded-pill" onclick="savePreferences()"><?php echo $btnsave;?></button>
 <button type="button" class="btn btn-sm btn-secondary rounded-pill" onclick="resetPreferences()"><?php echo $btnreset;?></button>
   
@@ -384,12 +393,7 @@ $(document).ready(function() {
 </div>
 
   <?php echo $regexlink;?> 
-  
-        <!-- Dictionary OnClick Popup -->
-        <a alt="onclick popup dictionary" class="common-size-icon4 toggle-dict-btn text-decoration-none text-black">
-            <img src="/assets/svg/comment.svg" class="dictIcon"></img>
-        </a>  
-		
+
 		
 <script>
 
@@ -399,14 +403,6 @@ if (openQuickModalBtn) { // Проверяем, что элемент сущес
 }
 </script>
 
-<a 
-  type="button"
-  onclick="toggleQuickModal()" 
-  aria-label="Открыть Cattāri Ariyasaccāni" 
-  class="common-size-icon4" 
-  style="cursor: pointer; height: 25px">
-  <i class="fa-solid fa-compass"></i>
-</a>
 
     <?php echo $defaults;?> 
     <?php echo $defaultsJS;?> 
