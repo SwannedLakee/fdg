@@ -729,7 +729,78 @@ foreach ($slides as $index => $slide) {
     <span class="visually-hidden">Next</span>
   </button>
 </div>
+
+<div class="text-end mt-2">
+    <a href="#" class="text-decoration-none text-muted small" data-bs-toggle="modal" data-bs-target="#allSlidesModal">
+      <?php echo $showall; ?>
+    </a>
 </div>
+
+</div>
+
+
+<div class="modal fade" id="allSlidesModal" tabindex="-1" aria-labelledby="allSlidesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="allSlidesModalLabel">
+            <?php echo ($lang == 'ru') ? 'Все интересные запросы' : (($lang == 'th') ? 'คำค้นหาที่น่าสนใจทั้งหมด' : 'All Interesting Queries'); ?>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ol class="list-group list-group-numbered" id="slidesListContainer">
+            </ol>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <?php echo ($lang == 'ru') ? 'Закрыть' : (($lang == 'th') ? 'ปิด' : 'Close'); ?>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+    const modalElement = document.getElementById('allSlidesModal');
+    const container = document.getElementById('slidesListContainer');
+    
+    // Флаг, чтобы не генерировать список каждый раз при открытии, а только 1 раз
+    let isListGenerated = false;
+
+    // Слушаем специальное событие Bootstrap "show.bs.modal" (срабатывает перед показом)
+    modalElement.addEventListener('show.bs.modal', function () {
+        
+        // Если уже сгенерировали или нет данных — ничего не делаем
+        if (isListGenerated || typeof slidesData === 'undefined' || !container) return;
+
+        let htmlContent = '';
+        
+        // Собираем одну большую строку (это быстрее, чем добавлять элементы по одному)
+        slidesData.forEach(slide => {
+            htmlContent += `
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold text-primary">${slide.title}</div>
+                        <small class="text-muted">${slide.desc}</small>
+                    </div>
+                    ${slide.link ? `<a href="${slide.link}" class="btn btn-sm btn-outline-primary ms-2" style="white-space: nowrap;">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>` : ''}
+                </li>
+            `;
+        });
+
+        // Вставляем всё в DOM за один раз
+        container.innerHTML = htmlContent;
+        
+        // Ставим метку, что всё готово
+        isListGenerated = true;
+    });
+});
+
+</script>
 
 
 

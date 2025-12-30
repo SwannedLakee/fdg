@@ -15,7 +15,7 @@ $btnsave = 'Сохр. по умолч.';
 $btnreset = 'Сбросить';
 $toggleLangRead = 'Переключить Рус/Англ (Ctrl + 2)';
 $toggleLang = 'Переключить Рус/Англ (Ctrl + 1)';
-
+$showall = 'Показать Все';
 $manifest = '/manifest-ru.json'; // для русской версии
 
 $ifRuLitTrn = '(<a href="/assets/common/o.html" class="translation-link">o</a>)';
@@ -864,7 +864,7 @@ $btnreset = 'Reset';
 
 $toggleLangRead = 'Toggle En/Ru (Ctrl + 2)';
 $toggleLang = 'Toggle En/Ru (Ctrl + 1)';
-
+$showall = 'Show All';
 
 $manifest = '/manifest.json'; // для английской версии
 
@@ -1972,3 +1972,9 @@ deferredPrompt = null;
 
 
 ?>
+
+<script>
+    // Передаем массив $slides из PHP в переменную JS
+    // json_encode сохраняет исходный порядок элементов (0, 1, 2...)
+    const slidesData = <?php echo json_encode($slides); ?>;
+</script>
