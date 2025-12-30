@@ -46,6 +46,10 @@ include 'scripts/search-handler.php';
         visibility: hidden;
         transition: opacity 0.3s ease-in-out; /* Плавное появление */
     }
+    
+        [data-bs-theme="dark"] .list-group-numbered > .list-group-item::before {
+        color: #e9ecef !important;
+    }
 </style>
 
   <!-- PWA-метатеги -->
@@ -766,36 +770,31 @@ foreach ($slides as $index => $slide) {
     const modalElement = document.getElementById('allSlidesModal');
     const container = document.getElementById('slidesListContainer');
     
-    // Флаг, чтобы не генерировать список каждый раз при открытии, а только 1 раз
     let isListGenerated = false;
 
-    // Слушаем специальное событие Bootstrap "show.bs.modal" (срабатывает перед показом)
     modalElement.addEventListener('show.bs.modal', function () {
         
-        // Если уже сгенерировали или нет данных — ничего не делаем
         if (isListGenerated || typeof slidesData === 'undefined' || !container) return;
 
         let htmlContent = '';
         
-        // Собираем одну большую строку (это быстрее, чем добавлять элементы по одному)
         slidesData.forEach(slide => {
             htmlContent += `
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
+                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-start">
+                    
+                    <div class="ms-2 me-auto text-start">
                         <div class="fw-bold text-primary">${slide.title}</div>
                         <small class="text-muted">${slide.desc}</small>
                     </div>
-                    ${slide.link ? `<a href="${slide.link}" class="btn btn-sm btn-outline-primary ms-2" style="white-space: nowrap;">
+
+                    ${slide.link ? `<a href="${slide.link}" class="btn btn-sm btn-outline-primary ms-3 align-self-center" style="white-space: nowrap;">
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>` : ''}
                 </li>
             `;
         });
 
-        // Вставляем всё в DOM за один раз
         container.innerHTML = htmlContent;
-        
-        // Ставим метку, что всё готово
         isListGenerated = true;
     });
 });
