@@ -228,9 +228,9 @@ $totalinyears years total
 <a href='/ru/sc'>Read</a>&nbsp;
 <a href='/assets/diff'>SuttaDiff</a>&nbsp;
 <a href='/history.php'>History</a>&nbsp;
-<!--
-<a href="/result/adhivacanasamphasso_suttanta_pali_words_1-2-1.html">Words</a>
--->
+
+<a href="/assets/dictTest.html">Dict Test</a>
+
 </div>
 
 
