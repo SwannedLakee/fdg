@@ -968,7 +968,7 @@
 "an7.94":{"pi":"Saddhammasutta","en":"Good Qualities","mtph":"","ru":"Хороший"},
 "an7.96-614":{"pi":"96-614","en":"","mtph":"","ru":""},
 "an7.618-644":{"pi":"618-644","en":"","mtph":"","ru":""},
-"an7.645-1124":{"pi":"645-1124","en":"","mtph":"","ru":""},
+"an7.645-1124":{"pi":"645-1124","en":"","mtph":"","ru":" (o)"},
 "an8.1":{"pi":"Mettāsutta","en":"The Benefits of Love","mtph":"","ru":"Доброжелательность"},
 "an8.2":{"pi":"Paññāsutta","en":"Wisdom","mtph":"","ru":"Понимание"},
 "an8.3":{"pi":"Paṭhamaappiyasutta","en":"Disliked (1st)","mtph":"","ru":"Неприятен Первая"},

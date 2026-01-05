@@ -13798,7 +13798,7 @@ clearBtn.style.display = 'block';
 </div>
  
 <div class="mt-3">
-<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an4.189">an4.189</a> Sacchikaraṇīyasutta</span>
+<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an4.189">an4.189</a> Sacchikaraṇīyasutta <?php echo $ifRuLitTrn;?></span>
 </div>
  
 <div class="mt-3">
@@ -15098,7 +15098,7 @@ clearBtn.style.display = 'block';
 </div>
  
 <div class="mt-3">
-<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an5.198">an5.198</a> Vācāsutta</span>
+<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an5.198">an5.198</a> Vācāsutta <?php echo $ifRuLitTrn;?></span>
 </div>
  
 <div class="mt-3">
