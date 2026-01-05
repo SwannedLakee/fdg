@@ -1483,7 +1483,7 @@
 "mn100":{"pi":"Saṅgāravasutta ","en":"With Saṅgārava ","mtph":18,"ru":"К Сангараве "},
 "mn101":{"pi":"Devadahasutta ","en":"At Devadaha ","mtph":4,"ru":"В Девадахе "},
 "mn102":{"pi":"Pañcattayasutta ","en":"The Five and Three ","mtph":5,"ru":"Пять и три"},
-"mn103":{"pi":"Kintisutta ","en":"Is This What You Think Of Me? ","mtph":"","ru":"Что вы думаете обо мне? "},
+"mn103":{"pi":"Kintisutta ","en":"Is This What? ","mtph":"","ru":"Что? "},
 "mn104":{"pi":"Sāmagāmasutta ","en":"At Sāmagāma ","mtph":"","ru":"В Самагаме "},
 "mn105":{"pi":"Sunakkhattasutta ","en":"With Sunakkhatta ","mtph":15,"ru":"К Сунаккхатте"},
 "mn106":{"pi":"Āneñjasappāyasutta ","en":"Conducive to the Imperturbable ","mtph":"","ru":"Путь к непоколебимому "},
