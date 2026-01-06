@@ -921,7 +921,7 @@
 "an7.47":{"pi":"Dutiyaaggisutta","en":"Fires (2nd)","mtph":"","ru":"Жертвоприношение"},
 "an7.48":{"pi":"Paṭhamasaññāsutta","en":"Perceptions in Brief","mtph":"","ru":"Восприятия Первая"},
 "an7.49":{"pi":"Dutiyasaññāsutta","en":"Perceptions in Detail","mtph":8,"ru":"Восприятия Вторая"},
-"an7.50":{"pi":"Methunasutta","en":"Sex","mtph":"","ru":"Сексуальность"},
+"an7.50":{"pi":"Methunasutta","en":"Sex","mtph":"","ru":"Спаривание"},
 "an7.51":{"pi":"Saṁyogasutta","en":"Yoking and Unyoking","mtph":"","ru":"Связывание"},
 "an7.52":{"pi":"Dānamahapphalasutta","en":"A Very Fruitful Gift","mtph":"","ru":"Даяние"},
 "an7.53":{"pi":"Nandamātāsutta","en":"Nanda’s Mother","mtph":"","ru":"Нандамата"},
