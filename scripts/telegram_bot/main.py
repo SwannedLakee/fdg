@@ -285,8 +285,8 @@ def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> In
     dict_url = f"https://dict.dhamma.gift/{'' if lang == 'en' else 'ru/'}search_html?q={query.replace(' ', '+')}"
 
     label_dict = "📘 Dictionary" if lang == "en" else "📘 Словарь"
-    label_site = " Read at 🔎 Dhamma.gift En" if lang == "en" else " Читать на 🔎 Dhamma.gift Ru"
-    toggle_label = "RU" if lang == "en" else "EN"  # Инвертировано, так как DEFAULT_LANG=en
+    label_site = "Read at 🔎 Dhamma.gift En" if lang == "en" else "Читать на 🔎 Dhamma.gift Ru"
+    toggle_label = "Switch to RU" if lang == "en" else "Перекл. на EN"  # Инвертировано, так как DEFAULT_LANG=en
 
     callback_prefix = "inline_" if is_inline else ""
 
