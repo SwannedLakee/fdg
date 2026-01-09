@@ -110,7 +110,7 @@ const dictionaries = [
 }
 
 
-function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?target=Devanagari&text={{q}}') {
+function openWithQuery(event, base = 'https://www.aksharamukha.com/converter?source=IASTPali&target=Devanagari&text={{q}}') {
   const queryInput = document.getElementById('paliauto');
   const query = queryInput?.value.trim().toLowerCase().replace(/ṁ/g, 'ṃ') || ''; // даже если пусто, подставляем ""
 
