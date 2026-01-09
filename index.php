@@ -433,7 +433,7 @@ Add <strong>Dhamma.Gift</strong> to your Home Screen?
   onclick="toggleQuickModal()" 
   aria-label="Open Cattāri Ariyasaccāni" 
   class="common-size-icon4" 
-  style="cursor: pointer; height: 25px">
+  style="color: grey; cursor: pointer; height: 25px">
   <i class="fa-solid fa-compass"></i>
 </a>
 
