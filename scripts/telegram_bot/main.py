@@ -286,7 +286,7 @@ def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> In
 
     label_dict = "📘 Dictionary" if lang == "en" else "📘 Словарь"
     label_site = "Read at 🔎 Dhamma.gift En" if lang == "en" else "Читать на 🔎 Dhamma.gift Ru"
-    toggle_label = "Switch to RU" if lang == "en" else "Перекл. на EN"  # Инвертировано, так как DEFAULT_LANG=en
+    toggle_label = "Lang Ru/En" if lang == "en" else "Язык Ru/En"  # Инвертировано, так как DEFAULT_LANG=en
 
     callback_prefix = "inline_" if is_inline else ""
 
