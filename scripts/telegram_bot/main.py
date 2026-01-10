@@ -113,7 +113,7 @@ def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> In
     dict_url = f"https://dict.dhamma.gift/{path}search_html?q={urllib.parse.quote_plus(query)}"
     
     label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
-    label_site = f{'Читать на' if lang == 'ru' else 'Read at'}" 🔎 Dhamma.gift {'Ru' if lang == 'ru' else 'En'}"
+label_site = f"{'Читать на' if lang == 'ru' else 'Read at'} 🔎 Dhamma.gift {'Ru' if lang == 'ru' else 'En'}"
     toggle_label = "Язык Ru/En" if lang == "ru" else "Lang En/Ru"
     cb_prefix = "inline_" if is_inline else ""
 
