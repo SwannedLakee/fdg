@@ -4,7 +4,7 @@ import os
 import logging
 import re
 import sys
-import urllib.parse
+import urllib.parse  # Используется для кодирования поискового запроса в ссылки
 
 # Telegram Core
 from telegram import (
@@ -109,11 +109,14 @@ def uniCoder(text):
 # === Клавиатуры ===
 def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> InlineKeyboardMarkup:
     path = "ru/" if lang == "ru" else ""
-    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={urllib.parse.quote_plus(query)}"
-    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={urllib.parse.quote_plus(query)}"
+    # Кодируем запрос для безопасности URL
+    encoded_q = urllib.parse.quote_plus(query)
+    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={encoded_q}"
+    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={encoded_q}"
     
     label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
-label_site = f"{'Читать на' if lang == 'ru' else 'Read at'} 🔎 Dhamma.gift {'Ru' if lang == 'ru' else 'En'}"
+    # ИСПРАВЛЕНО: Полная локализация текста кнопки (префикс и суффикс)
+    label_site = f"{'Читать на' if lang == 'ru' else 'Read at'} 🔎 Dhamma.gift {'Ru' if lang == 'ru' else 'En'}"
     toggle_label = "Язык Ru/En" if lang == "ru" else "Lang En/Ru"
     cb_prefix = "inline_" if is_inline else ""
 
@@ -125,8 +128,9 @@ label_site = f"{'Читать на' if lang == 'ru' else 'Read at'} 🔎 Dhamma.
 
 def format_message_with_links(text: str, query: str, lang: str = "en") -> str:
     path = "ru/" if lang == "ru" else ""
-    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={urllib.parse.quote_plus(query)}"
-    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={urllib.parse.quote_plus(query)}"
+    encoded_q = urllib.parse.quote_plus(query)
+    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={encoded_q}"
+    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={encoded_q}"
     label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
     return f"\n{text}\n\n🔎 <a href='{search_url}'>Dhamma.gift</a> | <a href='{dict_url}'>{label_dict}</a>"
 
@@ -149,17 +153,18 @@ async def inline_query(update: Update, context: CallbackContext):
     query = update.inline_query.query.strip()
     user_id = update.inline_query.from_user.id
     
-    # Теперь текст кнопки всегда следует за языком поиска (share_lang)
+    # Текст кнопки следует за языком поиска (share_lang)
     current_lang = get_user_share_lang(user_id)
     
-    # Текст кнопки
+    # Динамический текст верхней кнопки
     action_prefix = "Открыть" if current_lang == "ru" else "Open"
     btn_text = f"🔎 {action_prefix} 📖 Dhamma.gift {'Ru' if current_lang == 'ru' else 'En'}"
 
-    # Ссылка кнопки (с подстановкой q)
+    # Динамическая ссылка кнопки (с подстановкой текущего ввода пользователя)
     path = "ru/" if current_lang == "ru" else ""
     if query:
-        final_url = f"https://f.dhamma.gift/{path}?p=-kn&q={urllib.parse.quote_plus(query)}"
+        encoded_q = urllib.parse.quote_plus(query)
+        final_url = f"https://f.dhamma.gift/{path}?p=-kn&q={encoded_q}"
     else:
         final_url = f"https://f.dhamma.gift/{path}"
 
@@ -184,6 +189,7 @@ async def inline_query(update: Update, context: CallbackContext):
                 reply_markup=create_keyboard(word, lang=current_lang, is_inline=True)
             ))
 
+    # cache_time=0 позволяет ссылке в кнопке обновляться мгновенно при вводе каждой буквы
     await update.inline_query.answer(results, button=hot_button, cache_time=0, is_personal=True)
 
 async def toggle_language(update: Update, context: CallbackContext):
@@ -194,7 +200,7 @@ async def toggle_language(update: Update, context: CallbackContext):
     new_lang = 'ru' if parts[1] == 'en' else 'en'
     search_query = ':'.join(parts[2:])
     
-    # Обновляем оба параметра, чтобы кнопка сверху тоже переключилась
+    # Обновляем оба параметра, чтобы интерфейс и поиск были синхронны
     save_user_data(query.from_user.id, 'share_lang', new_lang)
     save_user_data(query.from_user.id, 'lang', new_lang)
     
@@ -228,4 +234,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
