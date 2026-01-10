@@ -4,6 +4,7 @@ import os
 import logging
 import re
 import sys
+import urllib.parse
 
 # Telegram Core
 from telegram import (
@@ -15,7 +16,7 @@ from telegram import (
     BotCommand,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    InlineQueryResultsButton, 
+    InlineQueryResultsButton,
     error
 )
 
@@ -30,27 +31,13 @@ from telegram.ext import (
     CallbackContext,
 )
 
+# === Константы сообщений ===
 WELCOME_MESSAGES = {
-    "en": (
-        "✨ Welcome to Dhamma Gift Bot!\n\n"
-        "❓ <b>How to use:</b>\n"
-        "⌨️ Type @dgift_bot and start typing a word.\n"
-        "Change Bots language 👇"
-    ),
-    "ru": (
-        "Добро пожаловать в Dhamma Gift Bot!\n\n"
-        "🔍 <b>Как использовать:</b>\n"
-        "⌨️ Напишите @dgift_bot и начните печатать слово.\n"
-        "Изменить язык Бота 👇"
-    )
+    "en": "✨ Welcome to Dhamma Gift Bot!\n\nChange language 👇",
+    "ru": "Добро пожаловать в Dhamma Gift Bot!\n\nИзменить язык 👇"
 }
 
-EXTRA_MESSAGES = {
-    "ru": "Мини Приложения на Русском:\n\n🔎 Поиск\nhttp://t.me/dgift_bot/find",
-    "en": "Mini Applications in English:\n\n🔎 Search\nhttp://t.me/dhammagift_bot/find"
-}
-
-# === Конфиг и Логи ===
+# === Загрузка конфига ===
 config_path = sys.argv[1] if len(sys.argv) > 1 else "config.json"
 with open(config_path, "r") as f:
     config = json.load(f)
@@ -64,30 +51,26 @@ logger = logging.getLogger(__name__)
 USER_DATA_FILE = f"user_data_{bot_name}.json"
 DEFAULT_LANG = "en"
 
-# === Функции данных ===
+# === Работа с данными ===
 def load_user_data() -> dict:
     if not os.path.exists(USER_DATA_FILE): return {}
     try:
         with open(USER_DATA_FILE, "r", encoding="utf-8") as f: return json.load(f)
-    except Exception as e: return {}
+    except: return {}
 
 def save_user_data(user_id: int, key: str, value: str):
-    try:
-        data = load_user_data()
-        user_id_str = str(user_id)
-        if user_id_str not in data: data[user_id_str] = {}
-        data[user_id_str][key] = value
-        with open(USER_DATA_FILE, "w", encoding="utf-8") as f: json.dump(data, f, indent=2, ensure_ascii=False)
-    except Exception as e: logger.error(f"Ошибка сохранения: {e}")
+    data = load_user_data()
+    u_id = str(user_id)
+    if u_id not in data: data[u_id] = {}
+    data[u_id][key] = value
+    with open(USER_DATA_FILE, "w", encoding="utf-8") as f: json.dump(data, f, indent=2, ensure_ascii=False)
 
 def get_user_lang(user_id: int) -> str:
-    data = load_user_data()
-    return data.get(str(user_id), {}).get("lang", DEFAULT_LANG)
+    return load_user_data().get(str(user_id), {}).get("lang", DEFAULT_LANG)
 
 def get_user_share_lang(user_id: int) -> str:
-    data = load_user_data()
-    # Если язык шейринга не задан, берем основной язык бота
-    return data.get(str(user_id), {}).get("share_lang", get_user_lang(user_id))
+    data = load_user_data().get(str(user_id), {})
+    return data.get("share_lang", data.get("lang", DEFAULT_LANG))
 
 # === Обработка текста ===
 def normalize(text: str) -> str:
@@ -95,7 +78,7 @@ def normalize(text: str) -> str:
     text = text.lower()
     repls = [("aa", "a"), ("ii", "i"), ("uu", "u"), ('"n', "n"), ("~n", "n"), (".t", "t"), (".d", "d"), (".n", "n"), (".m", "m"), (".l", "l"), (".h", "h")]
     for p, r in repls: text = text.replace(p, r)
-    return text.replace("ṁ", "m").replace("ṃ", "m").replace("ṭ", "t").replace("ḍ", "d").replace("ṇ", "n").replace("ṅ", "n").replace("ñ", "n").replace("ā", "a").replace("ī", "i").replace("ū", "u").replace(".", " ")
+    return text.replace("ā", "a").replace("ī", "i").replace("ū", "u").replace("ñ", "n").replace(".", " ")
 
 def load_words():
     path = os.path.join("assets", "sutta_words.txt")
@@ -123,42 +106,36 @@ def uniCoder(text):
     for p, r in repls: text = text.replace(p, r)
     return text
 
-# === Клавиатура и Ссылки ===
+# === Клавиатуры ===
 def create_keyboard(query: str, lang: str = "en", is_inline: bool = False) -> InlineKeyboardMarkup:
     path = "ru/" if lang == "ru" else ""
-    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={query.replace(' ', '+')}"
-    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={query.replace(' ', '+')}"
-
+    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={urllib.parse.quote_plus(query)}"
+    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={urllib.parse.quote_plus(query)}"
+    
     label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
     label_site = f"Читать на 🔎 Dhamma.gift {'Ru' if lang == 'ru' else 'En'}"
     toggle_label = "Язык Ru/En" if lang == "ru" else "Lang En/Ru"
-
     cb_prefix = "inline_" if is_inline else ""
 
-    keyboard = [
-        [
-            InlineKeyboardButton(text=toggle_label, callback_data=f"{cb_prefix}toggle_lang:{lang}:{query}"),
-            InlineKeyboardButton(text=label_dict, url=dict_url),
-        ],
-        [
-            InlineKeyboardButton(text=label_site, url=search_url),
-        ]
-    ]
-    return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(toggle_label, callback_data=f"{cb_prefix}toggle_lang:{lang}:{query}"),
+         InlineKeyboardButton(label_dict, url=dict_url)],
+        [InlineKeyboardButton(label_site, url=search_url)]
+    ])
 
 def format_message_with_links(text: str, query: str, lang: str = "en") -> str:
     path = "ru/" if lang == "ru" else ""
-    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={query.replace(' ', '+')}"
-    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={query.replace(' ', '+')}"
-    return f"\n{text}\n\n🔎 <a href='{search_url}'>Dhamma.gift</a> | <a href='{dict_url}'>{'📘 Словарь' if lang == 'ru' else '📘 Dictionary'}</a>"
+    search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={urllib.parse.quote_plus(query)}"
+    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={urllib.parse.quote_plus(query)}"
+    label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
+    return f"\n{text}\n\n🔎 <a href='{search_url}'>Dhamma.gift</a> | <a href='{dict_url}'>{label_dict}</a>"
 
 # === Обработчики ===
 async def set_menu_button(update: Update, lang: str):
-    user_id = update.effective_user.id
-    button_text = "DG ru" if lang == "ru" else "DG en"
-    button_url = f"https://f.dhamma.gift/{'ru/' if lang == 'ru' else ''}?source=pwa"
-    try:
-        await update.get_bot().set_chat_menu_button(chat_id=user_id, menu_button=MenuButtonWebApp(text=button_text, web_app=WebAppInfo(url=button_url)))
+    u_id = update.effective_user.id
+    b_text = "DG ru" if lang == "ru" else "DG en"
+    b_url = f"https://f.dhamma.gift/{'ru/' if lang == 'ru' else ''}?source=pwa"
+    try: await update.get_bot().set_chat_menu_button(chat_id=u_id, menu_button=MenuButtonWebApp(text=b_text, web_app=WebAppInfo(url=b_url)))
     except: pass
 
 async def start(update: Update, context: CallbackContext):
@@ -167,33 +144,26 @@ async def start(update: Update, context: CallbackContext):
     await update.message.reply_text(WELCOME_MESSAGES[lang], reply_markup=InlineKeyboardMarkup(kb), parse_mode="HTML")
     await set_menu_button(update, lang)
 
-async def handle_language_selection(update: Update, context: CallbackContext):
-    query = update.callback_query
-    await query.answer()
-    user_id = query.from_user.id
-    new_lang = 'ru' if query.data.split(':')[1] == 'en' else 'en'
-    
-    # Синхронизируем основной язык и язык поиска
-    save_user_data(user_id, 'lang', new_lang)
-    save_user_data(user_id, 'share_lang', new_lang)
-    
-    kb = [[InlineKeyboardButton("Русский" if new_lang == 'en' else "English", callback_data=f"lang_set:{new_lang}")]]
-    await query.edit_message_text(text=WELCOME_MESSAGES[new_lang], reply_markup=InlineKeyboardMarkup(kb), parse_mode="HTML")
-    await set_menu_button(update, new_lang)
-
-# === Инлайн-режим с динамической кнопкой ===
+# === ИНЛАЙН РЕЖИМ ===
 async def inline_query(update: Update, context: CallbackContext):
     query = update.inline_query.query.strip()
     user_id = update.inline_query.from_user.id
     
-    # Используем share_lang, так как именно он отвечает за контент
-    share_lang = get_user_share_lang(user_id)
-    interface_lang = get_user_lang(user_id)
+    # Теперь текст кнопки всегда следует за языком поиска (share_lang)
+    current_lang = get_user_share_lang(user_id)
+    
+    # Текст кнопки
+    action_prefix = "Открыть" if current_lang == "ru" else "Open"
+    btn_text = f"🔎 {action_prefix} 📖 Dhamma.gift {'Ru' if current_lang == 'ru' else 'En'}"
 
-    # Динамическая "горячая кнопка"
-    path = "ru/" if share_lang == "ru" else ""
-    btn_text = f"📖 Dhamma.gift {'Ru' if share_lang == 'ru' else 'En'}"
-    hot_button = InlineQueryResultsButton(text=btn_text, web_app=WebAppInfo(url=f"https://f.dhamma.gift/{path}"))
+    # Ссылка кнопки (с подстановкой q)
+    path = "ru/" if current_lang == "ru" else ""
+    if query:
+        final_url = f"https://f.dhamma.gift/{path}?p=-kn&q={urllib.parse.quote_plus(query)}"
+    else:
+        final_url = f"https://f.dhamma.gift/{path}"
+
+    hot_button = InlineQueryResultsButton(text=btn_text, web_app=WebAppInfo(url=final_url))
 
     results = []
     if query:
@@ -202,26 +172,19 @@ async def inline_query(update: Update, context: CallbackContext):
         
         results.append(InlineQueryResultArticle(
             id="user_input",
-            title=f"✏️ Send: {converted}" if interface_lang == "en" else f"✏️ Отправить: {converted}",
-            input_message_content=InputTextMessageContent(format_message_with_links(converted, converted, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True),
-            reply_markup=create_keyboard(converted, lang=share_lang, is_inline=True)
+            title=f"✏️ Send: {converted}" if current_lang == "en" else f"✏️ Отправить: {converted}",
+            input_message_content=InputTextMessageContent(format_message_with_links(converted, converted, lang=current_lang), parse_mode="HTML", disable_web_page_preview=True),
+            reply_markup=create_keyboard(converted, lang=current_lang, is_inline=True)
         ))
 
         for idx, word in enumerate(suggestions):
             results.append(InlineQueryResultArticle(
                 id=f"dict_{idx}", title=word,
-                input_message_content=InputTextMessageContent(format_message_with_links(word, word, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True),
-                reply_markup=create_keyboard(word, lang=share_lang, is_inline=True)
+                input_message_content=InputTextMessageContent(format_message_with_links(word, word, lang=current_lang), parse_mode="HTML", disable_web_page_preview=True),
+                reply_markup=create_keyboard(word, lang=current_lang, is_inline=True)
             ))
 
-    await update.inline_query.answer(results, button=hot_button, cache_time=10, is_personal=True)
-
-async def handle_message(update: Update, context: CallbackContext):
-    if not update.message or not update.message.text: return
-    text = update.message.text.strip()
-    share_lang = get_user_share_lang(update.effective_user.id)
-    converted = uniCoder(text)
-    await update.message.reply_text(format_message_with_links(converted, converted, lang=share_lang), reply_markup=create_keyboard(converted, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True)
+    await update.inline_query.answer(results, button=hot_button, cache_time=0, is_personal=True)
 
 async def toggle_language(update: Update, context: CallbackContext):
     query = update.callback_query
@@ -230,13 +193,34 @@ async def toggle_language(update: Update, context: CallbackContext):
     is_inline = parts[0] == 'inline_toggle_lang'
     new_lang = 'ru' if parts[1] == 'en' else 'en'
     search_query = ':'.join(parts[2:])
+    
+    # Обновляем оба параметра, чтобы кнопка сверху тоже переключилась
     save_user_data(query.from_user.id, 'share_lang', new_lang)
+    save_user_data(query.from_user.id, 'lang', new_lang)
+    
     await query.edit_message_text(text=format_message_with_links(search_query, search_query, lang=new_lang), reply_markup=create_keyboard(search_query, lang=new_lang, is_inline=is_inline), parse_mode="HTML", disable_web_page_preview=True)
+
+async def handle_lang_set(update: Update, context: CallbackContext):
+    query = update.callback_query
+    await query.answer()
+    new_lang = 'ru' if query.data.split(':')[1] == 'en' else 'en'
+    save_user_data(query.from_user.id, 'lang', new_lang)
+    save_user_data(query.from_user.id, 'share_lang', new_lang)
+    kb = [[InlineKeyboardButton("Русский" if new_lang == 'en' else "English", callback_data=f"lang_set:{new_lang}")]]
+    await query.edit_message_text(WELCOME_MESSAGES[new_lang], reply_markup=InlineKeyboardMarkup(kb), parse_mode="HTML")
+    await set_menu_button(update, new_lang)
+
+async def handle_message(update: Update, context: CallbackContext):
+    if not update.message or not update.message.text: return
+    text = update.message.text.strip()
+    lang = get_user_share_lang(update.effective_user.id)
+    converted = uniCoder(text)
+    await update.message.reply_text(format_message_with_links(converted, converted, lang=lang), reply_markup=create_keyboard(converted, lang=lang), parse_mode="HTML", disable_web_page_preview=True)
 
 def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_set:"))
+    app.add_handler(CallbackQueryHandler(handle_lang_set, pattern="^lang_set:"))
     app.add_handler(InlineQueryHandler(inline_query))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(CallbackQueryHandler(toggle_language, pattern=r"^(inline_)?toggle_lang:"))
@@ -244,5 +228,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
