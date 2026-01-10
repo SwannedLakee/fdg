@@ -323,7 +323,7 @@ async def inline_query(update: Update, context: CallbackContext):
     share_lang = get_user_share_lang(user_id) or interface_lang
     
     # Динамическая кнопка «Открыть на dg...»
-    action_text = "Открыть 🔎Dhamma.gift Ru" if share_lang == "ru" else "Open 🔎Dhamma.gift En"
+    action_text = "Открыть Dhamma.gift Ru" if share_lang == "ru" else "Open Dhamma.gift En"
     btn_text = f"🔎 {action_text}: {query}" if query else f"🔎 {action_text}"
     path = "ru/" if share_lang == "ru" else ""
     encoded_q = urllib.parse.quote_plus(query)
