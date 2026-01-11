@@ -1,1 +1,1 @@
-../offline-data/palistudies.blogspot.com
+../offline-data/lp
