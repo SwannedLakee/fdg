@@ -1,8 +1,3 @@
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -74,10 +69,11 @@ body {
   <div class="card">
 
     <div class="buttons">
-      <a class="button" data-mode="pali">Пали</a>
-      <a class="button" data-mode="ru">Русский</a>
+      <a class="button" data-mode="pali">Pāḷi</a>
+
       <a class="button" data-mode="bs">English · Sujato</a>
       <a class="button" data-mode="bb">English · Bodhi</a>
+      <a class="button" data-mode="ru">Русский</a>
     </div>
 
     <a id="open" class="main">Открыть в T2S</a>
@@ -90,46 +86,62 @@ const params = new URLSearchParams(location.search);
 const q = params.get('q');
 const mode = params.get('mode');
 
-if (!q) {
-  document.body.innerHTML = '<h3 style="text-align:center">Нет параметра q</h3>';
-  throw '';
-}
+const origin = location.origin;
+const scheme = location.protocol.replace(':', ''); // http | https
+
 
 function buildIntent(m) {
-  let base;
-  let query = '?q=' + encodeURIComponent(q);
+  let path;
+  let query = '';
 
-  if (m === 'ru') {
-    base = 'intent://dhamma.gift/ru/tts.php';
-    query += '&type=trn';
-  } else if (m === 'pali') {
-    base = 'intent://dhamma.gift/tts.php';
-    query += '&type=pali';
-  } else if (m === 'bs') {
-    base = 'intent://dhamma.gift/tts.php';
-    query += '&type=trn&translator=bs';
-  } else if (m === 'bb') {
-    base = 'intent://dhamma.gift/tts.php';
-    query += '&type=trn&translator=bb';
-  } else {
-    /* дефолт — строго русский */
-    base = 'intent://dhamma.gift/ru/tts.php';
-    query += '&type=trn';
+  if (q) {
+    query = '?q=' + encodeURIComponent(q);
   }
 
-  return base + query + '#Intent;scheme=https;package=hesoft.T2S;end';
+  // Определяем путь и параметры типа
+  if (m === 'ru') {
+    path = '/ru/tts.php';
+    if (q) query += '&type=trn';
+  } else if (m === 'pali') {
+    path = '/tts.php';
+    if (q) query += '&type=pali';
+  } else if (m === 'bs') {
+    path = '/tts.php';
+    if (q) query += '&type=trn&translator=bs';
+  } else if (m === 'bb') {
+    path = '/tts.php';
+    if (q) query += '&type=trn&translator=bb';
+  } else {
+    path = '/ru/tts.php';
+    if (q) query += '&type=trn';
+  }
+
+  // location.host содержит и домен, и порт (например, 127.0.0.1:8080)
+  const host = window.location.host;
+  // location.protocol содержит 'http:' или 'https:'
+  const scheme = window.location.protocol.replace(':', '');
+
+  // Формируем Intent: протокол уходит в параметр scheme=
+  // а хост и путь идут сразу после intent://
+  const intentUrl = `intent://${host}${path}${query}#Intent;scheme=${scheme};package=hesoft.T2S;end`;
+  
+  console.log("Generated Intent:", intentUrl); // Для отладки в консоли
+  return intentUrl;
 }
+
 
 const openBtn = document.getElementById('open');
 openBtn.href = buildIntent(mode);
 
 document.querySelectorAll('.button').forEach(btn => {
   const m = btn.dataset.mode;
-  btn.href = '?q=' + encodeURIComponent(q) + '&mode=' + m;
+  let href = '?mode=' + m;
+  if (q) href = '?q=' + encodeURIComponent(q) + '&mode=' + m;
+  btn.href = href;
   if (m === mode) btn.classList.add('active');
 });
 
-/* автозапуск — всегда русский по умолчанию */
+// автозапуск — русский по умолчанию
 if (!mode) {
   setTimeout(() => {
     location.href = buildIntent(null);

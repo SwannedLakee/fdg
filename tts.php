@@ -399,6 +399,12 @@ function updateLanguageSwitcher(lang) {
  alt="Help" src="/assets/svg/question.svg"></a>
         
       </a>
+      
+      
+      <a href="/t2s.html?<?= $_SERVER['QUERY_STRING'] ?>" 
+   class="text-decoration-none text-muted ms-2" 
+   style="font-size: 0.85rem;" 
+   title="Open in T2S Reader">t2s</a>
     </div>
 
     <div class="d-inline-flex align-items-center lang-switcher order-2 order-sm-3 mb-2 mb-sm-0">
