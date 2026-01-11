@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open in T2S</title>
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background: #f4f4f9;
+}
+a {
+  padding: 16px 28px;
+  font-size: 18px;
+  background: #007bff;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+<a id="btn" href="#">Открыть в T2S</a>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const q = params.get('q');
+
+if (!q) {
+  document.body.innerHTML = '<h3>Нет параметра q</h3>';
+} else {
+  const target =
+    'intent://dhamma.gift/ru/tts.php'
+    + '?q=' + encodeURIComponent(q)
+    + '&type=trn'
+    + '#Intent;scheme=https;package=hesoft.T2S;end';
+
+  document.getElementById('btn').href = target;
+
+  // автозапуск
+  setTimeout(() => {
+    window.location.href = target;
+  }, 300);
+}
+</script>
+
+</body>
+</html>
