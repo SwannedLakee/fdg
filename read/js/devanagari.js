@@ -341,7 +341,7 @@ let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: p
 if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
             <font class="variant"><br>${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
         </span>
     </span>${closeHtml}\n\n`;
@@ -349,7 +349,7 @@ if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
 } else if (paliData[segment] !== paliData[segment]) {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
     </span>${closeHtml}\n\n`;
 
 } 
@@ -366,7 +366,7 @@ if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
 else {
     html += `${openHtml}<span id="${anchor}">
         <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="ru">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
+        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
     </span>${closeHtml}\n\n`;
 }
 
