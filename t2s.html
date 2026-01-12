@@ -1,154 +1,185 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open in T2S</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open in T2S</title>
+  
+  <link href="/assets/css/bootstrap.5.3.1.min.css" rel="stylesheet" />
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <link href="/assets/css/extrastyles.css" rel="stylesheet" />
+  <link href="/assets/css/pages.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
+  <link href="/assets/css/paliLookup.css" rel="stylesheet" />
 
-<style>
-html, body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background: #f4f4f9;
-}
-.page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
-}
-.card {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-sizing: border-box;
-}
-.buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-.button {
-  flex: 1 1 45%;
-  padding: 12px;
-  text-align: center;
-  border-radius: 8px;
-  background: #e0e0e0;
-  color: #000;
-  text-decoration: none;
-  font-size: 15px;
-}
-.button.active {
-  background: #007bff;
-  color: #fff;
-}
-.main {
-  display: block;
-  text-align: center;
-  padding: 16px;
-  background: #28a745;
-  color: #fff;
-  border-radius: 12px;
-  text-decoration: none;
-  font-size: 18px;
-}
-</style>
+  <style>
+    :root {
+      --bg-color: #f4f4f9;
+      --card-bg: #ffffff;
+    }
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+    }
+    body {
+      background-color: var(--bg-color);
+      transition: background-color 0.3s;
+    }
+    .main-content {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: none;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .btn-mode {
+      flex: 1 1 45%;
+      padding: 12px;
+      text-align: center;
+      border-radius: 8px;
+      background: #e0e0e0;
+      color: #000;
+      text-decoration: none;
+      font-size: 15px;
+    }
+    [data-theme="dark"] .btn-mode {
+      background: #333;
+      color: #eee;
+    }
+    .btn-mode.active {
+      background: #007bff;
+      color: #fff;
+    }
+    .main-btn {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: #28a745;
+      color: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 18px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="page">
-  <div class="card">
+<div class="container mt-3">
+  <div class="d-flex flex-wrap align-items-center justify-content-between">
+    <div class="d-flex align-items-center order-1 mb-2 mb-sm-0">
+      <a id="readLink" href="/read.php" title="Sutta and Vinaya reading" rel="noreferrer" class="me-1">
+        <svg fill="#979797" xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 0 547.596 547.596">
+          <path d="M540.76,254.788L294.506,38.216c-11.475-10.098-30.064-10.098-41.386,0L6.943,254.788 c-11.475,10.098-8.415,18.284,6.885,18.284h75.964v221.773c0,12.087,9.945,22.108,22.108,22.108h92.947V371.067 c0-12.087,9.945-22.108,22.109-22.108h93.865c12.239,0,22.108,9.792,22.108,22.108v145.886h92.947 c12.24,0,22.108-9.945,22.108-22.108v-221.85h75.965C549.021,272.995,552.081,264.886,540.76,254.788z"></path>
+        </svg>
+      </a>
 
-    <div class="buttons">
-      <a class="button" data-mode="pali">Pāḷi</a>
+      <a id="homeLink" href="/" title="Sutta and Vinaya search" rel="noreferrer" class="me-0">
+        <img width="24px" alt="dhamma.gift icon" class="me-1" src="/assets/img/gray-white.png">
+      </a>
 
-      <a class="button" data-mode="bs">English · Sujato</a>
-      <a class="button" data-mode="bb">English · Bodhi</a>
-      <a class="button" data-mode="ru">Русский</a>
+      <div id="chapter-button" class="mode-switch me-1">
+        <a href="/r.php" title="Read Chapters"><img width="28px" alt="Read by Chapters" src="/assets/svg/book.svg"></a>
+      </div>
+
+      <a title="Dictionary" class="toggle-dict-btn text-decoration-none text-black me-1">
+        <img src="/assets/svg/comment.svg" style="width: 24px;">
+      </a>
+
+      <div class="ms-1 form-check form-switch">
+        <input type="checkbox" class="form-check-input" id="darkSwitch">
+      </div>
+
+      <a href="/assets/common/ttsHelp.html" class="text-decoration-none text-muted ms-1">
+        <img width="15px" alt="Help" src="/assets/svg/question.svg">
+      </a>
     </div>
 
-    <a id="open" class="main">Открыть в T2S</a>
-
+    <form id="slugForm" class="d-flex align-items-center flex-nowrap order-3 order-sm-2 mx-auto flex-grow-0" onsubmit="return goToSlug();" style="min-width: 140px; max-width: 250px;">
+      <input type="search" class="form-control form-control-sm rounded-pill me-1 flex-grow-1" id="paliauto" name="q" placeholder="e.g. an3.76">
+      <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle p-1 flex-shrink-0">Go</button>
+    </form>
   </div>
 </div>
+
+<div class="main-content">
+  <div class="card">
+    <div class="buttons">
+      <a class="btn-mode" data-mode="pali">Pāḷi</a>
+      <a class="btn-mode" data-mode="ru">Русский</a>
+
+      <a class="btn-mode" data-mode="bs">English · Sujato</a>
+      <a class="btn-mode" data-mode="bb">English · Bodhi</a>
+    </div>
+    <a id="open" class="main-btn">Открыть в T2S</a>
+  </div>
+</div>
+
+<script src="/assets/js/jquery-3.7.0.min.js"></script>
+<script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
 
 <script>
 const params = new URLSearchParams(location.search);
 const q = params.get('q');
 const mode = params.get('mode');
 
-const origin = location.origin;
-const scheme = location.protocol.replace(':', ''); // http | https
-
+// Заполняем поле поиска текущим запросом, если он есть
+if (q) document.getElementById('paliauto').value = q;
 
 function buildIntent(m) {
-  let path;
-  let query = '';
-
-  if (q) {
-    query = '?q=' + encodeURIComponent(q);
-  }
-
-  // Определяем путь и параметры типа
-  if (m === 'ru') {
-    path = '/ru/tts.php';
-    if (q) query += '&type=trn';
-  } else if (m === 'pali') {
-    path = '/tts.php';
-    if (q) query += '&type=pali';
-  } else if (m === 'bs') {
-    path = '/tts.php';
-    if (q) query += '&type=trn&translator=bs';
-  } else if (m === 'bb') {
-    path = '/tts.php';
-    if (q) query += '&type=trn&translator=bb';
-  } else {
-    path = '/ru/tts.php';
-    if (q) query += '&type=trn';
-  }
-
-  // location.host содержит и домен, и порт (например, 127.0.0.1:8080)
-  const host = window.location.host;
-  // location.protocol содержит 'http:' или 'https:'
-  const scheme = window.location.protocol.replace(':', '');
-
-  // Формируем Intent: протокол уходит в параметр scheme=
-  // а хост и путь идут сразу после intent://
-  const intentUrl = `intent://${host}${path}${query}#Intent;scheme=${scheme};package=hesoft.T2S;end`;
+  let path, query = q ? '?q=' + encodeURIComponent(q) : '';
   
-  console.log("Generated Intent:", intentUrl); // Для отладки в консоли
-  return intentUrl;
+  if (m === 'ru') { path = '/ru/tts.php'; if (q) query += '&type=trn'; }
+  else if (m === 'pali') { path = '/tts.php'; if (q) query += '&type=pali'; }
+  else if (m === 'bs') { path = '/tts.php'; if (q) query += '&type=trn&translator=bs'; }
+  else if (m === 'bb') { path = '/tts.php'; if (q) query += '&type=trn&translator=bb'; }
+  else { path = '/ru/tts.php'; if (q) query += '&type=trn'; }
+
+  const host = window.location.host;
+  const scheme = window.location.protocol.replace(':', '');
+  return `intent://${host}${path}${query}#Intent;scheme=${scheme};package=hesoft.T2S;end`;
 }
 
+function goToSlug() {
+    const newSlug = document.getElementById('paliauto').value.trim();
+    if (newSlug) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', newSlug);
+        window.location.href = url.toString();
+    }
+    return false;
+}
 
 const openBtn = document.getElementById('open');
 openBtn.href = buildIntent(mode);
 
-document.querySelectorAll('.button').forEach(btn => {
+document.querySelectorAll('.btn-mode').forEach(btn => {
   const m = btn.dataset.mode;
-  let href = '?mode=' + m;
-  if (q) href = '?q=' + encodeURIComponent(q) + '&mode=' + m;
+  let href = '?mode=' + m + (q ? '&q=' + encodeURIComponent(q) : '');
   btn.href = href;
   if (m === mode) btn.classList.add('active');
 });
 
-// автозапуск — русский по умолчанию
+// Автопереход на русский, если режим не выбран
 if (!mode) {
-  setTimeout(() => {
-    location.href = buildIntent(null);
-  }, 300);
+  setTimeout(() => { location.href = buildIntent(null); }, 300);
 }
 </script>
 
 </body>
 </html>
-
