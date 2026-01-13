@@ -3378,7 +3378,7 @@ clearBtn.style.display = 'block';
 
 		 
 		 <div class="mt-3">
- <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn12.55">sn12.55</a> Mahārukkhasutta</span>
+ <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn12.55">sn12.55</a> Mahārukkhasutta <?php echo $ifRuLitTrn;?></span>
  </div>
 
 		 
@@ -3834,12 +3834,12 @@ clearBtn.style.display = 'block';
 
 		 
 		 <div class="mt-3">
- <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn15.11">sn15.11</a> Duggatasutta</span>
+ <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn15.11">sn15.11</a> Duggatasutta <?php echo $ifRuLitTrn;?></span>
  </div>
 
 		 
 		 <div class="mt-3">
- <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn15.12">sn15.12</a> Sukhitasutta</span>
+ <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn15.12">sn15.12</a> Sukhitasutta <?php echo $ifRuLitTrn;?></span>
  </div>
 
 		 
@@ -10361,7 +10361,7 @@ clearBtn.style.display = 'block';
 
 		 
 		 <div class="mt-3">
- <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn51.20">sn51.20</a> Vibhaṅgasutta</span>
+ <span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=sn51.20">sn51.20</a> Vibhaṅgasutta <?php echo $ifRuLitTrn;?></span>
  </div>
 <div class="level4 my-3">
 		 <h5>3. Ayoguḷavagga</h5>
