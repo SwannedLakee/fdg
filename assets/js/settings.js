@@ -1372,7 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     
     // Проверяем параметры ?modal=quick или ?action=quick
-    if (urlParams.get('modal') === 'quick' || urlParams.get('action') === 'quick') {
+    if (urlParams.get('sacca') === 'true' || urlParams.get('action') === 'true') {
         
         // Небольшая задержка, чтобы DOM успел полностью отрисоваться
         setTimeout(() => {
