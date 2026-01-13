@@ -163,8 +163,11 @@ def normalize(text: str) -> str:
 def get_link_query(text: str) -> str:
     """
     Логика сокращения ссылки:
-    Если в первом блоке есть цифра или это исключение (bu-pm и т.д.) 
-    и слов больше одного -> берем только первый блок.
+    1. Если в первом блоке есть цифра или это исключение (bu-pm и т.д.):
+       - Проверяем второй блок: если в нем есть цифры (номер сутты или диапазон),
+         склеиваем первый и второй блок через точку (sn56 11 -> sn56.11).
+       - Если во втором блоке нет цифр (просто текст), берем только первый блок (mn10 metta -> mn10).
+    2. В остальных случаях возвращаем текст как есть.
     """
     if not text: return text
     parts = text.split()
@@ -177,8 +180,16 @@ def get_link_query(text: str) -> str:
     is_exception = first_block.lower() in exceptions
     
     if has_digit or is_exception:
+        # Проверяем наличие второго блока и наличие цифр в нем (напр. "11", "1-10", "5a")
+        if len(parts) > 1 and any(char.isdigit() for char in parts[1]):
+            # Очищаем первый блок от возможной точки в конце и соединяем со вторым
+            return f"{first_block.rstrip('.')}.{parts[1]}"
+        
+        # Если второй блок — это просто текст, возвращаем только первый блок
         return first_block
+        
     return text
+
 
 def autocomplete(prefix: str, max_results: int = 29) -> list[str]:
     try:
