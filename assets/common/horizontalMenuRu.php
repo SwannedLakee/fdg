@@ -144,22 +144,10 @@ echo '<!--
            <li>
          <div class="dropdown-item ">
 DG
-        <a class="text-reset" target="" target="TTS Текст-в-речь" href="/ru/tts.php" onclick="return openWithQuery(event, \'/ru/tts.php?q={{q}}\')" >TTS</a>  
-
-<a href="/r.php" class="text-reset" target="Читать Книгами или Главами"
-   onclick="
-       (function(e){
-           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase()|| \'\';
-           let match = q.match(/^([a-z]+[0-9]+)/i);
-           let base = match ? match[1] : q;
-           return openWithQuery(e, \'/r.php?q=\' + encodeURIComponent(base) + \'#\' + encodeURIComponent(q));
-       })(event)
-   ">Read+</a>
-
-            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">sutta</a>    
-      <a class="text-reset" target="" href="/ru/pm.php?expand=true">bupm</a>        
-      <a class="text-reset" target="" href="/ru/bipm.php?expand=true">bipm</a> 
-      <a class="text-reset" target="" href="?action=quick">ссылки</a> 
+            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">Sutta</a>    
+      <a class="text-reset" target="" href="/ru/pm.php?expand=true">Bupm</a>        
+      <a class="text-reset" target="" href="/ru/bipm.php?expand=true">Bipm</a> 
+      <a class="text-reset" target="" href="?action=quick">Ссылки</a> 
          </div>
          </li>
        
