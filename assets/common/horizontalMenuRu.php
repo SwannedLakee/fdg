@@ -140,19 +140,36 @@ echo '<!--
 </a>
   <ul class="dropdown-menu" aria-labelledby="MenuRussian">
        
+  
+           <li>
+         <div class="dropdown-item ">
+DG
+        <a class="text-reset" target="" target="TTS Текст-в-речь" href="/ru/tts.php" onclick="return openWithQuery(event, \'/ru/tts.php?q={{q}}\')" >TTS</a>  
+
+<a href="/r.php" class="text-reset" target="Читать Книгами или Главами"
+   onclick="
+       (function(e){
+           let q = document.getElementById(\'paliauto\')?.value.trim().toLowerCase()|| \'\';
+           let match = q.match(/^([a-z]+[0-9]+)/i);
+           let base = match ? match[1] : q;
+           return openWithQuery(e, \'/r.php?q=\' + encodeURIComponent(base) + \'#\' + encodeURIComponent(q));
+       })(event)
+   ">Read+</a>
+
+            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">sutta</a>    
+      <a class="text-reset" target="" href="/ru/pm.php?expand=true">bupm</a>        
+      <a class="text-reset" target="" href="/ru/bipm.php?expand=true">bipm</a> 
+      <a class="text-reset" target="" href="?action=quick">ссылки</a> 
+         </div>
+         </li>
        
 <li>
-         <div class="dropdown-item ">Dhamma.gift
+         <div class="dropdown-item ">DG
  <a class="text-reset" target="_blank"   href="/assets/common/o.html">Принципы Перевода</a>
- 
+   <a class="text-reset" target="" href="/assets/common/rationale.html">Проблематика</a>  
        </div>
          </li> 
-  <li>
-         <div class="dropdown-item ">Dhamma.gift
-  <a class="text-reset" target="" href="/assets/common/rationale.html">Проблематика</a>  
-       </div>
-         </li> 
-         
+
 <li><a class="dropdown-item" href="/assets/audio/documents/dn_Syrkin_2020_ed_2025.pdf">ДН пер. А.Я. Сыркина "2025"</a></li>
     <li><a class="dropdown-item" target="_blank" href="' . $mainpagethrflink . '">Тхеравада.рф Сутты</a></li>
     <li><a class="dropdown-item" target="_blank" href="' . $mainpagethrfvinayalink . '">Тхеравада.рф Патимоккха</a></li>
@@ -456,14 +473,6 @@ echo '<!--
                    <a class="text-reset" target="" href="https://benmneb.github.io/pts-converter/">#2</a>  
        </div>
          </li>   
-     
-              <li>
-         <div class="dropdown-item ">Принципы
-         <a class="text-reset" target="_blank"   href="/assets/common/o.html">Перевода</a>
-                   <a class="text-reset" target="" href="/assets/common/rationale.html">Проблематика</a>  
-       </div>
-         </li>   
-     
      
               <li>
          <div class="dropdown-item "> 
