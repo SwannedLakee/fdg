@@ -139,6 +139,20 @@ echo '<!--
 </figure>	  
 </a>
   <ul class="dropdown-menu" aria-labelledby="MenuRussian">
+       
+       
+<li>
+         <div class="dropdown-item ">Dhamma.gift
+ <a class="text-reset" target="_blank"   href="/assets/common/o.html">Принципы Перевода</a>
+ 
+       </div>
+         </li> 
+  <li>
+         <div class="dropdown-item ">Dhamma.gift
+  <a class="text-reset" target="" href="/assets/common/rationale.html">Проблематика</a>  
+       </div>
+         </li> 
+         
 <li><a class="dropdown-item" href="/assets/audio/documents/dn_Syrkin_2020_ed_2025.pdf">ДН пер. А.Я. Сыркина "2025"</a></li>
     <li><a class="dropdown-item" target="_blank" href="' . $mainpagethrflink . '">Тхеравада.рф Сутты</a></li>
     <li><a class="dropdown-item" target="_blank" href="' . $mainpagethrfvinayalink . '">Тхеравада.рф Патимоккха</a></li>

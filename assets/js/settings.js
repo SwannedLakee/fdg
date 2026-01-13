@@ -1366,6 +1366,27 @@ function toggleQuickModal() {
   }
 }
 
+
+// === Auto-open Quick Modal via URL Parameters ===
+document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Проверяем параметры ?modal=quick или ?action=quick
+    if (urlParams.get('modal') === 'quick' || urlParams.get('action') === 'quick') {
+        
+        // Небольшая задержка, чтобы DOM успел полностью отрисоваться
+        setTimeout(() => {
+            if (typeof toggleQuickModal === 'function') {
+                // Если окно еще не открыто — открываем
+                if (!quickModalIsOpen) {
+                    toggleQuickModal();
+                }
+            }
+        }, 300); // 300мс достаточно для инициализации стилей
+    }
+});
+
+
 /*
 const openQuickModalBtn = document.createElement("button");
 openQuickModalBtn.innerText = "≡"; // или иконку по желанию
