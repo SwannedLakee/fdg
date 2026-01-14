@@ -330,6 +330,8 @@ async def inline_query(update: Update, context: CallbackContext):
             reply_markup=create_keyboard(link_q, lang=share_lang, is_inline=True)
         ))
 
+
+
 async def handle_message(update: Update, context: CallbackContext):
     if not update.message or not update.message.text: return
     text = update.message.text.strip()
