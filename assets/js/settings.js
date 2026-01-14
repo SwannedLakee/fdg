@@ -213,6 +213,20 @@ document.addEventListener('DOMContentLoaded', function() {
   const helpButton = document.getElementById('helpMessage');
   const goButton = document.querySelector('.go-button'); // Кнопка "Go"
 
+  // Обработка GET-параметра removePunct
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('removePunct')) {
+    const rpValue = urlParams.get('removePunct');
+    // Режим активируется, если параметр равен 'true', '1' или просто присутствует в URL
+    const shouldEnable = rpValue === 'true' || rpValue === '1' || rpValue === '';
+    
+    localStorage.setItem('removePunct', shouldEnable ? 'true' : 'false');
+
+    // Очищаем URL от параметра без перезагрузки страницы, чтобы он не мешал при последующих действиях
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.delete('removePunct');
+    window.history.replaceState({}, document.title, newUrl.toString());
+  }
 
 
 function shouldIgnoreKeyEvent() {
