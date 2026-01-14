@@ -292,36 +292,63 @@ async def handle_extra_toggle(update: Update, context: CallbackContext):
 async def inline_query(update: Update, context: CallbackContext):
     query_text = update.inline_query.query.strip()
     user_id = update.inline_query.from_user.id
+    
+    # Получаем настройки языка
     interface_lang = get_user_lang(user_id)
     share_lang = get_user_share_lang(user_id)
     
-    link_q = get_link_query(query_text)
+    # 1. Сначала преобразуем ввод (pa.ticca -> paṭicca)
+    # Это нужно для красивого отображения и правильной ссылки
+    display_text = uniCoder(query_text)
+    
+    # 2. Генерируем "чистый" запрос для ссылки на основе уже преобразованного текста
+    link_q = get_link_query(display_text)
+    
+    # Формируем текст кнопки WebApp
     action_text = "Открыть Dhamma.gift Ru" if share_lang == "ru" else "Open Dhamma.gift En"
+    # В кнопке теперь будет Unicode (paṭicca)
     btn_text = f"🔎 {action_text}: {link_q}" if query_text else f"🔎 {action_text}"
+    
+    # Формируем URL для WebApp
     path = "ru/" if share_lang == "ru" else ""
-    final_url = f"https://f.dhamma.gift/{path}{'?p=-kn&q=' + urllib.parse.quote_plus(link_q) if query_text else ''}"
+    encoded_q = urllib.parse.quote_plus(link_q)
+    final_url = f"https://f.dhamma.gift/{path}{'?p=-kn&q=' + encoded_q if query_text else ''}"
     
     hot_button = InlineQueryResultsButton(text=btn_text, web_app=WebAppInfo(url=final_url))
     results = []
 
     if query_text:
+        # Для автодополнения используем исходный ввод (или display_text - normalize справится с обоими)
         suggestions = autocomplete(query_text)
-        converted_display = uniCoder(query_text)
         
-        # Главный результат (пользовательский ввод)
+        # === Результат 1: То, что ввел пользователь (но уже красивое) ===
         results.append(InlineQueryResultArticle(
             id="user_input",
-            title=f"✏️ Send: {converted_display}" if interface_lang == "en" else f"✏️ Отправить: {converted_display}",
-            input_message_content=InputTextMessageContent(format_message_with_links(converted_display, link_q, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True),
-            reply_markup=create_keyboard(query_text, lang=share_lang, is_inline=True)
+            # Заголовок с Unicode (paṭicca)
+            title=f"✏️ Send: {display_text}" if interface_lang == "en" else f"✏️ Отправить: {display_text}",
+            input_message_content=InputTextMessageContent(
+                # Сообщение в чат с правильными ссылками
+                format_message_with_links(display_text, link_q, lang=share_lang), 
+                parse_mode="HTML", 
+                disable_web_page_preview=True
+            ),
+            # Клавиатура под сообщением: передаем link_q, чтобы кнопки "Словарь/Читать" вели на paṭicca
+            reply_markup=create_keyboard(link_q, lang=share_lang, is_inline=True)
         ))
         
-        # Подсказки слов
+        # === Результат 2+: Подсказки из словаря ===
         for idx, word in enumerate(suggestions):
+            # word уже в Unicode из словаря, поэтому uniCoder не нужен
+            word_link_q = get_link_query(word)
             results.append(InlineQueryResultArticle(
-                id=f"dict_{idx}", title=word,
-                input_message_content=InputTextMessageContent(format_message_with_links(word, word, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True),
-                reply_markup=create_keyboard(word, lang=share_lang, is_inline=True)
+                id=f"dict_{idx}", 
+                title=word,
+                input_message_content=InputTextMessageContent(
+                    format_message_with_links(word, word_link_q, lang=share_lang), 
+                    parse_mode="HTML", 
+                    disable_web_page_preview=True
+                ),
+                reply_markup=create_keyboard(word_link_q, lang=share_lang, is_inline=True)
             ))
     
     await update.inline_query.answer(results, button=hot_button, cache_time=0, is_personal=True)
