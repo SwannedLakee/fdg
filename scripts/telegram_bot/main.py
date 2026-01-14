@@ -295,10 +295,21 @@ async def inline_query(update: Update, context: CallbackContext):
     interface_lang = get_user_lang(user_id)
     share_lang = get_user_share_lang(user_id)
     
-    link_q = get_link_query(query_text)
+    # === ИЗМЕНЕНИЕ ЗДЕСЬ ===
+    # Сначала преобразуем Velthuis в Unicode (pa.ticca -> paṭicca)
+    converted_query = uniCoder(query_text)
+    
+    # Передаем уже преобразованный текст в генератор ссылки
+    link_q = get_link_query(converted_query)
+    # =======================
+
     action_text = "Открыть Dhamma.gift Ru" if share_lang == "ru" else "Open Dhamma.gift En"
+    
+    # Теперь link_q содержит правильную диакритику, и кнопка отобразит paṭicca
     btn_text = f"🔎 {action_text}: {link_q}" if query_text else f"🔎 {action_text}"
+    
     path = "ru/" if share_lang == "ru" else ""
+    # Ссылка также будет сформирована с учетом диакритики
     final_url = f"https://f.dhamma.gift/{path}{'?p=-kn&q=' + urllib.parse.quote_plus(link_q) if query_text else ''}"
     
     hot_button = InlineQueryResultsButton(text=btn_text, web_app=WebAppInfo(url=final_url))
@@ -306,25 +317,18 @@ async def inline_query(update: Update, context: CallbackContext):
 
     if query_text:
         suggestions = autocomplete(query_text)
-        converted_display = uniCoder(query_text)
+        # converted_display можно брать уже из converted_query, но для надежности оставим как есть или заменим:
+        converted_display = converted_query 
         
         # Главный результат (пользовательский ввод)
         results.append(InlineQueryResultArticle(
             id="user_input",
+            # Используем converted_display для заголовка
             title=f"✏️ Send: {converted_display}" if interface_lang == "en" else f"✏️ Отправить: {converted_display}",
             input_message_content=InputTextMessageContent(format_message_with_links(converted_display, link_q, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True),
-            reply_markup=create_keyboard(query_text, lang=share_lang, is_inline=True)
+            # Важно: передаем converted_display (или link_q) в клавиатуру, чтобы кнопка "Словарь" тоже получила диакритику
+            reply_markup=create_keyboard(link_q, lang=share_lang, is_inline=True)
         ))
-        
-        # Подсказки слов
-        for idx, word in enumerate(suggestions):
-            results.append(InlineQueryResultArticle(
-                id=f"dict_{idx}", title=word,
-                input_message_content=InputTextMessageContent(format_message_with_links(word, word, lang=share_lang), parse_mode="HTML", disable_web_page_preview=True),
-                reply_markup=create_keyboard(word, lang=share_lang, is_inline=True)
-            ))
-    
-    await update.inline_query.answer(results, button=hot_button, cache_time=0, is_personal=True)
 
 async def handle_message(update: Update, context: CallbackContext):
     if not update.message or not update.message.text: return
