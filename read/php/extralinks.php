@@ -10,14 +10,6 @@ function extraLinks($fromjs) {
 $playIcon = "<img src='/assets/svg/play-grey.svg' style='width: 17px; height: 17px; vertical-align: middle;' alt='Play'>";
 
   include_once('../../config/config.php');
-
-$scripts = "
-    <script src='/assets/js/linksbjt.js'></script>
-    <script src='/assets/js/openBjt.js'></script>
-  ";
-  
-$bjtLink = "<a class='bjtLink' data-slug='$fromjs' href='javascript:void(0)' style='display:none' title='Open in Buddha Jayanthi Tripitaka'>Buddha Jayanthi Tripitaka</a>";
-
   $forthru = str_replace(".", '_', $fromjs);
 $cleaned = preg_replace('/\d.*$/', '', $fromjs);
 $forbwpath = strtolower($cleaned);
@@ -220,7 +212,7 @@ $playerHtml = "<span class='voice-dropdown'>
       ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1 2>/dev/null` ;
       ruslinkdn=`cd $locationrudn ; ls -R . | grep -m1 \"{$fromjs}.html\" ` ;
 
-      echo -n \"{$scripts}{$bjtLink}&nbsp;{$playerHtml}{$final}\"
+      echo -n \"{$playerHtml}{$final}\"
         [ ! -z $bblink ] && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
         [ ! -z \$ruslink ] && echo -n \"&nbsp;<a target='' title='Theravada.ru' href=$linkforthru/\$ruslink>Th.ru</a>\"
@@ -266,7 +258,7 @@ $playerHtml = "<span class='voice-dropdown'>
 
           $output = shell_exec("ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1` ; ruslinkdn=\"$thsulink\";
 
-          echo -n \"{$scripts}{$bjtLink}&nbsp;{$playerHtml}{$final}\";
+          echo -n \"{$playerHtml}{$final}\";
 
           [[ $bblink != \"\" ]]  && echo -n \"&nbsp;<a target='' title='BB and Other translations' href=/b/$bblink>BB</a>\"
 

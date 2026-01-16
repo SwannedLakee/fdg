@@ -376,6 +376,36 @@ scLink += `<a target="" title="Digital Pali Reader" href="${textUrl}">DPR</a>&nb
 }
 //dpr end
 
+
+// --- BJT START: Ссылка на Buddha Jayanthi Tripitaka ---
+function getBjtUrl(slug) {
+    // Проверяем, загружен ли массив данных из файла linksbjt.js
+    if (typeof bjtLinksData === 'undefined') {
+        return null;
+    }
+
+    // Очищаем slug от параметров (все, что после &)
+    let cleanSlug = slug.split('&')[0].toLowerCase();
+
+    // Ищем совпадение: item[0] - это slug (например, dn1), item[1] - это код для ссылки
+    let bjtItem = bjtLinksData.find(item => item[0] === cleanSlug);
+
+    if (bjtItem && bjtItem[1]) {
+        return "https://open.tipitaka.lk/latn/" + bjtItem[1];
+    }
+    
+    return null;
+}
+
+let bjtUrl = getBjtUrl(slug);
+
+if (bjtUrl) {
+    // Добавляем ссылку к переменной scLink, точно так же, как это делает DPR и SC
+    scLink += `<a target="_blank" title="Buddha Jayanthi Tripitaka" href="${bjtUrl}">BJT</a>&nbsp;`;
+}
+// --- BJT END ---
+
+
 scLink += `<a target="" title="SuttaCentral.net" href="https://suttacentral.net/${slug}/en/${translator}">SC</a>&nbsp;`;
       
 //<a href="/legacy.suttacentral.net/read/pi/${slug}.html">legacy.SC</a>&nbsp; <a target="" href="https://voice.suttacentral.net/scv/index.html?#/sutta?search=${slug}">Voice.SC</a> 
