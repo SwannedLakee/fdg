@@ -1,83 +1,66 @@
+// Константа для базового URL
+const DPR_BASE_URL = "https://www.digitalpalireader.online/_dprhtml/index.html?loc=";
+
+// Карта для быстрого поиска ссылок
+let dprMap = null;
+
 document.addEventListener("DOMContentLoaded", function() {
-//   console.log("Страница загружена");
+    // Инициализируем карту при загрузке страницы, если данные доступны
+    initDprMap();
+
     const dprLinks = document.querySelectorAll('.dprLink');
     dprLinks.forEach(link => {
         const slug = link.getAttribute('data-slug');
-       // console.log("Slug:", slug);
         const textUrl = getTextUrl(slug);
-    //    console.log("Text URL:", textUrl);
+        
         if (!textUrl) {
+            // Скрываем ссылку, если адрес не найден
             link.style.display = 'none';
+            console.warn(`DPR Link not found for slug: ${slug}`);
         } else {
-            // Установка значения в атрибут href
+            // Устанавливаем ссылку
             link.href = textUrl;
-             link.target = "_blank";
+            link.target = "_blank";
         }
     });
 });
 
-
-
-  function openDpr(slug) {
-
-     //   console.log("Открывается DPR для:", slug);
-        let textUrl = getTextUrl(slug);
-        if (textUrl) {
-     //       console.log("Ссылка найдена:", textUrl);
-            window.open(textUrl, "_blank");
-        } else {
-            console.log("Ссылка не найдена", slug, textUrl);
-        }
-    }
-
-    function getTextUrl(slug) {
-      let nikaya = slug.match(/[a-zA-Z]+/)[0]; // Получаем название никаи из строки
-      let textnum;
-
-      if (slug.includes(".")) {
-        let match = slug.match(/([a-zA-Z]+)(\d+)\.(\d+)/);
-        if (match) {
-          let [, nikaya, subdivision, textnum] = match;
-          let textUrl = findTextUrl(nikaya, parseInt(subdivision), parseInt(textnum));
-          if (textUrl) {
-            return textUrl;
-          }
-        }
-      } else {
-        textnum = parseInt(slug.match(/[a-zA-Z](\d+)/)[1]); // Получаем цифры после букв
-        let textUrl = findTextUrl(nikaya, null, textnum);
-        if (textUrl) {
-          return textUrl;
-        }
-      }
-
-      return null;
-    }
-
-function findTextUrl(nikaya, subdivision, textnum) {
-  if (digitalPaliReader && digitalPaliReader[nikaya] && digitalPaliReader[nikaya].available) {
-    if (subdivision !== null && digitalPaliReader[nikaya].available[subdivision]) {
-      let item = digitalPaliReader[nikaya].available[subdivision].find(item => {
-        if (Array.isArray(item)) {
-          if (item.length === 3) {
-            return textnum >= item[0] && textnum <= item[1];
-          } else if (item.length === 2) {
-            return textnum === item[0];
-          }
-        }
-        return false;
-      });
-
-      if (item) {
-        return digitalPaliReader.constants.rootUrl + item[item.length - 1];
-      }
+// Функция для открытия DPR из JS (например, по кнопке)
+function openDpr(slug) {
+    initDprMap(); // Убеждаемся, что карта инициализирована
+    
+    let textUrl = getTextUrl(slug);
+    if (textUrl) {
+        window.open(textUrl, "_blank");
     } else {
-      let item = digitalPaliReader[nikaya].available.find(item => Array.isArray(item) ? item[0] === textnum : item === textnum);
-      if (item) {
-        return digitalPaliReader.constants.rootUrl + item[1];
-      }
+        console.log("Ссылка не найдена для:", slug);
     }
-  }
-
-  return null;
 }
+
+// Вспомогательная функция инициализации карты данных
+function initDprMap() {
+    if (dprMap) return; // Уже инициализировано
+
+    if (typeof dprLinksData !== 'undefined') {
+        // Преобразуем массив пар [ключ, значение] в Map для быстрого поиска O(1)
+        dprMap = new Map(dprLinksData);
+    } else {
+        console.error("Ошибка: dprLinksData не найден. Убедитесь, что файл linksdpr.js подключен перед openDpr.js");
+    }
+}
+
+// Основная функция получения полного URL
+function getTextUrl(slug) {
+    if (!dprMap || !slug) return null;
+    
+    // Ищем точное совпадение ключа (например, "dn1", "SN1.1")
+    const code = dprMap.get(slug);
+    
+    if (code) {
+        return DPR_BASE_URL + code;
+    }
+    
+    return null;
+}
+
+
