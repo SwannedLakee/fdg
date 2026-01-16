@@ -1,3 +1,46 @@
+function findFileInTextInfo(slug) {
+    if (typeof textInfo === 'undefined') {
+        return { file: slug, anchor: null };
+    }
+
+    slug = slug.toLowerCase();
+
+    // ✅ 0. если есть точное совпадение — ничего не делаем
+    if (textInfo[slug]) {
+        return { file: slug, anchor: null };
+    }
+
+    let anchor = null;
+    let baseSlug = slug;
+
+    // 1. an2.3 → base=an2, anchor=3
+    const m = slug.match(/^([a-z]+\d+)\.(\d+)$/);
+    if (m) {
+        baseSlug = m[1];
+        anchor   = m[2];
+    }
+
+    // 2. поиск диапазона
+    for (const key in textInfo) {
+        if (!key.includes('-')) continue;
+        if (!key.startsWith(baseSlug + '.')) continue;
+
+        const [start, end] = key
+            .split('.')[1]
+            .split('-')
+            .map(Number);
+
+        const n = Number(anchor);
+        if (!isNaN(n) && n >= start && n <= end) {
+            return { file: key, anchor };
+        }
+    }
+
+    // 3. fallback
+    return { file: slug, anchor: null };
+}
+
+
 window.otrnranges = ['sn56.11', 'sn12.2', 'sn54.1'];
 
 window.vinayaranges = ["pli-tv-bu-vb-as1-7", "pli-tv-bu-vb-ay1", "pli-tv-bu-vb-ay2", "pli-tv-bu-vb-pc1", "pli-tv-bu-vb-pc2", "pli-tv-bu-vb-pd1", "pli-tv-bu-vb-pd2", "pli-tv-bu-vb-pd3", "pli-tv-bu-vb-pd4", "pli-tv-bu-vb-pj1", "pli-tv-bu-vb-pj2", "pli-tv-bu-vb-pj3", "pli-tv-bu-vb-pj4", "pli-tv-bu-vb-sk1", "pli-tv-bu-vb-sk2", "pli-tv-bu-vb-sk3", "pli-tv-bu-vb-sk4", "pli-tv-bu-vb-sk5", "pli-tv-bu-vb-sk7", "pli-tv-bu-vb-sk8", "pli-tv-bu-vb-sk74", "pli-tv-bu-vb-ss1", "pli-tv-bu-vb-ss2", "pli-tv-bu-vb-ss3", "pli-tv-bu-vb-ss4", "pli-tv-bu-vb-ss5", "pli-tv-bu-vb-ss6", "pli-tv-bu-vb-ss7", "pli-tv-bu-vb-ss8", "pli-tv-bu-vb-ss9", "pli-tv-bu-vb-ss10", "pli-tv-bu-vb-ss11", "pli-tv-bu-vb-ss12", "pli-tv-bu-vb-ss13"];

@@ -61,6 +61,10 @@ function buildSutta(slug) {
   }
   let html = `<div class="button-area"><button title="Переключить язык (Atl+Z или Alt+Space)" id="language-button" class="hide-button">Pāḷi Рус</button></div>`;
   
+  
+  const rangeInfo = findFileInTextInfo(slug);
+
+slug = rangeInfo.file;
   const slugReady = parseSlug(slug);
  // console.log("slugReady is " + slugReady + " slug is " + slug); 
 
@@ -107,6 +111,15 @@ const mlUrl = ruUrl.replace("/r/", "/ml/");
 const currentURL = window.location.href;
 const anchorURL = new URL(currentURL).hash; // Убираем символ "#"
 
+if (rangeInfo.anchor && !anchorURL) {
+    history.replaceState(
+        null,
+        "",
+        window.location.pathname +
+        window.location.search +
+        "#" + rangeInfo.anchor
+    );
+}
 
 
 // let ifRus = `<a target="" href="${mlUrl}">R+E</a>&nbsp;`;
@@ -672,6 +685,15 @@ prevName = prevName.replace(/[0-9.]/g, '');
 const anchorURL = new URL(currentURL).hash; // Убираем символ "#"
 console.log('anchorURL', anchorURL);
 
+if (rangeInfo.anchor && !anchorURL) {
+    history.replaceState(
+        null,
+        "",
+        window.location.pathname +
+        window.location.search +
+        "#" + rangeInfo.anchor
+    );
+}
 
   let params = new URLSearchParams(document.location.search);
   let sGetparam = params.get("s");
