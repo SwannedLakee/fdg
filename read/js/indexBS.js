@@ -371,13 +371,13 @@ function findTextUrl(nikaya, subdivision, textnum) {
 let textUrl = getTextUrl(slug);
 // console.log("Ссылка на", slug + ":", textUrl);
 if (textUrl) {
-scLink += `<a target="" title="Digital Pali Reader" href="${textUrl}">DPR</a>&nbsp;`;
+scLink += `<a target="" title="Myanmar and Thai Editions at DPR" href="${textUrl}">DPR</a>&nbsp;`;
 }
 }
 //dpr end
 
 
-// --- BJT START: Ссылка на Buddha Jayanthi Tripitaka ---
+// --- BJT START: Ссылка на Buddha Jayanthi (Sri Lanka Edition) ---
 function getBjtUrl(slug) {
     // Проверяем, загружен ли массив данных из файла linksbjt.js
     if (typeof bjtLinksData === 'undefined') {
@@ -401,7 +401,7 @@ let bjtUrl = getBjtUrl(slug);
 
 if (bjtUrl) {
     // Добавляем ссылку к переменной scLink, точно так же, как это делает DPR и SC
-    scLink += `<a target="_blank" title="Buddha Jayanthi Tripitaka" href="${bjtUrl}">BJT</a>&nbsp;`;
+    scLink += `<a target="_blank" title="Buddha Jayanthi (Sri Lanka Edition)" href="${bjtUrl}">BJT</a>&nbsp;`;
 }
 // --- BJT END ---
 

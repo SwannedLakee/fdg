@@ -325,7 +325,7 @@ function findTextUrl(nikaya, subdivision, textnum) {
 let textUrl = getTextUrl(slug);
 console.log("Ссылка на", slug + ":", textUrl);
 if (textUrl) {
-scLink += `<a target="" href="${textUrl}">DPR</a>&nbsp;`;
+scLink += `<a target="" title="Myanmar and Thai Editions at DPR" href="${textUrl}">DPR</a>&nbsp;`;
 }
 
 }

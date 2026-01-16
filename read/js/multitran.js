@@ -546,10 +546,40 @@ function findTextUrl(nikaya, subdivision, textnum) {
 let textUrl = getTextUrl(slug);
 //console.log("Ссылка на", slug + ":", textUrl);
 if (textUrl) {
-scLink += `<a target="" title='Digital Pali Reader' href="${textUrl}">DPR</a>&nbsp;`;
+scLink += `<a target="" title="Myanmar and Thai Editions at DPR" href="${textUrl}">DPR</a>&nbsp;`;
 }
 }
 //dpr end
+
+
+// --- BJT START: Ссылка на Buddha Jayanthi (Sri Lanka Edition) ---
+function getBjtUrl(slug) {
+    // Проверяем, загружен ли массив данных из файла linksbjt.js
+    if (typeof bjtLinksData === 'undefined') {
+        return null;
+    }
+
+    // Очищаем slug от параметров (все, что после &)
+    let cleanSlug = slug.split('&')[0].toLowerCase();
+
+    // Ищем совпадение: item[0] - это slug (например, dn1), item[1] - это код для ссылки
+    let bjtItem = bjtLinksData.find(item => item[0] === cleanSlug);
+
+    if (bjtItem && bjtItem[1]) {
+        return "https://open.tipitaka.lk/latn/" + bjtItem[1];
+    }
+    
+    return null;
+}
+
+let bjtUrl = getBjtUrl(slug);
+
+if (bjtUrl) {
+    // Добавляем ссылку к переменной scLink, точно так же, как это делает DPR и SC
+    scLink += `<a target="_blank" title="Buddha Jayanthi (Sri Lanka Edition)" href="${bjtUrl}">BJT</a>&nbsp;`;
+}
+// --- BJT END ---
+
 
 if ((translator === 'sujato') || (translator === 'brahmali')) {
   scLink += `<a target="" title='SuttaCentral.net' href="https://suttacentral.net/${slug}/en/${translator}">SC</a>&nbsp;`;  
