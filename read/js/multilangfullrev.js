@@ -455,7 +455,7 @@ scLink += `<a target="" title="Myanmar and Thai Editions at DPR" href="${textUrl
 //dpr end
 
 
-// --- BJT START: Ссылка на Buddha Jayanthi (Sri Lanka Edition) ---
+// --- BJT START:  ---
 function getBjtUrl(slug) {
     // Проверяем, загружен ли массив данных из файла linksbjt.js
     if (typeof bjtLinksData === 'undefined') {
@@ -479,7 +479,7 @@ let bjtUrl = getBjtUrl(slug);
 
 if (bjtUrl) {
     // Добавляем ссылку к переменной scLink, точно так же, как это делает DPR и SC
-    scLink += `<a target="_blank" title="Buddha Jayanthi (Sri Lanka Edition)" href="${bjtUrl}">BJT</a>&nbsp;`;
+    scLink += `<a target="_blank" title="Buddha Jayanthi (Sri Lanka Edition at Tipitaka.lk)" href="${bjtUrl}">BJT</a>&nbsp;`;
 }
 // --- BJT END ---
 
