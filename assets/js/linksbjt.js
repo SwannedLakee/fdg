@@ -1,5 +1,4 @@
-if (typeof bjtLinksData === 'undefined') 
-{ var bjtLinksData = [
+var bjtLinksData = [
 ["dn1", "dn-1-1"],
 ["dn2", "dn-1-2"],
 ["dn3", "dn-1-3"],
@@ -6332,4 +6331,3 @@ if (typeof bjtLinksData === 'undefined')
 ["ps3.9", ""],
 ["ps3.10", ""]
 ]
-}
