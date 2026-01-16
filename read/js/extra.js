@@ -1,7 +1,8 @@
 // Проверка загрузки
-// alert("Extra.js with Play/Pause LOADED"); 
+// alert("Extra.js with MediaSession LOADED");
 
-// --- Глобальное состояние ---
+// --- 1. Глобальное состояние и Тихий Трек ---
+
 const ttsState = {
   text: null,       // Текущий текст
   button: null,     // Текущая активная кнопка
@@ -10,9 +11,12 @@ const ttsState = {
   utterance: null
 };
 
-// --- Вспомогательные функции ---
+// Короткий MP3 файл тишины (ID3 + тишина), нужен для активации аудио-сессии в браузере
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////wAAAP//OEAAAAAAAAAAAAAAAAAAAAAAAMKvAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//OEAAAAAAAAAAAAAAAAAAAAAAALhAAAAAAAAAAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
+silentAudio.loop = true;
 
-// Сброс иконок (вернуть всем Play)
+// --- 2. Вспомогательные функции UI ---
+
 function resetAllIcons() {
   const pauseIcons = document.querySelectorAll('img[src*="pause-grey.svg"]');
   pauseIcons.forEach(img => {
@@ -21,22 +25,20 @@ function resetAllIcons() {
   });
 }
 
-// Переключение иконки конкретной кнопки
 function setButtonIcon(button, type) {
   if (!button) return;
   const img = button.querySelector('img');
   if (!img) return;
 
-  if (type === 'pause') { // Показываем иконку Паузы (значит сейчас играет)
+  if (type === 'pause') { // Иконка "Пауза" (значит идет воспроизведение)
     img.src = '/assets/svg/pause-grey.svg';
     img.alt = 'Pause';
-  } else { // Показываем иконку Play
+  } else { // Иконка "Play"
     img.src = '/assets/svg/play-grey.svg';
     img.alt = 'Play';
   }
 }
 
-// Очистка текста
 function cleanTextForTTS(text) {
   return text
     .replace(/\{.*?\}/g, '')
@@ -45,11 +47,85 @@ function cleanTextForTTS(text) {
     .trim();
 }
 
-// --- Логика TTS ---
+// --- 3. Логика Media Session (Управление из шторки) ---
+
+function setupMediaSession(text, langType) {
+  if (!('mediaSession' in navigator)) return;
+
+  // Метаданные для шторки
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: langType === 'pi' ? 'Pāli Recitation' : 'Translation Reading',
+    artist: 'Dhamma.Gift',
+    album: document.title || 'Sutta Study',
+    artwork: [
+      { src: '/assets/img/fav/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { src: '/assets/img/fav/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' }
+    ]
+  });
+
+  // Обработчики нажатий в шторке
+  navigator.mediaSession.setActionHandler('play', () => {
+    // Пользователь нажал Play в шторке -> Возобновляем
+    resumeTTS();
+  });
+
+  navigator.mediaSession.setActionHandler('pause', () => {
+    // Пользователь нажал Pause в шторке -> Ставим на паузу
+    pauseTTS();
+  });
+  
+  // Можно добавить stop, seekbackward и т.д., но для TTS это сложнее
+  navigator.mediaSession.setActionHandler('stop', () => {
+    stopTTS();
+  });
+}
+
+// --- 4. Управление воспроизведением (Controller) ---
+
+function pauseTTS() {
+  if (ttsState.speaking && !ttsState.paused) {
+    window.speechSynthesis.pause();
+    silentAudio.pause(); // Останавливаем тишину
+    ttsState.paused = true;
+    setButtonIcon(ttsState.button, 'play');
+    
+    // Сообщаем системе, что мы на паузе (меняется значок в шторке)
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
+  }
+}
+
+function resumeTTS() {
+  if (ttsState.paused) {
+    silentAudio.play().catch(e => console.warn("Audio resume blocked", e)); // Запускаем тишину
+    window.speechSynthesis.resume();
+    ttsState.paused = false;
+    setButtonIcon(ttsState.button, 'pause');
+
+    // Сообщаем системе, что мы играем
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
+  }
+}
+
+function stopTTS() {
+  window.speechSynthesis.cancel();
+  silentAudio.pause();
+  silentAudio.currentTime = 0;
+  
+  ttsState.speaking = false;
+  ttsState.paused = false;
+  
+  if (ttsState.button) setButtonIcon(ttsState.button, 'play');
+  ttsState.text = null;
+  ttsState.button = null;
+  
+  if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "none";
+}
+
+// --- 5. Основная логика запуска (Speak) ---
 
 function speakRawText(text, langType, button) {
-  // Отменяем всё старое
-  window.speechSynthesis.cancel();
+  // Полный сброс
+  stopTTS(); 
   
   // Обновляем состояние
   ttsState.text = text;
@@ -57,115 +133,97 @@ function speakRawText(text, langType, button) {
   ttsState.speaking = true;
   ttsState.paused = false;
 
-  // Визуально: сбрасываем другие кнопки, включаем текущую
+  // UI
   resetAllIcons();
   setButtonIcon(button, 'pause');
 
+  // 1. Запуск тишины (для background mode)
+  silentAudio.play().catch(err => {
+    console.warn("Silent audio blocked (interaction needed first?):", err);
+  });
+
+  // 2. Настройка шторки
+  setupMediaSession(text, langType);
+  if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
+
+  // 3. Создание Utterance
   const utterance = new SpeechSynthesisUtterance(text);
 
-  // Настройка языка
   if (langType === 'ru') {
     utterance.lang = 'ru-RU';
   } else if (langType === 'th') {
-    // Настройка для тайского (только для перевода)
     utterance.lang = 'th-TH';
-    utterance.rate = 0.7; // Чуть медленнее для тайского
+    utterance.rate = 0.7;
   } else if (langType === 'pi') {
-    // Хинди для деванагари, Английский для латиницы (Стандарт для Пали)
     utterance.lang = /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-US';
     if (utterance.lang === 'hi-IN') utterance.rate = 0.8;
   } else {
-    // По умолчанию английский
     utterance.lang = 'en-US';
   }
 
   // События
   utterance.onend = function() {
-    ttsState.speaking = false;
-    ttsState.paused = false;
-    ttsState.text = null;
-    ttsState.button = null;
-    setButtonIcon(button, 'play');
+    stopTTS(); // Это само выключит тишину и обновит иконки
   };
 
   utterance.onerror = function(e) {
     if (e.error !== 'interrupted' && e.error !== 'canceled') {
       console.error('TTS Error:', e);
-      setButtonIcon(button, 'play');
-      ttsState.speaking = false;
+      stopTTS();
     }
   };
 
-  // Сохраняем ссылку на объект (иногда нужно для GC)
   ttsState.utterance = utterance;
 
-  // Запуск
   try {
     window.speechSynthesis.speak(utterance);
   } catch (err) {
     console.error("Speak error:", err);
-    setButtonIcon(button, 'play');
+    stopTTS();
   }
 }
 
 function toggleSpeech(text, langType, button) {
-  // Логика Play/Pause как в tts.php
-  
-  // 1. Если этот же текст уже играет и не на паузе -> ПАУЗА
+  // Логика переключения
   if (ttsState.speaking && !ttsState.paused && ttsState.text === text) {
-    window.speechSynthesis.pause();
-    ttsState.paused = true;
-    setButtonIcon(button, 'play'); // Показываем Play, чтобы продолжить
+    pauseTTS(); // Теперь вызывает централизованную функцию
   }
-  // 2. Если этот же текст на паузе -> ПРОДОЛЖИТЬ
   else if (ttsState.paused && ttsState.text === text) {
-    window.speechSynthesis.resume();
-    ttsState.paused = false;
-    setButtonIcon(button, 'pause'); // Показываем Pause, чтобы остановить
+    resumeTTS(); // Теперь вызывает централизованную функцию
   }
-  // 3. Новый текст или старый закончился -> СТАРТ
   else {
     speakRawText(text, langType, button);
   }
 }
 
 
-// --- Обработчик кликов ---
+// --- 6. Обработчик кликов (Без изменений логики парсинга) ---
 
 function handleSuttaClick(e) {
-  // Ищем кнопку (поднимаемся вверх, если кликнули по картинке)
   const target = e.target.closest('.copy-pali, .copy-translation, .open-pali, .open-translation, .play-pali, .play-translation');
   if (!target) return;
 
   e.preventDefault();
 
-  // Определяем тип действия
   const isPlay = target.classList.contains('play-pali') || target.classList.contains('play-translation');
   const isOpen = target.classList.contains('open-pali') || target.classList.contains('open-translation');
   const isCopy = target.classList.contains('copy-pali') || target.classList.contains('copy-translation');
-  
-  // Определяем тип контента (Пали или Перевод)
   const isPaliTarget = target.classList.contains('play-pali') || target.classList.contains('copy-pali') || target.classList.contains('open-pali');
   
-  // Выбираем селектор текста
   const textSelector = isPaliTarget ? '.pli-lang' : '.rus-lang';
 
-  // Ищем контейнер (блок сутты)
   const container = target.closest('.sutta-container') || 
                     target.closest('.text-block') || 
                     target.closest('section') || 
                     target.closest('div');
 
-  // Собираем текст
   const elements = container ? container.querySelectorAll(textSelector) : document.querySelectorAll(textSelector);
   
   if (elements.length === 0) {
-    // Если текст не найден — тихо выходим или можно alert для отладки
     console.warn("Text elements not found for selector: " + textSelector);
     return;
   }
 
-  // Чистим и склеиваем текст
   let combinedText = "";
   elements.forEach(el => {
     const clone = el.cloneNode(true);
@@ -176,36 +234,21 @@ function handleSuttaClick(e) {
 
   if (!combinedText.trim()) return;
 
-  // --- ВЫПОЛНЕНИЕ ДЕЙСТВИЯ ---
-
   if (isPlay) {
-    // Определение языка для TTS
-    let langType = 'en'; // По умолчанию
+    let langType = 'en';
     const path = window.location.pathname;
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА ---
-    
-    // 1. Если это ПАЛИ — всегда используем стандартную логику (pi)
     if (isPaliTarget) {
       langType = 'pi';
-    } 
-    // 2. Если это ПЕРЕВОД — проверяем язык страницы
-    else {
-      // Проверка на Тайский в URL
+    } else {
       if (path.includes('/th/') || path.includes('/thml/') || path.includes('/mlth/')) {
         langType = 'th';
-      } 
-      // Проверка на Русский в URL
-      else if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) {
+      } else if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) {
         langType = 'ru';
-      } 
-      // Иначе Английский
-      else {
+      } else {
         langType = 'en';
       }
     }
-    
-    // Запускаем переключатель
     toggleSpeech(combinedText, langType, target);
   } 
   
@@ -220,7 +263,7 @@ function handleSuttaClick(e) {
   }
 }
 
-// --- Старые функции (Copy/Open/Notify) ---
+// --- Legacy (Copy/Open/Notify) ---
 
 function showNotification(message) {
   const notification = document.createElement('div');
@@ -276,8 +319,6 @@ async function copyToClipboard(text) {
   }
 }
 
-// Инициализация
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
 });
-
