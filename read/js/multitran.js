@@ -561,7 +561,7 @@ if ((translator === 'sujato') || (translator === 'brahmali')) {
 } else {
   scLink += `<a target="" title='SuttaCentral.net' href="https://suttacentral.net/${slug}">SC</a>&nbsp;`;
 }
- //     scLink += `<a target="" href="https://suttacentral.net/${slug}/en/${translator}">SC</a>&nbsp;`; 
+ //     scLink += `<a target="_blank" href="https://suttacentral.net/${slug}/en/${translator}">SC</a>&nbsp;`; 
 
 //<a href="/legacy.suttacentral.net/read/pi/${slug}.html">legacy.SC</a>&nbsp; <a target="" href="https://voice.suttacentral.net/scv/index.html?#/sutta?search=${slug}">Voice.SC</a>
       if (linksArray[0].length >= 4) {

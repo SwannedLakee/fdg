@@ -337,9 +337,9 @@ if (bjtUrl) {
 
 
 if ((translator === 'sujato') || (translator === 'brahmali')) {
-  scLink += `<a target="" href="https://suttacentral.net/${slug}/en/${translator}">SC.net</a>&nbsp;`;  
+  scLink += `<a target="_blank" href="https://suttacentral.net/${slug}/en/${translator}">SC.net</a>&nbsp;`;  
 } else {
-  scLink += `<a target="" href="https://suttacentral.net/${slug}">SC.net</a>&nbsp;`;
+  scLink += `<a target="_blank" href="https://suttacentral.net/${slug}">SC.net</a>&nbsp;`;
 }
 
       $.ajax({
@@ -347,7 +347,7 @@ if ((translator === 'sujato') || (translator === 'brahmali')) {
     }).done(function(data) {
       const linksArray = data.split(",");
   
-   //   scLink += `<a target="" href="https://suttacentral.net/${slug}">SC.net</a>&nbsp;`; 
+   //   scLink += `<a target="_blank" href="https://suttacentral.net/${slug}">SC.net</a>&nbsp;`; 
 
 //<a href="/legacy.suttacentral.net/read/pi/${slug}.html">legacy.SC</a>&nbsp; <a target="" href="https://voice.suttacentral.net/scv/index.html?#/sutta?search=${slug}">Voice.SC</a>
       if (linksArray[0].length >= 4) {
