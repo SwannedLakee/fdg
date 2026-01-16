@@ -104,7 +104,7 @@
         }
     },
     "shortcuts": [
-        {
+     /*   {
             "name": "DG Read",
             "url": "/read.php",
             "icons": [
@@ -114,7 +114,7 @@
                     "sizes": "192x192"
                 }
             ]
-        },
+        },*/
         {
             "name": "Dict.Dhamma.Gift",
             "url": "/assets/openDDG.html",

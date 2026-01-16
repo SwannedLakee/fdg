@@ -149,7 +149,7 @@ echo json_encode([
         ]
     ],
     "shortcuts" => [
-        [
+   /*     [
             "name" => "DG Read",
             "url" => $mainpagenoslash . "/read.php",
             "icons" => [
@@ -159,7 +159,7 @@ echo json_encode([
                     "sizes" => "192x192"
                 ]
             ]
-        ],    
+        ], */   
         [
             "name" => "Dict.Dhamma.Gift",
             "url" => $mainpagenoslash . "/assets/openDDG.html",
