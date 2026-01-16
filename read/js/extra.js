@@ -1,265 +1,283 @@
-// [ДОБАВИТЬ В НАЧАЛО ФАЙЛА]
+// Проверка загрузки
+// alert("Extra.js with Play/Pause LOADED"); 
 
-// Глобальное состояние для Audio
-const audioState = {
-  audio: null,
-  currentUrl: null,
-  isPlaying: false,
-  notification: null,
-  currentButton: null
+// --- Глобальное состояние ---
+const ttsState = {
+  text: null,       // Текущий текст
+  button: null,     // Текущая активная кнопка
+  speaking: false,
+  paused: false,
+  utterance: null
 };
 
-// Инициализация Media Session API
-function initMediaSession() {
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: 'Sutta TTS',
-      artist: 'Dhamma Reader',
-      artwork: [
-        { src: '/assets/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-        { src: '/assets/icons/icon-512.png', sizes: '512x512', type: 'image/png' }
-      ]
-    });
+// --- Вспомогательные функции ---
 
-    navigator.mediaSession.setActionHandler('play', () => {
-      if (audioState.audio) {
-        audioState.audio.play();
-        updateNotification('playing');
-      }
-    });
+// Сброс иконок (вернуть всем Play)
+function resetAllIcons() {
+  const pauseIcons = document.querySelectorAll('img[src*="pause-grey.svg"]');
+  pauseIcons.forEach(img => {
+    img.src = '/assets/svg/play-grey.svg';
+    img.alt = 'Play';
+  });
+}
 
-    navigator.mediaSession.setActionHandler('pause', () => {
-      if (audioState.audio) {
-        audioState.audio.pause();
-        updateNotification('paused');
-      }
-    });
+// Переключение иконки конкретной кнопки
+function setButtonIcon(button, type) {
+  if (!button) return;
+  const img = button.querySelector('img');
+  if (!img) return;
 
-    navigator.mediaSession.setActionHandler('stop', () => {
-      stopAudioPlayback();
-    });
-
-    navigator.mediaSession.setActionHandler('seekbackward', () => {
-      if (audioState.audio) {
-        audioState.audio.currentTime = Math.max(0, audioState.audio.currentTime - 10);
-      }
-    });
-
-    navigator.mediaSession.setActionHandler('seekforward', () => {
-      if (audioState.audio) {
-        audioState.audio.currentTime = Math.min(
-          audioState.audio.duration,
-          audioState.audio.currentTime + 10
-        );
-      }
-    });
+  if (type === 'pause') { // Показываем иконку Паузы (значит сейчас играет)
+    img.src = '/assets/svg/pause-grey.svg';
+    img.alt = 'Pause';
+  } else { // Показываем иконку Play
+    img.src = '/assets/svg/play-grey.svg';
+    img.alt = 'Play';
   }
 }
 
-// Обновить уведомление
-function updateNotification(state) {
-  if (!('Notification' in window)) return;
-
-  if (state === 'playing') {
-    if (audioState.notification) {
-      audioState.notification.close();
-    }
-
-    if (Notification.permission === 'granted') {
-      audioState.notification = new Notification('Sutta TTS', {
-        body: 'Сутта воспроизводится',
-        icon: '/assets/icons/icon-192.png',
-        badge: '/assets/icons/icon-96.png',
-        tag: 'sutta-tts',
-        silent: true,
-        requireInteraction: false
-      });
-
-      audioState.notification.onclick = () => {
-        window.focus();
-        audioState.notification.close();
-      };
-    }
-  } else if (state === 'paused' && audioState.notification) {
-    audioState.notification.close();
-    audioState.notification = null;
-  }
+// Очистка текста
+function cleanTextForTTS(text) {
+  return text
+    .replace(/\{.*?\}/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
-// Остановить воспроизведение
-function stopAudioPlayback() {
-  if (audioState.audio) {
-    audioState.audio.pause();
-    audioState.audio = null;
-  }
-  audioState.isPlaying = false;
-  audioState.currentUrl = null;
-  
-  if (audioState.notification) {
-    audioState.notification.close();
-    audioState.notification = null;
-  }
-  
-  if (audioState.currentButton) {
-    setButtonIcon(audioState.currentButton, 'play');
-    audioState.currentButton = null;
-  }
-  
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.playbackState = 'none';
-  }
-  
-  resetAllIcons();
-}
+// --- Логика TTS ---
 
-// Создать аудио из TTS
-async function createAudioFromTTS(text, langType, button) {
-  // Если уже играет этот же текст - пауза/продолжение
-  if (audioState.isPlaying && audioState.currentButton === button) {
-    if (!audioState.audio.paused) {
-      audioState.audio.pause();
-      audioState.isPlaying = false;
-      updateNotification('paused');
-      setButtonIcon(button, 'play');
-    } else {
-      audioState.audio.play();
-      audioState.isPlaying = true;
-      updateNotification('playing');
-      setButtonIcon(button, 'pause');
-    }
-    return;
-  }
-
-  // Остановить предыдущее воспроизведение
-  stopAudioPlayback();
+function speakRawText(text, langType, button) {
+  // Отменяем всё старое
   window.speechSynthesis.cancel();
+  
+  // Обновляем состояние
+  ttsState.text = text;
+  ttsState.button = button;
+  ttsState.speaking = true;
+  ttsState.paused = false;
 
-  // Обновить состояние
-  audioState.currentButton = button;
-  audioState.isPlaying = true;
+  // Визуально: сбрасываем другие кнопки, включаем текущую
   resetAllIcons();
   setButtonIcon(button, 'pause');
 
-  try {
-    // Создаем SpeechSynthesis для TTS
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Настройка языка (существующая логика)
-    if (langType === 'ru') {
-      utterance.lang = 'ru-RU';
-    } else if (langType === 'th') {
-      utterance.lang = 'th-TH';
-      utterance.rate = 0.7;
-    } else if (langType === 'pi') {
-      utterance.lang = /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-US';
-      if (utterance.lang === 'hi-IN') utterance.rate = 0.8;
-    } else {
-      utterance.lang = 'en-US';
-    }
+  const utterance = new SpeechSynthesisUtterance(text);
 
-    // Для длинных текстов используем Web Audio API
-    if (text.length > 500) {
-      await playLongTextWithWebAudio(utterance, button);
-    } else {
-      // Для коротких текстов используем стандартный TTS с уведомлениями
-      await playShortTextWithNotifications(utterance, button);
-    }
-  } catch (error) {
-    console.error('Audio playback error:', error);
+  // Настройка языка
+  if (langType === 'ru') {
+    utterance.lang = 'ru-RU';
+  } else if (langType === 'th') {
+    // Настройка для тайского (только для перевода)
+    utterance.lang = 'th-TH';
+    utterance.rate = 0.7; // Чуть медленнее для тайского
+  } else if (langType === 'pi') {
+    // Хинди для деванагари, Английский для латиницы (Стандарт для Пали)
+    utterance.lang = /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-US';
+    if (utterance.lang === 'hi-IN') utterance.rate = 0.8;
+  } else {
+    // По умолчанию английский
+    utterance.lang = 'en-US';
+  }
+
+  // События
+  utterance.onend = function() {
+    ttsState.speaking = false;
+    ttsState.paused = false;
+    ttsState.text = null;
+    ttsState.button = null;
     setButtonIcon(button, 'play');
-    audioState.isPlaying = false;
-  }
-}
+  };
 
-// Воспроизведение короткого текста
-function playShortTextWithNotifications(utterance, button) {
-  return new Promise((resolve) => {
-    utterance.onstart = () => {
-      audioState.isPlaying = true;
-      updateNotification('playing');
-      
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.playbackState = 'playing';
-      }
-    };
+  utterance.onerror = function(e) {
+    if (e.error !== 'interrupted' && e.error !== 'canceled') {
+      console.error('TTS Error:', e);
+      setButtonIcon(button, 'play');
+      ttsState.speaking = false;
+    }
+  };
 
-    utterance.onend = () => {
-      stopAudioPlayback();
-      resolve();
-    };
+  // Сохраняем ссылку на объект (иногда нужно для GC)
+  ttsState.utterance = utterance;
 
-    utterance.onerror = (e) => {
-      if (e.error !== 'interrupted') {
-        console.error('TTS Error:', e);
-      }
-      stopAudioPlayback();
-      resolve();
-    };
-
+  // Запуск
+  try {
     window.speechSynthesis.speak(utterance);
-  });
-}
-
-// Воспроизведение длинного текста через Web Audio API
-async function playLongTextWithWebAudio(utterance, button) {
-  // Создаем AudioContext для более контролируемого воспроизведения
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  const audioContext = new AudioContext();
-  
-  // Создаем источник для SpeechSynthesis
-  utterance.volume = 1;
-  utterance.rate = 1;
-  utterance.pitch = 1;
-  
-  // Запускаем TTS
-  window.speechSynthesis.speak(utterance);
-  
-  // Создаем медиа-уведомление
-  updateNotification('playing');
-  
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.playbackState = 'playing';
+  } catch (err) {
+    console.error("Speak error:", err);
+    setButtonIcon(button, 'play');
   }
-  
-  // Обработчики событий
-  utterance.onend = () => {
-    stopAudioPlayback();
-    audioContext.close();
-  };
-  
-  utterance.onerror = () => {
-    stopAudioPlayback();
-    audioContext.close();
-  };
 }
 
-// Обновить функцию toggleSpeech для использования новой системы
 function toggleSpeech(text, langType, button) {
-  // Всегда используем новую систему с уведомлениями
-  createAudioFromTTS(text, langType, button);
+  // Логика Play/Pause как в tts.php
+  
+  // 1. Если этот же текст уже играет и не на паузе -> ПАУЗА
+  if (ttsState.speaking && !ttsState.paused && ttsState.text === text) {
+    window.speechSynthesis.pause();
+    ttsState.paused = true;
+    setButtonIcon(button, 'play'); // Показываем Play, чтобы продолжить
+  }
+  // 2. Если этот же текст на паузе -> ПРОДОЛЖИТЬ
+  else if (ttsState.paused && ttsState.text === text) {
+    window.speechSynthesis.resume();
+    ttsState.paused = false;
+    setButtonIcon(button, 'pause'); // Показываем Pause, чтобы остановить
+  }
+  // 3. Новый текст или старый закончился -> СТАРТ
+  else {
+    speakRawText(text, langType, button);
+  }
 }
 
-// Обновить инициализацию
+
+// --- Обработчик кликов ---
+
+function handleSuttaClick(e) {
+  // Ищем кнопку (поднимаемся вверх, если кликнули по картинке)
+  const target = e.target.closest('.copy-pali, .copy-translation, .open-pali, .open-translation, .play-pali, .play-translation');
+  if (!target) return;
+
+  e.preventDefault();
+
+  // Определяем тип действия
+  const isPlay = target.classList.contains('play-pali') || target.classList.contains('play-translation');
+  const isOpen = target.classList.contains('open-pali') || target.classList.contains('open-translation');
+  const isCopy = target.classList.contains('copy-pali') || target.classList.contains('copy-translation');
+  
+  // Определяем тип контента (Пали или Перевод)
+  const isPaliTarget = target.classList.contains('play-pali') || target.classList.contains('copy-pali') || target.classList.contains('open-pali');
+  
+  // Выбираем селектор текста
+  const textSelector = isPaliTarget ? '.pli-lang' : '.rus-lang';
+
+  // Ищем контейнер (блок сутты)
+  const container = target.closest('.sutta-container') || 
+                    target.closest('.text-block') || 
+                    target.closest('section') || 
+                    target.closest('div');
+
+  // Собираем текст
+  const elements = container ? container.querySelectorAll(textSelector) : document.querySelectorAll(textSelector);
+  
+  if (elements.length === 0) {
+    // Если текст не найден — тихо выходим или можно alert для отладки
+    console.warn("Text elements not found for selector: " + textSelector);
+    return;
+  }
+
+  // Чистим и склеиваем текст
+  let combinedText = "";
+  elements.forEach(el => {
+    const clone = el.cloneNode(true);
+    const variants = clone.querySelectorAll('.variant');
+    variants.forEach(v => v.remove());
+    combinedText += cleanTextForTTS(clone.textContent) + "\n\n";
+  });
+
+  if (!combinedText.trim()) return;
+
+  // --- ВЫПОЛНЕНИЕ ДЕЙСТВИЯ ---
+
+  if (isPlay) {
+    // Определение языка для TTS
+    let langType = 'en'; // По умолчанию
+    const path = window.location.pathname;
+
+    // --- ОБНОВЛЕННАЯ ЛОГИКА ---
+    
+    // 1. Если это ПАЛИ — всегда используем стандартную логику (pi)
+    if (isPaliTarget) {
+      langType = 'pi';
+    } 
+    // 2. Если это ПЕРЕВОД — проверяем язык страницы
+    else {
+      // Проверка на Тайский в URL
+      if (path.includes('/th/') || path.includes('/thml/') || path.includes('/mlth/')) {
+        langType = 'th';
+      } 
+      // Проверка на Русский в URL
+      else if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) {
+        langType = 'ru';
+      } 
+      // Иначе Английский
+      else {
+        langType = 'en';
+      }
+    }
+    
+    // Запускаем переключатель
+    toggleSpeech(combinedText, langType, target);
+  } 
+  
+  else if (isOpen) {
+    openInNewTab(combinedText, isPaliTarget);
+  } 
+  
+  else if (isCopy) {
+    copyToClipboard(combinedText).then(success => {
+      showNotification(success ? "Copied" : "Copy failed");
+    });
+  }
+}
+
+// --- Старые функции (Copy/Open/Notify) ---
+
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'bubble-notification';
+  notification.innerText = message;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.classList.add('show'), 10);
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 2000);
+}
+
+function generatePageTitle(isPali) {
+  const path = window.location.pathname.replace(/^\//, '').replace(/\.html$/, '').replace(/\//g, '_');
+  return `${path || 'text'}_${isPali ? 'pali' : 'translation'}_tts`;
+}
+
+function openInNewTab(content, isPali) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/assets/render.php';
+  form.target = '_blank';
+  const inputs = {
+    title: generatePageTitle(isPali),
+    content: content,
+    lang: isPali ? 'pi' : 'ru'
+  };
+  for (const [key, value] of Object.entries(inputs)) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try { return document.execCommand('copy'); } 
+    catch (e) { return false; } 
+    finally { document.body.removeChild(textarea); }
+  }
+}
+
+// Инициализация
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
-  
-  // Запросить разрешение на уведомления
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-  
-  // Инициализировать Media Session
-  initMediaSession();
-  
-  // Обработка видимости страницы
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && audioState.isPlaying) {
-      // Страница в фоне, но воспроизведение продолжается
-      if (audioState.notification) {
-        audioState.notification.close();
-        audioState.notification = null;
-      }
-    }
-  });
 });
 
