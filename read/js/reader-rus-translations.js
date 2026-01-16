@@ -270,6 +270,13 @@ const varResponse = fetchVariant();
 //  console.log(rustrnpath);
 Promise.all([rootResponse, translationResponse, htmlResponse, varResponse]).then(responses => {
     const [paliData, transData, htmlData, varData] = responses;
+	
+	
+	// FIX: Check if we actually got data. If not, throw error to trigger the catch block.
+    if (Object.keys(htmlData).length === 0 && Object.keys(paliData).length === 0) {
+        throw new Error("No data found, triggering fallback");
+    }
+
     Object.keys(htmlData).forEach(segment => {
       if (transData[segment] === undefined) {
         transData[segment] = "";
