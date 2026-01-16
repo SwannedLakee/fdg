@@ -437,70 +437,43 @@ enUrl = ruUrl.replace("/th/read/", "/read/");
 scLink += `<a href="${enUrl}">En</a> `;
  
   
-//dpr
-if (texttype !== "vinaya") {
-function getTextUrl(slug) {
-  let nikaya = slug.match(/[a-zA-Z]+/)[0]; // Получаем название никаи из строки
-  let textnum;
+// --- DPR START: ---
+function getDprUrl(slug) {
+    // Проверяем, загружен ли массив данных из файла linksdprmapping.js
+    // (В вашем файле переменная называется dprLinksData)
+    if (typeof dprLinksData === 'undefined') {
+        return null;
+    }
 
-  if (slug.includes(".")) {
-    let match = slug.match(/([a-zA-Z]+)(\d+)\.(\d+)/);
-    if (match) {
-      let [, nikaya, subdivision, textnum] = match;
-      let textUrl = findTextUrl(nikaya, parseInt(subdivision), parseInt(textnum));
-      if (textUrl) {
-        return textUrl;
-      }
+    // Очищаем slug от параметров (все, что после &) и приводим к нижнему регистру
+    let cleanSlug = slug.split('&')[0].toLowerCase();
+
+    // Ищем совпадение: item[0] - это slug (например, dn1), item[1] - это код локации
+    let dprItem = dprLinksData.find(item => item[0] === cleanSlug);
+
+    if (dprItem && dprItem[1]) {
+        // Базовый URL для онлайн версии DPR.
+        // Если вы используете локальную версию или другое зеркало, измените эту строку.
+        const dprBaseUrl = "https://www.digitalpalireader.online/_dprhtml/index.html?loc=";
+        
+        return dprBaseUrl + dprItem[1];
     }
-  } else {
-    textnum = parseInt(slug.match(/[a-zA-Z](\d+)/)[1]); // Получаем цифры после букв
-    let textUrl = findTextUrl(nikaya, null, textnum);
-    if (textUrl) {
-      return textUrl;
-    }
-  }
-  
-  return "Запись не найдена";
+    
+    return null;
 }
 
-function findTextUrl(nikaya, subdivision, textnum) {
-  if (subdivision !== null) {
-    if (digitalPaliReader[nikaya].available[subdivision]) {
-      let item = digitalPaliReader[nikaya].available[subdivision].find(item => {
-        if (Array.isArray(item)) {
-          if (item.length === 3) {
-            return textnum >= item[0] && textnum <= item[1];
-          } else if (item.length === 2) {
-            return textnum === item[0];
-          }
-        }
-        return false;
-      });
-      
-      if (item) {
-        return digitalPaliReader.constants.rootUrl + item[item.length - 1];
-      }
+// Если нужно сохранить проверку на Vinaya (как было в старом коде), раскомментируйте условие ниже.
+// if (typeof texttype === 'undefined' || texttype !== "vinaya") {
+
+    let dprUrl = getDprUrl(slug);
+
+    if (dprUrl) {
+        // Добавляем ссылку, сохраняя старый title "Myanmar and Thai Editions at DPR"
+        scLink += `<a target="_blank" title="Myanmar and Thai Editions at DPR" href="${dprUrl}">DPR</a>&nbsp;`;
     }
-  } else {
-    let item = digitalPaliReader[nikaya].available.find(item => Array.isArray(item) ? item[0] === textnum : item === textnum);
-    if (item) {
-      return digitalPaliReader.constants.rootUrl + item[1];
-    }
-  }
-  
-  return null;
-}
 
-let textUrl = getTextUrl(slug);
-console.log("Ссылка на", slug + ":", textUrl);
-if (textUrl) {
-scLink += `<a target="" title="Myanmar and Thai Editions at DPR" href="${textUrl}">DPR</a> `;
-}
-
-}
-//dpr end
-
-
+// } 
+// --- DPR END ---
 // --- BJT START:  ---
 function getBjtUrl(slug) {
     // Проверяем, загружен ли массив данных из файла linksbjt.js
