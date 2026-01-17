@@ -252,12 +252,12 @@ if (paliData[segment] !== undefined && transData[segment] !== undefined && varDa
       </font>     
             </span>
             <span class="rus-lang" lang="ru">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
-      <br></span>
+      </span>
             </span>${closeHtml}\n\n`;
       } else if (paliData[segment] !== undefined && transData[segment] !== undefined ) {
               html += `${openHtml}<span id="${anchor}">
             <span class="pli-lang " lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
-            <span class="rus-lang" lang="ru">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}<br></span>
+            <span class="rus-lang" lang="ru">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}</span>
             </span>${closeHtml}\n\n`;
       } else if (paliData[segment] !== undefined) {
         html += openHtml + '<span id="' + anchor + '"><span class="pli-lang inputscript-ISOPali" lang="pi">' + linkToCopyStart + paliData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
