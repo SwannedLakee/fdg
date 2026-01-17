@@ -1,4 +1,3 @@
-
 const Sccopy = "/suttacentral.net";
 const suttaArea = document.getElementById("sutta");
 const homeButton = document.getElementById("home-button");
@@ -190,7 +189,7 @@ const rootResponse = fetch(rootpath)
     return response.json();
   })
   .catch(error => {
-    console.log('note: no root found, trying alternative path');
+  console.log('note: no root found, trying alternative path');
     // Переключаем на второй путь
     rootpath = `${Sccopy}/sc-data/sc_bilara_data/root/pli/ms/${texttype}/${slugReady}_root-pli-ms.json`;
     // Делаем новый запрос по второму пути
@@ -202,14 +201,15 @@ const rootResponse = fetch(rootpath)
         return response.json();
       })
       .catch(error => {
-        console.log('note: no alternative root found either');
+       console.log('note: no alternative root found either');
         return {}; // Возвращаем пустой объект, если оба пути недоступны
       });
   });
 
-    
-   async function fetchTranslation() {
-  const paths = [rustrnpath, trnpath];
+  const translationResponse = fetch(trnpath).then(response => response.json());
+  const htmlResponse = fetch(htmlpath).then(response => response.json());
+async function fetchVariant() {
+  const paths = [varpath, varpathLocal];
 
   for (const path of paths) {
     try {
@@ -217,55 +217,18 @@ const rootResponse = fetch(rootpath)
       if (response.ok) {
         return await response.json();
       }
-      console.log(`note: no translation found at ${path}`);
+   //   console.log(`note: no var found at ${path}`);
     } catch (error) {
-      console.log(`note: error fetching ${path}`);
+  //    console.log(`note: error fetching var ${path}`);
     }
   }
 
-  console.log('note: no translation found in any path');
+//  console.log('note: no var found in any path');
   return {}; // Если все пути недоступны
 }
 
-const translationResponse = fetchTranslation(); 
-    
-    
-  const htmlResponse = fetch(htmlpath).then(response => response.json())    .
-  catch(error => {
- console.log('note:no html found');   
-// console.log(varpath); 
-return {};
-  } 
-    );
-    
-async function fetchVariant() {
-  const paths = [varpath, varpathLocal];
-  let combinedData = {}; // Объект для объединения данных
-
-  for (const path of paths) {
-    try {
-      const response = await fetch(path);
-      if (response.ok) {
-        const data = await response.json();
-        combinedData = { ...combinedData, ...data }; // Объединяем данные
-      } else {
-    //    console.log(`note: no var found at ${path}`);
-      }
-    } catch (error) {
-    //  console.log(`note: error fetching var ${path}`);
-    }
-  }
-
-  if (Object.keys(combinedData).length === 0) {
-  //  console.log('note: no var found in any path');
-  }
-
-  return combinedData; // Возвращаем объединенные данные
-}
-
-// Использование
-const varResponse = fetchVariant();
-    
+const varResponse = fetchVariant();    
+ 
 //  console.log(trnpath);
 //  console.log(rustrnpath);
 Promise.all([rootResponse, translationResponse, htmlResponse, varResponse]).then(responses => {
@@ -669,7 +632,6 @@ prevName = prevName.replace(/[0-9.]/g, '');
   console.log('htmlpath', htmlpath);
   console.log('varpath', varpath);
   console.log('varpathLocal', varpath);
-  
 // Отправка запроса по адресу http://localhost:8080/ru/?q= с использованием значения slug
 var xhr = new XMLHttpRequest();
 var urlParams = new URLSearchParams(window.location.search);
@@ -717,7 +679,6 @@ window.location.href = newUrl;
     С главной страницы доступно больше настроек поиска.
 <br></p>`;
 });
-
     }
 
     );
