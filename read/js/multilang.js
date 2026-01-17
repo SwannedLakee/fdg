@@ -50,7 +50,7 @@ function buildSutta(slug) {
   if (slug.match(/bu-pm|bi-pm/)) {
     texttype = "vinaya";
     slug = slug.replace(/bu([psan])/, "bu-$1");
-    slug = slug.replace(/bi([psn])/, "bi-$1");
+    slug = slug.replace(/bi([psan])/, "bi-$1");
     if (!slug.match("pli-tv-")) {
       slug = "pli-tv-" + slug;
     }
@@ -58,7 +58,7 @@ function buildSutta(slug) {
   let html = `<div class="button-area"><button title="Переключить язык (Atl+Z или Alt+Space)" id="language-button" class="hide-button">Pāḷi Рус</button></div>`;
   
   const slugReady = parseSlug(slug);
-  console.log("slugReady is " + slugReady + " slug is " + slug); 
+  //console.log("slugReady is " + slugReady + " slug is " + slug); 
 
 
 
@@ -714,11 +714,6 @@ var urlParams = new URLSearchParams(window.location.search);
 urlParams.set('q', slug);
 xhr.open("GET", '/ru/?p=-kn&' + urlParams.toString(), true);
 xhr.send();
-
-//var xhr = new XMLHttpRequest();
-//xhr.open("GET", "/?q=" + encodeURIComponent(slug), true);
-//xhr.send();
-
 
 
 xhr.onreadystatechange = function() {

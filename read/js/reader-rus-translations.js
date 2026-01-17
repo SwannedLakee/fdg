@@ -39,7 +39,7 @@ function buildSutta(slug) {
     translator = "brahmali";
     texttype = "vinaya";
     slug = slug.replace(/bu([psan])/, "bu-$1");
-    slug = slug.replace(/bi([psn])/, "bi-$1");
+    slug = slug.replace(/bi([psan])/, "bi-$1");
     if (!slug.match("pli-tv-")) {
       slug = "pli-tv-" + slug;
     }
@@ -271,11 +271,6 @@ const varResponse = fetchVariant();
 Promise.all([rootResponse, translationResponse, htmlResponse, varResponse]).then(responses => {
     const [paliData, transData, htmlData, varData] = responses;
 	
-	
-	// FIX: Check if we actually got data. If not, throw error to trigger the catch block.
-    if (Object.keys(htmlData).length === 0 && Object.keys(paliData).length === 0) {
-        throw new Error("No data found, triggering fallback");
-    }
 
     Object.keys(htmlData).forEach(segment => {
       if (transData[segment] === undefined) {
@@ -675,45 +670,13 @@ prevName = prevName.replace(/[0-9.]/g, '');
   console.log('varpath', varpath);
   console.log('varpathLocal', varpath);
   
-  const currentURL = window.location.href;
-const anchorURL = new URL(currentURL).hash; // Убираем символ "#"
-console.log('anchorURL', anchorURL);
-
-
-  let params = new URLSearchParams(document.location.search);
-  let sGetparam = params.get("s");
-  
-console.log('sGetparam', sGetparam);  
-console.log('slug', slug);  
-
-/*
-  // Отправка запроса по адресу http://localhost:8080/ru/?q= с использованием значения slug
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "/ru/?s=" + encodeURIComponent(sGetparam) + "&q=" + encodeURIComponent(slug) + "#" + encodeURIComponent(anchorURL) , true);
-  xhr.send();
-
-  // Обработка ответа
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      if (xhr.status == 200) {
-        // Обработка успешного ответа
-        console.log(xhr.responseText);
-     window.location.href = "/ru/?s=" + encodeURIComponent(sGetparam) + "&q=" + encodeURIComponent(slug) + "#" + anchorURL;
-
-      } else {
-        // Обработка ошибки
-        console.log('Error sending request to /ru/?q=');
-      }
-    }
-  };
-  
-  // Обновление сообщения об ошибке на странице
-  */
-  
 // Отправка запроса по адресу http://localhost:8080/ru/?q= с использованием значения slug
 var xhr = new XMLHttpRequest();
-xhr.open("GET", "/ru/?p=-kn&q=" + encodeURIComponent(slug), true);
+var urlParams = new URLSearchParams(window.location.search);
+urlParams.set('q', slug);
+xhr.open("GET", '/ru/?p=-kn&' + urlParams.toString(), true);
 xhr.send();
+
 
 xhr.onreadystatechange = function() {
   if (xhr.readyState == 4) {
@@ -724,16 +687,14 @@ xhr.onreadystatechange = function() {
           !xhr.responseText.includes("404") &&
           xhr.responseText.trim().length > 0) {
         console.log(xhr.responseText);
-
-/*	
+/*
 let currentParams = new URLSearchParams(window.location.search);
 let sParam = currentParams.get("s");
 let newUrl = `/ru/?p=-kn&q=${encodeURIComponent(slug)}`;
 if (sParam) newUrl += `&s=${encodeURIComponent(sParam)}`;
 window.location.href = newUrl;
-	*/
-		
-    window.location.href = "/ru/?p=-kn&q=" + encodeURIComponent(slug);
+*/
+        window.location.href = "/ru/?p=-kn&q=" + encodeURIComponent(slug);
       } else {
         console.log('Page not found or empty response');
       }
@@ -745,17 +706,16 @@ window.location.href = newUrl;
   }
 };
 
-  // Обновление сообщения об ошибке на странице  
+  // Обновление сообщения об ошибке на странице
   
   suttaArea.innerHTML = `<p>Идёт Поиск "${decodeURIComponent(slug)}". Пожалуйста, Ожидайте.</p>
-    
-                  <div class="spinner-border" role="status">
+  
+                      <div class="spinner-border" role="status">
                 <span class="visually-hidden">Загрузка...</span>
                   </div>
-  <p>  Подсказка: <br>
+<p>    Подсказка: <br>
     С главной страницы доступно больше настроек поиска.
 <br></p>`;
-return false;
 });
 
     }
