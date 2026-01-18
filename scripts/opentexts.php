@@ -271,7 +271,7 @@ if ($isProblematicSlug) {
 }
 
 
-if (preg_match("/^(ja|snp|iti|thig|thag)[0-9].*/i", $stringForOpen)) {
+if (preg_match("/^(ja|snp|iti|thig|thag)[0-9]{1,3}.*/i", $stringForOpen)) {
   
 redirectWithAnchor($readerlang, $stringForOpen, $s ?? null, $anchor); 	  
 //for patimokkha and vinaya vibhanga
