@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Обработка GET-параметра removePunct
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('removePunct')) {
-    const rpValue = urlParams.get('removePunct');
+  if (urlParams.has('rp')) {
+    const rpValue = urlParams.get('rp');
     // Режим активируется, если параметр равен 'true', '1' или просто присутствует в URL
     const shouldEnable = rpValue === 'true' || rpValue === '1' || rpValue === '';
     
