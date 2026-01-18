@@ -97,10 +97,18 @@ if (isset($_GET['reader'])) {
             break;
     }
 } else {
-    // Если параметр 'reader' не передан, используем значение по умолчанию
-    $readerlang = $base . "read/";
+    // Получаем реферер для проверки
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+
+    // Если в текущем URL или в реферере есть /ru/ или /r/
+    if (preg_match('/\/ru\/|\/r\/|\/ml\//', $actual_link) || preg_match('/\/ru\/|\/r\/|\/ml\//', $referer)) {
+        $readerlang = "/r/";
+    } else {
+        // Значение по умолчанию для остальных языков
+        $readerlang = $base . "read/";
+    }
 }
-		
+
 		
 		if ($_SERVER["REQUEST_METHOD"] == "GET") {
   if (empty($_GET["name"])) {
@@ -226,7 +234,7 @@ $stringForOpen = str_replace(
 );
 $stringForOpen = preg_replace(
     [
-        '/\bs.\s*([\d.-]+)/',  // Теперь ловит числа с точками и дефисами
+        '/\bs(?![s])\.?\s*([\d.-]+)/',
         '/\bm.\s*([\d.-]+)/',
         '/\bd.\s*([\d.-]+)/',
         '/\ba.\s*([\d.-]+)/',
