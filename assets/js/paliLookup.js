@@ -538,7 +538,7 @@ function lazyLoadStandaloneScripts(lang = 'en') {
 
             // Set timeout for all loads
             const timeoutPromise = new Promise((_, timeoutReject) => {
-                setTimeout(() => timeoutReject(new Error('Script loading timeout')), 10000); // Longer timeout for Safari
+                setTimeout(() => timeoutReject(new Error('Script loading timeout')), 20000); // Longer timeout for Safari
             });
 
             Promise.race([
