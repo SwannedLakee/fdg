@@ -60,6 +60,7 @@ echo '<!--
      
 	  	          <li>
          <div class="dropdown-item ">Tipitaka:
+     <a class="text-reset" target="_blank"  href="https://open.tipitaka.lk/" title="Sri Lankian Edition Buddha Jhayanti">BJT</a>
   <a class="text-reset" target="_blank"  href="https://84000.org/" title="Thai Tipitaka at 84000.org">Thai</a>
   <a class="text-reset" target="_blank"  href="https://tipitaka.org/romn" title="VRI Tipitaka at Tipitaka.org">VRI</a>  
   <a class="text-reset" target="_blank"  href="https://gretil.sub.uni-goettingen.de/gretil.html#Suttapit" title="PTS Tipitaka at GRETIL">PTS</a>  
