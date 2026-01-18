@@ -582,6 +582,26 @@ function goToSlug() {
   window.location.search = newUrl;
 }
 
+
+document.addEventListener("DOMContentLoaded", function() {
+  const url = new URL(window.location.href);
+  const hasRp = url.searchParams.has('rp');
+  const isSavedRp = localStorage.getItem('removePunct') === 'true';
+
+  // 1. Если есть параметр rp — сохраняем в localStorage
+  if (hasRp) {
+    if (!isSavedRp) localStorage.setItem('removePunct', 'true');
+  } 
+  // 2. Если параметра нет, но есть запись в localStorage — добавляем rp и перезагружаем
+  else if (isSavedRp) {
+    url.searchParams.set('rp', '');
+//  window.location.replace(url.toString()); // Перезагрузка страницы с новым параметром
+  }
+});
+
+
+
+
 // Логика кнопки переключения Devanagari/Roman (JS only)
 document.addEventListener("DOMContentLoaded", function() {
     const scriptBtn = document.getElementById('script-toggle');
