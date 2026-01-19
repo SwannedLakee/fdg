@@ -967,7 +967,10 @@ abbreviations.forEach(book => {
   });
 });
 
-// --- ЛОГИКА ДЛЯ ВСПЛЫВАЮЩИХ ПОДСКАЗОК (BUBBLES) С ПОДДЕРЖКОЙ СЛОВАРЯ И HOVER ---
+
+
+// --- ЛОГИКА ДЛЯ ВСПЛЫВАЮЩИХ ПОДСКАЗОК (BUBBLES) — ФИНАЛЬНАЯ ВЕРСИЯ ---
+// (Включает: Hover, Клик-пин, Умное позиционирование, Перенос длинных слов)
 
 // 1. Добавляем CSS стили программно
 const memStyle = document.createElement('style');
@@ -992,34 +995,58 @@ memStyle.innerHTML = `
         color: #333333;
         border: 1px solid #ccc;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        padding: 4px 10px;
+        padding: 6px 12px; /* Чуть больше паддинг для многострочного текста */
         border-radius: 6px;
         font-size: 18px; 
         font-family: sans-serif;
         z-index: 10000;
-        white-space: nowrap;
+        
+        /* === ИЗМЕНЕНИЯ ДЛЯ ПЕРЕНОСА СЛОВ === */
+        white-space: normal;       /* Разрешаем перенос */
+        overflow-wrap: break-word; /* Ломаем длинные слова */
+        word-break: break-word;    /* Совместимость */
+        text-align: center;        /* Центрируем текст */
+        line-height: 1.3;          /* Межстрочный интервал */
+        
+        /* Ограничиваем ширину */
+        width: max-content;        /* Стремимся к ширине контента */
+        max-width: 300px;          /* Но не шире 300px на десктопе */
+        
+        /* На мобильных не шире экрана */
+        @media (max-width: 400px) {
+            max-width: 85vw;
+        }
+
         pointer-events: auto; 
         cursor: pointer; 
-        animation: memFadeIn 0.2s ease-out;
-        transform: translate(-50%, -100%);
-        margin-top: -8px; 
+        
+        transform: translateY(-100%); 
+        margin-top: -8px;
+        opacity: 0; 
+        transition: opacity 0.2s ease-out; 
+    }
+    
+    .mem-bubble.visible {
+        opacity: 1;
     }
 
+    /* Стрелочка вниз */
     .mem-bubble::after {
         content: "";
         position: absolute;
         top: 100%;
-        left: 50%;
+        left: var(--arrow-x, 50%); 
         margin-left: -6px;
         border-width: 6px;
         border-style: solid;
         border-color: #ffffff transparent transparent transparent; 
     }
+    /* Обводка стрелочки */
     .mem-bubble::before {
         content: "";
         position: absolute;
         top: 100%;
-        left: 50%;
+        left: var(--arrow-x, 50%);
         margin-left: -7px;
         border-width: 7px;
         border-style: solid;
@@ -1044,11 +1071,6 @@ memStyle.innerHTML = `
     body.dark .mem-bubble::before {
         border-color: #555 transparent transparent transparent;
     }
-
-    @keyframes memFadeIn {
-        from { opacity: 0; transform: translate(-50%, -90%); }
-        to { opacity: 1; transform: translate(-50%, -100%); }
-    }
 `;
 document.head.appendChild(memStyle);
 
@@ -1059,27 +1081,20 @@ let hoverTimeout;
 window.showBubble = function(element, event, isHover = false) {
     if (event) event.stopPropagation();
 
-    // === ПРОВЕРКА: ЕСЛИ БУКВА УЖЕ АКТИВНА ===
+    // Проверка активности
     if (element.classList.contains('mem-active')) {
-        // Если событие - Ховер:
         if (isHover) {
             clearTimeout(hoverTimeout);
-            return; // Просто выходим, бабл уже есть
-        } 
-        // Если событие - Клик:
-        else {
-            // Находим уже существующий бабл
+            return; 
+        } else {
             const existingBubble = document.querySelector('.mem-bubble');
             if (existingBubble) {
-                // Просто меняем статус на "Закреплен"
                 existingBubble.dataset.pinned = "true";
-                // И выходим. Не удаляем, не перерисовываем.
                 return; 
             }
         }
     }
 
-    // Если буква НЕ активна — удаляем старые и рисуем новый
     window.removeBubbles(); 
 
     const word = element.getAttribute('data-word');
@@ -1089,57 +1104,74 @@ window.showBubble = function(element, event, isHover = false) {
 
     const bubble = document.createElement('div');
     bubble.className = 'mem-bubble';
-    
-    // Статус: если ховер - false, если клик - true
     bubble.dataset.pinned = isHover ? "false" : "true";
-
     bubble.setAttribute('lang', 'pi');
     bubble.classList.add('pli-lang');
     bubble.innerText = word;
 
-    // --- Обработчики на самом бабле ---
-    bubble.addEventListener('mouseenter', () => {
-        clearTimeout(hoverTimeout);
-    });
+    // Обработчики на самом бабле
+    bubble.addEventListener('mouseenter', () => { clearTimeout(hoverTimeout); });
     bubble.addEventListener('mouseleave', () => {
         if (bubble.dataset.pinned === "false") {
             window.removeBubbles();
         }
     });
 
+    // Добавляем в DOM (прозрачным)
     document.body.appendChild(bubble);
 
+    // --- УМНОЕ ПОЗИЦИОНИРОВАНИЕ ---
     const rect = element.getBoundingClientRect();
+    const bubbleRect = bubble.getBoundingClientRect(); // Здесь мы уже получим реальную высоту с учетом переноса строк
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
+    const windowWidth = window.innerWidth;
+    
+    // Центр буквы относительно страницы
+    const triggerCenter = rect.left + (rect.width / 2);
+    
+    // Идеальная позиция левого края бабла
+    let leftPos = triggerCenter - (bubbleRect.width / 2);
+    
+    const padding = 10; // Минимальный отступ от края экрана
 
-    bubble.style.left = (rect.left + scrollX + rect.width / 2) + 'px';
+    // Проверка левого края
+    if (leftPos < padding) {
+        leftPos = padding;
+    }
+    
+    // Проверка правого края
+    if (leftPos + bubbleRect.width > windowWidth - padding) {
+        leftPos = windowWidth - bubbleRect.width - padding;
+    }
+
+    // Применяем позицию
+    bubble.style.left = (leftPos + scrollX) + 'px';
     bubble.style.top = (rect.top + scrollY) + 'px';
+
+    // Расчет позиции стрелки (чтобы она указывала на букву, даже если бабл сдвинут)
+    const arrowX = triggerCenter - leftPos;
+    bubble.style.setProperty('--arrow-x', arrowX + 'px');
+
+    // Показываем бабл
+    requestAnimationFrame(() => {
+        bubble.classList.add('visible');
+    });
 };
 
 // 3. Обработчики Hover для букв
 window.handleBubbleHover = function(element, event) {
     if (!window.matchMedia('(hover: hover)').matches) return;
-    
     clearTimeout(hoverTimeout);
-
-    // Если буква уже активна, ничего не делаем (избегаем перерисовки)
-    if (element.classList.contains('mem-active')) {
-        return;
-    }
-
+    if (element.classList.contains('mem-active')) return;
     window.showBubble(element, event, true);
 };
 
 window.handleBubbleLeave = function(element, event) {
     if (!window.matchMedia('(hover: hover)').matches) return;
-
     hoverTimeout = setTimeout(() => {
         const bubble = document.querySelector('.mem-bubble');
-        // Не закрываем, если закреплен кликом
-        if (bubble && bubble.dataset.pinned === "true") {
-            return;
-        }
+        if (bubble && bubble.dataset.pinned === "true") return;
         window.removeBubbles();
     }, 200); 
 };
