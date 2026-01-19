@@ -17047,7 +17047,7 @@ clearBtn.style.display = 'block';
 </div>
  
 <div class="mt-3">
-<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an9.29">an9.29</a> Āghātavatthusutta</span>
+<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an9.29">an9.29</a> Āghātavatthusutta <?php echo $ifRuLitTrn;?></span>
 </div>
  
 <div class="mt-3">
@@ -17657,11 +17657,11 @@ clearBtn.style.display = 'block';
 </div>
  
 <div class="mt-3">
-<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an10.79">an10.79</a> Āghātavatthusutta</span>
+<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an10.79">an10.79</a> Āghātavatthusutta <?php echo $ifRuLitTrn;?></span>
 </div>
  
 <div class="mt-3">
-<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an10.80">an10.80</a> Āghātapaṭivinayasutta</span>
+<span class="level5"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=an10.80">an10.80</a> Āghātapaṭivinayasutta <?php echo $ifRuLitTrn;?></span>
 </div>
  
 </div> <!-- close prev vagga div -->

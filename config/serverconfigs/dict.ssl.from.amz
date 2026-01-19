@@ -1,0 +1,35 @@
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName dict.dhamma.gift
+    ServerAlias www.d2.dhamma.gift d2.dhamma.gift www.dict.dhamma.gift d.dhamma.gift www.d.dhamma.gift
+
+    # --- Proxy Settings ---
+    ProxyPreserveHost On
+    
+    # These headers tell the backend (at :8880) to use HTTPS for internal logic
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-Port "443"
+    ProxyAddHeaders On
+
+    # Standard Proxy Pass to your backend
+    ProxyPass / http://127.0.0.1:8880/
+    ProxyPassReverse / http://127.0.0.1:8880/
+
+    # --- Security & Optimization ---
+    # Optional: Force the browser to upgrade any accidental insecure requests
+    # Header always set Content-Security-Policy "upgrade-insecure-requests"
+
+    # --- Logging ---
+    ErrorLog ${APACHE_LOG_DIR}/dict-error.log
+    CustomLog ${APACHE_LOG_DIR}/dict-access.log combined
+
+    # --- SSL Configuration (Managed by Certbot) ---
+    Include /etc/letsencrypt/options-ssl-apache.conf
+    SSLCertificateFile /etc/letsencrypt/live/dict.dhamma.gift/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/dict.dhamma.gift/privkey.pem
+</VirtualHost>
+</IfModule>
+
+
+
+
