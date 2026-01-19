@@ -201,6 +201,21 @@ function loadModal(modalId, modalFile) {
 
 //loadModal("paliLookupInfo", "/assets/common/modalsSC.html");
 
+
+(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('rp')) {
+        const rpValue = urlParams.get('rp');
+        const shouldEnable = rpValue === 'true' || rpValue === '1' || rpValue === '';
+        
+        localStorage.setItem('removePunct', shouldEnable ? 'true' : 'false');
+
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('rp'); 
+        window.history.replaceState({}, document.title, newUrl.toString());
+    }
+})();
+
 //sett8ngs management
 document.addEventListener('DOMContentLoaded', function() {
   
@@ -213,22 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const helpButton = document.getElementById('helpMessage');
   const goButton = document.querySelector('.go-button'); // Кнопка "Go"
 
-// Обработка GET-параметра rp (Remove Punctuation)
-const urlParams = new URLSearchParams(window.location.search);
 
-if (urlParams.has('rp')) {
-    const rpValue = urlParams.get('rp');
-    
-    // Режим активируется, если параметр равен 'true', '1' или просто присутствует в URL (?rp)
-    const shouldEnable = rpValue === 'true' || rpValue === '1' || rpValue === '';
-    
-    localStorage.setItem('removePunct', shouldEnable ? 'true' : 'false');
-
-    // Очищаем URL от параметра rp без перезагрузки страницы
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.delete('rp'); 
-    window.history.replaceState({}, document.title, newUrl.toString());
-}
 
 function shouldIgnoreKeyEvent() {
   const activeElement = document.activeElement;
