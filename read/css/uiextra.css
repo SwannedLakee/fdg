@@ -691,3 +691,13 @@
   cursor: pointer;       
   display: inline;
 }
+
+
+#settings, #paliLookupInfo{
+    z-index: 100000 !important;
+}
+
+
+.modal-backdrop {
+    z-index: 99999 !important;
+}
