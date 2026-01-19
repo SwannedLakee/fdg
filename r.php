@@ -153,15 +153,32 @@ function load_all_languages_interleaved($slug, $is_dev) {
       // --- ПОЛУЧЕНИЕ И ОБРАБОТКА ПАЛИ ---
       $raw_pali = $data_sources['pali'][$key] ?? '';
 
-      // Применяем очистку ТОЛЬКО если включен режим Devanagari
-      if ($is_dev) {
+      // --- ПРОВЕРКА УСЛОВИЙ (Зеркально с JS) ---
+      // 1. Проверяем, передан ли параметр 'rp' вообще (аналог urlParams.has('rp'))
+      $hasRp = isset($_GET['rp']);
+      
+      // 2. Получаем значение (аналог urlParams.get('rp'))
+      $rpValue = $hasRp ? $_GET['rp'] : null;
+
+      // 3. Условие активации: параметр есть И он равен 'true', '1' или '' (пусто)
+      $removePunctParam = $hasRp && ($rpValue === 'true' || $rpValue === '1' || $rpValue === '');
+
+      // --- ПРИМЕНЕНИЕ ОЧИСТКИ ---
+      if ($is_dev || $removePunctParam) {
           // 1. Замена тире и дефисов на пробел
           $raw_pali = str_replace(['-', '—', '–'], ' ', $raw_pali);
-          // 2. Удаление пунктуации и кавычек
-          $raw_pali = str_replace([':', ';', '“', '”', '‘', '’', ',', '"', "'"], '', $raw_pali);
-          // 3. Замена знаков конца предложения на вертикальную черту
+          
+          // 2. Замена западной пунктуации (точки, вопросы) на клавиатурную черту
           $raw_pali = str_replace(['.', '?', '!'], ' | ', $raw_pali);
+
+          // 3. ДОБАВЛЕНО: Замена родных данд Деванагари (।, ॥) на клавиатурную черту
+          // Без этого шага они удалятся, так как код символа у них другой
+          $raw_pali = str_replace(['।', '॥'], ' | ', $raw_pali);
+          
+          // 4. Удаляем всю остальную пунктуацию, КРОМЕ клавиатурной черты (|)
+          $raw_pali = preg_replace('/(?!\|)[\p{P}\p{S}]/u', '', $raw_pali);
       }
+
 
       $pali_text = htmlspecialchars($raw_pali, ENT_QUOTES, 'UTF-8');
       // ------------------------------------
@@ -564,6 +581,26 @@ function goToSlug() {
   }
   window.location.search = newUrl;
 }
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  const url = new URL(window.location.href);
+  const hasRp = url.searchParams.has('rp');
+  const isSavedRp = localStorage.getItem('removePunct') === 'true';
+
+  // 1. Если есть параметр rp — сохраняем в localStorage
+  if (hasRp) {
+    if (!isSavedRp) localStorage.setItem('removePunct', 'true');
+  } 
+  // 2. Если параметра нет, но есть запись в localStorage — добавляем rp и перезагружаем
+  else if (isSavedRp) {
+    url.searchParams.set('rp', '');
+//  window.location.replace(url.toString()); // Перезагрузка страницы с новым параметром
+  }
+});
+
+
+
 
 // Логика кнопки переключения Devanagari/Roman (JS only)
 document.addEventListener("DOMContentLoaded", function() {
