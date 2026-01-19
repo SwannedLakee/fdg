@@ -686,3 +686,8 @@
     vertical-align: top; 
   }
 
+.plain-label {
+  all: unset;             
+  cursor: pointer;       
+  display: inline;
+}

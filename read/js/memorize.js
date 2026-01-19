@@ -263,36 +263,42 @@ if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== unde
 let paliModDataSegment = paliData[segment].slice();  // Копия одного элемента массива
 
 function преобразоватьТекст() {
-    let входнойТекст = paliModDataSegment;  // Теперь работаете с копией, а не с оригиналом
+    let входнойТекст = paliModDataSegment; 
 
     // Разбиваем текст на строки
     let строкиСКавычками = входнойТекст.split('\n');
 
-const строки = строкиСКавычками.map(строка => {
-    return строка.replace(/"/g, ' " ').replace(/—/g, ' — ').replace(/“/g, ' “ ').replace(/‘/g, " ‘ " ).replace(/\?/g, " ? " ).replace(/,/g, " , " ).replace(/\./g, " . " ).replace(/:/g, " : " ).replace(/;/g, " ; " );
-});
+    const строки = строкиСКавычками.map(строка => {
+        // Подготовка пунктуации (добавляем пробелы, чтобы сплит сработал корректно)
+        return строка.replace(/"/g, ' " ').replace(/—/g, ' — ').replace(/“/g, ' “ ').replace(/‘/g, " ‘ " ).replace(/\?/g, " ? " ).replace(/,/g, " , " ).replace(/\./g, " . " ).replace(/:/g, " : " ).replace(/;/g, " ; " );
+    });
 
     let результат = строки.map(строка => {
         // Разбиваем каждую строку на слова
         let слова = строка.split(/\s+/);
         
-        // Преобразуем каждое слово в первую букву или пустую строку
-let преобразованныеСлова = слова.map(word => {
-    let перваяБуква = word.match(/^\p{L}/u); // Используйте \p{L} для букв из разных языков
-    if (перваяБуква) {
-        return перваяБуква[0];
-    } else {
-        let диакритическиеСимволы = word.match(/^[\p{M}\p{N}\p{S}\p{P}]/u);
-        return диакритическиеСимволы ? диакритическиеСимволы[0] : '';
-    }
-});
-
-        // Объединяем преобразованные слова снова в строку
+        // Преобразуем каждое слово
+        let преобразованныеСлова = слова.map(word => {
+            let перваяБуква = word.match(/^\p{L}/u); // Ищем букву
+            
+            if (перваяБуква) {
+                // Очищаем слово от лишних кавычек для сохранения в атрибут
+                let cleanWord = word.replace(/['"“‘]/g, ""); 
+                // ВОТ ИЗМЕНЕНИЕ: Возвращаем HTML span с полным словом внутри data-word
+                return `<span class="mem-trigger" lang="pi" data-word="${cleanWord}" onclick="showBubble(this, event)">${перваяБуква[0]}</span>`;
+            } else {
+                // Если это не буква (знак препинания), возвращаем как есть
+                let диакритическиеСимволы = word.match(/^[\p{M}\p{N}\p{S}\p{P}]/u);
+                return диакритическиеСимволы ? диакритическиеСимволы[0] : '';
+            }
+        });
+        // Объединяем преобразованные слова снова в строку и чистим пробелы у знаков препинания
         return преобразованныеСлова.join(' ').replace(/ \?/g, "?" ).replace(/“ /g, '').replace(/ ,/g, ", " ).replace(/ \. /g, ". " ).replace(/ : /g, ": " ).replace(/ ; /g, "; " ).replace(/ ‘ /g, " " );
-    }).join('\n'); // Объединяем строки с переносами
+    }).join('\n'); 
 
     return результат;
 }
+
 
 if (paliData[segment] !== undefined) {
 paliData[segment] = paliData[segment].replace(/[—–—]/, ' — ');
@@ -961,3 +967,145 @@ abbreviations.forEach(book => {
   });
 });
 
+// --- ЛОГИКА ДЛЯ ВСПЛЫВАЮЩИХ ПОДСКАЗОК (BUBBLES) С ПОДДЕРЖКОЙ СЛОВАРЯ ---
+
+// 1. Добавляем CSS стили программно
+const memStyle = document.createElement('style');
+memStyle.innerHTML = `
+    /* === ОБЩИЕ СТИЛИ (Базовые / Светлая тема) === */
+    
+    /* Буква-ссылка */
+    .mem-trigger {
+        cursor: pointer;
+        position: relative;
+        transition: color 0.2s, text-shadow 0.2s;
+        border-bottom: 1px dotted transparent;
+    }
+    .mem-trigger:hover {
+        color: #dcb15b; 
+        border-bottom-color: #dcb15b;
+    }
+
+    /* Сам бабл */
+    .mem-bubble {
+        position: absolute;
+        
+        /* Цвета для светлой темы */
+        background-color: #ffffff;
+        color: #333333;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 18px; 
+        font-family: sans-serif;
+        z-index: 10000;
+        white-space: nowrap;
+        
+        /* ВАЖНО: Включаем клики, чтобы словарь мог обработать слово */
+        pointer-events: auto; 
+        cursor: help; /* Курсор-вопрос, подсказывающий, что можно нажать */
+
+        animation: memFadeIn 0.2s ease-out;
+        transform: translate(-50%, -100%);
+        margin-top: -8px; 
+    }
+
+    /* Стрелочка вниз */
+    .mem-bubble::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -6px;
+        border-width: 6px;
+        border-style: solid;
+        border-color: #ffffff transparent transparent transparent; 
+    }
+    .mem-bubble::before {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -7px;
+        border-width: 7px;
+        border-style: solid;
+        border-color: #ccc transparent transparent transparent; 
+    }
+
+    /* === СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ === */
+    body.dark .mem-trigger:hover {
+        color: #ffd700; 
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+
+    body.dark .mem-bubble {
+        background-color: #2b2b2b;
+        color: #e0e0e0;
+        border: 1px solid #555;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+
+    body.dark .mem-bubble::after {
+        border-color: #2b2b2b transparent transparent transparent;
+    }
+    body.dark .mem-bubble::before {
+        border-color: #555 transparent transparent transparent;
+    }
+
+    @keyframes memFadeIn {
+        from { opacity: 0; transform: translate(-50%, -90%); }
+        to { opacity: 1; transform: translate(-50%, -100%); }
+    }
+`;
+document.head.appendChild(memStyle);
+
+// 2. Глобальная функция для показа бабла
+window.showBubble = function(element, event) {
+    event.stopPropagation(); // Не даем клику уйти выше (чтобы не сработал removeBubbles)
+    removeBubbles(); // Убираем старые
+
+    const word = element.getAttribute('data-word');
+    if (!word) return;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'mem-bubble';
+    
+    // ДОБАВЛЕНО: Атрибуты для того, чтобы словарь распознал этот блок как Пали
+    bubble.setAttribute('lang', 'pi');
+    bubble.classList.add('pli-lang');
+    
+    bubble.innerText = word;
+
+    document.body.appendChild(bubble);
+
+    // Позиционирование
+    const rect = element.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    bubble.style.left = (rect.left + scrollX + rect.width / 2) + 'px';
+    bubble.style.top = (rect.top + scrollY) + 'px';
+};
+
+// 3. Функция удаления
+function removeBubbles() {
+    const bubbles = document.querySelectorAll('.mem-bubble');
+    bubbles.forEach(el => el.remove());
+}
+
+// 4. Закрытие при клике мимо
+document.addEventListener('click', function(event) {
+    // ВАЖНО: Если клик произошел ВНУТРИ бабла, мы его НЕ закрываем.
+    // Это нужно, чтобы событие клика успело дойти до скрипта словаря.
+    if (event.target.closest('.mem-bubble')) {
+        return; 
+    }
+    removeBubbles();
+});
+
+// 5. Закрытие при скролле
+document.addEventListener('scroll', function() {
+    removeBubbles();
+}, true);
