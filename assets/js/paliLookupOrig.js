@@ -128,11 +128,11 @@ if (
 const dictionaryConfig = {
     "dpd_ru_full": {
         baseUrl: "https://dict.dhamma.gift/ru",
-        searchPath: "/search_html?q=",
+        searchPath: "/?silent&q=",
     },
     "dpd_full": {
         baseUrl: "https://dict.dhamma.gift",
-        searchPath: "/search_html?q=",
+        searchPath: "/?silent&q=",
     },
     "dpd_ru_compact": {
         baseUrl: "https://dict.dhamma.gift/ru",
@@ -159,12 +159,12 @@ const dictionaryConfig = {
     },
     "newwindow": {
         baseUrl: "https://dict.dhamma.gift",
-        searchPath: "/search_html?q=",
+        searchPath: "/?silent&q=",
         newWindow: true,
     },
     "newwindowru": {
         baseUrl: "https://dict.dhamma.gift/ru",
-        searchPath: "/search_html?q=",
+        searchPath: "/?silent&q=",
         newWindow: true,
     },
     "standaloneru": {
@@ -236,7 +236,7 @@ function createDictSearchUrl(word) {
     }
     
     // Запасной вариант для кнопки "искать онлайн" в standalone режиме
-    return `https://dict.dhamma.gift/${isRussian ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+    return `https://dict.dhamma.gift/${isRussian ? "ru/" : ""}?silent&q=${encodeURIComponent(word)}`;
 }
 
 

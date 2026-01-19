@@ -100,7 +100,7 @@ if (savedDict.includes("dpd")) {
   }
   
   if (savedDict.includes("full")) {
-    dictUrl += "/search_html?q=";
+    dictUrl += "/?silent&q=";
   } else if (savedDict.includes("compact")) {
     dictUrl += "/gd?search=";
   }
@@ -262,7 +262,7 @@ function lookupWordInStandaloneDict(word) {
    // console.log("after: ", word);
 
 // Создаем URL для поиска слова в словаре
-const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(word)}`;
 
 if (word in dpd_i2h) {
     out += `<a href="${dictSearchUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;"><strong>${word}</strong></a><br><ul style="line-height: 1em; padding-left: 15px;">`;
@@ -736,7 +736,7 @@ document.addEventListener('click', function(event) {
             openBtn.href = `${dhammaGift}${encodeURIComponent(textForSearch)}${dgParams}`;
 
             const dictBtn = document.querySelector('.dict-btn');
-            const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(textForSearch)}`;
+            const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(textForSearch)}`;
             dictBtn.href = dictSearchUrl;
 
             function showSearchButton() {
@@ -904,7 +904,7 @@ document.addEventListener('click', function(event) {
                 openBtn.href = `${dhammaGift}${encodeURIComponent(wordForSearch)}${dgParams}`;
 
                 const dictBtn = document.querySelector('.dict-btn');
-                const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+                const dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(wordForSearch)}`;
                 dictBtn.href = dictSearchUrl;
 
                 function showSearchButton() {

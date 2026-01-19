@@ -136,7 +136,7 @@ function createDictSearchUrl(word) {
             : `goldendict://${encodeURIComponent(word)}`;
     }
     // This part remains the same
-      return `https://${savedDict.includes("ru") ? "ru." : ""}dpdict.net/search_html?q=${encodeURIComponent(word)}`;
+      return `https://${savedDict.includes("ru") ? "ru." : ""}dpdict.net/?silent&q=${encodeURIComponent(word)}`;
 }
 
 
@@ -177,8 +177,8 @@ if (savedDict.includes("dpd")) {
   }
 
   if (savedDict.includes("full")) {
-    //    dictUrl += "/search_html?source=pwa&q=";
-  dictUrl += "/search_html?q=";
+    //    dictUrl += "/?silent&source=pwa&q=";
+  dictUrl += "/?silent&q=";
 //    dictUrl += "/?q=";
 
   } else if (savedDict.includes("compact")) {
@@ -194,9 +194,9 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dpdict.net/search_html?q=";
+ dictUrl = "https://dpdict.net/?silent&q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://ru.dpdict.net/search_html?q=";
+  dictUrl = "https://ru.dpdict.net/?silent&q=";
 // before this line:
 }
 

@@ -145,8 +145,8 @@ if (savedDict.includes("dpd")) {
   }
   
   if (savedDict.includes("full")) {
-    //    dictUrl += "/search_html?source=pwa&q=";
-    dictUrl += "/search_html?q=";
+    //    dictUrl += "/?silent&source=pwa&q=";
+    dictUrl += "/?silent&q=";
   } else if (savedDict.includes("compact")) {
     dictUrl += "/gd?search=";
   }
@@ -160,9 +160,9 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
-  dictUrl = "https://dict.dhamma.gift/search_html?q=";
+  dictUrl = "https://dict.dhamma.gift/?silent&q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/search_html?q=";
+  dictUrl = "https://dict.dhamma.gift/ru/?silent&q=";
 // before this line:
 }
 
@@ -253,7 +253,7 @@ if (dictUrl === "standalone" || dictUrl === "standaloneru") {
        // dhammaGift = '';
       dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordForSearch)}`;
     } else {
-        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordForSearch)}`;
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(wordForSearch)}`;
     }
 
 if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
@@ -552,7 +552,7 @@ function lookupWordInStandaloneDict(word) {
       //  dhammaGift = '';
       dictSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`;
     } else {
-        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(word)}`;
+        dictSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(word)}`;
     }
 
 
@@ -569,7 +569,7 @@ function lookupWordInStandaloneDict(word) {
     //    dhammaGift = '';
       wordSearchUrl = `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(wordToLink)}`;
     } else {
-        wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}search_html?q=${encodeURIComponent(wordToLink)}`;
+        wordSearchUrl = `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(wordToLink)}`;
     }
 
         // ИЗМЕНЕНО: onclick теперь вызывает openDictionaryWindow()

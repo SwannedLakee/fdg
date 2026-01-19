@@ -393,7 +393,7 @@ document.addEventListener("keydown", (event) => {
     const baseUrl = 'https://dict.dhamma.gift' + langPrefix;
 
     const url = q
-      ? baseUrl + '/search_html?source=pwa&q=' + encodeURIComponent(q)
+      ? baseUrl + '/?silent&source=pwa&q=' + encodeURIComponent(q)
       : baseUrl + '/';
 
     openDictionaryWindow(url);

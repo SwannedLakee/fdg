@@ -20,7 +20,7 @@ const DICTIONARIES = {
   'DPD': {
     name: 'DPD',
     method: 'GET',
-    base: 'https://dict.dhamma.gift/search_html?source=pwa&q=',
+    base: 'https://dict.dhamma.gift/?silent&source=pwa&q=',
     fallback: 'https://dict.dhamma.gift/?source=pwa',
     iframe: true
   },
