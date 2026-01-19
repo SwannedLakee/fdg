@@ -478,7 +478,7 @@ document.addEventListener("keydown", (event) => {
 if (
   event.altKey &&
   !event.ctrlKey &&
-  (event.code === 'Period' || event.code === 'Comma' || event.key === '.' || event.key === ','  || event.code === 'KeyM')
+  (event.code === 'Period' || event.code === 'Comma' || event.code === 'KeyM')
 ) {
     event.preventDefault();
 
