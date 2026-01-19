@@ -980,7 +980,7 @@ memStyle.innerHTML = `
         cursor: pointer;
         position: relative;
         transition: color 0.2s, text-shadow 0.2s, border-bottom-color 0.2s;
-        border-bottom: 1px dotted transparent;
+        border-bottom: 1px solid transparent;
     }
     
     .mem-trigger:hover,
