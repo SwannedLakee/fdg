@@ -208,7 +208,7 @@ DG
     <a class="text-reset" target=""  title="открыть Dict.Dhamma.Gift в новом окне (Alt + N)" href="javascript:void(0)" onclick="
       const q = document.getElementById(\'paliauto\')?.value || \'\';
       const url = q.trim() ? 
-        \'https://dict.dhamma.gift/ru/search_html?source=pwa&q=\' + encodeURIComponent(q) : 
+        \'https://dict.dhamma.gift/ru/?silent&source=pwa&q=\' + encodeURIComponent(q) : 
         \'https://dict.dhamma.gift/ru/\';
       openDictionaryWindow(url);
     ">Digital Pāḷi Dict</a>
@@ -247,7 +247,7 @@ DG
   <a class="dropdown-item" title="PTS Pali Dictionary + Gandhari Dictionary + Digital Pali Dictionary + Critical Pali Dictionary " href="javascript:void(0)" onclick="return openWithQueryMulti(event, [
     \'https://dsal.uchicago.edu/cgi-bin/app/pali_query.py?matchtype=default&qs=\',
     \'https://gandhari.org/dictionary?section=dop&search=\',
-    \'https://dict.dhamma.gift/search_html?source=pwa&q=\',
+    \'https://dict.dhamma.gift/?silent&source=pwa&q=\',
     \'https://www.digitalpalireader.online/_dprhtml/index.html?frombox=1&analysis=\',
     \'https://cpd.uni-koeln.de/search?query=\'
   ])">Pali PTS, Cone, DPD, DPR, CPD</a>
