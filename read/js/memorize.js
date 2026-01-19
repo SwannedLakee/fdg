@@ -269,7 +269,7 @@ function преобразоватьТекст() {
     let строкиСКавычками = входнойТекст.split('\n');
 
     const строки = строкиСКавычками.map(строка => {
-        // Подготовка пунктуации (добавляем пробелы, чтобы сплит сработал корректно)
+        // Подготовка пунктуации
         return строка.replace(/"/g, ' " ').replace(/—/g, ' — ').replace(/“/g, ' “ ').replace(/‘/g, " ‘ " ).replace(/\?/g, " ? " ).replace(/,/g, " , " ).replace(/\./g, " . " ).replace(/:/g, " : " ).replace(/;/g, " ; " );
     });
 
@@ -282,23 +282,23 @@ function преобразоватьТекст() {
             let перваяБуква = word.match(/^\p{L}/u); // Ищем букву
             
             if (перваяБуква) {
-                // Очищаем слово от лишних кавычек для сохранения в атрибут
                 let cleanWord = word.replace(/['"“‘]/g, ""); 
-                // ВОТ ИЗМЕНЕНИЕ: Возвращаем HTML span с полным словом внутри data-word
-                return `<span class="mem-trigger" lang="pi" data-word="${cleanWord}" onclick="showBubble(this, event)">${перваяБуква[0]}</span>`;
+                // ИЗМЕНЕНИЕ: Добавлены onmouseenter и onmouseleave
+                return `<span class="mem-trigger" lang="pi" 
+                              data-word="${cleanWord}" 
+                              onclick="showBubble(this, event)" 
+                              onmouseenter="handleBubbleHover(this, event)" 
+                              onmouseleave="handleBubbleLeave(this, event)">${перваяБуква[0]}</span>`;
             } else {
-                // Если это не буква (знак препинания), возвращаем как есть
                 let диакритическиеСимволы = word.match(/^[\p{M}\p{N}\p{S}\p{P}]/u);
                 return диакритическиеСимволы ? диакритическиеСимволы[0] : '';
             }
         });
-        // Объединяем преобразованные слова снова в строку и чистим пробелы у знаков препинания
         return преобразованныеСлова.join(' ').replace(/ \?/g, "?" ).replace(/“ /g, '').replace(/ ,/g, ", " ).replace(/ \. /g, ". " ).replace(/ : /g, ": " ).replace(/ ; /g, "; " ).replace(/ ‘ /g, " " );
     }).join('\n'); 
 
     return результат;
 }
-
 
 if (paliData[segment] !== undefined) {
 paliData[segment] = paliData[segment].replace(/[—–—]/, ' — ');
@@ -967,52 +967,44 @@ abbreviations.forEach(book => {
   });
 });
 
-// --- ЛОГИКА ДЛЯ ВСПЛЫВАЮЩИХ ПОДСКАЗОК (BUBBLES) С ПОДДЕРЖКОЙ СЛОВАРЯ ---
+// --- ЛОГИКА ДЛЯ ВСПЛЫВАЮЩИХ ПОДСКАЗОК (BUBBLES) С ПОДДЕРЖКОЙ СЛОВАРЯ И HOVER ---
 
 // 1. Добавляем CSS стили программно
 const memStyle = document.createElement('style');
 memStyle.innerHTML = `
-    /* === ОБЩИЕ СТИЛИ (Базовые / Светлая тема) === */
-    
-    /* Буква-ссылка */
+    /* === ОБЩИЕ СТИЛИ === */
     .mem-trigger {
         cursor: pointer;
         position: relative;
-        transition: color 0.2s, text-shadow 0.2s;
+        transition: color 0.2s, text-shadow 0.2s, border-bottom-color 0.2s;
         border-bottom: 1px dotted transparent;
     }
-    .mem-trigger:hover {
-        color: #dcb15b; 
-        border-bottom-color: #dcb15b;
+    
+    .mem-trigger:hover,
+    .mem-trigger.mem-active { 
+        color: var(--bs-primary, #0d6efd); 
+        border-bottom-color: var(--bs-primary, #0d6efd);
     }
 
-    /* Сам бабл */
     .mem-bubble {
         position: absolute;
-        
-        /* Цвета для светлой темы */
         background-color: #ffffff;
         color: #333333;
         border: 1px solid #ccc;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-
         padding: 4px 10px;
         border-radius: 6px;
         font-size: 18px; 
         font-family: sans-serif;
         z-index: 10000;
         white-space: nowrap;
-        
-        /* ВАЖНО: Включаем клики, чтобы словарь мог обработать слово */
         pointer-events: auto; 
-        cursor: help; /* Курсор-вопрос, подсказывающий, что можно нажать */
-
+        cursor: pointer; 
         animation: memFadeIn 0.2s ease-out;
         transform: translate(-50%, -100%);
         margin-top: -8px; 
     }
 
-    /* Стрелочка вниз */
     .mem-bubble::after {
         content: "";
         position: absolute;
@@ -1034,19 +1026,18 @@ memStyle.innerHTML = `
         border-color: #ccc transparent transparent transparent; 
     }
 
-    /* === СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ === */
-    body.dark .mem-trigger:hover {
-        color: #ffd700; 
-        text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    /* === ТЕМНАЯ ТЕМА === */
+    body.dark .mem-trigger:hover,
+    body.dark .mem-trigger.mem-active {
+        color: var(--bs-primary, #0d6efd); 
+        text-shadow: 0 0 8px rgba(13, 110, 253, 0.6); 
     }
-
     body.dark .mem-bubble {
         background-color: #2b2b2b;
         color: #e0e0e0;
         border: 1px solid #555;
         box-shadow: 0 4px 10px rgba(0,0,0,0.6);
     }
-
     body.dark .mem-bubble::after {
         border-color: #2b2b2b transparent transparent transparent;
     }
@@ -1061,26 +1052,63 @@ memStyle.innerHTML = `
 `;
 document.head.appendChild(memStyle);
 
-// 2. Глобальная функция для показа бабла
-window.showBubble = function(element, event) {
-    event.stopPropagation(); // Не даем клику уйти выше (чтобы не сработал removeBubbles)
-    removeBubbles(); // Убираем старые
+// Переменная для таймера закрытия
+let hoverTimeout;
+
+// 2. Глобальная функция показа
+window.showBubble = function(element, event, isHover = false) {
+    if (event) event.stopPropagation();
+
+    // === ПРОВЕРКА: ЕСЛИ БУКВА УЖЕ АКТИВНА ===
+    if (element.classList.contains('mem-active')) {
+        // Если событие - Ховер:
+        if (isHover) {
+            clearTimeout(hoverTimeout);
+            return; // Просто выходим, бабл уже есть
+        } 
+        // Если событие - Клик:
+        else {
+            // Находим уже существующий бабл
+            const existingBubble = document.querySelector('.mem-bubble');
+            if (existingBubble) {
+                // Просто меняем статус на "Закреплен"
+                existingBubble.dataset.pinned = "true";
+                // И выходим. Не удаляем, не перерисовываем.
+                return; 
+            }
+        }
+    }
+
+    // Если буква НЕ активна — удаляем старые и рисуем новый
+    window.removeBubbles(); 
 
     const word = element.getAttribute('data-word');
     if (!word) return;
 
+    element.classList.add('mem-active');
+
     const bubble = document.createElement('div');
     bubble.className = 'mem-bubble';
     
-    // ДОБАВЛЕНО: Атрибуты для того, чтобы словарь распознал этот блок как Пали
+    // Статус: если ховер - false, если клик - true
+    bubble.dataset.pinned = isHover ? "false" : "true";
+
     bubble.setAttribute('lang', 'pi');
     bubble.classList.add('pli-lang');
-    
     bubble.innerText = word;
+
+    // --- Обработчики на самом бабле ---
+    bubble.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+    });
+    bubble.addEventListener('mouseleave', () => {
+        if (bubble.dataset.pinned === "false") {
+            window.removeBubbles();
+        }
+    });
 
     document.body.appendChild(bubble);
 
-    // Позиционирование
     const rect = element.getBoundingClientRect();
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
@@ -1089,23 +1117,52 @@ window.showBubble = function(element, event) {
     bubble.style.top = (rect.top + scrollY) + 'px';
 };
 
-// 3. Функция удаления
-function removeBubbles() {
+// 3. Обработчики Hover для букв
+window.handleBubbleHover = function(element, event) {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    
+    clearTimeout(hoverTimeout);
+
+    // Если буква уже активна, ничего не делаем (избегаем перерисовки)
+    if (element.classList.contains('mem-active')) {
+        return;
+    }
+
+    window.showBubble(element, event, true);
+};
+
+window.handleBubbleLeave = function(element, event) {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+
+    hoverTimeout = setTimeout(() => {
+        const bubble = document.querySelector('.mem-bubble');
+        // Не закрываем, если закреплен кликом
+        if (bubble && bubble.dataset.pinned === "true") {
+            return;
+        }
+        window.removeBubbles();
+    }, 200); 
+};
+
+
+// 4. Глобальная функция удаления
+window.removeBubbles = function() {
     const bubbles = document.querySelectorAll('.mem-bubble');
     bubbles.forEach(el => el.remove());
+
+    const activeTriggers = document.querySelectorAll('.mem-trigger.mem-active');
+    activeTriggers.forEach(el => el.classList.remove('mem-active'));
 }
 
-// 4. Закрытие при клике мимо
+// 5. Закрытие при клике мимо
 document.addEventListener('click', function(event) {
-    // ВАЖНО: Если клик произошел ВНУТРИ бабла, мы его НЕ закрываем.
-    // Это нужно, чтобы событие клика успело дойти до скрипта словаря.
     if (event.target.closest('.mem-bubble')) {
         return; 
     }
-    removeBubbles();
+    window.removeBubbles();
 });
 
-// 5. Закрытие при скролле
+// 6. Закрытие при скролле
 document.addEventListener('scroll', function() {
-    removeBubbles();
+    window.removeBubbles();
 }, true);

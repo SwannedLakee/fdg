@@ -475,8 +475,11 @@ document.addEventListener("keydown", (event) => {
  
   // Для отладки: смотри, что нажимается
 //  console.log('Pressed:', event.code);
-
-  if (event.altKey && (event.code === 'Period' || event.code === 'KeyM')) {
+if (
+  event.altKey &&
+  !event.ctrlKey &&
+  (event.code === 'Period' || event.key === '.' || event.code === 'KeyM')
+) {
     event.preventDefault();
 
     const currentValue = localStorage.getItem("removePunct") === "true";
