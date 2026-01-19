@@ -226,7 +226,7 @@ def create_keyboard(original_query: str, lang: str = "en", is_inline: bool = Fal
     encoded_q = urllib.parse.quote_plus(link_q)
     
     search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={encoded_q}"
-    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={encoded_q}"
+    dict_url = f"https://dict.dhamma.gift/{path}?silent&q={encoded_q}"
 
     label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
     label_site = f"{'Читать на' if lang == 'ru' else 'Read at'} 🔎 Dhamma.gift {'Ru' if lang == 'ru' else 'En'}"
@@ -247,7 +247,7 @@ def format_message_with_links(display_text: str, link_query: str, lang: str = "e
     path = "ru/" if lang == "ru" else ""
     encoded_q = urllib.parse.quote_plus(link_query)
     search_url = f"https://f.dhamma.gift/{path}?p=-kn&q={encoded_q}"
-    dict_url = f"https://dict.dhamma.gift/{path}search_html?q={encoded_q}"
+    dict_url = f"https://dict.dhamma.gift/{path}?silent&q={encoded_q}"
     label_dict = "📘 Словарь" if lang == "ru" else "📘 Dictionary"
     return f"\n{display_text}\n\n🔎 <a href='{search_url}'>Dhamma.gift</a> | <a href='{dict_url}'>{label_dict}</a>"
 
