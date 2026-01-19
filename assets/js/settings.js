@@ -489,7 +489,7 @@ if (
   }
 
 
-  if (event.altKey && (event.code === 'Period' || event.code === 'KeyQ')) {
+  if (event.altKey && (event.code === 'KeyQ')) {
     event.preventDefault();
 
 openDictionaries(event);
