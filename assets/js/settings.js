@@ -8,6 +8,9 @@ function checkStorage(key) {
     }
 }
 
+
+
+
 // Вызов проверки для ttsEnabled
 //checkStorage('defaultReader');
 //checkStorage('removePunct');
@@ -247,8 +250,44 @@ function loadModal(modalId, modalFile) {
 //loadModal("paliLookupInfo", "/assets/common/modalsSC.html");
 
 //sett8ngs management
-document.addEventListener('DOMContentLoaded', function() {
-  
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    function handleReadLink(event) {
+        const btn = event.currentTarget; 
+        if (!btn) return;
+
+        // Строим URL на основе текущего href кнопки
+        const targetUrl = new URL(btn.getAttribute('href'), window.location.origin);
+        
+        // Получаем ВСЕ текущие параметры из адресной строки браузера
+        const currentParams = new URLSearchParams(window.location.search);
+        
+        // Переносим параметры в целевую ссылку
+        currentParams.forEach((value, key) => {
+            targetUrl.searchParams.set(key, value);
+        });
+        
+        // Добавляем текущий якорь (хеш)
+        targetUrl.hash = window.location.hash;
+        
+        // Обновляем ссылку
+        btn.href = targetUrl.toString();
+    }
+
+    // Инициализация
+    const readLinkBtn = document.getElementById('readLink');
+    
+    // Проверка: код сработает только если на странице есть кнопка с id="readLink"
+    if (readLinkBtn) {
+        // 1. Вешаем обработчик клика (чтобы обновилось прямо перед переходом)
+        readLinkBtn.addEventListener('click', handleReadLink);
+        
+        // 2. Вызываем один раз сразу при загрузке
+        // Это нужно, чтобы при наведении мыши (hover) ссылка уже была правильной
+        handleReadLink({ currentTarget: readLinkBtn });
+    }
+
   const scriptSelect = document.getElementById('script-select');
   const dictSelect = document.getElementById('dict-select');
 

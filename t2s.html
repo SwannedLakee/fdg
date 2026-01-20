@@ -139,43 +139,40 @@ const q = params.get('q');
 const mode = params.get('mode');
 
 // Заполняем поле поиска текущим запросом, если он есть
-if (q) {
-    document.getElementById('paliauto').value = q;
-    
-    // --- ОБНОВЛЕНИЕ ССЫЛОК ---
-    const readLink = document.getElementById('readLink');
-    if (readLink) {
-        let readBase = '/read.php'; // Значение по умолчанию
+if (q) document.getElementById('paliauto').value = q;
 
-        // Логика выбора ссылки в зависимости от режима
-        if (mode === 'ru') {
-            readBase = '/r/';
-        } else if (mode === 'bs') {
-            readBase = '/read/';
-        } else if (mode === 'bb') {
-            readBase = '/b/';
-        } else if (mode === 'pali') {
-            readBase = '/memorize/';
-        } else {
-          readBase = '/r/';
-        } 
-
-        readLink.href = readBase + '?q=' + encodeURIComponent(q);
-    }
-}
-
+// 2. Функция для создания intent-ссылки T2S
 function buildIntent(m) {
-  let path, query = q ? '?q=' + encodeURIComponent(q) : '';
-  
-  if (m === 'ru') { path = '/ru/tts.php'; if (q) query += '&type=trn'; }
-  else if (m === 'pali') { path = '/tts.php'; if (q) query += '&type=pali'; }
-  else if (m === 'bs') { path = '/tts.php'; if (q) query += '&type=trn&translator=bs'; }
-  else if (m === 'bb') { path = '/tts.php'; if (q) query += '&type=trn&translator=bb'; }
-  else { path = '/ru/tts.php'; if (q) query += '&type=trn'; }
+  const intentParams = new URLSearchParams(window.location.search);
+  let path = '/ru/tts.php'; 
+
+  if (m === 'pali') { 
+      path = '/tts.php'; 
+      intentParams.set('type', 'pali');
+      intentParams.delete('translator'); 
+  }
+  else if (m === 'bs') { 
+      path = '/tts.php'; 
+      intentParams.set('type', 'trn');
+      intentParams.set('translator', 'bs'); 
+  }
+  else if (m === 'bb') { 
+      path = '/tts.php'; 
+      intentParams.set('type', 'trn');
+      intentParams.set('translator', 'bb'); 
+  }
+  else { 
+      path = '/ru/tts.php'; 
+      intentParams.set('type', 'trn');
+      intentParams.delete('translator');
+  }
 
   const host = window.location.host;
   const scheme = window.location.protocol.replace(':', '');
-  return `intent://${host}${path}${query}#Intent;scheme=${scheme};package=hesoft.T2S;end`;
+  const queryStr = intentParams.toString();
+  const hash = window.location.hash; 
+
+  return `intent://${host}${path}?${queryStr}${hash}#Intent;scheme=${scheme};package=hesoft.T2S;end`;
 }
 
 function goToSlug() {
@@ -191,19 +188,18 @@ function goToSlug() {
 const openBtn = document.getElementById('open');
 openBtn.href = buildIntent(mode);
 
+// 3. Обработка кнопок переключения режимов
 document.querySelectorAll('.btn-mode').forEach(btn => {
-  const m = btn.dataset.mode;
-
-  // ИЗМЕНЕНИЕ: Сразу генерируем ссылку-интент для этой кнопки,
-  // чтобы при клике сразу открывалось приложение (как кнопка Open)
-  btn.href = buildIntent(m);
+  const targetMode = btn.dataset.mode;
+  const urlParams = new URLSearchParams(window.location.search);
   
-  // Подсветка активной кнопки остается на основе текущего URL
-  if (m === mode) btn.classList.add('active');
+  urlParams.set('mode', targetMode);
+  
+  btn.href = '?' + urlParams.toString() + window.location.hash;
+  
+  if (targetMode === mode) btn.classList.add('active');
 });
 
-
-// Автопереход на русский, если режим не выбран
 if (!mode) {
   setTimeout(() => { location.href = buildIntent(null); }, 300);
 }
