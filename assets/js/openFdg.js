@@ -272,6 +272,8 @@ document.addEventListener('DOMContentLoaded', function() {
         baseUrl = window.location.origin + "/memorize/";
     } else if (localStorage.defaultReader === 'fr') {
         baseUrl = window.location.origin + "/frev/";
+    } else if (localStorage.defaultReader === 'tts') {
+        baseUrl = window.location.origin + "/t2s.html";
     }
     const fdgLinks = document.querySelectorAll('.fdgLink');
     fdgLinks.forEach(link => {

@@ -1,3 +1,48 @@
+
+function checkStorage(key) {
+    if (localStorage.getItem(key) !== null) {
+        alert(`Запись "${key}" есть в localStorage! Значение: ${localStorage.getItem(key)}`);
+    } else {
+      
+     alert(`Записи "${key}" нет.`); 
+    }
+}
+
+// Вызов проверки для ttsEnabled
+checkStorage('defaultReader');
+//checkStorage('removePunct');
+
+// 1. Обработка URL-параметров при загрузке
+(function() {
+    try {
+        const url = new URL(window.location.href);
+        let paramsChanged = false;
+
+        // --- ЛОГИКА ДЛЯ TTS (Пишем в defaultReader) ---
+        if (url.searchParams.has('tts')) {
+            const val = url.searchParams.get('tts');
+            
+            // Если ?tts, ?tts=1 или ?tts=true (и не false/0)
+            if (val !== 'false' && val !== '0') {
+                localStorage.setItem('defaultReader', 'tts'); // <--- Ставим tts как читалку
+            }
+            
+            // Удаляем параметр из адреса
+            url.searchParams.delete('tts');
+            paramsChanged = true;
+        }
+
+        if (paramsChanged) {
+            window.history.replaceState({}, document.title, url.toString());
+        }
+
+    } catch (e) {
+        console.error('Ошибка обработки URL:', e);
+    }
+})();
+
+
+
 const MAX_HISTORY = 84;
 let textinfoCache = null; // Кеш для данных сутт
 
@@ -200,41 +245,6 @@ function loadModal(modalId, modalFile) {
 }
 
 //loadModal("paliLookupInfo", "/assets/common/modalsSC.html");
-
-(function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    // Проверяем наличие параметра tts
-    if (urlParams.has('tts')) {
-        const ttsValue = urlParams.get('tts');
-        
-        // Включаем, если tts=true, tts=1 или просто ?tts (пустая строка)
-        const shouldEnable = ttsValue === 'true' || ttsValue === '1' || ttsValue === '';
-        
-        // Используем ключ 'ttsEnabled', который мы прописали в основном скрипте
-        localStorage.setItem('ttsEnabled', shouldEnable ? 'true' : 'false');
-
-        // Очистка URL (закомментировано, как в вашем примере)
-        // const newUrl = new URL(window.location.href);
-        // newUrl.searchParams.delete('tts'); 
-        // window.history.replaceState({}, document.title, newUrl.toString());
-    }
-})();
-
-
-
-(function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('rp')) {
-        const rpValue = urlParams.get('rp');
-        const shouldEnable = rpValue === 'true' || rpValue === '1' || rpValue === '';
-        
-        localStorage.setItem('removePunct', shouldEnable ? 'true' : 'false');
-
-    //    const newUrl = new URL(window.location.href);
-    //    newUrl.searchParams.delete('rp'); 
-   //     window.history.replaceState({}, document.title, newUrl.toString());
-    }
-})();
 
 //sett8ngs management
 document.addEventListener('DOMContentLoaded', function() {
