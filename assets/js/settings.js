@@ -8,11 +8,8 @@ function checkStorage(key) {
     }
 }
 
-
-
-
 // Вызов проверки для ttsEnabled
-//checkStorage('defaultReader');
+//checkStorage('ttsMode');
 //checkStorage('removePunct');
 
 // 1. Обработка URL-параметров при загрузке
@@ -27,7 +24,7 @@ function checkStorage(key) {
             
             // Если ?tts, ?tts=1 или ?tts=true (и не false/0)
             if (val !== 'false' && val !== '0') {
-                localStorage.setItem('defaultReader', 'tts'); // <--- Ставим tts как читалку
+                localStorage.setItem('ttsMode', 'true'); // <--- Ставим tts как читалку
             }
             
             // Удаляем параметр из адреса
@@ -43,8 +40,6 @@ function checkStorage(key) {
         console.error('Ошибка обработки URL:', e);
     }
 })();
-
-
 
 const MAX_HISTORY = 84;
 let textinfoCache = null; // Кеш для данных сутт

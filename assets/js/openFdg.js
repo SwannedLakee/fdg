@@ -233,6 +233,7 @@ document.addEventListener('click', function(event) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 1. Логика чекбокса цитат (без изменений)
     const checkbox = document.getElementById('quotePopupCheckbox');
     const storageKey = 'quotePopupEnabled';
     if (checkbox) {
@@ -244,6 +245,8 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem(storageKey, !this.checked);
         });
     }
+
+    // 2. Подготовка поисковых параметров (без изменений)
     const urlParams = new URLSearchParams(window.location.search);
     const sParam = urlParams.get('s');
     let keyword;
@@ -254,7 +257,10 @@ document.addEventListener('DOMContentLoaded', function() {
         keyword = "";
     }
     let searchValue = sParam && sParam.trim() !== "" ? sParam : keyword;
+
+    // 3. Определение BaseUrl (УБРАЛИ условие для tts отсюда)
     let baseUrl;
+    // Определение языка
     if (window.location.href.includes('/ru') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
         baseUrl = window.location.origin + "/r/";
     } else if (window.location.href.includes('/th') || (localStorage.siteLanguage && localStorage.siteLanguage === 'th')) {
@@ -262,6 +268,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         baseUrl = window.location.origin + "/read/";
     }
+
+    // Определение режима ридера (ML, RV, D и т.д.)
     if (localStorage.defaultReader === 'ml') {
         baseUrl = window.location.origin + "/ml/";
     } else if (localStorage.defaultReader === 'rv') {
@@ -272,14 +280,25 @@ document.addEventListener('DOMContentLoaded', function() {
         baseUrl = window.location.origin + "/memorize/";
     } else if (localStorage.defaultReader === 'fr') {
         baseUrl = window.location.origin + "/frev/";
-    } else if (localStorage.defaultReader === 'tts') {
-        baseUrl = window.location.origin + "/t2s.html";
-    }
+    } 
+
+    // 4. Обработка всех ссылок .fdgLink
     const fdgLinks = document.querySelectorAll('.fdgLink');
     fdgLinks.forEach(link => {
         const slug = link.getAttribute('data-slug');
         const filter = link.getAttribute('data-filter');
-        const textUrl = findFdgTextUrl(slug, filter || searchValue, baseUrl);
+        
+        // По умолчанию используем общий baseUrl
+        let currentLinkBaseUrl = baseUrl;
+
+        // НОВОЕ УСЛОВИЕ:
+        // Если это mainLink И в localStorage включен ttsMode -> меняем базу на t2s.html
+        if (link.classList.contains('mainLink') && localStorage.getItem('ttsMode') === 'true') {
+            currentLinkBaseUrl = window.location.origin + "/t2s.html";
+        }
+
+        const textUrl = findFdgTextUrl(slug, filter || searchValue, currentLinkBaseUrl);
+        
         if (!textUrl) {
             link.style.display = 'none';
         } else {
@@ -287,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 function findFdgTextUrl(slug, searchValue, baseUrl) {
     const exceptions = ["bv", "ja", "ne", "pv[0-9]", "cnd", "mil", "pe", "thi-ap", "tha-ap", "cp", "kp", "mnd", "ps", "vv", 'ds', 'dt', 'kv', 'patthana', 'pp', 'ya'];
