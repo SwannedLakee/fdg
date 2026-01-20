@@ -9,7 +9,7 @@ function checkStorage(key) {
 }
 
 // Вызов проверки для ttsEnabled
-checkStorage('defaultReader');
+//checkStorage('defaultReader');
 //checkStorage('removePunct');
 
 // 1. Обработка URL-параметров при загрузке

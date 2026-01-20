@@ -139,7 +139,30 @@ const q = params.get('q');
 const mode = params.get('mode');
 
 // Заполняем поле поиска текущим запросом, если он есть
-if (q) document.getElementById('paliauto').value = q;
+if (q) {
+    document.getElementById('paliauto').value = q;
+    
+    // --- ОБНОВЛЕНИЕ ССЫЛОК ---
+    const readLink = document.getElementById('readLink');
+    if (readLink) {
+        let readBase = '/read.php'; // Значение по умолчанию
+
+        // Логика выбора ссылки в зависимости от режима
+        if (mode === 'ru') {
+            readBase = '/r/';
+        } else if (mode === 'bs') {
+            readBase = '/read/';
+        } else if (mode === 'bb') {
+            readBase = '/b/';
+        } else if (mode === 'pali') {
+            readBase = '/memorize/';
+        } else {
+          readBase = '/r/';
+        } 
+
+        readLink.href = readBase + '?q=' + encodeURIComponent(q);
+    }
+}
 
 function buildIntent(m) {
   let path, query = q ? '?q=' + encodeURIComponent(q) : '';
