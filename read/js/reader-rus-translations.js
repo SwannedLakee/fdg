@@ -272,45 +272,6 @@ var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
  // console.log(finder);
    // let finder = decodeURIComponent(params.get("s"));
 
-
-// Функция инициализации настроек пунктуации
-// Проверяет URL параметр 'rp' и localStorage
-function getPunctuationSetting() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Если в URL есть параметр rp (например ?rp=1 или просто ?rp),
-    // то принудительно включаем режим и сохраняем это в память
-    if (urlParams.has('rp')) {
-        localStorage.setItem("removePunct", "true");
-        
-              const newUrl = new URL(window.location.href);
-       newUrl.searchParams.delete('rp');
-       window.history.replaceState({}, document.title, newUrl.toString());
-       
-        return true;
-    }
-    
-    // Иначе просто возвращаем то, что сохранено ранее
-    return localStorage.getItem("removePunct") === "true";
-  
-}
-
-getPunctuationSetting();
-
-
-
-// Чистая функция для обработки текста
-function cleanPaliText(text) {
-    if (!text) return text;
-
-    // Выполняем замены
-    return text
-        .replace(/[-—–]/g, ' ')       // Тире -> пробел
-        .replace(/[:;“”‘’,"']/g, '')  // Кавычки, запятые -> удалить
-        .replace(/[.?!]/g, ' | ');    // Знаки конца предложения -> разделитель
-}
-
-
 if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== undefined) {    
   paliData[segment] = paliData[segment].replace(/[-—–]/g, ' ');  
     paliData[segment] = paliData[segment].replace(/[:;“”‘’,"']/g, '');  

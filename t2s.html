@@ -193,10 +193,15 @@ openBtn.href = buildIntent(mode);
 
 document.querySelectorAll('.btn-mode').forEach(btn => {
   const m = btn.dataset.mode;
-  let href = '?mode=' + m + (q ? '&q=' + encodeURIComponent(q) : '');
-  btn.href = href;
+
+  // ИЗМЕНЕНИЕ: Сразу генерируем ссылку-интент для этой кнопки,
+  // чтобы при клике сразу открывалось приложение (как кнопка Open)
+  btn.href = buildIntent(m);
+  
+  // Подсветка активной кнопки остается на основе текущего URL
   if (m === mode) btn.classList.add('active');
 });
+
 
 // Автопереход на русский, если режим не выбран
 if (!mode) {
