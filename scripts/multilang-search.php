@@ -89,7 +89,7 @@ if (preg_match('/dictLookup/', $p) || preg_match('/dictLookup/', $extra)) {
     if ($server_name === 'localhost' || $server_name === '127.0.0.1') {
         $dictUrl = "dttp://app.dicttango/WordLookup?word="; // Исправлен протокол
     } else {
-        $dictUrl = "/assets/openDDG.html?url={$dictType}{$langinurl}/?silent&q=";  
+        $dictUrl = "/assets/openDDG.html?url={$dictType}{$langinurl}/?q=";  
     }
     
     echo "<script>
