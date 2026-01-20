@@ -201,6 +201,26 @@ function loadModal(modalId, modalFile) {
 
 //loadModal("paliLookupInfo", "/assets/common/modalsSC.html");
 
+(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    // Проверяем наличие параметра tts
+    if (urlParams.has('tts')) {
+        const ttsValue = urlParams.get('tts');
+        
+        // Включаем, если tts=true, tts=1 или просто ?tts (пустая строка)
+        const shouldEnable = ttsValue === 'true' || ttsValue === '1' || ttsValue === '';
+        
+        // Используем ключ 'ttsEnabled', который мы прописали в основном скрипте
+        localStorage.setItem('ttsEnabled', shouldEnable ? 'true' : 'false');
+
+        // Очистка URL (закомментировано, как в вашем примере)
+        // const newUrl = new URL(window.location.href);
+        // newUrl.searchParams.delete('tts'); 
+        // window.history.replaceState({}, document.title, newUrl.toString());
+    }
+})();
+
+
 
 (function() {
     const urlParams = new URLSearchParams(window.location.search);
