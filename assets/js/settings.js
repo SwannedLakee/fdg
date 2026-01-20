@@ -210,9 +210,9 @@ function loadModal(modalId, modalFile) {
         
         localStorage.setItem('removePunct', shouldEnable ? 'true' : 'false');
 
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete('rp'); 
-        window.history.replaceState({}, document.title, newUrl.toString());
+    //    const newUrl = new URL(window.location.href);
+    //    newUrl.searchParams.delete('rp'); 
+   //     window.history.replaceState({}, document.title, newUrl.toString());
     }
 })();
 
