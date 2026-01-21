@@ -1,3 +1,13 @@
+
+const style = document.createElement('style');
+style.textContent = `
+  .pli-lang {
+    font-size: 1.4em;
+  }
+`;
+document.head.appendChild(style);
+
+
 const Sccopy = "/suttacentral.net";
 const suttaArea = document.getElementById("sutta");
 const homeButton = document.getElementById("home-button");
