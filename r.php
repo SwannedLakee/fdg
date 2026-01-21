@@ -508,6 +508,41 @@ body.dark .dt-buttons .btn-secondary:hover {
   #sutta-table th:nth-child(3):nth-last-child(2), #sutta-table td:nth-child(3):nth-last-child(2),
   #sutta-table th:nth-child(4):nth-last-child(1), #sutta-table td:nth-child(4):nth-last-child(1) { width: 100% !important; }
 }
+
+/* --- ИСПРАВЛЕНИЕ DATATABLES COLVIS В ТЕМНОЙ ТЕМЕ --- */
+
+/* Фон самого выпадающего списка */
+body.dark div.dt-button-collection {
+    background-color: #212529 !important;
+    border: 1px solid #495057 !important;
+}
+
+/* Стили для кнопок внутри списка (ID, Pali, English...) */
+body.dark div.dt-button-collection .dt-button {
+    background-color: #212529 !important;
+    color: #dee2e6 !important; /* Цвет текста */
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Ховер (наведение) на пункты списка */
+body.dark div.dt-button-collection .dt-button:hover {
+    background-color: #495057 !important;
+    color: #fff !important;
+}
+
+/* Активный пункт (когда галочка стоит/колонка видима) */
+body.dark div.dt-button-collection .dt-button.active {
+    background-color: #0d6efd !important; /* Синий акцент для активных */
+    color: #fff !important;
+    font-weight: bold;
+}
+
+/* Исправление фона подложки (если она есть) */
+body.dark .dt-button-background {
+    background: rgba(0, 0, 0, 0.7) !important;
+}
+
  </style>
 </head>
 <body data-bs-theme="light"> 
@@ -671,7 +706,7 @@ $(document).ready(function() {
     buttons: [{
       extend: 'colvis',
       text: '🌐',
-      className: 'btn-secondary btn-sm'
+      className: 'btn-light btn-sm'
     }],
        searchBuilder: {
             preDefined: {
