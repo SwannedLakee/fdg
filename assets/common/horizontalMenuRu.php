@@ -148,7 +148,7 @@ DG
             <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">Sutta</a>    
       <a class="text-reset" target="" href="/ru/pm.php?expand=true">Bupm</a>        
       <a class="text-reset" target="" href="/ru/bipm.php?expand=true">Bipm</a> 
-      <a class="text-reset" target="" href="?sacca=true">Ссылки</a> 
+      <a class="text-reset" target="" href="?rp=true&tts=true&sacca=true">Ссылки</a> 
          </div>
          </li>
        
