@@ -110,7 +110,7 @@ $is_ru_referer = false;
       //    <button class='close-player' aria-label='Close player'>×</button>
 
 $playerHtml = "<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link'  title='Text-to-Speech Options' class='voice-link'>Voice</a>
+    <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs'  title='Text-to-Speech Options' class='voice-link'>Voice</a>
     <span class='voice-player'>
         <audio controls class='lazy-audio' preload='none'>
             <source src='$voicefile' type='$mimeType'>
@@ -155,7 +155,7 @@ $playerHtml = "<span class='voice-dropdown'>
         }
 
 $playerHtml = "<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link' title='Text-to-Speech Options' >Voice</a>
+    <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs' title='Text-to-Speech Options' >Voice</a>
     <span class='voice-player'>
         <audio controls class='lazy-audio' preload='none'>
             <source src='$voicefile' type='$mimeType'>
@@ -179,7 +179,7 @@ $playerHtml = "<span class='voice-dropdown'>
   // Если аудио нет, используем простую ссылку
   if (!$hasAudio) {
 $playerHtml = "<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link' title='Text-to-Speech Options' >Voice</a>
+    <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs' title='Text-to-Speech Options' >Voice</a>
     <span class='voice-player'>
             Pali 
                  <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>

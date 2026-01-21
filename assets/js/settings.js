@@ -9,6 +9,7 @@ function checkStorage(key) {
 }
 
 // Вызов проверки для ttsEnabled
+//localStorage.setItem('ttsMode', 'true');
 //checkStorage('ttsMode');
 //checkStorage('removePunct');
 

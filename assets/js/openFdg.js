@@ -258,9 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     let searchValue = sParam && sParam.trim() !== "" ? sParam : keyword;
 
-    // 3. Определение BaseUrl (УБРАЛИ условие для tts отсюда)
     let baseUrl;
-    // Определение языка
+    // Определение языка (без изменений)
     if (window.location.href.includes('/ru') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
         baseUrl = window.location.origin + "/r/";
     } else if (window.location.href.includes('/th') || (localStorage.siteLanguage && localStorage.siteLanguage === 'th')) {
@@ -269,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         baseUrl = window.location.origin + "/read/";
     }
 
-    // Определение режима ридера (ML, RV, D и т.д.)
+    // Определение режима ридера (без изменений)
     if (localStorage.defaultReader === 'ml') {
         baseUrl = window.location.origin + "/ml/";
     } else if (localStorage.defaultReader === 'rv') {
@@ -282,22 +281,13 @@ document.addEventListener('DOMContentLoaded', function() {
         baseUrl = window.location.origin + "/frev/";
     } 
 
-    // 4. Обработка всех ссылок .fdgLink
+    // 4. Обработка ссылок: только установка стандартных href
     const fdgLinks = document.querySelectorAll('.fdgLink');
     fdgLinks.forEach(link => {
         const slug = link.getAttribute('data-slug');
         const filter = link.getAttribute('data-filter');
         
-        // По умолчанию используем общий baseUrl
-        let currentLinkBaseUrl = baseUrl;
-
-        // НОВОЕ УСЛОВИЕ:
-        // Если это mainLink И в localStorage включен ttsMode -> меняем базу на t2s.html
-        if (link.classList.contains('mainLink') && localStorage.getItem('ttsMode') === 'true') {
-            currentLinkBaseUrl = window.location.origin + "/t2s.html";
-        }
-
-        const textUrl = findFdgTextUrl(slug, filter || searchValue, currentLinkBaseUrl);
+        const textUrl = findFdgTextUrl(slug, filter || searchValue, baseUrl);
         
         if (!textUrl) {
             link.style.display = 'none';
@@ -305,8 +295,39 @@ document.addEventListener('DOMContentLoaded', function() {
             link.href = textUrl;
         }
     });
-});
 
+    // 5. ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ПРАВОГО КЛИКА / ДОЛГОГО ТАПА (ИСПРАВЛЕННЫЙ)
+    document.addEventListener('contextmenu', function(e) {
+        const link = e.target.closest('a.fdgLink');
+        if (!link) return;
+
+        if (link.classList.contains('mainLink') && localStorage.getItem('ttsMode') === 'true') {
+            
+            // 1. Блокируем стандартное поведение
+            e.preventDefault(); 
+            e.stopImmediatePropagation();
+
+            // 2. Снимаем выделение текста (важно для iOS/Android)
+            // При долгом тапе текст выделяется, и если это состояние не сбросить, UI может зависнуть
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+
+            // 3. Подготавливаем ссылку
+            const slug = link.getAttribute('data-slug');
+            const filter = link.getAttribute('data-filter');
+            const ttsBaseUrl = window.location.origin + "/t2s.html";
+            const ttsUrl = findFdgTextUrl(slug, filter || searchValue, ttsBaseUrl);
+
+            // 4. Открываем с задержкой (FIX ЗАВИСАНИЯ)
+            // Даем браузеру время (100мс) завершить внутренние процессы обработки тача
+            // перед тем, как фокус уйдет на новую вкладку.
+            setTimeout(() => {
+                window.open(ttsUrl, '_blank');
+            }, 500);
+        }
+    }, { passive: false });
+});
 
 function findFdgTextUrl(slug, searchValue, baseUrl) {
     const exceptions = ["bv", "ja", "ne", "pv[0-9]", "cnd", "mil", "pe", "thi-ap", "tha-ap", "cp", "kp", "mnd", "ps", "vv", 'ds', 'dt', 'kv', 'patthana', 'pp', 'ya'];
