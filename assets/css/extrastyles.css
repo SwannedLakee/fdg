@@ -1342,12 +1342,11 @@ a.quoteLink-start::before {
 }
 */
 
-
 #settings, #paliLookupInfo{
     z-index: 100000 !important;
 }
 
-
-.modal-backdrop {
+/*.modal-backdrop {
     z-index: 99999 !important;
 }
+*/
