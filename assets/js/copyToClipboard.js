@@ -57,17 +57,27 @@ function copyToClipboard(text = "") {
   let textParts = [];
 
   // 1. Всегда добавляем текст пали (с видимыми вариантами)
-  const piElement = parentSpan.querySelector('.pli-lang');
-  if (piElement) {
+  // ИЗМЕНЕНИЕ: Ищем все блоки с lang="pi", чтобы захватить и мнемонику, и полный текст (для memorize.js)
+  // Ранее было: const piElement = parentSpan.querySelector('.pli-lang');
+  const piElements = parentSpan.querySelectorAll('[lang="pi"]');
+
+  piElements.forEach(piElement => {
+    // Проверка на вложенность: если родитель тоже имеет lang="pi", пропускаем (чтобы избежать дублирования)
+    if (piElement.parentElement.closest('[lang="pi"]')) return;
+
     const piClone = piElement.cloneNode(true);
     // Удаляем только скрытые варианты
     piClone.querySelectorAll('.hidden-variant').forEach(el => el.remove());
+    
     const piText = piClone.textContent
       .trim()
       .replace(/\u00A0/g, '\n')
       .replace(/\s\s+/g, '\n');
-    textParts.push(piText);
-  }
+    
+    if (piText) {
+      textParts.push(piText);
+    }
+  });
 
   // 2. Если кликнули на перевод - добавляем его текст
   if (clickedLang !== 'pi') {
