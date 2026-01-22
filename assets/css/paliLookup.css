@@ -311,3 +311,13 @@ img[data-size="large"] {
     transform: translateY(0);
   }
 }
+
+/* Подсветка последнего нажатого слова (Bootstrap primary) */
+.pli-lang.active-word {
+  background-color: rgba(var(--bs-primary-rgb), 0.25);
+  border-radius: 0.25rem;
+
+}
+.pli-lang{
+transition: background-color 260ms ease-in-out;
+}

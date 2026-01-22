@@ -1,3 +1,26 @@
+// ─────────────────────────────────────────────
+// Подсветка активного слова (pli-lang)
+// ─────────────────────────────────────────────
+document.addEventListener("click", function (e) {
+  const word = e.target.closest(".pli-lang");
+
+  // если клик по слову — подсветить его
+  if (word) {
+    document
+      .querySelectorAll(".pli-lang.active-word")
+      .forEach(el => el.classList.remove("active-word"));
+
+    word.classList.add("active-word");
+    return;
+  }
+
+  // если клик НЕ по слову — снять подсветку
+  document
+    .querySelectorAll(".pli-lang.active-word")
+    .forEach(el => el.classList.remove("active-word"));
+});
+
+
 const isMobileLike = (
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
                         (window.innerWidth <= 768)
@@ -569,6 +592,7 @@ function lazyLoadStandaloneScripts(lang = 'en') {
         requestIdleCallback(loadScripts, { timeout: 1000 });
     });
 }
+
 
 // Инициализация после загрузки страницы
 document.addEventListener('DOMContentLoaded', function() {
