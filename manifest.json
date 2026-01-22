@@ -12,14 +12,17 @@
         {
             "src": "/assets/img/pwa-bold-monocolor-192.png",
             "type": "image/png",
-            "sizes": "192x192"
+            "sizes": "192x192",
+            "purpose": "any"
         },
         {
             "src": "/assets/img/pwa-bold-monocolor-512.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any"
         }
     ],
+
     "screenshots": [
         {
             "src": "/assets/img/android/1.jpg",
@@ -93,6 +96,24 @@
     "start_url": "/?source=pwa",
     "scope": "/",
     "display": "minimal-ui",
+    "display_override": [
+        "tabbed",
+        "window-controls-overlay",
+        "minimal-ui",
+        "standalone"
+    ],
+    "tab_strip": {
+        "home_tab": {
+            "scope_patterns": [
+                {
+                    "pathname": "/*"
+                }
+            ]
+        },
+        "new_tab_button": {
+            "url": "/?source=pwa-new-tab"
+        }
+    },
     "background_color": "#2E3E50",
     "theme_color": "#000000",
     "share_target": {
