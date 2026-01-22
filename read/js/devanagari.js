@@ -512,7 +512,8 @@ const isWarningClosed = localStorage.getItem('goodClosed');
 
 const warning = `
   <div style="max-width: 600px; margin: 0 auto; text-align: center;" class="warning-container">
-    <p class='pli-lang' lang='pi' style='color:green;'>बहुस्सुतो होति सुतधरो सुतसन्निचयो... सात्थं सब्यञ्जनं... तथारूपास्स धम्मा बहुस्सुता होन्ति धाता वचसा परिचिता मनसानुपेक्खिता दिट्ठिया सुप्पटिविद्धा।<a class='text-decoration-none' target='' href='${rvUrl}'>&nbsp;</a>
+    <p class='pli-lang' lang='pi' style='color:green;'>बहुस्सुतो होति सुतधरो सुतसन्निचयो... 
+<a class='text-decoration-none' target='' href='${rvUrl}'>&nbsp;</a>
            ${canShowClose && !isWarningClosed ? `<span class="close-warning">×</span>` : ''} 
     </p>
   </div>
