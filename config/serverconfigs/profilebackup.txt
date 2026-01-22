@@ -485,5 +485,5 @@ apachectl start
 
 
 
-cp -parv ~/.shortcuts "$dwnl/Sutta Audio/shortcuts" 2>&1 >/dev/null
+#cp -parv ~/.shortcuts "$dwnl/Sutta Audio/shortcuts" 2>&1 >/dev/null
 
