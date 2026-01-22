@@ -701,3 +701,16 @@
 .modal-backdrop {
     z-index: 99999 !important;
 }
+
+
+/* Класс для подсветки текущего предложения при чтении */
+.tts-active {
+    background-color: rgba(var(--bs-primary-rgb), 0.2); /* Чуть прозрачнее, чем слово */
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.2);
+    transition: background-color 260ms ease-in-out;
+    
+    /* Чтобы подсветка красиво переносилась на новые строки */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
