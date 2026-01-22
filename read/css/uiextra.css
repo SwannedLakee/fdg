@@ -714,3 +714,9 @@
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
 }
+
+#sutta.hide-pali .rus-lang,
+#sutta.hide-pali .eng-lang {
+    display: block;
+    margin-bottom: 8px; /* Отступ между строками */
+}
