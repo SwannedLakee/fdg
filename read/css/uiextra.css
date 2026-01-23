@@ -715,8 +715,21 @@
     box-decoration-break: clone;
 }
 
+
+/* 1. Общее правило для обычного текста (оставляем как есть) */
 #sutta.hide-pali .rus-lang,
 #sutta.hide-pali .eng-lang {
     display: block;
-    margin-bottom: 8px; /* Отступ между строками */
+    margin-bottom: 8px; /* Отступ для абзацев */
+}
+
+/* 2. СПЕЦИАЛЬНОЕ правило для стихов: убираем отступ */
+#sutta.hide-pali .verse-line .rus-lang,
+#sutta.hide-pali .verse-line .eng-lang {
+    margin-bottom: 0; /* Строки стиха будут прижаты друг к другу */
+}
+
+/* 3. Дополнительно: добавить небольшой отступ всему блоку стиха, если нужно */
+#sutta.hide-pali .verse-line {
+    margin-bottom: 2px; /* Небольшой зазор между строками самого HTML контейнера */
 }
