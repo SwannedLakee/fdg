@@ -109,25 +109,38 @@ function loadContent($slug, $type) {
     // Применяем HTML-форматирование, если есть шаблоны
     $formatted_content = '';
     if (!empty($json_content)) {
-        // Проверяем, является ли скрипт Devanagari (по умолчанию dev, если не lat и тип pali)
-        $isDevanagari = ($type === 'pali');
+        
+        // 1. Определяем параметры для SPAN (класс и lang) и флаг обработки текста
+        // Значения по умолчанию (для английского и остальных)
+        $spanClass = 'eng-lang';
+        $langAttr = 'en';
+        $isPali = false;
+
+        if ($type === 'pali') {
+            $spanClass = 'pli-lang';
+            $langAttr = 'pi';
+            $isPali = true; // Флаг для включения очистки текста
+        } elseif ($type === 'ru') {
+            $spanClass = 'rus-lang';
+            $langAttr = 'ru';
+        }
 
         foreach ($json_content as $key => $text) {
             
-            // Логика обработки текста для Devanagari (аналог JS)
-            if ($isDevanagari) {
-                // 1. Замена тире и дефисов на пробел
+            // 2. Логика обработки текста (ТОЛЬКО для Pali)
+            if ($isPali) {
                 $text = str_replace(['-', '—', '–'], ' ', $text);
-                // 2. Удаление пунктуации и кавычек
                 $text = str_replace([':', ';', '“', '”', '‘', '’', ',', '"', "'"], '', $text);
-                // 3. Замена знаков конца предложения на вертикальную черту
                 $text = str_replace(['.', '?', '!'], ' | ', $text);
             }
 
+            // 3. Получаем шаблон и вставляем текст
             $template = $html_templates[$key] ?? '<p>{}</p>';
-            $formatted_content .= str_replace('{}', htmlspecialchars($text), $template) . ' ';
+            $itemHtml = str_replace('{}', htmlspecialchars($text), $template);
+
+            // 4. Оборачиваем в span с динамическими переменными
+            $formatted_content .= '<span class="' . $spanClass . '" lang="' . $langAttr . '">' . $itemHtml . '</span> ';
         }
-        $formatted_content = $formatted_content;
     }
 
     // Получаем информацию о переводчике
@@ -430,7 +443,7 @@ function updateLanguageSwitcher(lang) {
 <div class="text-end text-muted small mt-2">
   <?= htmlspecialchars($sourceInfo) ?>
 </div>
-<div class="text-content mt-3 pli-lang" id="voiceTextContent" lang="pi"><?= $content ?></div>
+<div class="text-content mt-3" id="voiceTextContent"><?= $content ?></div>
 
 <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
 
@@ -1038,6 +1051,7 @@ function resetSpeed() {
       <script src="/assets/js/paliLookup.js"></script>
       <script src="/assets/js/settings.js"></script>
       <script src="/read/js/urlForLbl.js" defer></script>
+      <script src="/read/js/extra.js" defer></script>
 </body>
 </html>
 
