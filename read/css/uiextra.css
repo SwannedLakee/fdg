@@ -733,31 +733,3 @@
 #sutta.hide-pali .verse-line {
     margin-bottom: 2px; /* Небольшой зазор между строками самого HTML контейнера */
 }
-
-
-/* Стили для подсветки при TTS */
-.tts-active-pali {
-    background-color: rgba(25, 135, 84, 0.2); /* Зеленый для пали */
-    border-radius: 0.25rem;
-    box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.3);
-    transition: background-color 260ms ease-in-out;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-}
-
-.tts-active-translation {
-    background-color: rgba(13, 110, 253, 0.2); /* Синий для перевода */
-    border-radius: 0.25rem;
-    box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.3);
-    transition: background-color 260ms ease-in-out;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-}
-
-/* Стили для активных кнопок режима */
-.tts-mode-selector .btn.active {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-}
-
