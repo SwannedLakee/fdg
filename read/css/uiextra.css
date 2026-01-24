@@ -733,3 +733,10 @@
 #sutta.hide-pali .verse-line {
     margin-bottom: 2px; /* Небольшой зазор между строками самого HTML контейнера */
 }
+
+
+.tts-mini-button {
+  width: 17px; 
+  height: 17px; 
+  vertical-align: middle;
+}

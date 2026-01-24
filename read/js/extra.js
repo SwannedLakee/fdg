@@ -1,109 +1,90 @@
+// --- Конфигурация путей ---
+const makeJsonUrl = (slug) => {
+  const basePath = '/assets/texts/devanagari/root/pli/ms/';
+  const suffix = '_rootd-pli-ms.json';
+  return `${basePath}${slug}${suffix}`;
+};
+
 // --- Глобальное состояние ---
 const ttsState = {
-  segments: [],
+  playlist: [], 
   currentIndex: 0,
   button: null,
   speaking: false,
   paused: false,
   utterance: null,
   langSettings: null,
-  userRate: 1.0 // Базовая скорость
+  userRate: 1.0 
 };
 
 let screenWakeLock = null;
 const synth = window.speechSynthesis;
 
-// --- 1. Wake Lock (Блокировка экрана) ---
+// --- 1. Wake Lock ---
 async function requestWakeLock() {
   if ('wakeLock' in navigator) {
-    try { 
-      screenWakeLock = await navigator.wakeLock.request('screen'); 
-    } 
-    catch (err) { 
-      console.warn('Wake Lock failed:', err); 
-    }
+    try { screenWakeLock = await navigator.wakeLock.request('screen'); } 
+    catch (err) { console.warn('Wake Lock failed:', err); }
   }
 }
-
 function releaseWakeLock() {
   if (screenWakeLock !== null) {
     screenWakeLock.release().then(() => { screenWakeLock = null; });
   }
 }
-
 document.addEventListener("visibilitychange", async () => {
   if (screenWakeLock !== null && document.visibilityState === "visible") {
     if (ttsState.speaking && !ttsState.paused) requestWakeLock();
   }
 });
 
-// --- 2. Управление UI Меню Скорости ---
+// --- 2. Меню скорости ---
 function toggleSpeedMenu() {
-  const menu = document.getElementById('speedMenu');
-  if (!menu) return;
-  
-  if (menu.style.display === 'block') {
-    menu.style.display = 'none';
-    document.removeEventListener('click', closeSpeedMenuOutside);
-  } else {
-    menu.style.display = 'block';
-    document.addEventListener('click', closeSpeedMenuOutside);
-  }
+    const menu = document.getElementById('speedMenu');
+    if (!menu) return;
+    if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closeSpeedMenuOutside);
+    } else {
+        menu.style.display = 'block';
+        document.addEventListener('click', closeSpeedMenuOutside);
+    }
 }
-
 function closeSpeedMenuOutside(event) {
-  const menu = document.getElementById('speedMenu');
-  const btn = document.getElementById('speedToggleBtn');
-  
-  if (!menu || !btn) return;
-
-  if (!menu.contains(event.target) && !btn.contains(event.target)) {
-    menu.style.display = 'none';
-    document.removeEventListener('click', closeSpeedMenuOutside);
-  }
+    const menu = document.getElementById('speedMenu');
+    const btn = document.getElementById('speedToggleBtn');
+    if (!menu || !btn) return;
+    if (!menu.contains(event.target) && !btn.contains(event.target)) {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closeSpeedMenuOutside);
+    }
 }
-
 function updateSpeedLabel(val) {
-  const btn = document.getElementById('speedToggleBtn');
-  if (btn) btn.innerText = val + 'x';
+    const btn = document.getElementById('speedToggleBtn');
+    if (btn) btn.innerText = val + 'x';
 }
-
-// Инициализация контролов (Ползунок + Кнопка меню)
 function initTTSControls() {
   const rateInput = document.getElementById('rateRange');
   const toggleBtn = document.getElementById('speedToggleBtn');
-
-  // 1. Логика ползунка
   if (rateInput) {
     rateInput.value = ttsState.userRate;
     updateSpeedLabel(ttsState.userRate);
-
     rateInput.addEventListener('input', (e) => {
       const newRate = parseFloat(e.target.value);
       ttsState.userRate = newRate;
       updateSpeedLabel(newRate);
-
-      // Если речь идет — перезапускаем текущий кусок с новой скоростью
       if (ttsState.speaking && !ttsState.paused) {
-        synth.cancel();
-        // Откатываемся на 1 назад, чтобы playNextSegment начал этот же кусок заново
-        if (ttsState.currentIndex > 0) ttsState.currentIndex--; 
-        playNextSegment();
+          synth.cancel();
+          playNextSegment(); 
       }
     });
   }
-
-  // 2. Логика кнопки меню (открыть/закрыть)
   if (toggleBtn) {
-    // Удаляем старые обработчики (на всякий случай) и ставим новый
-    toggleBtn.onclick = (e) => {
-      e.preventDefault();
-      toggleSpeedMenu();
-    };
+      toggleBtn.onclick = (e) => { e.preventDefault(); toggleSpeedMenu(); };
   }
 }
 
-// --- 3. Вспомогательные функции UI ---
+// --- 3. UI утилиты ---
 function resetUI() {
   const pauseIcons = document.querySelectorAll('img[src*="pause-grey.svg"]');
   pauseIcons.forEach(img => {
@@ -114,7 +95,6 @@ function resetUI() {
   });
   document.querySelectorAll('.tts-active').forEach(el => el.classList.remove('tts-active'));
 }
-
 function setButtonIcon(button, type) {
   if (!button) return;
   const img = button.querySelector('img');
@@ -129,22 +109,84 @@ function setButtonIcon(button, type) {
     button.classList.remove('playing');
   }
 }
-
 function cleanTextForTTS(text) {
-  return text
-    .replace(/\{.*?\}/g, '')
-    .replace(/\[.*?\]/g, '')
-    .replace(/\(.*?\)/g, '')
-    .replace(/[0-9]/g, '')
-    .replace(/[ \t]+/g, ' ')
-    .replace(/_/g, '')
-    .trim();
+  return text.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
 }
 
-// --- 4. Логика TTS ---
-function startSegmentedPlayback(elements, langType, button) {
+// --- 4. Логика Подготовки Данных ---
+
+async function fetchSegmentsData(slug) {
+    try {
+        const url = makeJsonUrl(slug);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json(); 
+    } catch (e) {
+        console.error("TTS Fetch Error:", e);
+        return null; 
+    }
+}
+
+async function preparePlaylist(elements, slug) {
+    let jsonData = null;
+    let cleanJsonMap = {}; 
+
+    // Логика: если передан slug (для PALI), качаем JSON.
+    // Если slug === null (для TRANSLATION), пропускаем скачивание.
+    if (slug) {
+        jsonData = await fetchSegmentsData(slug);
+        
+        if (jsonData) {
+            // Очистка ключей JSON (убираем префикс до двоеточия)
+            Object.keys(jsonData).forEach(fullKey => {
+                const parts = fullKey.split(':');
+                const cleanKey = parts.length > 1 ? parts[1] : fullKey;
+                cleanJsonMap[cleanKey] = jsonData[fullKey];
+            });
+        }
+    }
+
+    const playlist = [];
+
+    elements.forEach((el, index) => {
+        let textToRead = "";
+        
+        // Получаем ID из HTML
+        const domId = el.id || (el.closest('[id]') ? el.closest('[id]').id : null);
+        
+        // 1. Приоритет: JSON (Деванагари) - только если cleanJsonMap не пуст
+        if (Object.keys(cleanJsonMap).length > 0 && domId && cleanJsonMap[domId]) {
+            textToRead = cleanJsonMap[domId];
+            textToRead = textToRead.replace(/<[^>]*>/g, '');
+        } 
+        else {
+            // 2. Фолбэк: DOM (Латиница или Перевод)
+            const clone = el.cloneNode(true);
+            clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
+            textToRead = cleanTextForTTS(clone.textContent);
+        }
+
+        if (textToRead && textToRead.length > 1) {
+            playlist.push({ text: textToRead, element: el });
+        }
+    });
+
+    return playlist;
+}
+
+// --- 5. Логика Проигрывателя ---
+
+async function startPlaybackProcess(elements, langType, button, slug) {
   stopPlayback();
-  ttsState.segments = Array.from(elements);
+  
+  const playlist = await preparePlaylist(elements, slug);
+  
+  if (playlist.length === 0) {
+      setButtonIcon(button, 'play');
+      return;
+  }
+
+  ttsState.playlist = playlist;
   ttsState.currentIndex = 0;
   ttsState.button = button;
   ttsState.speaking = true;
@@ -158,38 +200,30 @@ function startSegmentedPlayback(elements, langType, button) {
 }
 
 function playNextSegment() {
-  // Если на паузе или речь не идет - выходим
-  if (ttsState.paused || !ttsState.speaking) return;
+  // Если на паузе, не продолжаем
+  if (ttsState.paused) {
+    return;
+  }
   
-  if (ttsState.currentIndex >= ttsState.segments.length) {
+  if (ttsState.currentIndex >= ttsState.playlist.length || !ttsState.speaking) {
     stopPlayback();
     return;
   }
 
-  const el = ttsState.segments[ttsState.currentIndex];
+  const item = ttsState.playlist[ttsState.currentIndex];
   
-  // Клонируем и чистим
-  const clone = el.cloneNode(true);
-  clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
-  const textToRead = cleanTextForTTS(clone.textContent);
-
-  if (!textToRead || textToRead.length < 2) { 
-    ttsState.currentIndex++;
-    playNextSegment();
-    return;
+  document.querySelectorAll('.tts-active').forEach(e => e.classList.remove('tts-active'));
+  if (item.element) {
+      item.element.classList.add('tts-active');
+      item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // Подсветка
-  document.querySelectorAll('.tts-active').forEach(e => e.classList.remove('tts-active'));
-  el.classList.add('tts-active');
-  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-  const utterance = new SpeechSynthesisUtterance(textToRead);
+  const utterance = new SpeechSynthesisUtterance(item.text);
   const langType = ttsState.langSettings;
   const voices = synth.getVoices();
   const userRate = ttsState.userRate;
 
-  // Настройки языков
+  // Настройка языков
   if (langType === 'ru') {
     utterance.lang = 'ru-RU';
     const ruVoice = voices.find(v => v.lang === 'ru-RU' && v.name.includes('Google'));
@@ -201,25 +235,26 @@ function playNextSegment() {
     utterance.rate = userRate * 0.8; 
   } 
   else if (langType === 'pi') {
-    const isDevanagari = /[\u0900-\u097F]/.test(textToRead);
+    const isDevanagari = /[\u0900-\u097F]/.test(item.text);
     if (isDevanagari) {
-      utterance.lang = 'sa-IN';
-      utterance.rate = userRate * 0.5; 
+       utterance.lang = 'sa-IN';
+       utterance.rate = userRate * 0.5; 
     } else {
-      const indoVoice = voices.find(v => v.lang === 'id-ID');
-      const italianVoice = voices.find(v => v.lang === 'it-IT');
-      if (indoVoice) {
-        utterance.voice = indoVoice;
-        utterance.lang = 'id-ID';
-        utterance.rate = userRate * 0.85; 
-      } else if (italianVoice) {
-        utterance.voice = italianVoice;
-        utterance.lang = 'it-IT';
-        utterance.rate = userRate * 0.9;
-      } else {
-        utterance.lang = 'en-US';
-        utterance.rate = userRate * 0.8; 
-      }
+       // Пали латиница
+       const indoVoice = voices.find(v => v.lang === 'id-ID');
+       const italianVoice = voices.find(v => v.lang === 'it-IT');
+       if (indoVoice) {
+           utterance.voice = indoVoice;
+           utterance.lang = 'id-ID';
+           utterance.rate = userRate * 0.85; 
+       } else if (italianVoice) {
+           utterance.voice = italianVoice;
+           utterance.lang = 'it-IT';
+           utterance.rate = userRate * 0.9;
+       } else {
+           utterance.lang = 'en-US';
+           utterance.rate = userRate * 0.8; 
+       }
     }
   } 
   else {
@@ -228,26 +263,25 @@ function playNextSegment() {
   }
 
   utterance.onend = function() {
-    // Если на паузе - не переходим к следующему сегменту
-    if (ttsState.paused) return;
+    // ВАЖНОЕ ИСПРАВЛЕНИЕ:
+    // Проверяем, является ли это событие от текущего актуального объекта utterance.
+    // Если мы нажали паузу/плей и создали новый utterance, старый может вызвать onend,
+    // и мы не должны на него реагировать.
+    if (this !== ttsState.utterance) return;
     
+    if (ttsState.paused) return; 
+
     if (ttsState.speaking) {
       ttsState.currentIndex++;
-      // Проверяем не закончились ли сегменты
-      if (ttsState.currentIndex >= ttsState.segments.length) {
-        stopPlayback();
-      } else {
-        playNextSegment();
-      }
+      playNextSegment();
     }
   };
 
   utterance.onerror = function(e) {
+    if (this !== ttsState.utterance) return; // Та же проверка для ошибок
     if (e.error !== 'interrupted' && e.error !== 'canceled') {
-      if (!ttsState.paused) {
-        ttsState.currentIndex++;
-        playNextSegment();
-      }
+      ttsState.currentIndex++;
+      playNextSegment();
     }
   };
 
@@ -259,41 +293,61 @@ function stopPlayback() {
   synth.cancel();
   ttsState.speaking = false;
   ttsState.paused = false;
-  ttsState.segments = [];
+  ttsState.playlist = [];
   ttsState.currentIndex = 0;
-  ttsState.utterance = null;
   if (ttsState.button) setButtonIcon(ttsState.button, 'play');
   resetUI();
   releaseWakeLock();
 }
 
-function toggleSpeech(elements, langType, button) {
-  // Если это та же кнопка и речь уже идет
-  if (ttsState.button === button && ttsState.speaking) {
-    if (!ttsState.paused) {
-      // Пауза - отменяем текущую речь и ставим флаг паузы
-      synth.cancel();
+function toggleSpeech(elements, langType, button, slug) {
+  // Если нажали ту же кнопку
+  if (ttsState.button === button) {
+    
+    // Сценарий 1: Активно говорит -> Ставим на ПАУЗУ
+    if (ttsState.speaking && !ttsState.paused) {
+      synth.pause();
       ttsState.paused = true;
       setButtonIcon(button, 'play'); 
       releaseWakeLock();
       return;
     }
-    else {
-      // Возобновление - снимаем флаг паузы и продолжаем с текущего сегмента
+
+    // Сценарий 2: Стоит на паузе -> ВОЗОБНОВЛЯЕМ
+    if (ttsState.paused) {
       ttsState.paused = false;
       setButtonIcon(button, 'pause');
       requestWakeLock();
-      // Продолжаем с текущего индекса
+      
+      // Полностью перезапускаем текущий сегмент
+      synth.cancel(); // Отменяем все
+      
+      // Сохраняем текущий индекс
+      const currentIndex = ttsState.currentIndex;
+      
+      // Временно сбрасываем speaking, чтобы playNextSegment работал правильно
+      ttsState.speaking = false;
+      ttsState.currentIndex = currentIndex;
+      ttsState.speaking = true;
+      
+      // Запускаем с текущего сегмента
       playNextSegment();
+      return;
+    }
+    
+    // Сценарий 3: Активно говорит и нажали ту же кнопку для остановки
+    if (ttsState.speaking && ttsState.paused === false) {
+      stopPlayback();
       return;
     }
   }
   
-  // Если другая кнопка или речь не идет - начинаем заново
-  startSegmentedPlayback(elements, langType, button);
+  // Сценарий 4: Запуск с нуля (или нажата другая кнопка)
+  stopPlayback(); // Останавливаем текущее воспроизведение если есть
+  startPlaybackProcess(elements, langType, button, slug);
 }
 
-// --- Обработчик кликов ---
+// --- 6. Обработчик кликов ---
 function handleSuttaClick(e) {
   const target = e.target.closest('.copy-pali, .copy-translation, .open-pali, .open-translation, .play-pali, .play-translation');
   if (!target) return;
@@ -307,6 +361,9 @@ function handleSuttaClick(e) {
   const isPaliTarget = target.classList.contains('play-pali') || target.classList.contains('copy-pali') || target.classList.contains('open-pali');
   const textSelector = isPaliTarget ? '.pli-lang' : '.rus-lang';
 
+  // Получаем slug
+  const slug = target.getAttribute('data-slug');
+  
   const container = target.closest('.sutta-container') || target.closest('.text-block') || target.closest('section') || target.closest('div');
   const elements = container ? container.querySelectorAll(textSelector) : document.querySelectorAll(textSelector);
   
@@ -328,42 +385,37 @@ function handleSuttaClick(e) {
   if (isPlay) {
     let langType = 'en'; 
     const path = window.location.pathname;
+    
     if (isPaliTarget) langType = 'pi';
     else if (path.includes('/th/') || path.includes('/thml/')) langType = 'th';
     else if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) langType = 'ru';
     
-    toggleSpeech(elements, langType, target);
+    // ИСПРАВЛЕНИЕ: Передаем slug ТОЛЬКО если это Pali. 
+    // Если это Translation, передаем null, чтобы не качать JSON.
+    const slugForTTS = isPaliTarget ? slug : null;
+    
+    toggleSpeech(elements, langType, target, slugForTTS);
   } 
 }
 
-// --- Старые функции ---
 function showNotification(message) {
   const n = document.createElement('div');
   n.className = 'bubble-notification';
   n.innerText = message;
   document.body.appendChild(n);
   setTimeout(() => n.classList.add('show'), 10);
-  setTimeout(() => { 
-    n.classList.remove('show'); 
-    setTimeout(() => n.remove(), 300); 
-  }, 2000);
+  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 2000);
 }
-
 function generatePageTitle(isPali) {
   const path = window.location.pathname.replace(/^\//, '').replace(/\.html$/, '').replace(/\//g, '_');
   return `${path || 'text'}_${isPali ? 'pali' : 'translation'}_tts`;
 }
-
 function openInNewTab(content, isPali) {
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = '/assets/render.php';
   form.target = '_blank';
-  const inputs = { 
-    title: generatePageTitle(isPali), 
-    content: content, 
-    lang: isPali ? 'pi' : 'ru' 
-  };
+  const inputs = { title: generatePageTitle(isPali), content: content, lang: isPali ? 'pi' : 'ru' };
   for (const [key, value] of Object.entries(inputs)) {
     const input = document.createElement('input');
     input.type = 'hidden';
@@ -375,35 +427,14 @@ function openInNewTab(content, isPali) {
   form.submit();
   document.body.removeChild(form);
 }
-
 async function copyToClipboard(text) {
-  try { 
-    await navigator.clipboard.writeText(text); 
-    return true; 
-  } 
-  catch (err) { 
-    return false; 
-  }
+  try { await navigator.clipboard.writeText(text); return true; } 
+  catch (err) { return false; }
 }
-
-// Инициализация голосов
 if (speechSynthesis.onvoiceschanged !== undefined) {
-  let voicesLoaded = false;
-  speechSynthesis.onvoiceschanged = () => {
-    if (!voicesLoaded) {
-      window.speechSynthesis.getVoices();
-      voicesLoaded = true;
-    }
-  };
+  speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
-
-// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
-  initTTSControls();
-  
-  // Принудительно получаем голоса для некоторых браузеров
-  setTimeout(() => {
-    window.speechSynthesis.getVoices();
-  }, 100);
+  initTTSControls(); 
 });

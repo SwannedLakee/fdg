@@ -449,8 +449,28 @@ if ((translator === 'sujato') || (translator === 'brahmali')) {
   scLink += `<a target="" title='SuttaCentral.net' href="https://suttacentral.net/${slug}">SC</a>&nbsp;`;
 }
 
+scLink += `<span class='voice-dropdown'>
+    <a href='javascript:void(0)' class='voice-link fdgLink mainLink'  title='Text-to-Speech Options' >Voice</a>
+    <span class='voice-player'>
+            Pali 
+<a href="javascript:void(0)"
+   title="Listen Pali"
+   data-slug="${texttype}/${slugReady}"
+   class="play-pali">
+    <img class="tts-mini-button" src="/assets/svg/play-grey.svg">
+</a>
+| Trn  
+ <a href="javascript:void(0)"
+   title='Listen Translation'
+   data-slug="${texttype}/${slugReady}"
+   class='play-translation'>
+    <img class="tts-mini-button" src="/assets/svg/play-grey.svg">
+</a> |
+  <a href='${slug}' title='Open Pali'>Open</a> 
+ <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Cp</a> | `;
+//   onclick="alert(this.getAttribute('data-slug'))"
       $.ajax({
-      url: "/read/php/extralinks.php?fromjs=" +slug
+      url: "/read/php/extralinksNew.php?fromjs=" +slug
     }).done(function(data) {
       const linksArray = data.split(",");
   
