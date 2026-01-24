@@ -148,10 +148,13 @@ DG
             <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">Sutta</a>    
       <a class="text-reset" target="" href="/ru/pm.php?expand=true">Bupm</a>        
       <a class="text-reset" target="" href="/ru/bipm.php?expand=true">Bipm</a> 
-      <a class="text-reset" target="" href="?rp=true&tts=true&sacca=true">Ссылки</a> 
+      <a class="text-reset" target="" 
+    href="javascript:void(0)"   
+ onclick="toggleQuickModal();"     
+      >Ссылки</a> 
          </div>
          </li>
-       
+  <!--      href="?rp=true&tts=true&sacca=true"-->     
 <li>
          <div class="dropdown-item ">DG
  <a class="text-reset" target="_blank"   href="/assets/common/o.html">Принципы Перевода</a>

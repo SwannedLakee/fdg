@@ -1,11 +1,16 @@
-// ─────────────────────────────────────────────
-// Подсветка активного слова (pli-lang)
-// ─────────────────────────────────────────────
 document.addEventListener("click", function (e) {
   const word = e.target.closest(".pli-lang");
 
-  // если клик по слову — подсветить его
+  // Если клик по слову
   if (word) {
+    // 1. ПРОВЕРКА: Если слово уже активно (второй клик) -> снимаем выделение
+    if (word.classList.contains("active-word")) {
+      word.classList.remove("active-word");
+      // Здесь также можно добавить закрытие попапа/iframe, если нужно
+      return; 
+    }
+
+    // 2. Обычное поведение: сбрасываем старые и выделяем новое
     document
       .querySelectorAll(".pli-lang.active-word")
       .forEach(el => el.classList.remove("active-word"));
@@ -14,12 +19,11 @@ document.addEventListener("click", function (e) {
     return;
   }
 
-  // если клик НЕ по слову — снять подсветку
+  // Если клик НЕ по слову — снять подсветку со всех
   document
     .querySelectorAll(".pli-lang.active-word")
     .forEach(el => el.classList.remove("active-word"));
 });
-
 
 const isMobileLike = (
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
