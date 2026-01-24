@@ -431,13 +431,13 @@
   .voice-player {
       display: none;
       position: fixed;
-      top: 25%;
+      bottom: 10%;
       left: 50%;
       transform: translateX(-50%);
       background: white;
       padding: 20px;
       border: 1px solid #ddd;
-      z-index: 1000;
+      z-index: 10000;
       min-width: 350px;    
       max-width: 90vw;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -739,4 +739,17 @@
   width: 17px; 
   height: 17px; 
   vertical-align: middle;
+}
+
+/* Убираем подчеркивание у кнопок play-pali и play-translation */
+.play-pali, 
+.play-translation,
+.voice-link {
+    text-decoration: none !important;
+    border: none; /* На случай, если это граница */
+}
+
+/* Также полезно убрать подчеркивание у всех ссылок внутри плеера */
+.voice-player a {
+    text-decoration: none;
 }
