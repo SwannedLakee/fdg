@@ -124,10 +124,6 @@ $is_ru_referer = false;
 $playerHtml = "<span class='voice-dropdown'>
     <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs' title='Text-to-Speech Options' >Voice</a>
     <span class='voice-player'>
-        <audio controls class='lazy-audio' preload='none'>
-            <source src='$voicefile' type='$mimeType'>
-            Your browser does not support the audio element.
-        </audio><br>
             Pali 
                  <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>
        
@@ -135,7 +131,8 @@ $playerHtml = "<span class='voice-dropdown'>
             Trn  
                <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
             <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> |
-            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
+                     <a href='$voicefile'>File
+        </a> | <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a>  |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
@@ -169,10 +166,6 @@ $playerHtml = "<span class='voice-dropdown'>
 $playerHtml = "<span class='voice-dropdown'>
     <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs' title='Text-to-Speech Options' >Voice</a>
     <span class='voice-player'>
-        <audio controls class='lazy-audio' preload='none'>
-            <source src='$voicefile' type='$mimeType'>
-            Your browser does not support the audio element.
-        </audio><br>
             Pali 
                  <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>
        
@@ -180,7 +173,8 @@ $playerHtml = "<span class='voice-dropdown'>
             Trn  
                <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
             <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> |
-            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
+                     <a href='$voicefile'>File
+        </a> | <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
@@ -200,7 +194,7 @@ $playerHtml = "<span class='voice-dropdown'>
             Trn  
                <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
             <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> | 
-            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
+ <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";

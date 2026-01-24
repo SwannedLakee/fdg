@@ -13,11 +13,15 @@ const ttsState = {
 let screenWakeLock = null;
 const synth = window.speechSynthesis;
 
-// --- 1. Wake Lock (Блокировка экрана) - ПЕРЕНЕСЕНО И УЛУЧШЕНО ---
+// --- 1. Wake Lock (Блокировка экрана) ---
 async function requestWakeLock() {
   if ('wakeLock' in navigator) {
-    try { screenWakeLock = await navigator.wakeLock.request('screen'); } 
-    catch (err) { console.warn('Wake Lock failed:', err); }
+    try { 
+      screenWakeLock = await navigator.wakeLock.request('screen'); 
+    } 
+    catch (err) { 
+      console.warn('Wake Lock failed:', err); 
+    }
   }
 }
 
@@ -33,36 +37,35 @@ document.addEventListener("visibilitychange", async () => {
   }
 });
 
-// --- 2. Управление UI Меню Скорости (ПЕРЕНЕСЕНО ОТ ВАС) ---
-
+// --- 2. Управление UI Меню Скорости ---
 function toggleSpeedMenu() {
-    const menu = document.getElementById('speedMenu');
-    if (!menu) return;
-    
-    if (menu.style.display === 'block') {
-        menu.style.display = 'none';
-        document.removeEventListener('click', closeSpeedMenuOutside);
-    } else {
-        menu.style.display = 'block';
-        document.addEventListener('click', closeSpeedMenuOutside);
-    }
+  const menu = document.getElementById('speedMenu');
+  if (!menu) return;
+  
+  if (menu.style.display === 'block') {
+    menu.style.display = 'none';
+    document.removeEventListener('click', closeSpeedMenuOutside);
+  } else {
+    menu.style.display = 'block';
+    document.addEventListener('click', closeSpeedMenuOutside);
+  }
 }
 
 function closeSpeedMenuOutside(event) {
-    const menu = document.getElementById('speedMenu');
-    const btn = document.getElementById('speedToggleBtn');
-    
-    if (!menu || !btn) return;
+  const menu = document.getElementById('speedMenu');
+  const btn = document.getElementById('speedToggleBtn');
+  
+  if (!menu || !btn) return;
 
-    if (!menu.contains(event.target) && !btn.contains(event.target)) {
-        menu.style.display = 'none';
-        document.removeEventListener('click', closeSpeedMenuOutside);
-    }
+  if (!menu.contains(event.target) && !btn.contains(event.target)) {
+    menu.style.display = 'none';
+    document.removeEventListener('click', closeSpeedMenuOutside);
+  }
 }
 
 function updateSpeedLabel(val) {
-    const btn = document.getElementById('speedToggleBtn');
-    if (btn) btn.innerText = val + 'x';
+  const btn = document.getElementById('speedToggleBtn');
+  if (btn) btn.innerText = val + 'x';
 }
 
 // Инициализация контролов (Ползунок + Кнопка меню)
@@ -82,24 +85,23 @@ function initTTSControls() {
 
       // Если речь идет — перезапускаем текущий кусок с новой скоростью
       if (ttsState.speaking && !ttsState.paused) {
-          synth.cancel();
-          // Откатываемся на 1 назад, чтобы playNextSegment начал этот же кусок заново
-          if(ttsState.currentIndex > 0) ttsState.currentIndex--; 
-          playNextSegment();
+        synth.cancel();
+        // Откатываемся на 1 назад, чтобы playNextSegment начал этот же кусок заново
+        if (ttsState.currentIndex > 0) ttsState.currentIndex--; 
+        playNextSegment();
       }
     });
   }
 
   // 2. Логика кнопки меню (открыть/закрыть)
   if (toggleBtn) {
-      // Удаляем старые обработчики (на всякий случай) и ставим новый
-      toggleBtn.onclick = (e) => {
-          e.preventDefault();
-          toggleSpeedMenu();
-      };
+    // Удаляем старые обработчики (на всякий случай) и ставим новый
+    toggleBtn.onclick = (e) => {
+      e.preventDefault();
+      toggleSpeedMenu();
+    };
   }
 }
-
 
 // --- 3. Вспомогательные функции UI ---
 function resetUI() {
@@ -156,7 +158,10 @@ function startSegmentedPlayback(elements, langType, button) {
 }
 
 function playNextSegment() {
-  if (ttsState.currentIndex >= ttsState.segments.length || !ttsState.speaking) {
+  // Если на паузе или речь не идет - выходим
+  if (ttsState.paused || !ttsState.speaking) return;
+  
+  if (ttsState.currentIndex >= ttsState.segments.length) {
     stopPlayback();
     return;
   }
@@ -198,23 +203,23 @@ function playNextSegment() {
   else if (langType === 'pi') {
     const isDevanagari = /[\u0900-\u097F]/.test(textToRead);
     if (isDevanagari) {
-       utterance.lang = 'hi-IN';
-       utterance.rate = userRate * 0.8; 
+      utterance.lang = 'sa-IN';
+      utterance.rate = userRate * 0.5; 
     } else {
-       const indoVoice = voices.find(v => v.lang === 'id-ID');
-       const italianVoice = voices.find(v => v.lang === 'it-IT');
-       if (indoVoice) {
-           utterance.voice = indoVoice;
-           utterance.lang = 'id-ID';
-           utterance.rate = userRate * 0.85; 
-       } else if (italianVoice) {
-           utterance.voice = italianVoice;
-           utterance.lang = 'it-IT';
-           utterance.rate = userRate * 0.9;
-       } else {
-           utterance.lang = 'en-US';
-           utterance.rate = userRate * 0.8; 
-       }
+      const indoVoice = voices.find(v => v.lang === 'id-ID');
+      const italianVoice = voices.find(v => v.lang === 'it-IT');
+      if (indoVoice) {
+        utterance.voice = indoVoice;
+        utterance.lang = 'id-ID';
+        utterance.rate = userRate * 0.85; 
+      } else if (italianVoice) {
+        utterance.voice = italianVoice;
+        utterance.lang = 'it-IT';
+        utterance.rate = userRate * 0.9;
+      } else {
+        utterance.lang = 'en-US';
+        utterance.rate = userRate * 0.8; 
+      }
     }
   } 
   else {
@@ -223,16 +228,26 @@ function playNextSegment() {
   }
 
   utterance.onend = function() {
-    if (ttsState.speaking && !ttsState.paused) {
+    // Если на паузе - не переходим к следующему сегменту
+    if (ttsState.paused) return;
+    
+    if (ttsState.speaking) {
       ttsState.currentIndex++;
-      playNextSegment();
+      // Проверяем не закончились ли сегменты
+      if (ttsState.currentIndex >= ttsState.segments.length) {
+        stopPlayback();
+      } else {
+        playNextSegment();
+      }
     }
   };
 
   utterance.onerror = function(e) {
     if (e.error !== 'interrupted' && e.error !== 'canceled') {
-      ttsState.currentIndex++;
-      playNextSegment();
+      if (!ttsState.paused) {
+        ttsState.currentIndex++;
+        playNextSegment();
+      }
     }
   };
 
@@ -246,28 +261,35 @@ function stopPlayback() {
   ttsState.paused = false;
   ttsState.segments = [];
   ttsState.currentIndex = 0;
+  ttsState.utterance = null;
   if (ttsState.button) setButtonIcon(ttsState.button, 'play');
   resetUI();
   releaseWakeLock();
 }
 
 function toggleSpeech(elements, langType, button) {
-  if (ttsState.button === button) {
-    if (ttsState.speaking && !ttsState.paused) {
-      synth.pause();
+  // Если это та же кнопка и речь уже идет
+  if (ttsState.button === button && ttsState.speaking) {
+    if (!ttsState.paused) {
+      // Пауза - отменяем текущую речь и ставим флаг паузы
+      synth.cancel();
       ttsState.paused = true;
       setButtonIcon(button, 'play'); 
       releaseWakeLock();
       return;
     }
-    if (ttsState.paused) {
-      synth.resume();
+    else {
+      // Возобновление - снимаем флаг паузы и продолжаем с текущего сегмента
       ttsState.paused = false;
       setButtonIcon(button, 'pause');
       requestWakeLock();
+      // Продолжаем с текущего индекса
+      playNextSegment();
       return;
     }
   }
+  
+  // Если другая кнопка или речь не идет - начинаем заново
   startSegmentedPlayback(elements, langType, button);
 }
 
@@ -321,7 +343,10 @@ function showNotification(message) {
   n.innerText = message;
   document.body.appendChild(n);
   setTimeout(() => n.classList.add('show'), 10);
-  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 2000);
+  setTimeout(() => { 
+    n.classList.remove('show'); 
+    setTimeout(() => n.remove(), 300); 
+  }, 2000);
 }
 
 function generatePageTitle(isPali) {
@@ -334,7 +359,11 @@ function openInNewTab(content, isPali) {
   form.method = 'POST';
   form.action = '/assets/render.php';
   form.target = '_blank';
-  const inputs = { title: generatePageTitle(isPali), content: content, lang: isPali ? 'pi' : 'ru' };
+  const inputs = { 
+    title: generatePageTitle(isPali), 
+    content: content, 
+    lang: isPali ? 'pi' : 'ru' 
+  };
   for (const [key, value] of Object.entries(inputs)) {
     const input = document.createElement('input');
     input.type = 'hidden';
@@ -348,14 +377,33 @@ function openInNewTab(content, isPali) {
 }
 
 async function copyToClipboard(text) {
-  try { await navigator.clipboard.writeText(text); return true; } 
-  catch (err) { return false; }
+  try { 
+    await navigator.clipboard.writeText(text); 
+    return true; 
+  } 
+  catch (err) { 
+    return false; 
+  }
 }
 
+// Инициализация голосов
 if (speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  let voicesLoaded = false;
+  speechSynthesis.onvoiceschanged = () => {
+    if (!voicesLoaded) {
+      window.speechSynthesis.getVoices();
+      voicesLoaded = true;
+    }
+  };
 }
+
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
-  initTTSControls(); // Запускаем поиск ползунка и кнопки
+  initTTSControls();
+  
+  // Принудительно получаем голоса для некоторых браузеров
+  setTimeout(() => {
+    window.speechSynthesis.getVoices();
+  }, 100);
 });
