@@ -10,7 +10,6 @@ const urlsToCache = [
     '/r/index.html',
     '/pm.php',
     '/bipm.php',
-    '/assets/texts/sutta_words.txt',
     '/assets/js/audioLazyLoad.js',
 '/assets/js/autopali.js',
 '/assets/js/bootstrap.bundle.5.3.1.min.js',
@@ -34,10 +33,6 @@ const urlsToCache = [
 '/assets/js/setDefaultMode.js',
 '/assets/js/settings.js',
 '/assets/js/smoothScroll.js',
-'/assets/js/standalone-dpd/dpd_deconstructor.js',
-'/assets/js/standalone-dpd/dpd_ebts.js',
-'/assets/js/standalone-dpd/dpd_i2h.js',
-'/assets/js/standalone-dpd/ru/dpd_ebts.js',
 '/assets/js/switchView.js',
 '/assets/js/themeswitch.js',
 '/assets/js/tocjs.js',
@@ -47,7 +42,13 @@ const urlsToCache = [
 '/read/js/loadAssets.js',
 '/read/js/urlForLbl.js'
 ];
-
+/*
+'/assets/js/standalone-dpd/dpd_deconstructor.js',
+'/assets/js/standalone-dpd/dpd_ebts.js',
+'/assets/js/standalone-dpd/dpd_i2h.js',
+'/assets/js/standalone-dpd/ru/dpd_ebts.js',
+    '/assets/texts/sutta_words.txt',
+*/
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
