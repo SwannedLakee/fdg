@@ -313,7 +313,7 @@ img[data-size="large"] {
 }
 
 /* Подсветка последнего нажатого слова (Bootstrap primary) */
-.pli-lang.active-word {
+.active-word {
   background-color: rgba(var(--bs-primary-rgb), 0.25);
   border-radius: 0.25rem;
     box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.25);

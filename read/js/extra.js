@@ -14,11 +14,51 @@ const ttsState = {
   paused: false,
   utterance: null,
   langSettings: null,
-  userRate: 1.0 
+  userRate: 1.0,
+  // --- NEW: Добавляем slug в состояние для сохранения ---
+  currentSlug: null 
 };
 
 let screenWakeLock = null;
 const synth = window.speechSynthesis;
+
+// --- NEW: Управление LocalStorage ---
+const STORAGE_KEY = 'dhamma_tts_progress';
+
+function saveProgress() {
+    if (!ttsState.speaking && !ttsState.paused) return;
+    
+    const data = {
+        url: window.location.pathname, // Привязываемся к текущей странице
+        slug: ttsState.currentSlug,
+        index: ttsState.currentIndex,
+        lang: ttsState.langSettings,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function clearProgress() {
+    localStorage.removeItem(STORAGE_KEY);
+}
+
+function getSavedProgress() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        
+        // Проверяем, что сохранение относится к текущей странице
+        if (data.url !== window.location.pathname) return null;
+        
+        // Опционально: сбрасывать, если прошло много времени (например, > 24 часов)
+        // if (Date.now() - data.timestamp > 24 * 60 * 60 * 1000) return null;
+
+        return data;
+    } catch (e) {
+        return null;
+    }
+}
 
 // --- 1. Wake Lock ---
 async function requestWakeLock() {
@@ -131,13 +171,10 @@ async function preparePlaylist(elements, slug) {
     let jsonData = null;
     let cleanJsonMap = {}; 
 
-    // Логика: если передан slug (для PALI), качаем JSON.
-    // Если slug === null (для TRANSLATION), пропускаем скачивание.
     if (slug) {
         jsonData = await fetchSegmentsData(slug);
         
         if (jsonData) {
-            // Очистка ключей JSON (убираем префикс до двоеточия)
             Object.keys(jsonData).forEach(fullKey => {
                 const parts = fullKey.split(':');
                 const cleanKey = parts.length > 1 ? parts[1] : fullKey;
@@ -150,17 +187,13 @@ async function preparePlaylist(elements, slug) {
 
     elements.forEach((el, index) => {
         let textToRead = "";
-        
-        // Получаем ID из HTML
         const domId = el.id || (el.closest('[id]') ? el.closest('[id]').id : null);
         
-        // 1. Приоритет: JSON (Деванагари) - только если cleanJsonMap не пуст
         if (Object.keys(cleanJsonMap).length > 0 && domId && cleanJsonMap[domId]) {
             textToRead = cleanJsonMap[domId];
             textToRead = textToRead.replace(/<[^>]*>/g, '');
         } 
         else {
-            // 2. Фолбэк: DOM (Латиница или Перевод)
             const clone = el.cloneNode(true);
             clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
             textToRead = cleanTextForTTS(clone.textContent);
@@ -176,8 +209,9 @@ async function preparePlaylist(elements, slug) {
 
 // --- 5. Логика Проигрывателя ---
 
-async function startPlaybackProcess(elements, langType, button, slug) {
-  stopPlayback();
+// --- MODIFIED: Добавлен аргумент startIndex ---
+async function startPlaybackProcess(elements, langType, button, slug, startIndex = 0) {
+  stopPlayback(false); // false = не чистить прогресс, так как мы сейчас начнем новый
   
   const playlist = await preparePlaylist(elements, slug);
   
@@ -187,11 +221,16 @@ async function startPlaybackProcess(elements, langType, button, slug) {
   }
 
   ttsState.playlist = playlist;
-  ttsState.currentIndex = 0;
+  
+  // Проверка на валидность индекса (если текст изменился, а индекс старый)
+  if (startIndex >= playlist.length) startIndex = 0;
+  
+  ttsState.currentIndex = startIndex;
   ttsState.button = button;
   ttsState.speaking = true;
   ttsState.paused = false;
   ttsState.langSettings = langType;
+  ttsState.currentSlug = slug; // Сохраняем slug
 
   resetUI();
   setButtonIcon(button, 'pause');
@@ -200,15 +239,15 @@ async function startPlaybackProcess(elements, langType, button, slug) {
 }
 
 function playNextSegment() {
-  // Если на паузе, не продолжаем
-  if (ttsState.paused) {
-    return;
-  }
+  if (ttsState.paused) return;
   
   if (ttsState.currentIndex >= ttsState.playlist.length || !ttsState.speaking) {
-    stopPlayback();
+    stopPlayback(true); // true = очистить прогресс, так как дослушали до конца
     return;
   }
+
+  // --- NEW: Сохраняем прогресс перед началом каждого сегмента ---
+  saveProgress();
 
   const item = ttsState.playlist[ttsState.currentIndex];
   
@@ -223,7 +262,6 @@ function playNextSegment() {
   const voices = synth.getVoices();
   const userRate = ttsState.userRate;
 
-  // Настройка языков
   if (langType === 'ru') {
     utterance.lang = 'ru-RU';
     const ruVoice = voices.find(v => v.lang === 'ru-RU' && v.name.includes('Google'));
@@ -240,7 +278,6 @@ function playNextSegment() {
        utterance.lang = 'sa-IN';
        utterance.rate = userRate * 0.5; 
     } else {
-       // Пали латиница
        const indoVoice = voices.find(v => v.lang === 'id-ID');
        const italianVoice = voices.find(v => v.lang === 'it-IT');
        if (indoVoice) {
@@ -263,12 +300,7 @@ function playNextSegment() {
   }
 
   utterance.onend = function() {
-    // ВАЖНОЕ ИСПРАВЛЕНИЕ:
-    // Проверяем, является ли это событие от текущего актуального объекта utterance.
-    // Если мы нажали паузу/плей и создали новый utterance, старый может вызвать onend,
-    // и мы не должны на него реагировать.
     if (this !== ttsState.utterance) return;
-    
     if (ttsState.paused) return; 
 
     if (ttsState.speaking) {
@@ -278,7 +310,7 @@ function playNextSegment() {
   };
 
   utterance.onerror = function(e) {
-    if (this !== ttsState.utterance) return; // Та же проверка для ошибок
+    if (this !== ttsState.utterance) return; 
     if (e.error !== 'interrupted' && e.error !== 'canceled') {
       ttsState.currentIndex++;
       playNextSegment();
@@ -289,7 +321,8 @@ function playNextSegment() {
   synth.speak(utterance);
 }
 
-function stopPlayback() {
+// --- MODIFIED: Добавлен флаг clearStorage ---
+function stopPlayback(shouldClear = false) {
   synth.cancel();
   ttsState.speaking = false;
   ttsState.paused = false;
@@ -298,13 +331,14 @@ function stopPlayback() {
   if (ttsState.button) setButtonIcon(ttsState.button, 'play');
   resetUI();
   releaseWakeLock();
+  
+  if (shouldClear) {
+      clearProgress();
+  }
 }
 
 function toggleSpeech(elements, langType, button, slug) {
-  // Если нажали ту же кнопку
   if (ttsState.button === button) {
-    
-    // Сценарий 1: Активно говорит -> Ставим на ПАУЗУ
     if (ttsState.speaking && !ttsState.paused) {
       synth.pause();
       ttsState.paused = true;
@@ -313,38 +347,47 @@ function toggleSpeech(elements, langType, button, slug) {
       return;
     }
 
-    // Сценарий 2: Стоит на паузе -> ВОЗОБНОВЛЯЕМ
     if (ttsState.paused) {
       ttsState.paused = false;
       setButtonIcon(button, 'pause');
       requestWakeLock();
-      
-      // Полностью перезапускаем текущий сегмент
-      synth.cancel(); // Отменяем все
-      
-      // Сохраняем текущий индекс
+      synth.cancel(); 
+      // Сохраняем текущий индекс перед перезапуском
       const currentIndex = ttsState.currentIndex;
-      
-      // Временно сбрасываем speaking, чтобы playNextSegment работал правильно
       ttsState.speaking = false;
       ttsState.currentIndex = currentIndex;
       ttsState.speaking = true;
-      
-      // Запускаем с текущего сегмента
       playNextSegment();
       return;
     }
     
-    // Сценарий 3: Активно говорит и нажали ту же кнопку для остановки
     if (ttsState.speaking && ttsState.paused === false) {
-      stopPlayback();
+      stopPlayback(true); // Пользователь явно остановил -> чистим
       return;
     }
   }
   
-  // Сценарий 4: Запуск с нуля (или нажата другая кнопка)
-  stopPlayback(); // Останавливаем текущее воспроизведение если есть
-  startPlaybackProcess(elements, langType, button, slug);
+  // Запуск с нуля или новой кнопкой
+  stopPlayback(false); // Не чистим, сейчас проверим сохраненное
+  
+  // --- NEW: Проверяем сохранение ---
+  let startIndex = 0;
+  const saved = getSavedProgress();
+  
+  // Если есть сохранение для этой страницы и языка
+  // Примечание: slug может быть null для переводов, поэтому проверяем URL + lang
+  if (saved && saved.lang === langType) {
+      // Если это Пали, проверяем совпадение slug
+      if (langType === 'pi' && saved.slug !== slug) {
+          startIndex = 0;
+      } else {
+          // Восстанавливаем позицию
+          startIndex = saved.index || 0;
+          console.log("Resuming TTS from index:", startIndex);
+      }
+  }
+
+  startPlaybackProcess(elements, langType, button, slug, startIndex);
 }
 
 // --- 6. Обработчик кликов ---
@@ -361,7 +404,6 @@ function handleSuttaClick(e) {
   const isPaliTarget = target.classList.contains('play-pali') || target.classList.contains('copy-pali') || target.classList.contains('open-pali');
   const textSelector = isPaliTarget ? '.pli-lang' : '.rus-lang';
 
-  // Получаем slug
   const slug = target.getAttribute('data-slug');
   
   const container = target.closest('.sutta-container') || target.closest('.text-block') || target.closest('section') || target.closest('div');
@@ -390,8 +432,6 @@ function handleSuttaClick(e) {
     else if (path.includes('/th/') || path.includes('/thml/')) langType = 'th';
     else if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) langType = 'ru';
     
-    // ИСПРАВЛЕНИЕ: Передаем slug ТОЛЬКО если это Pali. 
-    // Если это Translation, передаем null, чтобы не качать JSON.
     const slugForTTS = isPaliTarget ? slug : null;
     
     toggleSpeech(elements, langType, target, slugForTTS);
@@ -431,10 +471,31 @@ async function copyToClipboard(text) {
   try { await navigator.clipboard.writeText(text); return true; } 
   catch (err) { return false; }
 }
+
+// --- NEW: Авто-скролл к сохраненной позиции при загрузке ---
+function checkAndScrollToSavedPosition() {
+    const saved = getSavedProgress();
+    if (saved) {
+        // Пытаемся найти текстовые элементы, чтобы проскроллить
+        // Мы не знаем точно селектор (pli-lang или rus-lang), пробуем угадать по saved.lang
+        const selector = (saved.lang === 'pi') ? '.pli-lang' : '.rus-lang';
+        const elements = document.querySelectorAll(selector);
+        
+        if (elements && elements[saved.index]) {
+            setTimeout(() => {
+                elements[saved.index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Опционально: можно добавить легкую подсветку "здесь вы остановились"
+                // elements[saved.index].style.backgroundColor = '#f0f0f0';
+            }, 1000); // Небольшая задержка, чтобы страница отрендерилась
+        }
+    }
+}
+
 if (speechSynthesis.onvoiceschanged !== undefined) {
   speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
   initTTSControls(); 
+  checkAndScrollToSavedPosition(); // Проверяем сохранение при старте
 });
