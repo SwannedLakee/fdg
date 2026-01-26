@@ -557,7 +557,7 @@ body.dark .dt-button-background {
    
    <form id="slugForm" class="d-flex align-items-center flex-nowrap me-2" onsubmit="goToSlug(); return false;">
     <input type="search" class="form-control form-control-sm rounded-pill" id="paliauto" name="q" value="<?= htmlspecialchars($slug) ?>" placeholder="e.g. dn9" style="width: 120px;" autofocus>
-    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-1 flex-shrink-0" style="width:30px; height:30px;">Go</button>
+    <button type="submit" id="searchbtn" class="btn btn-sm btn-outline-secondary rounded-circle p-1 ms-1 flex-shrink-0" style="width:30px; height:30px;">Go</button>
    </form>
    
    <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)" class="toggle-dict-btn text-decoration-none text-dark me-2">
@@ -589,15 +589,15 @@ body.dark .dt-button-background {
     </div>
   </div>
 </div>
- <script src="/assets/js/jquery-3.7.0.min.js"></script>
- <script src="/assets/js/jquery-ui.min.js"></script>
+ <script src="/assets/js/jquery-3.7.0.min.js" defer></script>
+ <script src="/assets/js/jquery-ui.min.js" defer></script>
  <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
  <script type="text/javascript" src="/assets/js/datatables/datatables.js"></script>
  <script type="text/javascript" src="/assets/js/natural.js"></script>
  <script type="text/javascript" src="/assets/js/strip-html.js"></script>
  <script src="/assets/js/autopali.js" defer></script>
  <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
- <script src="/assets/js/paliLookup.js"></script>
+ <script src="/assets/js/paliLookup.js" defer></script>
  <script src="/assets/js/settings.js"></script>
  <script src="/assets/js/smoothScroll.js" defer></script>
  

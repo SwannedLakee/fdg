@@ -201,8 +201,8 @@ if ($lang === 'pi') {
 <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
 <link href="/assets/css/paliLookup.css" rel="stylesheet" />
 
-<script src="/assets/js/jquery-3.7.0.min.js"></script>
-<script src="/assets/js/jquery-ui.min.js"></script>
+<script src="/assets/js/jquery-3.7.0.min.js" defer></script>
+<script src="/assets/js/jquery-ui.min.js" defer></script>
   <title><?= $title ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -431,7 +431,7 @@ function updateLanguageSwitcher(lang) {
   <input type="search" class="form-control form-control-sm rounded-pill me-1 flex-grow-1"
          id="paliauto" name="q" value="<?= htmlspecialchars($slug) ?>"
          placeholder="e.g. an3.76" style="min-width: 100px;" autofocus>
-  <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle p-1 flex-shrink-0">
+  <button type="submit" id="searchbtn" class="btn btn-sm btn-outline-secondary rounded-circle p-1 flex-shrink-0">
     Go
   </button>
 </form>
