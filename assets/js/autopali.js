@@ -192,11 +192,14 @@ var normalizedTerm = normalizeTerm(request.term);
                     }
                     
 if (/\d/.test(selectedValue)) {
-        this.value = selectedValue.split(/\s+/)[0]; // Берём только первую часть (sn35.236)
-        return false;
-    } else {
-	 terms.push(selectedValue);
-	}
+    this.value = selectedValue.split(/\s+/)[0]; // Берём только первую часть (sn35.236)
+    
+    $("#searchbtn").click(); 
+    return false;
+} else {
+    terms.push(selectedValue);
+}
+
                     for (var i = 1; i < terms.length; i += 2) {
                         if (terms[i] === "*") {
                             terms[i] = "*";
