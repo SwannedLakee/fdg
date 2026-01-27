@@ -101,6 +101,7 @@
 
   .hint {
     font-family: sans-serif;
+    z-index:100;
   }
 
   .byline .pli-lang,
@@ -415,75 +416,6 @@
     padding: 5px; 
   }
 
-  .voice-dropdown {
-      position: relative;
-      display: inline-block;
-  }
-
-  .voice-link {
-      position: relative; 
-      display: inline-block;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-  }
-
-
-  .voice-player {
-      display: none;
-      position: fixed;
-      top: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      padding: 20px;
-      border: 1px solid #ddd;
-      z-index: 10000;
-      min-width: 350px;    
-      max-width: 90vw;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      border-radius: 24px;
-  }
-
-  .voice-dropdown:hover .voice-player {
-      display: none;
-  }
-
-  .voice-player:hover {
-      display: block !important;
-  }
-
-
-  .voice-link:focus + .voice-player,
-  .voice-player:focus-within {
-      display: block;
-  }
-
-
-  .voice-dropdown.active .voice-player {
-      display: block;
-  }
-
-  .dark .voice-player {
-      background: #333;
-      border-color: #555;
-      color: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-  }
-
-  .close-player {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-  }
-
-  .player-links {
-      margin-top: 15px;
-  }
-
   .copyLink {
       position: relative;
       display: inline-block;
@@ -567,78 +499,6 @@
           box-shadow: none;
           opacity: 0;
       }
-  }
-
-
-
-  /* Firefox-specific styles */
-  @-moz-document url-prefix() {
-    .voice-player {
-      display: none;
-      position: fixed;
-      top: 25%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      padding: 20px;
-      border: 1px solid #ddd;
-      z-index: 1000;
-      min-width: 350px;
-      max-width: 90vw;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      border-radius: 24px;
-    }
-
-    .voice-dropdown.active .voice-player {
-      display: block;
-    }
-
-    .dark .voice-player {
-      background: #333;
-      border-color: #555;
-      color: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-
-    /* Улучшение для Firefox Mobile */
-    .voice-link:focus {
-      outline: none;
-    }
-  }
-
-  /* Общие улучшения для всех браузеров */
-  .voice-player {
-    white-space: nowrap; /* Предотвращаем перенос строк */
-  }
-
-  .player-links {
-    display: inline-block;
-    margin-top: 10px;
-  }
-
-  .player-links a {
-    margin: 0 5px;
-    white-space: nowrap;
-  }
-
-  /* Для мобильных устройств - делаем окно уже */
-  @media (max-width: 480px) {
-    .voice-player {
-      min-width: 280px;
-      padding: 15px;
-      white-space: normal;
-    }
-
-    .player-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .player-links a {
-      margin: 2px;
-    }
   }
 
   /* Делаем родительские элементы контекстом для позиционирования */
@@ -816,4 +676,63 @@ transition: background-color 260ms ease-in-out;
 .tts-icon-btn, .tts-icon-btn img {
     text-decoration: none !important;
     border: none !important;
+}
+
+.voice-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.voice-link {
+    position: relative; 
+    display: inline-block;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.voice-player {
+
+    display: none;
+    position: fixed;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    z-index: 1000000;
+    min-width: 150px;
+    max-width: 90vw;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 24px;
+}
+
+/* ЕДИНСТВЕННОЕ правило для отображения */
+.voice-dropdown.active .voice-player {
+    display: block;
+}
+
+.dark .voice-player {
+    background: #333;
+    border-color: #555;
+    color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.player-links {
+    margin-top: 15px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .voice-player {
+        bottom: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 200px;
+        max-height: 80vh;
+        overflow-y: auto;
+          z-index: 1000000;
+    }
 }

@@ -148,12 +148,6 @@ dropdown.classList.remove('active');
 });
 }
 
-document.addEventListener('click', function(e) {
-if (!e.target.closest('.voice-dropdown') && !e.target.closest('.voice-player')) {
-closeAllPlayers();
-}
-});
-
 initVoicePlayers();
 
 if (typeof MutationObserver !== 'undefined') {
@@ -164,6 +158,3 @@ subtree: true
 }
 
 });
-
-
-

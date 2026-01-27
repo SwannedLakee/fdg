@@ -282,21 +282,32 @@ function handleSuttaClick(e) {
     const modeSelect = document.getElementById('tts-mode-select');
     const voiceLink = e.target.closest('.voice-link');
     const closeBtn = e.target.closest('.close-tts-btn');
-    const playerWindow = e.target.closest('.voice-player');
     const playBtn = e.target.closest('.play-main-button');
     const navBtn = e.target.closest('.prev-main-button, .next-main-button');
 
-    // 1. Клик по ссылке "Voice" — переключаем класс .active
+    // Новое: если окно открыто и клик вне него, ничего не делать (не закрывать)
+    const activeDropdown = document.querySelector('.voice-dropdown.active');
+    if (activeDropdown && !activeDropdown.contains(e.target)) {
+        return;
+    }
+
+    // 1. Клик по ссылке "Voice"
     if (voiceLink) {
         e.preventDefault();
         e.stopPropagation();
         const parent = voiceLink.closest('.voice-dropdown');
         const isActive = parent.classList.contains('active');
         
-        document.querySelectorAll('.voice-dropdown.active').forEach(el => el.classList.remove('active'));
+        // Закрываем все другие открытые окна
+        document.querySelectorAll('.voice-dropdown.active').forEach(el => {
+            if (el !== parent) el.classList.remove('active');
+        });
         
+        // Если окно уже активно - НЕ закрываем его (только по крестику)
+        // Если не активно - открываем
         if (!isActive) {
             parent.classList.add('active');
+            
             // Опционально: автостарт при открытии
             if (!ttsState.speaking && !ttsState.paused) {
                 const mode = modeSelect ? modeSelect.value : (localStorage.getItem(MODE_STORAGE_KEY) || 'pi');
@@ -308,30 +319,28 @@ function handleSuttaClick(e) {
         return;
     }
 
-    // 2. Закрытие по крестику
+    // 2. Закрытие по крестику - ЕДИНСТВЕННЫЙ способ закрыть окно
     if (closeBtn) {
         e.preventDefault();
         e.stopPropagation();
-        document.querySelectorAll('.voice-dropdown.active').forEach(el => el.classList.remove('active'));
+        closeBtn.closest('.voice-dropdown')?.classList.remove('active');
         return;
     }
 
-    // 3. Остановка всплытия кликов внутри окна (чтобы не закрывалось)
-    if (playerWindow) {
-        e.stopPropagation();
-    }
-
-    // 4. Логика кнопок навигации
+    // 3. Обработка навигации внутри окна
     if (navBtn) {
         e.preventDefault();
+        e.stopPropagation();
         const direction = navBtn.classList.contains('next-main-button') ? 'next' : 'prev';
-        changeSegment(direction); // Смена индекса + немедленный перезапуск
+        changeSegment(direction);
         return;
     }
 
-    // 5. Логика Play/Pause
+    // 4. Обработка Play/Pause
     if (playBtn) {
         e.preventDefault();
+        e.stopPropagation();
+        
         const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'pi';
         const container = playBtn.closest('.sutta-container') || document;
 
@@ -360,8 +369,6 @@ function handleSuttaClick(e) {
         startPlaybackProcess(elements, mode, playBtn, playBtn.dataset.slug, 0, container);
     }
 }
-
-
 
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
