@@ -55,8 +55,12 @@ function getSavedProgress() {
 function cleanTextForTTS(text) {
   if (!text) return "";
   return text
-    .replace(/\bПер\.(?=\s)/g, 'Перевод') 
-    .replace(/\bпер\.(?=\s)/g, 'перевод')
+    .replace(/Pāḷi MS/g, 'पाऌइ महसङ्गीति') 
+    .replace(/[Пп]ер\./g, 'Перевод') 
+    .replace(/”/g, '')
+    .replace(/ред\./g, 'отредактировано')
+    .replace(/Англ/g, 'Английского')
+    .replace(/Trn\./g, 'Translation')
     .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
     .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
 }
@@ -86,12 +90,22 @@ function resetUI() {
 
 // --- Логика Данных ---
 async function fetchSegmentsData(slug) {
-    if (!slug) return null;
-    try {
-        const url = makeJsonUrl(slug);
-        const response = await fetch(url);
-        return response.ok ? await response.json() : null;
-    } catch (e) { return null; }
+  if (!slug) return null;
+  try {
+    const url = makeJsonUrl(slug);
+    const response = await fetch(url);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    Object.keys(data).forEach(k => {
+      data[k] = data[k].replace(/”/g, '');
+    });
+
+    return data;
+  } catch (e) {
+    return null;
+  }
 }
 
 function detectTranslationLang() {
