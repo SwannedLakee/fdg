@@ -642,16 +642,34 @@
 transition: background-color 260ms ease-in-out;
 }
 
-.tts-mode-select {
+/* Объединенный стиль для селекторов режима и скорости */
+.tts-mode-select, 
+.tts-rate-select {
     background: transparent;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 12px;
     padding: 2px;
     color: #666;
-    margin-right: 5px;
     cursor: pointer;
+    margin-bottom: 5px; /* Чтобы не прилипали друг к другу при переносе */
 }
+
+/* Стилизация темной темы для обоих селекторов */
+.dark .tts-mode-select,
+.dark .tts-rate-select {
+    border-color: #555;
+    color: #ccc;
+    background-color: #333;
+}
+
+/* Контейнер для подписи "Speed" */
+.tts-speed-label {
+    font-size: 12px;
+    color: #888;
+    margin-right: 3px;
+}
+
 
 
 .tts-controls {
