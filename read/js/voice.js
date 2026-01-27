@@ -60,7 +60,7 @@ function cleanTextForTTS(text) {
     .replace(/”/g, '')
     .replace(/ред\./g, 'отредактировано')
     .replace(/Англ/g, 'Английского')
-    .replace(/Trn\./g, 'Translation')
+    .replace(/Trn:/g, 'Translation')
     .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
     .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
 }
@@ -225,11 +225,12 @@ function playNextSegment() {
   else if (item.lang === 'th') {
     utterance.lang = 'th-TH';
     utterance.voice = findMaleVoice('th', ['Male', 'Niwat']); // Niwat - частый мужской голос в TH
+           utterance.rate = ttsState.userRate * 0.6;
   } 
   else if (item.lang === 'pi') {
     if (/[\u0900-\u097F]/.test(item.text)) {
        utterance.lang = 'sa-IN';
-       utterance.rate = ttsState.userRate * 0.6;
+       utterance.rate = ttsState.userRate * 0.5;
     } else {
        const piVoice = voices.find(v => v.lang === 'id-ID') || voices.find(v => v.lang === 'it-IT');
        if (piVoice) utterance.voice = piVoice;

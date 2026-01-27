@@ -109,21 +109,8 @@ $is_ru_referer = false;
           $mimeType = ($fileExt === 'mp3') ? 'audio/mpeg' : 'audio/mp4; codecs="mp4a.40.2"';
       //    <button class='close-player' aria-label='Close player'>×</button>
 
-$playerHtml = "<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs'  title='Text-to-Speech Options' class='voice-link'>Voice</a>
-    <span class='voice-player'>
-        <audio controls class='lazy-audio' preload='none'>
-            <source src='$voicefile' type='$mimeType'>
-            Your browser does not support the audio element.
-        </audio><br>
-            Pali 
-                 <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>
-       
-            <a href='$pali_link' title='Open Pali'>Open</a> <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Cp</a> |
-            Trn  
-               <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
-            <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> |
-            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
+$playerHtml = "| <a href='$voicefile'>File
+        </a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
@@ -154,21 +141,8 @@ $playerHtml = "<span class='voice-dropdown'>
             $mimeType = 'audio/wav';
         }
 
-$playerHtml = "<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs' title='Text-to-Speech Options' >Voice</a>
-    <span class='voice-player'>
-        <audio controls class='lazy-audio' preload='none'>
-            <source src='$voicefile' type='$mimeType'>
-            Your browser does not support the audio element.
-        </audio><br>
-            Pali 
-                 <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>
-       
-            <a href='$pali_link' title='Open Pali'>Open</a> <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Cp</a> |
-            Trn  
-               <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
-            <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> |
-            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
+$playerHtml = "| <a href='$voicefile'>File
+        </a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
@@ -178,19 +152,7 @@ $playerHtml = "<span class='voice-dropdown'>
 
   // Если аудио нет, используем простую ссылку
   if (!$hasAudio) {
-$playerHtml = "<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link fdgLink mainLink' data-slug='$fromjs' title='Text-to-Speech Options' >Voice</a>
-    <span class='voice-player'>
-            Pali 
-                 <a href='javascript:void(0)' title='Listen Pali' class='play-pali'>$playIcon</a>
-       
-            <a href='$pali_link' title='Open Pali'>Open</a> <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Cp</a> |
-            Trn  
-               <a href='javascript:void(0)' title='Listen Translation' class='play-translation'>$playIcon</a>         
-            <a href='$trn_link' title='Open Translation' >Open</a> <a href='javascript:void(0)' title='Copy Translation' class='copy-translation'>Cp</a> |
-            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Voice.SC</a> |
-            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
-    </span>
+$playerHtml = "| <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a> </span>
 </span>";
 
   }
