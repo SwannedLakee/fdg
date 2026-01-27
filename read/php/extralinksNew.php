@@ -121,8 +121,8 @@ $is_ru_referer = false;
           $mimeType = ($fileExt === 'mp3') ? 'audio/mpeg' : 'audio/mp4; codecs="mp4a.40.2"';
       //    <button class='close-player' aria-label='Close player'>×</button>
 
-$playerHtml = "<a href='$voicefile'>File
-        </a> | <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a>  |
+$playerHtml = "| <a href='$voicefile'>File
+        </a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
@@ -153,8 +153,8 @@ $playerHtml = "<a href='$voicefile'>File
             $mimeType = 'audio/wav';
         }
 
-$playerHtml = "<a href='$voicefile'>File
-        </a> | <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a> |
+$playerHtml = "| <a href='$voicefile'>File
+        </a> |
             <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
     </span>
 </span>";
@@ -164,9 +164,7 @@ $playerHtml = "<a href='$voicefile'>File
 
   // Если аудио нет, используем простую ссылку
   if (!$hasAudio) {
-$playerHtml = "<a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a> |
-            <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
-    </span>
+$playerHtml = "| <a title='TTS help' href='/assets/common/ttsHelp.html'>?</a> </span>
 </span>";
 
   }

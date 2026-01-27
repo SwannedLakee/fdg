@@ -464,10 +464,9 @@ const modeLabels = {
 
 scLink += `
 <span class='voice-dropdown'>
-    <a data-slug="${texttype}/${slugReady}" href='javascript:void(0)' class='play-main-button voice-link fdgLink mainLink' title='TTS Options'>Voice&nbsp;</a>
+    <a data-slug="${texttype}/${slugReady}" href='javascript:void(0)' class='play-main-button voice-link fdgLink mainLink' title='TTS Options'>Voice</a>&nbsp;
     <span class='voice-player'>
     <a href="javascript:void(0)" class="close-tts-btn" style="float:right; margin-top:-15px; margin-right:-10px; font-size:24px; text-decoration:none; color:#888;">&times;</a>
-
 
         <a href="javascript:void(0)" title="Prev" class="prev-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/backward-step.svg"></a>
         <a href="javascript:void(0)" title="Play/Pause" data-slug="${texttype}/${slugReady}" class="play-main-button tts-icon-btn large"><img class="tts-main-img" src="/assets/svg/play-grey.svg" style="width:34px; height:34px;"></a> 
@@ -483,9 +482,9 @@ scLink += `
         </select>
         
 
-           
+      
         <br> <a href="/tts.php${window.location.search}" class="tts-text-link">Open</a>
-        | <a href="javascript:void(0)" title="Copy" class="tts-icon-btn">Cp</a>| `;
+        | <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a> `;
 //   onclick="alert(this.getAttribute('data-slug'))"
       $.ajax({
       url: "/read/php/extralinksNew.php?fromjs=" +slug
