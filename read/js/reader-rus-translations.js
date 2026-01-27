@@ -449,20 +449,6 @@ if ((translator === 'sujato') || (translator === 'brahmali')) {
   scLink += `<a target="" title='SuttaCentral.net' href="https://suttacentral.net/${slug}">SC</a>&nbsp;`;
 }
 
-// 1. Логика определения режима по умолчанию
-const path = window.location.pathname;
-const isMemorize = path.includes('/d/') || path.includes('/memorize/');
-const defaultMode = isMemorize ? 'pi' : 'trn';
-const savedMode = localStorage.getItem('tts_preferred_mode') || defaultMode;
-
-const modeLabels = {
-    'pi': 'Pāḷi',
-    'pi-trn': 'Pāḷi + Перевод',
-    'trn': 'Перевод',
-    'trn-pi': 'Перевод + Пали'
-};
-
-
 scLink += getTTSInterfaceHTML(texttype, slugReady, slug);
 
 // 2. Запускаем загрузку доп. ссылок
@@ -471,7 +457,7 @@ scLink += getTTSInterfaceHTML(texttype, slugReady, slug);
 
 //   onclick="alert(this.getAttribute('data-slug'))"
       $.ajax({
-      url: "/read/php/extralinksNew.php?fromjs=" +slug
+      url: "/read/php/extralinks.php?fromjs=" +slug
     }).done(function(data) {
       const linksArray = data.split(",");
   

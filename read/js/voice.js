@@ -189,14 +189,44 @@ function playNextSegment() {
   const voices = synth.getVoices();
   utterance.rate = ttsState.userRate;
 
-  // Логика выбора голоса
-  if (item.lang === 'ru') {
+  const currentPath = window.location.pathname;
+  const isEnglishPath = currentPath.includes('/read/') || currentPath.includes('/b/');
+
+  // Вспомогательная функция для поиска мужского голоса
+  const findMaleVoice = (langCode, preferredNames) => {
+    // 1. Сначала ищем по списку имен (мужских)
+    let voice = voices.find(v => 
+      v.lang.startsWith(langCode) && 
+      preferredNames.some(name => v.name.includes(name))
+    );
+    // 2. Если не нашли, ищем любой голос Google для этого языка
+    if (!voice) {
+      voice = voices.find(v => v.lang.startsWith(langCode) && v.name.includes('Google'));
+    }
+    // 3. Если и так нет, берем первый попавшийся для языка
+    if (!voice) {
+      voice = voices.find(v => v.lang.startsWith(langCode));
+    }
+    return voice;
+  };
+
+  // --- ЛОГИКА ВЫБОРА ГОЛОСА ---
+
+  if (isEnglishPath && item.lang !== 'pi') {
+    utterance.lang = 'en-US';
+    // Приоритетные мужские имена для EN: David, Guy, Male
+    utterance.voice = findMaleVoice('en', ['David', 'Guy', 'Male', 'Microsoft James']);
+  } 
+  else if (item.lang === 'ru') {
     utterance.lang = 'ru-RU';
-    const ruVoice = voices.find(v => v.lang === 'ru-RU' && v.name.includes('Google'));
-    if (ruVoice) utterance.voice = ruVoice;
-  } else if (item.lang === 'th') {
+    // Приоритетные мужские имена для RU: Pavel, Dmitry, Male
+    utterance.voice = findMaleVoice('ru', ['Pavel', 'Dmitry', 'Male', 'Microsoft Pavel']);
+  } 
+  else if (item.lang === 'th') {
     utterance.lang = 'th-TH';
-  } else if (item.lang === 'pi') {
+    utterance.voice = findMaleVoice('th', ['Male', 'Niwat']); // Niwat - частый мужской голос в TH
+  } 
+  else if (item.lang === 'pi') {
     if (/[\u0900-\u097F]/.test(item.text)) {
        utterance.lang = 'sa-IN';
        utterance.rate = ttsState.userRate * 0.6;
@@ -205,6 +235,9 @@ function playNextSegment() {
        if (piVoice) utterance.voice = piVoice;
        utterance.lang = piVoice ? piVoice.lang : 'en-US';
     }
+  } 
+  else {
+    utterance.lang = 'en-US';
   }
 
   utterance.onend = () => {
@@ -214,9 +247,15 @@ function playNextSegment() {
     }
   };
 
+  utterance.onerror = (event) => {
+    ttsState.currentIndex++;
+    playNextSegment();
+  };
+
   ttsState.utterance = utterance;
   synth.speak(utterance);
 }
+
 
 function stopPlayback(shouldClear = false) {
   synth.cancel();
