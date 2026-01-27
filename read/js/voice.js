@@ -374,3 +374,59 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 });
+
+
+
+// --- Интеграция с интерфейсом ---
+function getTTSInterfaceHTML(texttype, slugReady, slug) {
+    const path = window.location.pathname;
+    const isMemorize = path.includes('/d/') || path.includes('/memorize/');
+    const defaultMode = isMemorize ? 'pi' : 'trn';
+    const savedMode = localStorage.getItem('tts_preferred_mode') || defaultMode;
+
+    const modeLabels = {
+        'pi': 'Pāḷi',
+        'pi-trn': 'Pāḷi + Перевод',
+        'trn': 'Перевод',
+        'trn-pi': 'Перевод + Пали'
+    };
+
+    // Возвращаем HTML плеера + пустой span для доп. ссылок
+    return `
+    <span class='voice-dropdown'>
+        <a data-slug="${texttype}/${slugReady}" data-root-slug="${slug}" href='javascript:void(0)' class='play-main-button voice-link fdgLink mainLink' title='TTS Options'>Voice</a>&nbsp;
+        <span class='voice-player'>
+            <a href="javascript:void(0)" class="close-tts-btn" style="float:right; margin-top:-15px; margin-right:-10px; font-size:24px; text-decoration:none; color:#888;">&times;</a>
+            <a href="javascript:void(0)" title="Prev" class="prev-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/backward-step.svg"></a>
+            <a href="javascript:void(0)" title="Play/Pause" data-slug="${texttype}/${slugReady}" class="play-main-button tts-icon-btn large"><img class="tts-main-img" src="/assets/svg/play-grey.svg" style="width:34px; height:34px;"></a> 
+            <a href="javascript:void(0)" title="Next" class="next-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/forward-step.svg"></a>
+            <br>
+            <select id="tts-mode-select" class="tts-mode-select">
+                ${Object.entries(modeLabels).map(([val, label]) => 
+                    `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
+                ).join('')}
+            </select>
+            <br>
+            <a href="/tts.php${window.location.search}" class="tts-text-link">Open</a> | 
+            <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/${slug}'>Alt</a>
+    `; // Закрываем <p>, который открылся в scLink
+}
+
+/*
+        </span>
+    </span>
+    <span id="extra-links-container"></span>
+    </p>
+    
+*/
+// Функция для загрузки внешних ссылок (бывший AJAX из ордера)
+function loadExtraLinks(slug) {
+    $.ajax({
+        url: "/read/php/extralinksNew.php?fromjs=" + slug
+    }).done(function(data) {
+        const container = document.getElementById('extra-links-container');
+        if (container && data.split(",")[0].length >= 4) {
+            container.innerHTML = data.split(",")[0];
+        }
+    });
+}

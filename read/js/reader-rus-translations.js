@@ -462,29 +462,13 @@ const modeLabels = {
     'trn-pi': 'Перевод + Пали'
 };
 
-scLink += `
-<span class='voice-dropdown'>
-    <a data-slug="${texttype}/${slugReady}" href='javascript:void(0)' class='play-main-button voice-link fdgLink mainLink' title='TTS Options'>Voice</a>&nbsp;
-    <span class='voice-player'>
-    <a href="javascript:void(0)" class="close-tts-btn" style="float:right; margin-top:-15px; margin-right:-10px; font-size:24px; text-decoration:none; color:#888;">&times;</a>
 
-        <a href="javascript:void(0)" title="Prev" class="prev-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/backward-step.svg"></a>
-        <a href="javascript:void(0)" title="Play/Pause" data-slug="${texttype}/${slugReady}" class="play-main-button tts-icon-btn large"><img class="tts-main-img" src="/assets/svg/play-grey.svg" style="width:34px; height:34px;"></a> 
-        <a href="javascript:void(0)" title="Next" class="next-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/forward-step.svg"></a>
+scLink += getTTSInterfaceHTML(texttype, slugReady, slug);
 
-      <br>
-      
-        <select id="tts-mode-select" class="tts-mode-select">
-            <option value="pi" ${savedMode === 'pi' ? 'selected' : ''}>${modeLabels['pi']}</option>
-            <option value="pi-trn" ${savedMode === 'pi-trn' ? 'selected' : ''}>${modeLabels['pi-trn']}</option>
-            <option value="trn" ${savedMode === 'trn' ? 'selected' : ''}>${modeLabels['trn']}</option>
-            <option value="trn-pi" ${savedMode === 'trn-pi' ? 'selected' : ''}>${modeLabels['trn-pi']}</option>
-        </select>
-        
+// 2. Запускаем загрузку доп. ссылок
+//loadExtraLinks(slug);
 
-      
-        <br> <a href="/tts.php${window.location.search}" class="tts-text-link">Open</a>
-        | <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt</a> `;
+
 //   onclick="alert(this.getAttribute('data-slug'))"
       $.ajax({
       url: "/read/php/extralinksNew.php?fromjs=" +slug
