@@ -2,7 +2,8 @@
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
   const suffix = '_rootd-pli-ms.json';
-  return `${basePath}${slug}${suffix}`;
+  const cleanSlug = slug.replace(/pli-tv-|b[ui]-vb-/g, "");
+  return `${basePath}${cleanSlug}${suffix}`;
 };
 
 // --- Глобальное состояние ---
@@ -15,31 +16,29 @@ const ttsState = {
   utterance: null,
   langSettings: null,
   userRate: 1.0,
-  // --- NEW: Добавляем slug в состояние для сохранения ---
   currentSlug: null 
 };
 
 let screenWakeLock = null;
 const synth = window.speechSynthesis;
-
-// --- NEW: Управление LocalStorage ---
 const STORAGE_KEY = 'dhamma_tts_progress';
+const MODE_STORAGE_KEY = 'tts_preferred_mode';
 
+// --- Сохранение прогресса ---
 function saveProgress() {
     if (!ttsState.speaking && !ttsState.paused) return;
-    
+    const item = ttsState.playlist[ttsState.currentIndex];
+    const domId = item?.element?.id || item?.element?.closest('[id]')?.id;
+
     const data = {
-        url: window.location.pathname, // Привязываемся к текущей странице
+        url: window.location.pathname,
         slug: ttsState.currentSlug,
         index: ttsState.currentIndex,
+        lastId: domId,
         lang: ttsState.langSettings,
         timestamp: Date.now()
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function clearProgress() {
-    localStorage.removeItem(STORAGE_KEY);
 }
 
 function getSavedProgress() {
@@ -47,208 +46,123 @@ function getSavedProgress() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return null;
         const data = JSON.parse(raw);
-        
-        // Проверяем, что сохранение относится к текущей странице
         if (data.url !== window.location.pathname) return null;
-        
-        // Опционально: сбрасывать, если прошло много времени (например, > 24 часов)
-        // if (Date.now() - data.timestamp > 24 * 60 * 60 * 1000) return null;
-
         return data;
-    } catch (e) {
-        return null;
-    }
+    } catch (e) { return null; }
 }
 
-// --- 1. Wake Lock ---
-async function requestWakeLock() {
-  if ('wakeLock' in navigator) {
-    try { screenWakeLock = await navigator.wakeLock.request('screen'); } 
-    catch (err) { console.warn('Wake Lock failed:', err); }
-  }
-}
-function releaseWakeLock() {
-  if (screenWakeLock !== null) {
-    screenWakeLock.release().then(() => { screenWakeLock = null; });
-  }
-}
-document.addEventListener("visibilitychange", async () => {
-  if (screenWakeLock !== null && document.visibilityState === "visible") {
-    if (ttsState.speaking && !ttsState.paused) requestWakeLock();
-  }
-});
-
-// --- 2. Меню скорости ---
-function toggleSpeedMenu() {
-    const menu = document.getElementById('speedMenu');
-    if (!menu) return;
-    if (menu.style.display === 'block') {
-        menu.style.display = 'none';
-        document.removeEventListener('click', closeSpeedMenuOutside);
-    } else {
-        menu.style.display = 'block';
-        document.addEventListener('click', closeSpeedMenuOutside);
-    }
-}
-function closeSpeedMenuOutside(event) {
-    const menu = document.getElementById('speedMenu');
-    const btn = document.getElementById('speedToggleBtn');
-    if (!menu || !btn) return;
-    if (!menu.contains(event.target) && !btn.contains(event.target)) {
-        menu.style.display = 'none';
-        document.removeEventListener('click', closeSpeedMenuOutside);
-    }
-}
-function updateSpeedLabel(val) {
-    const btn = document.getElementById('speedToggleBtn');
-    if (btn) btn.innerText = val + 'x';
-}
-function initTTSControls() {
-  const rateInput = document.getElementById('rateRange');
-  const toggleBtn = document.getElementById('speedToggleBtn');
-  if (rateInput) {
-    rateInput.value = ttsState.userRate;
-    updateSpeedLabel(ttsState.userRate);
-    rateInput.addEventListener('input', (e) => {
-      const newRate = parseFloat(e.target.value);
-      ttsState.userRate = newRate;
-      updateSpeedLabel(newRate);
-      if (ttsState.speaking && !ttsState.paused) {
-          synth.cancel();
-          playNextSegment(); 
-      }
-    });
-  }
-  if (toggleBtn) {
-      toggleBtn.onclick = (e) => { e.preventDefault(); toggleSpeedMenu(); };
-  }
+// --- Утилиты ---
+function cleanTextForTTS(text) {
+  if (!text) return "";
+  return text
+    .replace(/\bПер\.(?=\s)/g, 'Перевод') 
+    .replace(/\bпер\.(?=\s)/g, 'перевод')
+    .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
+    .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
 }
 
-// --- 3. UI утилиты ---
+function setButtonIcon(button, type) {
+  const allPlayButtons = document.querySelectorAll('.play-main-button');
+  allPlayButtons.forEach(btn => {
+    const img = btn.querySelector('img');
+    if (!img) return;
+    if (type === 'pause') { 
+      img.src = '/assets/svg/pause-grey.svg';
+      btn.classList.add('playing');
+    } else { 
+      img.src = '/assets/svg/play-grey.svg';
+      btn.classList.remove('playing');
+    }
+  });
+}
+
 function resetUI() {
-  const pauseIcons = document.querySelectorAll('img[src*="pause-grey.svg"]');
-  pauseIcons.forEach(img => {
+  document.querySelectorAll('.playing').forEach(btn => btn.classList.remove('playing'));
+  document.querySelectorAll('img[src*="pause-grey.svg"]').forEach(img => {
     img.src = '/assets/svg/play-grey.svg';
-    img.alt = 'Play';
-    const btn = img.closest('a') || img.closest('button');
-    if (btn) btn.classList.remove('playing');
   });
   document.querySelectorAll('.tts-active').forEach(el => el.classList.remove('tts-active'));
 }
-function setButtonIcon(button, type) {
-  if (!button) return;
-  const img = button.querySelector('img');
-  if (!img) return;
-  if (type === 'pause') { 
-    img.src = '/assets/svg/pause-grey.svg';
-    img.alt = 'Pause';
-    button.classList.add('playing');
-  } else { 
-    img.src = '/assets/svg/play-grey.svg';
-    img.alt = 'Play';
-    button.classList.remove('playing');
-  }
-}
-function cleanTextForTTS(text) {
-  return text.replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
-}
 
-// --- 4. Логика Подготовки Данных ---
-
+// --- Логика Данных ---
 async function fetchSegmentsData(slug) {
+    if (!slug) return null;
     try {
         const url = makeJsonUrl(slug);
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json(); 
-    } catch (e) {
-        console.error("TTS Fetch Error:", e);
-        return null; 
-    }
+        return response.ok ? await response.json() : null;
+    } catch (e) { return null; }
 }
 
-async function preparePlaylist(elements, slug) {
-    let jsonData = null;
-    let cleanJsonMap = {}; 
+function detectTranslationLang() {
+    const path = window.location.pathname;
+    return (path.includes('/th/') || path.includes('/thml/')) ? 'th' : 'ru';
+}
 
-    if (slug) {
-        jsonData = await fetchSegmentsData(slug);
-        
-        if (jsonData) {
-            Object.keys(jsonData).forEach(fullKey => {
-                const parts = fullKey.split(':');
-                const cleanKey = parts.length > 1 ? parts[1] : fullKey;
-                cleanJsonMap[cleanKey] = jsonData[fullKey];
-            });
-        }
+async function preparePlaylist(elements, slug, forceLang = null) {
+    let jsonData = (forceLang === 'pi' && slug) ? await fetchSegmentsData(slug) : null;
+    let cleanJsonMap = {}; 
+    if (jsonData) {
+        Object.keys(jsonData).forEach(fullKey => {
+            const parts = fullKey.split(':');
+            cleanJsonMap[parts.length > 1 ? parts[1] : fullKey] = jsonData[fullKey];
+        });
     }
 
     const playlist = [];
-
-    elements.forEach((el, index) => {
+    elements.forEach((el) => {
         let textToRead = "";
-        const domId = el.id || (el.closest('[id]') ? el.closest('[id]').id : null);
+        const domId = el.id || el.closest('[id]')?.id;
         
-        if (Object.keys(cleanJsonMap).length > 0 && domId && cleanJsonMap[domId]) {
-            textToRead = cleanJsonMap[domId];
-            textToRead = textToRead.replace(/<[^>]*>/g, '');
-        } 
-        else {
+        if (forceLang === 'pi' && domId && cleanJsonMap[domId]) {
+            textToRead = cleanJsonMap[domId].replace(/<[^>]*>/g, '');
+        } else {
             const clone = el.cloneNode(true);
             clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
             textToRead = cleanTextForTTS(clone.textContent);
         }
 
-        if (textToRead && textToRead.length > 1) {
-            playlist.push({ text: textToRead, element: el });
+        if (textToRead.length > 1) {
+            let itemLang = forceLang;
+            if (itemLang === 'trn') itemLang = detectTranslationLang();
+            playlist.push({ text: textToRead, element: el, lang: itemLang || 'pi' });
         }
     });
-
     return playlist;
 }
 
-// --- 5. Логика Проигрывателя ---
+async function prepareCombinedPlaylist(container, slug, order = 'pi-trn') {
+    const paliElements = container.querySelectorAll('.pli-lang');
+    const transElements = container.querySelectorAll('.rus-lang');
+    const trnLang = detectTranslationLang();
+    const paliPlaylist = await preparePlaylist(paliElements, slug, 'pi');
+    const transPlaylist = await preparePlaylist(transElements, null, trnLang);
 
-// --- MODIFIED: Добавлен аргумент startIndex ---
-async function startPlaybackProcess(elements, langType, button, slug, startIndex = 0) {
-  stopPlayback(false); // false = не чистить прогресс, так как мы сейчас начнем новый
-  
-  const playlist = await preparePlaylist(elements, slug);
-  
-  if (playlist.length === 0) {
-      setButtonIcon(button, 'play');
-      return;
-  }
-
-  ttsState.playlist = playlist;
-  
-  // Проверка на валидность индекса (если текст изменился, а индекс старый)
-  if (startIndex >= playlist.length) startIndex = 0;
-  
-  ttsState.currentIndex = startIndex;
-  ttsState.button = button;
-  ttsState.speaking = true;
-  ttsState.paused = false;
-  ttsState.langSettings = langType;
-  ttsState.currentSlug = slug; // Сохраняем slug
-
-  resetUI();
-  setButtonIcon(button, 'pause');
-  requestWakeLock();
-  playNextSegment();
+    const combined = [];
+    const maxLength = Math.max(paliPlaylist.length, transPlaylist.length);
+    for (let i = 0; i < maxLength; i++) {
+        if (order === 'pi-trn') {
+            if (paliPlaylist[i]) combined.push(paliPlaylist[i]);
+            if (transPlaylist[i]) combined.push(transPlaylist[i]);
+        } else {
+            if (transPlaylist[i]) combined.push(transPlaylist[i]);
+            if (paliPlaylist[i]) combined.push(paliPlaylist[i]);
+        }
+    }
+    return combined;
 }
 
+// --- Ядро Проигрывателя ---
 function playNextSegment() {
-  if (ttsState.paused) return;
-  
-  if (ttsState.currentIndex >= ttsState.playlist.length || !ttsState.speaking) {
-    stopPlayback(true); // true = очистить прогресс, так как дослушали до конца
+  if (ttsState.paused || !ttsState.speaking) return;
+  if (synth.speaking) synth.cancel();
+
+  if (ttsState.currentIndex >= ttsState.playlist.length) {
+    stopPlayback(true);
     return;
   }
 
-  // --- NEW: Сохраняем прогресс перед началом каждого сегмента ---
   saveProgress();
-
   const item = ttsState.playlist[ttsState.currentIndex];
   
   document.querySelectorAll('.tts-active').forEach(e => e.classList.remove('tts-active'));
@@ -258,60 +172,29 @@ function playNextSegment() {
   }
 
   const utterance = new SpeechSynthesisUtterance(item.text);
-  const langType = ttsState.langSettings;
   const voices = synth.getVoices();
-  const userRate = ttsState.userRate;
+  utterance.rate = ttsState.userRate;
 
-  if (langType === 'ru') {
+  // Логика выбора голоса
+  if (item.lang === 'ru') {
     utterance.lang = 'ru-RU';
     const ruVoice = voices.find(v => v.lang === 'ru-RU' && v.name.includes('Google'));
     if (ruVoice) utterance.voice = ruVoice;
-    utterance.rate = userRate;
-  } 
-  else if (langType === 'th') {
+  } else if (item.lang === 'th') {
     utterance.lang = 'th-TH';
-    utterance.rate = userRate * 0.8; 
-  } 
-  else if (langType === 'pi') {
-    const isDevanagari = /[\u0900-\u097F]/.test(item.text);
-    if (isDevanagari) {
+  } else if (item.lang === 'pi') {
+    if (/[\u0900-\u097F]/.test(item.text)) {
        utterance.lang = 'sa-IN';
-       utterance.rate = userRate * 0.5; 
+       utterance.rate = ttsState.userRate * 0.6;
     } else {
-       const indoVoice = voices.find(v => v.lang === 'id-ID');
-       const italianVoice = voices.find(v => v.lang === 'it-IT');
-       if (indoVoice) {
-           utterance.voice = indoVoice;
-           utterance.lang = 'id-ID';
-           utterance.rate = userRate * 0.85; 
-       } else if (italianVoice) {
-           utterance.voice = italianVoice;
-           utterance.lang = 'it-IT';
-           utterance.rate = userRate * 0.9;
-       } else {
-           utterance.lang = 'en-US';
-           utterance.rate = userRate * 0.8; 
-       }
+       const piVoice = voices.find(v => v.lang === 'id-ID') || voices.find(v => v.lang === 'it-IT');
+       if (piVoice) utterance.voice = piVoice;
+       utterance.lang = piVoice ? piVoice.lang : 'en-US';
     }
-  } 
-  else {
-    utterance.lang = 'en-US';
-    utterance.rate = userRate;
   }
 
-  utterance.onend = function() {
-    if (this !== ttsState.utterance) return;
-    if (ttsState.paused) return; 
-
-    if (ttsState.speaking) {
-      ttsState.currentIndex++;
-      playNextSegment();
-    }
-  };
-
-  utterance.onerror = function(e) {
-    if (this !== ttsState.utterance) return; 
-    if (e.error !== 'interrupted' && e.error !== 'canceled') {
+  utterance.onend = () => {
+    if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
       playNextSegment();
     }
@@ -321,181 +204,189 @@ function playNextSegment() {
   synth.speak(utterance);
 }
 
-// --- MODIFIED: Добавлен флаг clearStorage ---
 function stopPlayback(shouldClear = false) {
   synth.cancel();
   ttsState.speaking = false;
   ttsState.paused = false;
-  ttsState.playlist = [];
-  ttsState.currentIndex = 0;
-  if (ttsState.button) setButtonIcon(ttsState.button, 'play');
+  setButtonIcon(null, 'play');
   resetUI();
-  releaseWakeLock();
-  
-  if (shouldClear) {
-      clearProgress();
-  }
+  if (shouldClear) localStorage.removeItem(STORAGE_KEY);
 }
 
-function toggleSpeech(elements, langType, button, slug) {
-  if (ttsState.button === button) {
+// --- Навигация и Клики ---
+function changeSegment(direction) {
+    if (!ttsState.playlist.length) return;
+    synth.cancel();
+    ttsState.utterance = null;
+
+    if (direction === 'next') {
+        if (ttsState.currentIndex < ttsState.playlist.length - 1) ttsState.currentIndex++;
+    } else if (direction === 'prev') {
+        if (ttsState.currentIndex > 0) ttsState.currentIndex--;
+    }
+
+    saveProgress();
+    const item = ttsState.playlist[ttsState.currentIndex];
+    document.querySelectorAll('.tts-active').forEach(e => e.classList.remove('tts-active'));
+    if (item?.element) {
+        item.element.classList.add('tts-active');
+        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     if (ttsState.speaking && !ttsState.paused) {
-      synth.pause();
-      ttsState.paused = true;
-      setButtonIcon(button, 'play'); 
-      releaseWakeLock();
-      return;
+        setTimeout(() => playNextSegment(), 50);
     }
+}
 
-    if (ttsState.paused) {
-      ttsState.paused = false;
-      setButtonIcon(button, 'pause');
-      requestWakeLock();
-      synth.cancel(); 
-      // Сохраняем текущий индекс перед перезапуском
-      const currentIndex = ttsState.currentIndex;
-      ttsState.speaking = false;
-      ttsState.currentIndex = currentIndex;
-      ttsState.speaking = true;
-      playNextSegment();
-      return;
-    }
-    
-    if (ttsState.speaking && ttsState.paused === false) {
-      stopPlayback(true); // Пользователь явно остановил -> чистим
-      return;
-    }
-  }
-  
-  // Запуск с нуля или новой кнопкой
-  stopPlayback(false); // Не чистим, сейчас проверим сохраненное
-  
-  // --- NEW: Проверяем сохранение ---
-  let startIndex = 0;
+async function startPlaybackProcess(elements, langType, button, slug, startIndex = 0, container = null) {
   const saved = getSavedProgress();
+  stopPlayback(false); 
   
-  // Если есть сохранение для этой страницы и языка
-  // Примечание: slug может быть null для переводов, поэтому проверяем URL + lang
-  if (saved && saved.lang === langType) {
-      // Если это Пали, проверяем совпадение slug
-      if (langType === 'pi' && saved.slug !== slug) {
-          startIndex = 0;
-      } else {
-          // Восстанавливаем позицию
-          startIndex = saved.index || 0;
-          console.log("Resuming TTS from index:", startIndex);
-      }
+  let playlist = (langType.includes('-')) 
+      ? await prepareCombinedPlaylist(container, slug, langType)
+      : await preparePlaylist(elements, slug, langType);
+  
+  if (!playlist.length) return;
+
+  ttsState.playlist = playlist;
+  ttsState.currentSlug = slug;
+  ttsState.langSettings = langType;
+  ttsState.button = button;
+  ttsState.speaking = true;
+
+  if (saved && saved.lastId) {
+      const foundIdx = playlist.findIndex(item => (item.element?.id || item.element?.closest('[id]')?.id) === saved.lastId);
+      if (foundIdx !== -1) startIndex = foundIdx;
   }
 
-  startPlaybackProcess(elements, langType, button, slug, startIndex);
+  ttsState.currentIndex = startIndex < playlist.length ? startIndex : 0;
+  setButtonIcon(button, 'pause');
+  playNextSegment();
 }
 
-// --- 6. Обработчик кликов ---
 function handleSuttaClick(e) {
-  const target = e.target.closest('.copy-pali, .copy-translation, .open-pali, .open-translation, .play-pali, .play-translation');
-  if (!target) return;
+    const modeSelect = document.getElementById('tts-mode-select');
+    const voiceLink = e.target.closest('.voice-link');
+    const closeBtn = e.target.closest('.close-tts-btn');
+    const playerWindow = e.target.closest('.voice-player');
+    const playBtn = e.target.closest('.play-main-button');
+    const navBtn = e.target.closest('.prev-main-button, .next-main-button');
 
-  e.preventDefault();
-
-  const isPlay = target.classList.contains('play-pali') || target.classList.contains('play-translation');
-  const isOpen = target.classList.contains('open-pali') || target.classList.contains('open-translation');
-  const isCopy = target.classList.contains('copy-pali') || target.classList.contains('copy-translation');
-  
-  const isPaliTarget = target.classList.contains('play-pali') || target.classList.contains('copy-pali') || target.classList.contains('open-pali');
-  const textSelector = isPaliTarget ? '.pli-lang' : '.rus-lang';
-
-  const slug = target.getAttribute('data-slug');
-  
-  const container = target.closest('.sutta-container') || target.closest('.text-block') || target.closest('section') || target.closest('div');
-  const elements = container ? container.querySelectorAll(textSelector) : document.querySelectorAll(textSelector);
-  
-  if (elements.length === 0) return;
-
-  if (isOpen || isCopy) {
-    let combinedText = "";
-    elements.forEach(el => {
-      const clone = el.cloneNode(true);
-      clone.querySelectorAll('.variant, sup, .ref').forEach(v => v.remove());
-      combinedText += cleanTextForTTS(clone.textContent) + "\n\n";
-    });
-    if (!combinedText.trim()) return;
-    if (isOpen) openInNewTab(combinedText, isPaliTarget);
-    else if (isCopy) copyToClipboard(combinedText).then(success => showNotification(success ? "Copied" : "Failed"));
-    return;
-  }
-
-  if (isPlay) {
-    let langType = 'en'; 
-    const path = window.location.pathname;
-    
-    if (isPaliTarget) langType = 'pi';
-    else if (path.includes('/th/') || path.includes('/thml/')) langType = 'th';
-    else if (path.includes('/ru/') || path.includes('/r/') || path.includes('/ml/')) langType = 'ru';
-    
-    const slugForTTS = isPaliTarget ? slug : null;
-    
-    toggleSpeech(elements, langType, target, slugForTTS);
-  } 
-}
-
-function showNotification(message) {
-  const n = document.createElement('div');
-  n.className = 'bubble-notification';
-  n.innerText = message;
-  document.body.appendChild(n);
-  setTimeout(() => n.classList.add('show'), 10);
-  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 2000);
-}
-function generatePageTitle(isPali) {
-  const path = window.location.pathname.replace(/^\//, '').replace(/\.html$/, '').replace(/\//g, '_');
-  return `${path || 'text'}_${isPali ? 'pali' : 'translation'}_tts`;
-}
-function openInNewTab(content, isPali) {
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = '/assets/render.php';
-  form.target = '_blank';
-  const inputs = { title: generatePageTitle(isPali), content: content, lang: isPali ? 'pi' : 'ru' };
-  for (const [key, value] of Object.entries(inputs)) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = value;
-    form.appendChild(input);
-  }
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
-}
-async function copyToClipboard(text) {
-  try { await navigator.clipboard.writeText(text); return true; } 
-  catch (err) { return false; }
-}
-
-// --- NEW: Авто-скролл к сохраненной позиции при загрузке ---
-function checkAndScrollToSavedPosition() {
-    const saved = getSavedProgress();
-    if (saved) {
-        // Пытаемся найти текстовые элементы, чтобы проскроллить
-        // Мы не знаем точно селектор (pli-lang или rus-lang), пробуем угадать по saved.lang
-        const selector = (saved.lang === 'pi') ? '.pli-lang' : '.rus-lang';
-        const elements = document.querySelectorAll(selector);
+    // 1. Клик по основной ссылке "Voice" — открыть/закрыть окно
+    if (voiceLink) {
+        e.preventDefault();
+        e.stopPropagation();
+        const parent = voiceLink.closest('.voice-dropdown');
+        const isOpening = !parent.classList.contains('active');
         
-        if (elements && elements[saved.index]) {
-            setTimeout(() => {
-                elements[saved.index].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Опционально: можно добавить легкую подсветку "здесь вы остановились"
-                // elements[saved.index].style.backgroundColor = '#f0f0f0';
-            }, 1000); // Небольшая задержка, чтобы страница отрендерилась
+        // Закрываем другие окна, если они открыты
+        document.querySelectorAll('.voice-dropdown.active').forEach(el => el.classList.remove('active'));
+        
+        if (isOpening) {
+            parent.classList.add('active');
+            // Если музыка не играет, можно сразу запустить (опционально)
+            if (!ttsState.speaking && !ttsState.paused) {
+                const mode = modeSelect ? modeSelect.value : (localStorage.getItem(MODE_STORAGE_KEY) || 'pi');
+                const slug = voiceLink.dataset.slug;
+                const container = voiceLink.closest('.sutta-container') || document;
+                let elements = mode === 'pi' ? container.querySelectorAll('.pli-lang') : 
+                               mode === 'trn' ? container.querySelectorAll('.rus-lang') : null;
+                startPlaybackProcess(elements, mode, voiceLink, slug, 0, container);
+            }
+        } else {
+            parent.classList.remove('active');
         }
+        return;
+    }
+
+    // 2. Клик по "крестику" (если добавлен) — закрыть окно
+    if (closeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelectorAll('.voice-dropdown.active').forEach(el => el.classList.remove('active'));
+        return;
+    }
+
+    // 3. Выбор режима в выпадающем списке внутри окна
+    if (e.target.id === 'tts-mode-select') {
+        const newMode = e.target.value;
+        localStorage.setItem(MODE_STORAGE_KEY, newMode);
+        
+        // Если уже слушаем — перезапускаем в новом режиме с того же места
+        if (ttsState.speaking || ttsState.paused) {
+            saveProgress();
+            const btn = document.querySelector('.play-main-button');
+            const slug = btn?.dataset.slug;
+            const container = btn?.closest('.sutta-container') || document;
+            startPlaybackProcess(null, newMode, btn, slug, 0, container);
+        }
+        return;
+    }
+
+    // 4. Кнопки навигации (Назад / Вперед)
+    if (navBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const direction = navBtn.classList.contains('next-main-button') ? 'next' : 'prev';
+        changeSegment(direction);
+        return;
+    }
+
+    // 5. Кнопка Play/Pause внутри окна (или на самой ссылке)
+    if (playBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const slug = playBtn.dataset.slug;
+        const container = playBtn.closest('.sutta-container') || document;
+        const mode = modeSelect ? modeSelect.value : (localStorage.getItem(MODE_STORAGE_KEY) || 'pi');
+
+        // Если это та же кнопка — управляем паузой
+        if (ttsState.button && (ttsState.button === playBtn || ttsState.button.classList.contains('play-main-button'))) {
+            if (ttsState.speaking && !ttsState.paused) {
+                synth.cancel();
+                ttsState.paused = true;
+                setButtonIcon(playBtn, 'play');
+                return;
+            }
+            if (ttsState.paused) {
+                // Если режим сменили за время паузы — пересобираем плейлист
+                if (ttsState.langSettings !== mode) {
+                    saveProgress();
+                    startPlaybackProcess(null, mode, playBtn, slug, 0, container);
+                } else {
+                    ttsState.paused = false;
+                    ttsState.speaking = true;
+                    setButtonIcon(playBtn, 'pause');
+                    playNextSegment();
+                }
+                return;
+            }
+        }
+
+        // Запуск нового процесса воспроизведения
+        let elements = mode === 'pi' ? container.querySelectorAll('.pli-lang') : 
+                       mode === 'trn' ? container.querySelectorAll('.rus-lang') : null;
+        startPlaybackProcess(elements, mode, playBtn, slug, 0, container);
+        return;
+    }
+
+    // 6. Клик внутри окна плеера по любым другим местам (не закрываем окно)
+    if (playerWindow) {
+        e.stopPropagation();
+        return;
+    }
+
+    // 7. Прочие кнопки (Copy, Open и т.д.)
+    const otherBtn = e.target.closest('.copy-pali-btn, .tts-text-link');
+    if (otherBtn) {
+        // Здесь остается ваша стандартная логика
+        return;
     }
 }
 
-if (speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleSuttaClick);
-  initTTSControls(); 
-  checkAndScrollToSavedPosition(); // Проверяем сохранение при старте
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 });

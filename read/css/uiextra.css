@@ -741,17 +741,33 @@
   vertical-align: middle;
 }
 
-/* Убираем подчеркивание у кнопок play-pali и play-translation */
-.play-pali, 
-.play-translation,
-.voice-link {
+/* Универсальный класс для кнопок-иконок в меню Voice */
+.tts-icon-btn {
     text-decoration: none !important;
-    border: none; /* На случай, если это граница */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 0 !important;
+    outline: none;
+    border: none;
+    padding: 2px;
+    transition: opacity 0.2s;
 }
 
-/* Также полезно убрать подчеркивание у всех ссылок внутри плеера */
+.tts-icon-btn:hover {
+    opacity: 0.7;
+    text-decoration: none !important;
+}
+
+.tts-icon-btn img {
+    display: block;
+    margin: 0;
+}
+
+/* Убираем стандартные подчеркивания ссылок внутри плеера */
 .voice-player a {
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 
@@ -766,3 +782,38 @@
 transition: background-color 260ms ease-in-out;
 }
 
+.tts-mode-select {
+    background: transparent;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 2px;
+    color: #666;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+
+.tts-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.tts-icon-btn.large .tts-main-img {
+    width: 32px;
+    height: 32px;
+}
+
+.tts-footer {
+    margin-top: 8px;
+    font-size: 0.9em;
+}
+
+/* Убираем подчеркивание в любой ситуации */
+.tts-icon-btn, .tts-icon-btn img {
+    text-decoration: none !important;
+    border: none !important;
+}

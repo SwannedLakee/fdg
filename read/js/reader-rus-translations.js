@@ -449,25 +449,44 @@ if ((translator === 'sujato') || (translator === 'brahmali')) {
   scLink += `<a target="" title='SuttaCentral.net' href="https://suttacentral.net/${slug}">SC</a>&nbsp;`;
 }
 
-  
-scLink += `<span class='voice-dropdown'>
-    <a href='javascript:void(0)' class='voice-link fdgLink mainLink'  title='Text-to-Speech Options' >Voice</a>
+// 1. Логика определения режима по умолчанию
+const path = window.location.pathname;
+const isMemorize = path.includes('/d/') || path.includes('/memorize/');
+const defaultMode = isMemorize ? 'pi' : 'trn';
+const savedMode = localStorage.getItem('tts_preferred_mode') || defaultMode;
+
+const modeLabels = {
+    'pi': 'Pāḷi',
+    'pi-trn': 'Pāḷi + Перевод',
+    'trn': 'Перевод',
+    'trn-pi': 'Перевод + Пали'
+};
+
+scLink += `
+<span class='voice-dropdown'>
+    <a data-slug="${texttype}/${slugReady}" href='javascript:void(0)' class='play-main-button voice-link fdgLink mainLink' title='TTS Options'>Voice&nbsp;</a>
     <span class='voice-player'>
-            Pali 
-<a href="javascript:void(0)"
-   title="Listen Pali"
-   data-slug="${texttype}/${slugReady}"
-   class="play-pali">
-    <img class="tts-mini-button" src="/assets/svg/play-grey.svg">
-</a>
-| Trn  
- <a href="javascript:void(0)"
-   title='Listen Translation'
-   data-slug="${texttype}/${slugReady}"
-   class='play-translation'>
-    <img class="tts-mini-button" src="/assets/svg/play-grey.svg">
-</a> |
-<a href="/tts.php${window.location.search}" title="Open Pali">Open</a> <a href='javascript:void(0)' title='Copy Pali' class='copy-pali'>Cp</a> | `;
+    <a href="javascript:void(0)" class="close-tts-btn" style="float:right; margin-top:-15px; margin-right:-10px; font-size:24px; text-decoration:none; color:#888;">&times;</a>
+
+
+        <a href="javascript:void(0)" title="Prev" class="prev-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/backward-step.svg"></a>
+        <a href="javascript:void(0)" title="Play/Pause" data-slug="${texttype}/${slugReady}" class="play-main-button tts-icon-btn large"><img class="tts-main-img" src="/assets/svg/play-grey.svg" style="width:24px; height:24px;"></a> 
+        <a href="javascript:void(0)" title="Next" class="next-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/forward-step.svg"></a>
+
+      <br>
+      <br>
+      
+        <select id="tts-mode-select" class="tts-mode-select">
+            <option value="pi" ${savedMode === 'pi' ? 'selected' : ''}>${modeLabels['pi']}</option>
+            <option value="pi-trn" ${savedMode === 'pi-trn' ? 'selected' : ''}>${modeLabels['pi-trn']}</option>
+            <option value="trn" ${savedMode === 'trn' ? 'selected' : ''}>${modeLabels['trn']}</option>
+            <option value="trn-pi" ${savedMode === 'trn-pi' ? 'selected' : ''}>${modeLabels['trn-pi']}</option>
+        </select>
+        
+
+           
+        <br> <a href="/tts.php${window.location.search}" class="tts-text-link">Open</a>
+        | <a href="javascript:void(0)" title="Copy" class="tts-icon-btn">Cp</a>| `;
 //   onclick="alert(this.getAttribute('data-slug'))"
       $.ajax({
       url: "/read/php/extralinksNew.php?fromjs=" +slug
