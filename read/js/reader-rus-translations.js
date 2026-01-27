@@ -470,10 +470,9 @@ scLink += `
 
 
         <a href="javascript:void(0)" title="Prev" class="prev-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/backward-step.svg"></a>
-        <a href="javascript:void(0)" title="Play/Pause" data-slug="${texttype}/${slugReady}" class="play-main-button tts-icon-btn large"><img class="tts-main-img" src="/assets/svg/play-grey.svg" style="width:24px; height:24px;"></a> 
+        <a href="javascript:void(0)" title="Play/Pause" data-slug="${texttype}/${slugReady}" class="play-main-button tts-icon-btn large"><img class="tts-main-img" src="/assets/svg/play-grey.svg" style="width:34px; height:34px;"></a> 
         <a href="javascript:void(0)" title="Next" class="next-main-button tts-icon-btn"><img class="tts-mini-button" src="/assets/svg/forward-step.svg"></a>
 
-      <br>
       <br>
       
         <select id="tts-mode-select" class="tts-mode-select">

@@ -272,34 +272,29 @@ function handleSuttaClick(e) {
     const playBtn = e.target.closest('.play-main-button');
     const navBtn = e.target.closest('.prev-main-button, .next-main-button');
 
-    // 1. Клик по основной ссылке "Voice" — открыть/закрыть окно
+    // 1. Клик по ссылке "Voice" — переключаем класс .active
     if (voiceLink) {
         e.preventDefault();
         e.stopPropagation();
         const parent = voiceLink.closest('.voice-dropdown');
-        const isOpening = !parent.classList.contains('active');
+        const isActive = parent.classList.contains('active');
         
-        // Закрываем другие окна, если они открыты
         document.querySelectorAll('.voice-dropdown.active').forEach(el => el.classList.remove('active'));
         
-        if (isOpening) {
+        if (!isActive) {
             parent.classList.add('active');
-            // Если музыка не играет, можно сразу запустить (опционально)
+            // Опционально: автостарт при открытии
             if (!ttsState.speaking && !ttsState.paused) {
                 const mode = modeSelect ? modeSelect.value : (localStorage.getItem(MODE_STORAGE_KEY) || 'pi');
-                const slug = voiceLink.dataset.slug;
                 const container = voiceLink.closest('.sutta-container') || document;
-                let elements = mode === 'pi' ? container.querySelectorAll('.pli-lang') : 
-                               mode === 'trn' ? container.querySelectorAll('.rus-lang') : null;
-                startPlaybackProcess(elements, mode, voiceLink, slug, 0, container);
+                let elements = mode === 'pi' ? container.querySelectorAll('.pli-lang') : container.querySelectorAll('.rus-lang');
+                startPlaybackProcess(elements, mode, voiceLink, voiceLink.dataset.slug, 0, container);
             }
-        } else {
-            parent.classList.remove('active');
         }
         return;
     }
 
-    // 2. Клик по "крестику" (если добавлен) — закрыть окно
+    // 2. Закрытие по крестику
     if (closeBtn) {
         e.preventDefault();
         e.stopPropagation();
@@ -307,41 +302,25 @@ function handleSuttaClick(e) {
         return;
     }
 
-    // 3. Выбор режима в выпадающем списке внутри окна
-    if (e.target.id === 'tts-mode-select') {
-        const newMode = e.target.value;
-        localStorage.setItem(MODE_STORAGE_KEY, newMode);
-        
-        // Если уже слушаем — перезапускаем в новом режиме с того же места
-        if (ttsState.speaking || ttsState.paused) {
-            saveProgress();
-            const btn = document.querySelector('.play-main-button');
-            const slug = btn?.dataset.slug;
-            const container = btn?.closest('.sutta-container') || document;
-            startPlaybackProcess(null, newMode, btn, slug, 0, container);
-        }
-        return;
+    // 3. Остановка всплытия кликов внутри окна (чтобы не закрывалось)
+    if (playerWindow) {
+        e.stopPropagation();
     }
 
-    // 4. Кнопки навигации (Назад / Вперед)
+    // 4. Логика кнопок навигации
     if (navBtn) {
         e.preventDefault();
-        e.stopPropagation();
         const direction = navBtn.classList.contains('next-main-button') ? 'next' : 'prev';
-        changeSegment(direction);
+        changeSegment(direction); // Смена индекса + немедленный перезапуск
         return;
     }
 
-    // 5. Кнопка Play/Pause внутри окна (или на самой ссылке)
+    // 5. Логика Play/Pause
     if (playBtn) {
         e.preventDefault();
-        e.stopPropagation();
-        
-        const slug = playBtn.dataset.slug;
+        const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'pi';
         const container = playBtn.closest('.sutta-container') || document;
-        const mode = modeSelect ? modeSelect.value : (localStorage.getItem(MODE_STORAGE_KEY) || 'pi');
 
-        // Если это та же кнопка — управляем паузой
         if (ttsState.button && (ttsState.button === playBtn || ttsState.button.classList.contains('play-main-button'))) {
             if (ttsState.speaking && !ttsState.paused) {
                 synth.cancel();
@@ -350,10 +329,9 @@ function handleSuttaClick(e) {
                 return;
             }
             if (ttsState.paused) {
-                // Если режим сменили за время паузы — пересобираем плейлист
                 if (ttsState.langSettings !== mode) {
                     saveProgress();
-                    startPlaybackProcess(null, mode, playBtn, slug, 0, container);
+                    startPlaybackProcess(null, mode, playBtn, playBtn.dataset.slug, 0, container);
                 } else {
                     ttsState.paused = false;
                     ttsState.speaking = true;
@@ -363,27 +341,12 @@ function handleSuttaClick(e) {
                 return;
             }
         }
-
-        // Запуск нового процесса воспроизведения
-        let elements = mode === 'pi' ? container.querySelectorAll('.pli-lang') : 
-                       mode === 'trn' ? container.querySelectorAll('.rus-lang') : null;
-        startPlaybackProcess(elements, mode, playBtn, slug, 0, container);
-        return;
-    }
-
-    // 6. Клик внутри окна плеера по любым другим местам (не закрываем окно)
-    if (playerWindow) {
-        e.stopPropagation();
-        return;
-    }
-
-    // 7. Прочие кнопки (Copy, Open и т.д.)
-    const otherBtn = e.target.closest('.copy-pali-btn, .tts-text-link');
-    if (otherBtn) {
-        // Здесь остается ваша стандартная логика
-        return;
+        
+        let elements = mode === 'pi' ? container.querySelectorAll('.pli-lang') : container.querySelectorAll('.rus-lang');
+        startPlaybackProcess(elements, mode, playBtn, playBtn.dataset.slug, 0, container);
     }
 }
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
