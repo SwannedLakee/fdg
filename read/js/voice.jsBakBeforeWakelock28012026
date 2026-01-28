@@ -6,8 +6,6 @@ const makeJsonUrl = (slug) => {
 };
 
 // --- Глобальное состояние ---
-let wakeLock = null; // Переменная для Wake Lock
-
 const ttsState = {
   playlist: [],
   currentIndex: 0,
@@ -18,7 +16,7 @@ const ttsState = {
   langSettings: null,
   userRate: parseFloat(localStorage.getItem('tts_preferred_rate')) || 1.0,
   currentSlug: null,
-  isNavigating: false 
+  isNavigating: false // Флаг для предотвращения двойных переходов
 };
 
 const synth = window.speechSynthesis;
@@ -28,38 +26,6 @@ const LAST_SLUG_KEY = 'tts_last_slug';
 const LAST_INDEX_KEY = 'tts_last_index'; 
 
 // --- Утилиты ---
-
-// 1. Wake Lock: Запрос
-async function requestWakeLock() {
-  if ('wakeLock' in navigator) {
-    try {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => {
-        console.log('Wake Lock released');
-      });
-      console.log('Wake Lock active');
-    } catch (err) {
-      console.error(`${err.name}, ${err.message}`);
-    }
-  }
-}
-
-// 2. Wake Lock: Сброс
-async function releaseWakeLock() {
-  if (wakeLock !== null) {
-    await wakeLock.release();
-    wakeLock = null;
-    console.log('Wake Lock released manually');
-  }
-}
-
-// 3. Очистка хранилища (позиции)
-function clearTtsStorage() {
-  localStorage.removeItem(LAST_SLUG_KEY);
-  localStorage.removeItem(LAST_INDEX_KEY);
-  console.log('TTS Storage cleared (end of track reached)');
-}
-
 function cleanTextForTTS(text) {
   if (!text) return "";
   return text
@@ -237,16 +203,9 @@ function createPlaylistFromData(textData, mode) {
 
 // --- Ядро TTS ---
 function playCurrentSegment() {
-  // 1. Проверка границ и очистка в конце
   if (ttsState.currentIndex < 0 || ttsState.currentIndex >= ttsState.playlist.length) {
-    clearTtsStorage();
     stopPlayback();
     return;
-  }
-
-  // 2. Включаем Wake Lock, если играем
-  if (!wakeLock && !ttsState.paused) {
-    requestWakeLock();
   }
 
   // Очищаем старые обработчики
@@ -260,15 +219,9 @@ function playCurrentSegment() {
 
   const item = ttsState.playlist[ttsState.currentIndex];
   
-  // 3. Сохранение позиции с условием "не сохранять в самом конце"
   if (ttsState.currentSlug) {
-    // Если осталось играть меньше 2 сегментов (последний или предпоследний), чистим
-    if (ttsState.currentIndex >= ttsState.playlist.length - 2) {
-       clearTtsStorage(); 
-    } else {
-       localStorage.setItem(LAST_SLUG_KEY, ttsState.currentSlug);
-       localStorage.setItem(LAST_INDEX_KEY, ttsState.currentIndex);
-    }
+    localStorage.setItem(LAST_SLUG_KEY, ttsState.currentSlug);
+    localStorage.setItem(LAST_INDEX_KEY, ttsState.currentIndex);
   }
   
   if (item.element) {
@@ -300,13 +253,12 @@ function playCurrentSegment() {
   utterance.rate = ttsState.userRate * multiplier;
 
   utterance.onend = () => {
+    // Переходим к следующему только если воспроизводится и не на паузе
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
       if (ttsState.currentIndex < ttsState.playlist.length) {
         playCurrentSegment();
       } else {
-        // Конец плейлиста
-        clearTtsStorage();
         stopPlayback();
       }
     }
@@ -314,23 +266,12 @@ function playCurrentSegment() {
 
   utterance.onerror = (e) => {
     console.error('TTS Error', e);
-    
-    // --- ЗАЩИТА ОТ УБЕГАНИЯ ---
-    // Если страница скрыта или ошибка 'interrupted', ставим паузу вместо пропуска
-    if (document.hidden || e.error === 'interrupted') {
-      console.warn('Playback paused due to background error to prevent skipping.');
-      ttsState.paused = true;
-      setButtonIcon('play');
-      return; 
-    }
-
-    // Если страница активна и ошибка другая — пробуем следующий сегмент
+    // При ошибке тоже переходим к следующему
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
       if (ttsState.currentIndex < ttsState.playlist.length) {
         playCurrentSegment();
       } else {
-        clearTtsStorage();
         stopPlayback();
       }
     }
@@ -338,8 +279,10 @@ function playCurrentSegment() {
   
   ttsState.utterance = utterance;
   
+  // Запускаем только если не на паузе
   if (!ttsState.paused) {
     setTimeout(() => {
+      // Дополнительная проверка состояния перед запуском
       if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
         synth.speak(utterance);
       }
@@ -393,6 +336,7 @@ async function handleSuttaClick(e) {
       resetUI();
       const item = ttsState.playlist[ttsState.currentIndex];
       if (item && item.element) {
+        // Добавляем tts-active для визуализации, даже на паузе
         item.element.classList.add('tts-active');
         item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -415,13 +359,16 @@ async function handleSuttaClick(e) {
     const currentId = currentItem ? currentItem.id : null;
 
     // В. Решаем: Прыжок или Пауза?
+    // Прыгаем, если есть выбор (activeId) И (плеер стоит ИЛИ выбран ID, отличный от текущего)
     const shouldJump = activeId && (!ttsState.speaking || activeId !== currentId);
 
     if (shouldJump) {
+      // --> ПЕРЕХОД НА ВЫБРАННОЕ СЛОВО
       const modeSelect = document.getElementById('tts-mode-select');
       const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
       let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
 
+      // startPlayback сама найдет .active-word и начнет оттуда
       startPlayback(container, mode, targetSlug, 0);
       
     } else {
@@ -435,10 +382,9 @@ async function handleSuttaClick(e) {
           ttsState.paused = true;
           synth.cancel();
           setButtonIcon('play');
-          // На паузе экран можно гасить, но обычно лучше держать, если пауза короткая.
-          // В текущей реализации мы держим Lock, пока stopPlayback не вызван.
         }
       } else {
+        // Если вообще ничего не играло и ничего не выбрано - старт с начала
         const modeSelect = document.getElementById('tts-mode-select');
         const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
         let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
@@ -463,10 +409,6 @@ function stopPlayback() {
   ttsState.speaking = false;
   ttsState.paused = false;
   ttsState.isNavigating = false;
-  
-  // Освобождаем Wake Lock
-  releaseWakeLock();
-
   if (ttsState.utterance) {
     ttsState.utterance.onend = null;
     ttsState.utterance.onerror = null;
@@ -498,7 +440,9 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
     const activeId = getElementId(activeWord);
     
     if (activeId) {
+      // Ищем ID этого слова в плейлисте
       const foundIndex = playlist.findIndex(item => item.id === activeId);
+      
       if (foundIndex !== -1) {
         actualStartIndex = foundIndex;
       }
@@ -587,6 +531,8 @@ async function handleTTSSettingChange(e) {
   if (e.target.id === 'tts-mode-select' || e.target.id === 'tts-rate-select') {
     e.preventDefault();
     
+    const container = document.querySelector('.sutta-container') || document;
+    
     if (e.target.id === 'tts-mode-select') {
       const newMode = e.target.value;
       localStorage.setItem(MODE_STORAGE_KEY, newMode);
@@ -617,7 +563,7 @@ async function handleTTSSettingChange(e) {
         ttsState.speaking = true;
         ttsState.paused = wasPaused;
         
-        if (!wasPaused) {
+if (!wasPaused) {
           setButtonIcon('pause');
           playCurrentSegment();
         } else {
@@ -632,7 +578,7 @@ async function handleTTSSettingChange(e) {
       }
     }  
           
-    if (e.target.id === 'tts-rate-select') {
+          if (e.target.id === 'tts-rate-select') {
       ttsState.userRate = parseFloat(e.target.value);
       localStorage.setItem(RATE_STORAGE_KEY, e.target.value);
       if (ttsState.speaking && !ttsState.paused) {
@@ -649,13 +595,6 @@ window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
 document.addEventListener('click', handleSuttaClick);
 document.addEventListener('DOMContentLoaded', () => { 
   synth.getVoices();
-});
-
-// Слушатель для восстановления WakeLock при возврате на вкладку
-document.addEventListener('visibilitychange', async () => {
-  if (wakeLock !== null && document.visibilityState === 'visible') {
-    requestWakeLock();
-  }
 });
 
 document.addEventListener("click", function (e) {
