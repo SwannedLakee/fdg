@@ -2,9 +2,9 @@
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
   const suffix = '_rootd-pli-ms.json';
-  const cleanSlug = slug.replace(/pli-tv-|b[ui]-vb-/g, "");
-  return `${basePath}${cleanSlug}${suffix}`;
+  return `${basePath}${slug}${suffix}`;
 };
+
 
 // --- Глобальное состояние ---
 const ttsState = {
@@ -31,8 +31,8 @@ function cleanTextForTTS(text) {
   return text
     .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/[Пп]ер\./g, 'Перевод') 
-    .replace(/[Рр]ед\./g, 'отредактировано') 
-    .replace(/Trn:/g, 'Translation') 
+    .replace(/[Рр]ед\./g, 'отнедактиновано') 
+    .replace(/Trn:/g, 'Translated by') 
     .replace(/”/g, '')
     .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
     .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
@@ -49,7 +49,6 @@ function resetUI() {
   document.querySelectorAll('.tts-active').forEach(el => el.classList.remove('tts-active'));
 }
 
-// --- Логика данных ---
 async function fetchSegmentsData(slug) {
   try {
     const response = await fetch(makeJsonUrl(slug));
@@ -207,14 +206,24 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
 
     if (!list.length) return;
     
-    // --- ПРИОРИТЕТ 1: Маркер .active-word ---
+    // --- УНИВЕРСАЛЬНЫЙ ПОИСК ПО ID РОДИТЕЛЯ ---
     const activeMarker = container.querySelector('.active-word');
     if (activeMarker) {
-        const markerIndex = list.findIndex(item => 
-            item.element && (item.element === activeMarker || item.element.contains(activeMarker))
-        );
-        if (markerIndex !== -1) {
-            startIndex = markerIndex;
+        // Ищем id у самого элемента или у ближайшего родителя (например, <p> или <tr>)
+        const parentWithId = activeMarker.closest('[id]');
+        const targetId = parentWithId ? parentWithId.id : null;
+
+        if (targetId) {
+            // Ищем в плейлисте элемент с таким же ID
+            const markerIndex = list.findIndex(item => item.id === targetId);
+
+            if (markerIndex !== -1) {
+                startIndex = markerIndex;
+                console.log(`[TTS] Переход по ID: ${targetId}, индекс в плейлисте: ${markerIndex}`);
+            } else {
+                // Если в текущем режиме (например, "только пали") нет этого ID
+                console.warn(`[TTS] ID ${targetId} не найден в текущем плейлисте (режим: ${mode})`);
+            }
         }
     }
     
@@ -231,167 +240,44 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
     playCurrentSegment();
 }
 
+
 // --- Обработчики ---
 async function handleSuttaClick(e) {
     const container = e.target.closest('.sutta-container') || document;
     
-    // 1. ОБРАБОТКА КЛИКА ПО ТЕКСТУ (УСТАНОВКА active-word)
-    const textSegment = e.target.closest('.pli-lang, .rus-lang, .tha-lang, .eng-lang');
-    // Игнорируем клики внутри меню плеера
-    if (textSegment && !e.target.closest('.voice-dropdown')) {
-        // Убираем маркер с других мест
-        document.querySelectorAll('.active-word').forEach(el => el.classList.remove('active-word'));
-        // Ставим на текущий
-        textSegment.classList.add('active-word');
-
-        // Если плеер уже загружен и работает (или на паузе), переключаемся на этот кусок
-        if (ttsState.playlist.length > 0) {
-            const idx = ttsState.playlist.findIndex(item => item.element === textSegment);
-            if (idx !== -1) {
-                ttsState.currentIndex = idx;
-                
-                // Если сейчас идет воспроизведение — прыгаем сразу
-                if (ttsState.speaking && !ttsState.paused) {
-                    if (ttsState.utterance) {
-                         ttsState.utterance.onend = null;
-                    }
-                    synth.cancel();
-                    playCurrentSegment();
-                }
-                // Если пауза или стоп — просто обновили currentIndex (визуально обновится при нажатии Play)
-            }
-        }
-        // Мы не делаем preventDefault, чтобы работало выделение текста браузером
-        return; 
-    }
-
-    const modeSelect = document.getElementById('tts-mode-select');
-    
-    // Смена режима
-    if (e.target.id === 'tts-mode-select') {
-        e.preventDefault();
-        const newMode = e.target.value;
-        localStorage.setItem(MODE_STORAGE_KEY, newMode);
-        
-        if (ttsState.speaking || ttsState.paused) {
-            const wasPaused = ttsState.paused;
-            const currentId = ttsState.playlist[ttsState.currentIndex]?.id;
-            const pausedIndex = ttsState.currentIndex;
-            
-            synth.cancel();
-            
-            const paliEls = container.querySelectorAll('.pli-lang');
-            const trnEls = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
-            
-            let newList = [];
-            // (Логика пересборки плейлиста такая же, как была...)
-            if (newMode === 'pi') {
-                newList = await preparePlaylist(paliEls, ttsState.currentSlug, 'pi');
-            } else if (newMode === 'trn') {
-                newList = await preparePlaylist(trnEls, null);
-            } else {
-                const pList = await preparePlaylist(paliEls, ttsState.currentSlug, 'pi');
-                const tList = await preparePlaylist(trnEls, null);
-                const max = Math.max(pList.length, tList.length);
-                for (let i = 0; i < max; i++) {
-                    if (newMode === 'pi-trn') {
-                        if (pList[i]) newList.push(pList[i]);
-                        if (tList[i]) newList.push(tList[i]);
-                    } else {
-                        if (tList[i]) newList.push(tList[i]);
-                        if (pList[i]) newList.push(pList[i]);
-                    }
-                }
-            }
-            
-            if (!newList.length) return;
-            
-            let newIndex = 0;
-            if (currentId) {
-                const foundIndex = newList.findIndex(item => item.id === currentId);
-                if (foundIndex !== -1) newIndex = foundIndex;
-            } else if (pausedIndex < newList.length) {
-                newIndex = pausedIndex;
-            }
-            
-            ttsState.playlist = newList;
-            ttsState.currentIndex = newIndex;
-            ttsState.langSettings = newMode;
-            ttsState.speaking = true;
-            ttsState.paused = wasPaused;
-            
-            if (!wasPaused) {
-                setButtonIcon('pause');
-                playCurrentSegment();
-            } else {
-                setButtonIcon('play');
-                resetUI();
-                const item = ttsState.playlist[ttsState.currentIndex];
-                if (item && item.element) {
-                    item.element.classList.add('tts-active');
-                    item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        }
-        return;
-    }
-    
-    if (e.target.id === 'tts-rate-select') {
-        e.preventDefault();
-        ttsState.userRate = parseFloat(e.target.value);
-        localStorage.setItem(RATE_STORAGE_KEY, e.target.value);
-        if (ttsState.speaking && !ttsState.paused) {
-            synth.cancel();
-            playCurrentSegment();
-        }
-        return;
-    }
-
     const voiceLink = e.target.closest('.voice-link');
     const playBtn = e.target.closest('.play-main-button');
     const navBtn = e.target.closest('.prev-main-button, .next-main-button');
 
-    // Клик по ссылке "Voice"
+    // Инициализация при клике на Voice
     if (voiceLink) {
         e.preventDefault();
         const parent = voiceLink.closest('.voice-dropdown');
         parent.classList.add('active');
         if (!ttsState.speaking) {
-            const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
+            const modeSelect = document.getElementById('tts-mode-select');
+            const mode = e.target.closest('.voice-dropdown')?.querySelector('#tts-mode-select')?.value 
+                         || localStorage.getItem(MODE_STORAGE_KEY) 
+                         || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
             const targetSlug = voiceLink.dataset.slug;
             
-            let startIndex = 0;
-            const savedSlug = localStorage.getItem(LAST_SLUG_KEY);
-            const savedIndex = parseInt(localStorage.getItem(LAST_INDEX_KEY), 10);
-            
-            // Если есть active-word, оно обработается внутри startPlayback.
-            // Если нет, берем из памяти.
-            const hasActive = container.querySelector('.active-word');
-            if (!hasActive && savedSlug === targetSlug && !isNaN(savedIndex)) {
-                startIndex = savedIndex;
-            }
-
-            startPlayback(container, mode, targetSlug, startIndex);
+            // Если есть active-word, startPlayback сам вычислит startIndex
+            startPlayback(container, mode, targetSlug, 0);
         }
         return;
     }
 
-    // Навигация
+    // Кнопки навигации
     if (navBtn) {
         e.preventDefault();
         if (!ttsState.speaking || ttsState.playlist.length === 0) return;
         
         let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
         let newIndex = ttsState.currentIndex + direction;
-
         if (newIndex < 0) newIndex = 0;
         if (newIndex >= ttsState.playlist.length) newIndex = ttsState.playlist.length - 1;
 
         if (!ttsState.paused) {
-            if (ttsState.utterance) {
-                ttsState.utterance.onend = null;
-                ttsState.utterance.onerror = null;
-            }
             synth.cancel();
             ttsState.currentIndex = newIndex;
             playCurrentSegment();
@@ -407,59 +293,46 @@ async function handleSuttaClick(e) {
         return;
     }
 
-    // Play/Pause
+    // Основная кнопка Play/Pause
     if (playBtn && !e.target.classList.contains('voice-link')) {
         e.preventDefault();
+        const activeMarker = container.querySelector('.active-word');
         
-        const hasActiveMarker = container.querySelector('.active-word');
-        
-        // Логика: если есть маркер, то мы форсируем старт с него, даже если была просто пауза
-        // Но если мы УЖЕ говорим этот самый фрагмент, то не перезапускаем
-        
-        if (ttsState.speaking && !ttsState.paused && !hasActiveMarker) {
+        // Если словарь выделил слово — всегда переходим к нему
+        if (activeMarker) {
+            const modeSelect = document.getElementById('tts-mode-select');
+            const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+            let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+            
+            startPlayback(container, mode, targetSlug, 0);
+            return;
+        }
+
+        // Обычная логика паузы
+        if (ttsState.speaking && !ttsState.paused) {
             ttsState.paused = true;
             synth.cancel();
             setButtonIcon('play');
-        } else if (ttsState.paused && !hasActiveMarker) {
+        } else if (ttsState.paused) {
             ttsState.paused = false;
             setButtonIcon('pause');
             playCurrentSegment();
         } else {
-            // Старт / Рестарт
-            const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
-            
-            let targetSlug = playBtn.dataset.slug;
-            if (!targetSlug) {
-                const parentDropdown = playBtn.closest('.voice-dropdown');
-                const siblingLink = parentDropdown ? parentDropdown.querySelector('.voice-link') : null;
-                if (siblingLink) targetSlug = siblingLink.dataset.slug;
-            }
-
-            let startIndex = 0;
-            const savedSlug = localStorage.getItem(LAST_SLUG_KEY);
-            const savedIndex = parseInt(localStorage.getItem(LAST_INDEX_KEY), 10);
-            
-            // Если нет маркера, пытаемся восстановить. Если есть маркер, startPlayback сам его найдет.
-            if (!hasActiveMarker && targetSlug && savedSlug === targetSlug && !isNaN(savedIndex)) {
-                startIndex = savedIndex;
-            }
-
-            if (targetSlug) {
-                startPlayback(container, mode, targetSlug, startIndex);
-            }
+            const modeSelect = document.getElementById('tts-mode-select');
+            const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+            startPlayback(container, mode, playBtn.dataset.slug, 0);
         }
     }
 
+    // Закрытие плеера
     if (e.target.closest('.close-tts-btn')) {
         e.preventDefault();
         stopPlayback();
-        e.target.closest('.voice-dropdown').classList.remove('active');
+        const dropdown = e.target.closest('.voice-dropdown');
+        if (dropdown) dropdown.classList.remove('active');
     }
 }
 
-window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
-document.addEventListener('click', handleSuttaClick);
-document.addEventListener('DOMContentLoaded', () => { synth.getVoices(); });
 
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
@@ -487,7 +360,126 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
                 ${rates.map(r => `<option value="${r}" ${savedRate == r ? 'selected' : ''}>${r}x</option>`).join('')}
             </select>
             <br>
-            <a href="/tts.php${window.location.search}" class="tts-text-link">Alt</a> |
-<a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>Alt2</a> 
+            <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
+<a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a> 
             `;
 }
+
+// --- Отдельные обработчики для событий change ---
+async function handleTTSSettingChange(e) {
+    if (e.target.id === 'tts-mode-select' || e.target.id === 'tts-rate-select') {
+        e.preventDefault();
+        
+        const container = document.querySelector('.sutta-container') || document;
+        
+        if (e.target.id === 'tts-mode-select') {
+            const newMode = e.target.value;
+            localStorage.setItem(MODE_STORAGE_KEY, newMode);
+            
+            if (ttsState.speaking || ttsState.paused) {
+                const wasPaused = ttsState.paused;
+                const currentId = ttsState.playlist[ttsState.currentIndex]?.id;
+                const pausedIndex = ttsState.currentIndex;
+                
+                synth.cancel();
+                
+                const paliEls = container.querySelectorAll('.pli-lang');
+                const trnEls = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
+                
+                let newList = [];
+                if (newMode === 'pi') {
+                    newList = await preparePlaylist(paliEls, ttsState.currentSlug, 'pi');
+                } else if (newMode === 'trn') {
+                    newList = await preparePlaylist(trnEls, null);
+                } else {
+                    const pList = await preparePlaylist(paliEls, ttsState.currentSlug, 'pi');
+                    const tList = await preparePlaylist(trnEls, null);
+                    const max = Math.max(pList.length, tList.length);
+                    for (let i = 0; i < max; i++) {
+                        if (newMode === 'pi-trn') {
+                            if (pList[i]) newList.push(pList[i]);
+                            if (tList[i]) newList.push(tList[i]);
+                        } else {
+                            if (tList[i]) newList.push(tList[i]);
+                            if (pList[i]) newList.push(pList[i]);
+                        }
+                    }
+                }
+                
+                if (!newList.length) return;
+                
+                let newIndex = 0;
+                if (currentId) {
+                    const foundIndex = newList.findIndex(item => item.id === currentId);
+                    if (foundIndex !== -1) newIndex = foundIndex;
+                } else if (pausedIndex < newList.length) {
+                    newIndex = pausedIndex;
+                }
+                
+                ttsState.playlist = newList;
+                ttsState.currentIndex = newIndex;
+                ttsState.langSettings = newMode;
+                ttsState.speaking = true;
+                ttsState.paused = wasPaused;
+                
+                if (!wasPaused) {
+                    setButtonIcon('pause');
+                    playCurrentSegment();
+                } else {
+                    setButtonIcon('play');
+                    resetUI();
+                    const item = ttsState.playlist[ttsState.currentIndex];
+                    if (item && item.element) {
+                        item.element.classList.add('tts-active');
+                        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+        }
+        
+        if (e.target.id === 'tts-rate-select') {
+            ttsState.userRate = parseFloat(e.target.value);
+            localStorage.setItem(RATE_STORAGE_KEY, e.target.value);
+            if (ttsState.speaking && !ttsState.paused) {
+                synth.cancel();
+                playCurrentSegment();
+            }
+        }
+    }
+}
+
+// Вешаем обработчик change на документ
+document.addEventListener('change', handleTTSSettingChange);
+
+// Инициализация voices и обработчиков остается прежней
+window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
+document.addEventListener('click', handleSuttaClick);
+document.addEventListener('DOMContentLoaded', () => { synth.getVoices(); });
+
+
+document.addEventListener("click", function (e) {
+  const word = e.target.closest(".pli-lang");
+
+  // Если клик по слову
+  if (word) {
+    // 1. ПРОВЕРКА: Если слово уже активно (второй клик) -> снимаем выделение
+    if (word.classList.contains("active-word")) {
+      word.classList.remove("active-word");
+      // Здесь также можно добавить закрытие попапа/iframe, если нужно
+      return; 
+    }
+
+    // 2. Обычное поведение: сбрасываем старые и выделяем новое
+    document
+      .querySelectorAll(".pli-lang.active-word")
+      .forEach(el => el.classList.remove("active-word"));
+
+    word.classList.add("active-word");
+    return;
+  }
+
+  // Если клик НЕ по слову — снять подсветку со всех
+  document
+    .querySelectorAll(".pli-lang.active-word")
+    .forEach(el => el.classList.remove("active-word"));
+});
