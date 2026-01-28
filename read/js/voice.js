@@ -1,4 +1,4 @@
-// --- Конфигурация путей ---
+/// --- Конфигурация путей ---
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
   const suffix = '_rootd-pli-ms.json';
@@ -37,7 +37,6 @@ function cleanTextForTTS(text) {
     .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
     .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
 }
-
 
 function setButtonIcon(type) {
   const allImgs = document.querySelectorAll('.play-main-button img');
@@ -83,9 +82,7 @@ async function prepareTextData(slug) {
   if (paliJsonData) {
     Object.keys(paliJsonData).forEach(key => {
       const cleanKey = key.split(':').pop();
-      // Очищаем пали текст той же функцией
-      const rawPaliText = paliJsonData[key].replace(/<[^>]*>/g, '').trim();
-      cleanJsonMap[cleanKey] = cleanTextForTTS(rawPaliText); // Используем ту же функцию
+      cleanJsonMap[cleanKey] = paliJsonData[key];
     });
   }
   
@@ -111,13 +108,13 @@ async function prepareTextData(slug) {
     let translation = '';
     
     if (cleanJsonMap[id]) {
-      paliDev = cleanJsonMap[id]; // Уже очищено
+      paliDev = cleanJsonMap[id].replace(/<[^>]*>/g, '').trim();
     }
     
     if (translationElement) {
       const clone = translationElement.cloneNode(true);
       clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
-      translation = cleanTextForTTS(clone.textContent); // Тоже используем ту же функцию
+      translation = cleanTextForTTS(clone.textContent);
     }
     
     if (paliDev || translation) {
@@ -133,7 +130,6 @@ async function prepareTextData(slug) {
   
   return textData;
 }
-
 
 function createPlaylistFromData(textData, mode) {
   const playlist = [];
@@ -232,12 +228,7 @@ function playCurrentSegment() {
     }
     
     item.element.classList.add('tts-active');
-    
-    // ПРОВЕРКА: скроллим только на десктопе, на мобильных устройствах отключаем
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (!isMobile) {
-      item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   const utterance = new SpeechSynthesisUtterance(item.text);
@@ -292,6 +283,112 @@ function playCurrentSegment() {
         synth.speak(utterance);
       }
     }, 50);
+  }
+}
+
+// --- Обработчики событий ---
+async function handleSuttaClick(e) {
+  const container = e.target.closest('.sutta-container') || document;
+  
+  const voiceLink = e.target.closest('.voice-link');
+  const playBtn = e.target.closest('.play-main-button');
+  const navBtn = e.target.closest('.prev-main-button, .next-main-button');
+
+  if (voiceLink) {
+    e.preventDefault();
+    const parent = voiceLink.closest('.voice-dropdown');
+    parent.classList.add('active');
+    
+    if (!ttsState.speaking) {
+      const modeSelect = document.getElementById('tts-mode-select');
+      const mode = e.target.closest('.voice-dropdown')?.querySelector('#tts-mode-select')?.value 
+                   || localStorage.getItem(MODE_STORAGE_KEY) 
+                   || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
+      const targetSlug = voiceLink.dataset.slug;
+      
+      startPlayback(container, mode, targetSlug, 0);
+    }
+    return;
+  }
+
+  if (navBtn) {
+    e.preventDefault();
+    if (!ttsState.speaking || ttsState.playlist.length === 0) return;
+    
+    let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
+    let newIndex = ttsState.currentIndex + direction;
+    
+    // Корректная обработка границ
+    if (direction < 0 && newIndex < 0) {
+      newIndex = 0;
+    } else if (direction > 0 && newIndex >= ttsState.playlist.length) {
+      newIndex = ttsState.playlist.length - 1;
+    }
+    
+    // Если индекс не изменился, выходим
+    if (newIndex === ttsState.currentIndex) {
+      return;
+    }
+    
+    // Останавливаем текущее воспроизведение
+    synth.cancel();
+    
+    // Обновляем индекс
+    ttsState.currentIndex = newIndex;
+    
+    if (ttsState.paused) {
+      // Если на паузе - только подсветка и скролл
+      resetUI();
+      const item = ttsState.playlist[ttsState.currentIndex];
+      if (item && item.element) {
+        item.element.classList.add('tts-active');
+        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      // Если воспроизводилось - продолжаем с нового места
+      playCurrentSegment();
+    }
+    return;
+  }
+
+  if (playBtn && !e.target.classList.contains('voice-link')) {
+    e.preventDefault();
+    
+    const activeWord = container.querySelector('.active-word');
+    
+    if (activeWord) {
+      const modeSelect = document.getElementById('tts-mode-select');
+      const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+      let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+      
+      startPlayback(container, mode, targetSlug, 0);
+      return;
+    }
+
+    if (ttsState.speaking) {
+      if (ttsState.paused) {
+        // Возобновляем с текущей позиции
+        ttsState.paused = false;
+        setButtonIcon('pause');
+        playCurrentSegment();
+      } else {
+        // Ставим на паузу
+        ttsState.paused = true;
+        synth.cancel();
+        setButtonIcon('play');
+      }
+    } else {
+      const modeSelect = document.getElementById('tts-mode-select');
+      const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+      startPlayback(container, mode, playBtn.dataset.slug, 0);
+    }
+  }
+
+  if (e.target.closest('.close-tts-btn')) {
+    e.preventDefault();
+    stopPlayback();
+    const dropdown = e.target.closest('.voice-dropdown');
+    if (dropdown) dropdown.classList.remove('active');
   }
 }
 
@@ -387,8 +484,10 @@ async function handleSuttaClick(e) {
 
   if (navBtn) {
     e.preventDefault();
+    if (ttsState.isNavigating) return;
     if (!ttsState.speaking || ttsState.playlist.length === 0) return;
     
+    ttsState.isNavigating = true;
     let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
     let newIndex = ttsState.currentIndex + direction;
     
@@ -401,27 +500,28 @@ async function handleSuttaClick(e) {
     
     // Если индекс не изменился, выходим
     if (newIndex === ttsState.currentIndex) {
+      ttsState.isNavigating = false;
       return;
     }
     
-    // Останавливаем текущее воспроизведение
+    // Сначала отменяем текущее воспроизведение
     synth.cancel();
+    
+    // Если был на паузе, сохраняем этот статус
+    const wasPaused = ttsState.paused;
     
     // Обновляем индекс
     ttsState.currentIndex = newIndex;
     
-    if (ttsState.paused) {
-      // Если на паузе - только подсветка и скролл (только на десктопе)
+    if (wasPaused) {
+      // Если был на паузе - только подсветка и скролл
       resetUI();
       const item = ttsState.playlist[ttsState.currentIndex];
       if (item && item.element) {
         item.element.classList.add('tts-active');
-        // Тоже проверяем на мобильное устройство
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (!isMobile) {
-          item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      ttsState.isNavigating = false;
     } else {
       // Если воспроизводилось - продолжаем с нового места
       ttsState.speaking = true;
@@ -447,10 +547,10 @@ async function handleSuttaClick(e) {
 
     if (ttsState.speaking) {
       if (ttsState.paused) {
-        // Возобновляем с текущей позиции - ПРОСТО ВЫЗЫВАЕМ playCurrentSegment
+        // Возобновляем с текущей позиции
         ttsState.paused = false;
         setButtonIcon('pause');
-        playCurrentSegment(); // УПРОЩЕННО - используем существующую функцию
+        playCurrentSegment();
       } else {
         // Ставим на паузу
         ttsState.paused = true;
@@ -462,7 +562,6 @@ async function handleSuttaClick(e) {
       const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
       startPlayback(container, mode, playBtn.dataset.slug, 0);
     }
-    return;
   }
 
   if (e.target.closest('.close-tts-btn')) {
@@ -562,7 +661,7 @@ async function handleTTSSettingChange(e) {
         ttsState.speaking = true;
         ttsState.paused = wasPaused;
         
-        if (!wasPaused) {
+if (!wasPaused) {
           setButtonIcon('pause');
           playCurrentSegment();
         } else {
@@ -575,9 +674,9 @@ async function handleTTSSettingChange(e) {
           }
         }
       }
-    }
-    
-    if (e.target.id === 'tts-rate-select') {
+    }  
+          
+          if (e.target.id === 'tts-rate-select') {
       ttsState.userRate = parseFloat(e.target.value);
       localStorage.setItem(RATE_STORAGE_KEY, e.target.value);
       if (ttsState.speaking && !ttsState.paused) {
