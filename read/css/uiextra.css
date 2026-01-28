@@ -758,3 +758,32 @@ transition: background-color 260ms ease-in-out;
           z-index: 1000000;
     }
 }
+
+.close-tts-btn {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.tts-icon {
+  display: inline-block;
+}
+
+.tts-icon.backward, .tts-icon.forward {
+  width: 20px;
+}
+
+.tts-icon.play {
+  width: 45px;
+}
+
+.tts-icon.forward {
+  position: relative;
+  right:5px;
+}
+
+
+.tts-mode-select,
+.tts-rate-select {
+  font-size: 14px;
+}

@@ -38,6 +38,7 @@ function cleanTextForTTS(text) {
     .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
 }
 
+
 function setButtonIcon(type) {
   const allImgs = document.querySelectorAll('.play-main-button img');
   allImgs.forEach(img => {
@@ -82,7 +83,9 @@ async function prepareTextData(slug) {
   if (paliJsonData) {
     Object.keys(paliJsonData).forEach(key => {
       const cleanKey = key.split(':').pop();
-      cleanJsonMap[cleanKey] = paliJsonData[key];
+      // Очищаем пали текст той же функцией
+      const rawPaliText = paliJsonData[key].replace(/<[^>]*>/g, '').trim();
+      cleanJsonMap[cleanKey] = cleanTextForTTS(rawPaliText); // Используем ту же функцию
     });
   }
   
@@ -108,13 +111,13 @@ async function prepareTextData(slug) {
     let translation = '';
     
     if (cleanJsonMap[id]) {
-      paliDev = cleanJsonMap[id].replace(/<[^>]*>/g, '').trim();
+      paliDev = cleanJsonMap[id]; // Уже очищено
     }
     
     if (translationElement) {
       const clone = translationElement.cloneNode(true);
       clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
-      translation = cleanTextForTTS(clone.textContent);
+      translation = cleanTextForTTS(clone.textContent); // Тоже используем ту же функцию
     }
     
     if (paliDev || translation) {
@@ -130,6 +133,7 @@ async function prepareTextData(slug) {
   
   return textData;
 }
+
 
 function createPlaylistFromData(textData, mode) {
   const playlist = [];
@@ -228,7 +232,12 @@ function playCurrentSegment() {
     }
     
     item.element.classList.add('tts-active');
-    item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // ПРОВЕРКА: скроллим только на десктопе, на мобильных устройствах отключаем
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   const utterance = new SpeechSynthesisUtterance(item.text);
@@ -283,112 +292,6 @@ function playCurrentSegment() {
         synth.speak(utterance);
       }
     }, 50);
-  }
-}
-
-// --- Обработчики событий ---
-async function handleSuttaClick(e) {
-  const container = e.target.closest('.sutta-container') || document;
-  
-  const voiceLink = e.target.closest('.voice-link');
-  const playBtn = e.target.closest('.play-main-button');
-  const navBtn = e.target.closest('.prev-main-button, .next-main-button');
-
-  if (voiceLink) {
-    e.preventDefault();
-    const parent = voiceLink.closest('.voice-dropdown');
-    parent.classList.add('active');
-    
-    if (!ttsState.speaking) {
-      const modeSelect = document.getElementById('tts-mode-select');
-      const mode = e.target.closest('.voice-dropdown')?.querySelector('#tts-mode-select')?.value 
-                   || localStorage.getItem(MODE_STORAGE_KEY) 
-                   || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
-      const targetSlug = voiceLink.dataset.slug;
-      
-      startPlayback(container, mode, targetSlug, 0);
-    }
-    return;
-  }
-
-  if (navBtn) {
-    e.preventDefault();
-    if (!ttsState.speaking || ttsState.playlist.length === 0) return;
-    
-    let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
-    let newIndex = ttsState.currentIndex + direction;
-    
-    // Корректная обработка границ
-    if (direction < 0 && newIndex < 0) {
-      newIndex = 0;
-    } else if (direction > 0 && newIndex >= ttsState.playlist.length) {
-      newIndex = ttsState.playlist.length - 1;
-    }
-    
-    // Если индекс не изменился, выходим
-    if (newIndex === ttsState.currentIndex) {
-      return;
-    }
-    
-    // Останавливаем текущее воспроизведение
-    synth.cancel();
-    
-    // Обновляем индекс
-    ttsState.currentIndex = newIndex;
-    
-    if (ttsState.paused) {
-      // Если на паузе - только подсветка и скролл
-      resetUI();
-      const item = ttsState.playlist[ttsState.currentIndex];
-      if (item && item.element) {
-        item.element.classList.add('tts-active');
-        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    } else {
-      // Если воспроизводилось - продолжаем с нового места
-      playCurrentSegment();
-    }
-    return;
-  }
-
-  if (playBtn && !e.target.classList.contains('voice-link')) {
-    e.preventDefault();
-    
-    const activeWord = container.querySelector('.active-word');
-    
-    if (activeWord) {
-      const modeSelect = document.getElementById('tts-mode-select');
-      const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
-      let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
-      
-      startPlayback(container, mode, targetSlug, 0);
-      return;
-    }
-
-    if (ttsState.speaking) {
-      if (ttsState.paused) {
-        // Возобновляем с текущей позиции
-        ttsState.paused = false;
-        setButtonIcon('pause');
-        playCurrentSegment();
-      } else {
-        // Ставим на паузу
-        ttsState.paused = true;
-        synth.cancel();
-        setButtonIcon('play');
-      }
-    } else {
-      const modeSelect = document.getElementById('tts-mode-select');
-      const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
-      startPlayback(container, mode, playBtn.dataset.slug, 0);
-    }
-  }
-
-  if (e.target.closest('.close-tts-btn')) {
-    e.preventDefault();
-    stopPlayback();
-    const dropdown = e.target.closest('.voice-dropdown');
-    if (dropdown) dropdown.classList.remove('active');
   }
 }
 
@@ -484,10 +387,8 @@ async function handleSuttaClick(e) {
 
   if (navBtn) {
     e.preventDefault();
-    if (ttsState.isNavigating) return;
     if (!ttsState.speaking || ttsState.playlist.length === 0) return;
     
-    ttsState.isNavigating = true;
     let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
     let newIndex = ttsState.currentIndex + direction;
     
@@ -500,28 +401,27 @@ async function handleSuttaClick(e) {
     
     // Если индекс не изменился, выходим
     if (newIndex === ttsState.currentIndex) {
-      ttsState.isNavigating = false;
       return;
     }
     
-    // Сначала отменяем текущее воспроизведение
+    // Останавливаем текущее воспроизведение
     synth.cancel();
-    
-    // Если был на паузе, сохраняем этот статус
-    const wasPaused = ttsState.paused;
     
     // Обновляем индекс
     ttsState.currentIndex = newIndex;
     
-    if (wasPaused) {
-      // Если был на паузе - только подсветка и скролл
+    if (ttsState.paused) {
+      // Если на паузе - только подсветка и скролл (только на десктопе)
       resetUI();
       const item = ttsState.playlist[ttsState.currentIndex];
       if (item && item.element) {
         item.element.classList.add('tts-active');
-        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Тоже проверяем на мобильное устройство
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (!isMobile) {
+          item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
-      ttsState.isNavigating = false;
     } else {
       // Если воспроизводилось - продолжаем с нового места
       ttsState.speaking = true;
@@ -547,10 +447,10 @@ async function handleSuttaClick(e) {
 
     if (ttsState.speaking) {
       if (ttsState.paused) {
-        // Возобновляем с текущей позиции
+        // Возобновляем с текущей позиции - ПРОСТО ВЫЗЫВАЕМ playCurrentSegment
         ttsState.paused = false;
         setButtonIcon('pause');
-        playCurrentSegment();
+        playCurrentSegment(); // УПРОЩЕННО - используем существующую функцию
       } else {
         // Ставим на паузу
         ttsState.paused = true;
@@ -562,6 +462,7 @@ async function handleSuttaClick(e) {
       const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
       startPlayback(container, mode, playBtn.dataset.slug, 0);
     }
+    return;
   }
 
   if (e.target.closest('.close-tts-btn')) {
@@ -589,27 +490,39 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
   const rates = [0.25, 0.5, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
 
   return `
-  <span class='voice-dropdown'>
-    <a data-slug="${texttype}/${slugReady}" href='javascript:void(0)' class='voice-link'>Voice</a>&nbsp;
-    <span class='voice-player'>
-      <a href="javascript:void(0)" class="close-tts-btn" style="float:right; font-size:20px;">&times;</a>
-      <a href="javascript:void(0)" class="prev-main-button tts-icon-btn"><img src="/assets/svg/backward-step.svg" style="width:35px;"></a>
-      <a href="javascript:void(0)" class="play-main-button tts-icon-btn large"><img src="/assets/svg/play-grey.svg" style="width:45px;"></a> 
-      <a href="javascript:void(0)" class="next-main-button tts-icon-btn"><img src="/assets/svg/forward-step.svg" style="width:25px;"></a>
+  <span class="voice-dropdown">
+    <a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" class="voice-link">Voice</a>&nbsp;
+    <span class="voice-player">
+      <a href="javascript:void(0)" class="close-tts-btn">&times;</a>
+
+      <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
+        <img src="/assets/svg/backward-step.svg" class="tts-icon backward">
+      </a>
+
+      <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
+        <img src="/assets/svg/play-grey.svg" class="tts-icon play">
+      </a> 
+
+      <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
+        <img src="/assets/svg/forward-step.svg" class="tts-icon forward">
+      </a>
+
       <br>
-      <select id="tts-mode-select" class="tts-mode-select" style="font-size:14px;">
-        ${Object.entries(modeLabels).map(([val, label]) => 
+
+      <select id="tts-mode-select" class="tts-mode-select">
+        ${Object.entries(modeLabels).map(([val, label]) =>
           `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
         ).join('')}
       </select>
-      <select id="tts-rate-select" class="tts-rate-select" style="font-size:14px;">
-        ${rates.map(r => 
+
+      <select id="tts-rate-select" class="tts-rate-select">
+        ${rates.map(r =>
           `<option value="${r}" ${savedRate == r ? 'selected' : ''}>${r}x</option>`
         ).join('')}
       </select>
       <br>
       <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
-      <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>`;
+      <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>&nbsp;`;
 }
 
 // --- Обработчик изменения настроек ---
