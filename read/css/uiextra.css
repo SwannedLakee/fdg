@@ -704,7 +704,7 @@ transition: background-color 260ms ease-in-out;
 .next-main-button {
   position: relative; 
   top: -2px;
-  right: -4px;
+  right: 6px;
 }
 
 .voice-link {
