@@ -36,8 +36,10 @@ function cleanTextForTTS(text) {
     
     .replace(/Trn:/g, 'Translated by') 
     .replace(/”/g, '')
-    .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
-    .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
+    .replace(/\{.*?\}/g, '')
+    .replace(/\(.*?\)/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/_/g, '').trim();
 }
 
 function setButtonIcon(type) {
