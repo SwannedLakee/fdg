@@ -453,6 +453,17 @@ document.addEventListener("keydown", (event) => {
     helpButton.click();
   }
 
+// Alt + R — Voice / TTS (если доступно)
+if (event.altKey && event.code === "KeyR") {
+  // не мешаем вводу текста
+  const voiceLink = document.querySelector('.voice-link');
+  // если плеера нет на странице — тихо выходим
+  if (!voiceLink) return;
+  event.preventDefault();
+  voiceLink.click();
+}
+
+
     if (event.altKey && event.code === "KeyS") {
       // Имитируем клик по кнопке
       settingsButton.click();

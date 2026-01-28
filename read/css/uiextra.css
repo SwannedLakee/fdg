@@ -554,12 +554,12 @@
 
 
 #settings, #paliLookupInfo{
-    z-index: 100000 !important;
+    z-index: 1000 !important;
 }
 
 
 .modal-backdrop {
-    z-index: 99999 !important;
+    z-index: 999 !important;
 }
 
 
