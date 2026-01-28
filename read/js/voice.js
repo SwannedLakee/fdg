@@ -679,26 +679,127 @@ document.addEventListener('visibilitychange', async () => {
   }
 });
 
-document.addEventListener("click", function (e) {
-  const word = e.target.closest(".pli-lang");
 
-  if (word) {
-    if (word.classList.contains("active-word")) {
-      word.classList.remove("active-word");
-      return; 
+// --- 1. ОБРАБОТЧИК КЛИКОВ (ТОЛЬКО источник клика: pali ИЛИ перевод) ---
+document.addEventListener("click", function (e) {
+
+  // Клик по сегменту текста
+  const clickedSegment = e.target.closest(
+    ".pli-lang, .rus-lang, .eng-lang, .tha-lang"
+  );
+
+  if (clickedSegment) {
+
+    // Если уже активен — ничего не делаем
+    if (clickedSegment.classList.contains("active-word")) {
+      return;
     }
 
-    document.querySelectorAll(".pli-lang.active-word").forEach(el => {
-      el.classList.remove("active-word");
-    });
+    // 1. Снимаем все старые подсветки и кнопку
+    removeAllHighlights();
 
-    word.classList.add("active-word");
+    // 2. Подсвечиваем ТОЛЬКО то, по чему кликнули
+    clickedSegment.classList.add("active-word");
+
+    // 3. Контейнер с id (общий для pali + перевода)
+    const rowContainer =
+      clickedSegment.closest("[id]") || clickedSegment;
+
+    // 4. Добавляем кнопку TTS
+    addTtsButton(rowContainer, clickedSegment);
+
     return;
   }
 
-  if (!e.target.closest('.voice-player') && !e.target.closest('.tts-mode-select') && !e.target.closest('.tts-rate-select')) {
-    document.querySelectorAll(".pli-lang.active-word").forEach(el => {
-      el.classList.remove("active-word");
-    });
+  // Клик мимо — убираем подсветку и кнопку
+  if (
+    !e.target.closest(".voice-player") &&
+    !e.target.closest(".tts-mode-select") &&
+    !e.target.closest(".tts-rate-select") &&
+    !e.target.closest(".dynamic-tts-btn")
+  ) {
+    removeAllHighlights();
   }
 });
+// Чистилка
+function removeAllHighlights() {
+    document.querySelectorAll(".active-word").forEach(el => el.classList.remove("active-word"));
+    const oldBtn = document.querySelector('.dynamic-tts-btn');
+    if (oldBtn) oldBtn.remove();
+}
+
+// --- 2. ФУНКЦИЯ ДОБАВЛЕНИЯ КНОПКИ (FIX: Позиция и Плеер) ---
+function addTtsButton(container, sourceElement) {
+    // Удаляем старые
+    
+    if (ttsState.speaking || ttsState.paused) {
+        return;
+    }
+    if (ttsState.speaking || ttsState.paused) {
+        return;
+    }
+    if (ttsState.speaking || ttsState.paused) {
+        return;
+    }
+    if (ttsState.speaking || ttsState.paused) {
+        return;
+    }
+    
+    const oldBtns = document.querySelectorAll('.dynamic-tts-btn');
+    oldBtns.forEach(btn => btn.remove());
+
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'dynamic-tts-btn'; 
+    
+    btnContainer.innerHTML = `
+      <a href="javascript:void(0)" class="play-main-button tts-icon-btn large" style="text-decoration: none; border: none;">
+        <img src="/assets/svg/play-grey.svg" class="tts-icon play" style="width: 20px; height: 20px; vertical-align: middle;">
+      </a>
+    `;
+
+    // --- СТИЛИ ПОЗИЦИОНИРОВАНИЯ ---
+    // Чтобы кнопка была всегда справа в строке
+Object.assign(btnContainer.style, {
+    position: 'fixed',
+    right: '16px',
+    bottom: '70px',
+    zIndex: '100',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%'
+});
+
+    // Настраиваем родителя
+    container.style.position = 'relative';
+    // Добавляем отступ справа всему тексту внутри, чтобы он не заезжал под кнопку
+    // (Ищем детей-спанов и даем им padding, если нужно, или самому контейнеру)
+    // container.style.paddingRight = '40px'; // Можно включить, если текст налезает
+
+    container.appendChild(btnContainer);
+
+    // --- ОБРАБОТКА НАЖАТИЯ НА PLAY ---
+    const link = btnContainer.querySelector('a');
+    link.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        e.preventDefault();
+
+        // 1. Получаем настройки
+        const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
+        const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
+        const mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn'; // Или 'pi', как настроено
+
+        // 2. Запускаем воспроизведение
+        startPlayback(document, mode, slug);
+
+        // 3. ПОКАЗЫВАЕМ ОКНО ПЛЕЕРА
+        const voiceDropdown = document.querySelector('.voice-dropdown');
+        if (voiceDropdown) {
+            voiceDropdown.classList.add('active'); // Класс, который делает меню видимым
+        }
+
+        // 4. УДАЛЯЕМ КНОПКУ (она сделала своё дело)
+        btnContainer.remove();
+    });
+}
