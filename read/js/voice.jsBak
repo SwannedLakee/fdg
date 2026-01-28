@@ -6,14 +6,7 @@ const makeJsonUrl = (slug) => {
 };
 
 // --- Глобальное состояние ---
-let wakeLock = null; 
-
-// === HACK: Плеер тишины для работы в фоне ===
-// 0.5 секунды тишины в формате MP3 (Base64)
-const SILENCE_BASE64 = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////8AAABhTGF2YzU4LjkxAAAAAAAAAAAAAAAAJAAAAAAAAAAAASDs90kvAAAAAAAAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA//OEZAAAAAAIAAAAAAAAEAAAP8AAAABAAAAAAf/7E0AAAAAAAAAAAAAA';
-
-const silentAudio = new Audio(SILENCE_BASE64);
-silentAudio.loop = true; // Зацикливаем тишину
+let wakeLock = null; // Переменная для Wake Lock
 
 const ttsState = {
   playlist: [],
@@ -65,71 +58,6 @@ function clearTtsStorage() {
   localStorage.removeItem(LAST_SLUG_KEY);
   localStorage.removeItem(LAST_INDEX_KEY);
   console.log('TTS Storage cleared (end of track reached)');
-}
-
-// 4. Обновление данных на экране блокировки (Media Session)
-function updateMediaSession(title, artist) {
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: title || 'Sutta Reading',
-      artist: artist || 'SuttaCentral Voice',
-      artwork: [
-        { src: '/assets/img/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' }
-      ]
-    });
-
-    // Обработчики кнопок на экране блокировки / наушниках
-    navigator.mediaSession.setActionHandler('play', () => {
-      if (ttsState.paused) {
-         ttsState.paused = false;
-         setButtonIcon('pause');
-         playCurrentSegment();
-      }
-    });
-
-    navigator.mediaSession.setActionHandler('pause', () => {
-      ttsState.paused = true;
-      synth.cancel();
-      setButtonIcon('play');
-    });
-
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-       navigatePlaylist(-1);
-    });
-
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-       navigatePlaylist(1);
-    });
-  }
-}
-
-// 5. Управление навигацией (общая логика для кнопок и гарнитуры)
-function navigatePlaylist(direction) {
-  if (!ttsState.speaking || ttsState.playlist.length === 0) return;
-    
-  let newIndex = ttsState.currentIndex + direction;
-  
-  if (direction < 0 && newIndex < 0) newIndex = 0;
-  else if (direction > 0 && newIndex >= ttsState.playlist.length) newIndex = ttsState.playlist.length - 1;
-  
-  if (newIndex === ttsState.currentIndex) return;
-  
-  synth.cancel();
-  ttsState.currentIndex = newIndex;
-  
-  // Если мы на паузе, просто обновляем UI и метаданные, но не играем
-  if (ttsState.paused) {
-    resetUI();
-    const item = ttsState.playlist[ttsState.currentIndex];
-    if (item && item.element) {
-      item.element.classList.add('tts-active');
-      item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    const mediaTitle = item.text.length < 50 ? item.text : `Segment ${newIndex + 1}`;
-    updateMediaSession(mediaTitle, ttsState.currentSlug);
-  } else {
-    playCurrentSegment();
-  }
 }
 
 function cleanTextForTTS(text) {
@@ -316,13 +244,9 @@ function playCurrentSegment() {
     return;
   }
 
-  // 2. Включаем Wake Lock и Тишину
+  // 2. Включаем Wake Lock, если играем
   if (!wakeLock && !ttsState.paused) {
     requestWakeLock();
-  }
-  // Запускаем тихий трек, чтобы браузер не убивал процесс в фоне
-  if (silentAudio.paused) {
-    silentAudio.play().catch(e => console.log('Silent audio play failed:', e));
   }
 
   // Очищаем старые обработчики
@@ -336,12 +260,9 @@ function playCurrentSegment() {
 
   const item = ttsState.playlist[ttsState.currentIndex];
   
-  // 3. Обновляем инфо для экрана блокировки
-  const mediaTitle = item.text.length < 50 ? item.text : `Segment ${ttsState.currentIndex + 1}`;
-  updateMediaSession(mediaTitle, ttsState.currentSlug);
-
-  // 4. Сохранение позиции
+  // 3. Сохранение позиции с условием "не сохранять в самом конце"
   if (ttsState.currentSlug) {
+    // Если осталось играть меньше 2 сегментов (последний или предпоследний), чистим
     if (ttsState.currentIndex >= ttsState.playlist.length - 2) {
        clearTtsStorage(); 
     } else {
@@ -394,9 +315,8 @@ function playCurrentSegment() {
   utterance.onerror = (e) => {
     console.error('TTS Error', e);
     
-    // Если ошибка прерывания, но мы в фоне и играет тишина, возможно стоит попробовать дальше,
-    // но обычно interrupted означает, что ОС убила синтез.
-    // Оставляем защиту, но благодаря silentAudio ошибок должно быть меньше.
+    // --- ЗАЩИТА ОТ УБЕГАНИЯ ---
+    // Если страница скрыта или ошибка 'interrupted', ставим паузу вместо пропуска
     if (document.hidden || e.error === 'interrupted') {
       console.warn('Playback paused due to background error to prevent skipping.');
       ttsState.paused = true;
@@ -404,6 +324,7 @@ function playCurrentSegment() {
       return; 
     }
 
+    // Если страница активна и ошибка другая — пробуем следующий сегмент
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
       if (ttsState.currentIndex < ttsState.playlist.length) {
@@ -458,8 +379,26 @@ async function handleSuttaClick(e) {
     if (!ttsState.speaking || ttsState.playlist.length === 0) return;
     
     let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
-    // Используем общую функцию навигации
-    navigatePlaylist(direction);
+    let newIndex = ttsState.currentIndex + direction;
+    
+    if (direction < 0 && newIndex < 0) newIndex = 0;
+    else if (direction > 0 && newIndex >= ttsState.playlist.length) newIndex = ttsState.playlist.length - 1;
+    
+    if (newIndex === ttsState.currentIndex) return;
+    
+    synth.cancel();
+    ttsState.currentIndex = newIndex;
+    
+    if (ttsState.paused) {
+      resetUI();
+      const item = ttsState.playlist[ttsState.currentIndex];
+      if (item && item.element) {
+        item.element.classList.add('tts-active');
+        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      playCurrentSegment();
+    }
     return;
   }
 
@@ -496,7 +435,8 @@ async function handleSuttaClick(e) {
           ttsState.paused = true;
           synth.cancel();
           setButtonIcon('play');
-          // На паузе можно остановить тишину, но лучше оставить, чтобы не потерять сессию
+          // На паузе экран можно гасить, но обычно лучше держать, если пауза короткая.
+          // В текущей реализации мы держим Lock, пока stopPlayback не вызван.
         }
       } else {
         const modeSelect = document.getElementById('tts-mode-select');
@@ -520,11 +460,6 @@ async function handleSuttaClick(e) {
 
 function stopPlayback() {
   synth.cancel();
-  
-  // Останавливаем тишину
-  silentAudio.pause();
-  silentAudio.currentTime = 0;
-  
   ttsState.speaking = false;
   ttsState.paused = false;
   ttsState.isNavigating = false;
@@ -539,11 +474,6 @@ function stopPlayback() {
   }
   setButtonIcon('play');
   resetUI();
-  
-  // Сбрасываем статус MediaSession
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.playbackState = "none";
-  }
 }
 
 async function startPlayback(container, mode, slug, startIndex = 0) {
@@ -574,13 +504,15 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
       if (foundIndex !== -1) {
         actualStartIndex = foundIndex;
       } else {
-        // 2. ЕСЛИ НЕ НАШЛИ (например, пустой перевод), ищем БЛИЖАЙШИЙ СЛЕДУЮЩИЙ
+        // 2. ВАРИАНТ 1: Если точного совпадения нет (пустой перевод), ищем БЛИЖАЙШИЙ СЛЕДУЮЩИЙ
+        // Находим, где этот ID находится в полных сырых данных
         const sourceIndex = textData.findIndex(item => item.id === activeId);
         
         if (sourceIndex !== -1) {
           // Идем вниз по списку от найденного места
           for (let i = sourceIndex + 1; i < textData.length; i++) {
             const nextId = textData[i].id;
+            // Проверяем, есть ли этот сосед в нашем плейлисте
             const nextInPlaylistIndex = playlist.findIndex(item => item.id === nextId);
             
             if (nextInPlaylistIndex !== -1) {
