@@ -491,16 +491,37 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
   
   let actualStartIndex = startIndex;
   
-  // Ищем любой элемент с active-word внутри контейнера
+  // Ищем элемент active-word
   const activeWord = container.querySelector('.active-word');
   
   if (activeWord) {
     const activeId = getElementId(activeWord);
     
     if (activeId) {
+      // 1. Пробуем найти точное совпадение в плейлисте
       const foundIndex = playlist.findIndex(item => item.id === activeId);
+      
       if (foundIndex !== -1) {
         actualStartIndex = foundIndex;
+      } else {
+        // 2. ВАРИАНТ 1: Если точного совпадения нет (пустой перевод), ищем БЛИЖАЙШИЙ СЛЕДУЮЩИЙ
+        // Находим, где этот ID находится в полных сырых данных
+        const sourceIndex = textData.findIndex(item => item.id === activeId);
+        
+        if (sourceIndex !== -1) {
+          // Идем вниз по списку от найденного места
+          for (let i = sourceIndex + 1; i < textData.length; i++) {
+            const nextId = textData[i].id;
+            // Проверяем, есть ли этот сосед в нашем плейлисте
+            const nextInPlaylistIndex = playlist.findIndex(item => item.id === nextId);
+            
+            if (nextInPlaylistIndex !== -1) {
+              actualStartIndex = nextInPlaylistIndex;
+              console.log(`Сегмент ${activeId} пуст/пропущен. Переход к ближайшему: ${nextId}`);
+              break; 
+            }
+          }
+        }
       }
     }
   } else {
