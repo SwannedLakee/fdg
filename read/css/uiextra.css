@@ -701,6 +701,12 @@ transition: background-color 260ms ease-in-out;
     display: inline-block;
 }
 
+.next-main-button {
+  position: relative; 
+  top: -2px;
+  right: -4px;
+}
+
 .voice-link {
     position: relative; 
     display: inline-block;
@@ -709,7 +715,6 @@ transition: background-color 260ms ease-in-out;
 }
 
 .voice-player {
-
     display: none;
     position: fixed;
     bottom: 50%;
@@ -725,7 +730,6 @@ transition: background-color 260ms ease-in-out;
     border-radius: 24px;
 }
 
-/* ЕДИНСТВЕННОЕ правило для отображения */
 .voice-dropdown.active .voice-player {
     display: block;
 }

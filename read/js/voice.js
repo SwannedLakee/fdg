@@ -31,6 +31,8 @@ function cleanTextForTTS(text) {
   return text
     .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/[Пп]ер\./g, 'Перевод') 
+    .replace(/[Рр]ед\./g, 'отредактировано') 
+    .replace(/Trn:/g, 'Translation') 
     .replace(/”/g, '')
     .replace(/\{.*?\}/g, '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '')
     .replace(/[0-9]/g, '').replace(/[ \t]+/g, ' ').replace(/_/g, '').trim();
