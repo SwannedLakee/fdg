@@ -569,7 +569,7 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
   return `
   <span class="voice-dropdown">
-    <a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="voice-link">Voice</a>&nbsp;
+    <a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
     <span class="voice-player">
       <a href="javascript:void(0)" class="close-tts-btn">&times;</a>
 
