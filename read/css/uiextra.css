@@ -714,12 +714,24 @@ transition: background-color 260ms ease-in-out;
     -webkit-tap-highlight-color: transparent;
 }
 
+
+/* --- Начало замены --- */
+
 .voice-player {
-    display: none;
+    /* Меняем display:none на block + visibility, чтобы работала анимация */
+    display: block; 
+    visibility: hidden;
+    opacity: 0;
+
     position: fixed;
-    bottom: 50%;
+    /* Привязываем к низу, а не к центру */
+    bottom: 0; 
     left: 50%;
-    transform: translate(-50%, -50%);
+    
+    /* Состояние "Скрыто": смещаем вниз на 120% высоты элемента */
+    transform: translate(-50%, 120%);
+    
+    /* Сохраняем ваш дизайн */
     background: white;
     padding: 20px;
     border: 1px solid #ddd;
@@ -728,12 +740,24 @@ transition: background-color 260ms ease-in-out;
     max-width: 90vw;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 24px;
+
+    /* Плавная анимация выезда */
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease, visibility 0s 0.4s;
 }
 
 .voice-dropdown.active .voice-player {
-    display: block;
+    /* Состояние "Показано" */
+    visibility: visible;
+    opacity: 1;
+    
+    /* Поднимаем чуть выше края экрана (на 30px), чтобы висела красиво, как раньше */
+    transform: translate(-50%, -30px);
+    
+    /* Убираем задержку видимости при появлении */
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease, visibility 0s;
 }
 
+/* Темная тема (остается без изменений, просто для сохранения контекста) */
 .dark .voice-player {
     background: #333;
     border-color: #555;
@@ -748,16 +772,19 @@ transition: background-color 260ms ease-in-out;
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .voice-player {
-        bottom: 50px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 200px;
+        /* На мобильных можно прижать чуть ближе к низу или оставить так же */
+        width: 95%; /* Чуть шире на мобильных */
+        max-width: 210px;
         max-height: 80vh;
         overflow-y: auto;
-          z-index: 1000000;
+    }
+    
+    /* При активном состоянии на мобильных можно поднимать чуть меньше, если нужно */
+    .voice-dropdown.active .voice-player {
+         transform: translate(-50%, -20px);
     }
 }
+
 
 .close-tts-btn {
   position: absolute; 
