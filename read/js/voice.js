@@ -74,6 +74,7 @@ function cleanTextForTTS(text) {
     
     .replace(/Trn:/g, 'Translated by') 
     .replace(/”/g, '')
+    .replace(/’ति/g, 'ति')
     .replace(/\{.*?\}/g, '')
     .replace(/\(.*?\)/g, '')
     .replace(/[ \t]+/g, ' ')
@@ -121,12 +122,15 @@ async function prepareTextData(slug) {
   const paliJsonData = await fetchSegmentsData(slug);
   const cleanJsonMap = {};
   
-  if (paliJsonData) {
+    if (paliJsonData) {
     Object.keys(paliJsonData).forEach(key => {
       const cleanKey = key.split(':').pop();
-      cleanJsonMap[cleanKey] = paliJsonData[key];
+
+      const rawText = paliJsonData[key].replace(/<[^>]*>/g, '').trim(); 
+      cleanJsonMap[cleanKey] = cleanTextForTTS(rawText); 
     });
   }
+
   
   const allIds = new Set();
   
@@ -415,49 +419,56 @@ async function handleSuttaClick(e) {
   }
 
   // --- 3. Обработка кнопки PLAY (Главная логика) ---
-  if (playBtn && !e.target.classList.contains('voice-link')) {
-    e.preventDefault();
+if (playBtn && !e.target.classList.contains('voice-link')) {
+  e.preventDefault();
 
-    // А. Смотрим, выбрал ли пользователь что-то (active-word)
-    const activeWordElement = container.querySelector('.active-word');
-    const activeId = activeWordElement ? getElementId(activeWordElement) : null;
-    
-    // Б. Смотрим, что сейчас играет
-    const currentItem = ttsState.playlist[ttsState.currentIndex];
-    const currentId = currentItem ? currentItem.id : null;
+  const activeWordElement = container.querySelector('.active-word');
+  const activeId = activeWordElement ? getElementId(activeWordElement) : null;
+  
+  const currentItem = ttsState.playlist[ttsState.currentIndex];
+  const currentId = currentItem ? currentItem.id : null;
 
-    // В. Решаем: Прыжок или Пауза?
-    const shouldJump = activeId && (!ttsState.speaking || activeId !== currentId);
+  // Если выделено слово, и оно либо не то, что сейчас играет, либо плеер вообще не запущен
+  const shouldJump = activeId && (!ttsState.speaking || activeId !== currentId);
 
-    if (shouldJump) {
-      const modeSelect = document.getElementById('tts-mode-select');
-      const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
-      let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+  if (shouldJump) {
+    let mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
 
-      startPlayback(container, mode, targetSlug, 0);
+    // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ: если режим не комбинированный, меняем его под тип выделенного слова
+    if (mode !== 'pi-trn' && mode !== 'trn-pi') {
+      mode = activeWordElement.classList.contains('pli-lang') ? 'pi' : 'trn';
+      localStorage.setItem(MODE_STORAGE_KEY, mode);
       
-    } else {
-      // --> ОБЫЧНАЯ ПАУЗА / ПРОДОЛЖЕНИЕ
-      if (ttsState.speaking) {
-        if (ttsState.paused) {
-          ttsState.paused = false;
-          setButtonIcon('pause');
-          playCurrentSegment();
-        } else {
-          ttsState.paused = true;
-          synth.cancel();
-          setButtonIcon('play');
-          // На паузе экран можно гасить, но обычно лучше держать, если пауза короткая.
-        }
-      } else {
-        const modeSelect = document.getElementById('tts-mode-select');
-        const mode = modeSelect?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
-        let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
-        startPlayback(container, mode, targetSlug, 0);
-      }
+      // Обновляем визуальный селект
+      const modeSelect = document.getElementById('tts-mode-select');
+      if (modeSelect) modeSelect.value = mode;
     }
-    return;
+
+    let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+    startPlayback(container, mode, targetSlug, 0);
+    
+  } else {
+    // Стандартная логика паузы/продолжения
+    if (ttsState.speaking) {
+      if (ttsState.paused) {
+        ttsState.paused = false;
+        setButtonIcon('pause');
+        playCurrentSegment();
+      } else {
+        ttsState.paused = true;
+        synth.cancel();
+        setButtonIcon('play');
+      }
+    } else {
+      // Старт с начала, если ничего не выделено
+      const mode = document.getElementById('tts-mode-select')?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+      let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+      startPlayback(container, mode, targetSlug, 0);
+    }
   }
+  return;
+}
+
 
   // --- 4. Кнопка закрытия ---
   if (e.target.closest('.close-tts-btn')) {
