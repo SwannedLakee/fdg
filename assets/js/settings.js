@@ -14,32 +14,45 @@ function checkStorage(key) {
 //checkStorage('removePunct');
 
 // 1. Обработка URL-параметров при загрузке
-(function() {
-    try {
-        const url = new URL(window.location.href);
-        let paramsChanged = false;
+(function () {
+  try {
+    const url = new URL(window.location.href);
 
-        // --- ЛОГИКА ДЛЯ TTS (Пишем в defaultReader) ---
-        if (url.searchParams.has('tts')) {
-            const val = url.searchParams.get('tts');
-            
-            // Если ?tts, ?tts=1 или ?tts=true (и не false/0)
-            if (val !== 'false' && val !== '0') {
-                localStorage.setItem('ttsMode', 'true'); // <--- Ставим tts как читалку
-            }
-            
-            // Удаляем параметр из адреса
-            url.searchParams.delete('tts');
-            paramsChanged = true;
-        }
+    // --- TTS как читалка ---
+    if (url.searchParams.has('tts')) {
+      const raw = url.searchParams.get('tts');
+      const val = raw ? raw.toLowerCase() : '';
 
-        if (paramsChanged) {
-            window.history.replaceState({}, document.title, url.toString());
-        }
+      const allowedModes = ['pi', 'trn', 'pi-trn', 'trn-pi'];
 
-    } catch (e) {
-        console.error('Ошибка обработки URL:', e);
+      // tts=true | 1 | yes | on
+      if (['', '1', 'true', 'yes', 'on'].includes(val)) {
+        localStorage.setItem('ttsMode', 'true');
+      }
+
+      // tts=pi | trn | pi-trn | trn-pi
+      if (allowedModes.includes(val)) {
+        localStorage.setItem('ttsMode', 'true');
+        localStorage.setItem('tts_preferred_mode', val);
+      }
+
+      // tts=false | 0 | off
+      if (['false', '0', 'off'].includes(val)) {
+        localStorage.removeItem('ttsMode');
+      }
     }
+
+    // --- Скорость ---
+    if (url.searchParams.has('ttsRate')) {
+      const rate = parseFloat(url.searchParams.get('ttsRate'));
+      if (!isNaN(rate) && rate > 0) {
+        localStorage.setItem('tts_preferred_rate', rate.toString());
+      }
+    }
+
+  } catch (e) {
+    console.error('Ошибка обработки URL:', e);
+  }
 })();
 
 const MAX_HISTORY = 84;
