@@ -50,17 +50,34 @@
   display: none;
   }
 
-  #scrollToTopBtn {
+#scrollToTopBtn {
   border-width: 2px;
-    border-radius: 32px;
-    bottom: 30px;
-    right: 90px;
-  /*  background-color: #424269;
-    border-color: #5A5A5A;*/
-    height: 30px;
-    width: 30px;
-    opacity: 0.8;
-  }
+  border-radius: 32px;
+  bottom: 30px;
+  right: 90px;
+  /* background-color: #424269; border-color: #5A5A5A; */ /* Ваши старые комменты */
+  height: 30px;
+  width: 30px;
+  
+  /* --- ИЗМЕНЕНИЯ ЗДЕСЬ --- */
+  
+  /* 1. Начальное состояние перед анимацией */
+  opacity: 0; 
+  transform: scale(0.5); 
+
+  /* 2. Применяем ту же анимацию "пружины" */
+  animation: btnPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  
+  /* 3. Плавность для эффектов при наведении */
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Добавим эффект наведения для комплекта, как у TTS кнопки */
+#scrollToTopBtn:hover {
+  transform: scale(1.15) !important; /* Чуть увеличиваем при наведении */
+  opacity: 1 !important; /* Делаем полностью непрозрачной */
+}
+
 
   html.dark #scrollToTopBtn #arrowImg,
   body.dark #scrollToTopBtn #arrowImg,
@@ -273,11 +290,13 @@
   }
 
 
-  /* === Базовые стили для всех режимов === */
+/* === Базовые стили для всех режимов === */
 
-  .pli-lang, .eng-lang, .rus-lang {
-    display: inline;
-  }
+.pli-lang, .eng-lang, .rus-lang {
+  display: block;       /* Forces the element to take full width */
+  margin-bottom: 4px;   /* Adds a little breathing room between languages */
+}
+
 
   .column-view .pli-lang,
   .column-view .eng-lang,
@@ -638,7 +657,7 @@
     box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.25);
 }
 
-.pli-lang{
+  .pli-lang, .rus-lang, .eng-lang {
 transition: background-color 260ms ease-in-out;
 }
 
@@ -835,10 +854,25 @@ transition: background-color 260ms ease-in-out;
   font-size: 14px;
 }
 
+/* Анимация появления: увеличение с небольшим отскоком */
+@keyframes btnPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5); /* Начинаем с маленького размера */
+  }
+  60% {
+    transform: scale(1.1); /* Чуть увеличиваем больше нормы (пружина) */
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1);   /* Возвращаем в норму */
+  }
+}
+
 .dynamic-tts-btn {
   position: fixed;
   right: 20px; 
-  bottom: 70px; 
+  bottom: 72px; 
   z-index: 99;
   width: 30px;  
   height: 30px;
@@ -853,11 +887,24 @@ transition: background-color 260ms ease-in-out;
   border: 2px solid #5a5a5a; 
   background-color: rgb(221, 221, 221);
   cursor: pointer;
-  opacity: 0.8;
-  transition: all 0.3s ease;
+  
+  /* --- ИЗМЕНЕНИЯ ЗДЕСЬ --- */
+  opacity: 0; /* Исходно невидима, анимация сделает 0.8 */
+  transform: scale(0.5); /* Исходно маленькая */
+  animation: btnPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  /* ----------------------- */
+
+  transition: all 0.3s ease; /* Это оставим для hover эффектов */
   padding: 0;
   margin: 0;
 }
+
+/* Добавим эффект при наведении для живости */
+.dynamic-tts-btn:hover {
+  opacity: 1 !important;
+  transform: scale(1.1) !important; /* Кнопка чуть увеличится при наведении */
+}
+
 
 .dynamic-tts-btn img {
   width: 14px;
