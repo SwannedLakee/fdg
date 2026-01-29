@@ -850,28 +850,51 @@ function showPali() {
 function toggleThePali() {
   const languageButton = document.getElementById("language-button");
 
- 
-	 // initial state
- if (!localStorage.paliToggleRu) {
+  // initial state
+  if (!localStorage.paliToggleRu) {
     localStorage.paliToggleRu = "pli-rus";
-  }   
+  }
 
   languageButton.addEventListener("click", () => {
+    
+    // 1. ЗАПОМИНАЕМ ПОЗИЦИЮ ДО ПЕРЕКЛЮЧЕНИЯ
+    const anchorData = getTopVisibleSegment();
+
+    // Переключение логики (Ваш существующий код)
     if (language === "pli-rus") {
-     showPali();
+      showPali();
       language = "pli";
       localStorage.paliToggleRu = "pli";
     } else if (language === "rus") {
       showPaliEnglish();
-      language = "pli-rus";    
+      language = "pli-rus";
       localStorage.paliToggleRu = "pli-rus";
     } else if (language === "pli") {
-	  showEnglish();
+      showEnglish();
       language = "rus";
-      localStorage.paliToggleRu = "rus";  
+      localStorage.paliToggleRu = "rus";
+    }
+
+    // 2. ВОССТАНАВЛИВАЕМ ПОЗИЦИЮ ПОСЛЕ ПЕРЕКЛЮЧЕНИЯ
+    if (anchorData && anchorData.element) {
+        // Вычисляем новую позицию скролла:
+        // Текущий абсолютный скролл + новая позиция элемента - старый отступ
+        // Но проще использовать scrollIntoView, однако он может дергать.
+        // Лучше ручной подсчет для точности:
+        
+        // Даем браузеру мгновение пересчитать layout (иногда нужно, но часто работает и синхронно)
+        // Если синхронно не сработает идеально, оберните нижнюю часть в setTimeout(..., 0)
+        
+        const currentRect = anchorData.element.getBoundingClientRect();
+        const absoluteTop = window.scrollY + currentRect.top;
+        
+        // Нам нужно, чтобы element оказался на anchorData.topOffset от верха
+        window.scrollTo({
+            top: absoluteTop - anchorData.topOffset,
+            behavior: "auto" // Важно: "auto", чтобы было мгновенно без анимации прокрутки
+        });
     }
   });
-  
 }
 
 
@@ -990,4 +1013,26 @@ function handleVariantVisibility() {
   });
 
   
+}
+
+// Функция для поиска текущего верхнего видимого элемента
+function getTopVisibleSegment() {
+  // Ищем все элементы с ID внутри #sutta (ваши сегменты имеют id типа sn56.11:1.1)
+  const segments = document.querySelectorAll("#sutta > span[id]");
+  
+  // Отступ сверху (например, если есть фиксированная шапка, можно увеличить)
+  // 50px - небольшой запас для комфорта
+  const headerOffset = 100; 
+
+  for (let segment of segments) {
+    const rect = segment.getBoundingClientRect();
+    // Если элемент находится в пределах видимости (или чуть выше/ниже границы 'комфорта')
+    if (rect.top >= 0 && rect.top < window.innerHeight) {
+      return {
+        element: segment,
+        topOffset: rect.top // Запоминаем, где именно он был относительно верха экрана
+      };
+    }
+  }
+  return null; // Если ничего не найдено (например, самый низ страницы)
 }
