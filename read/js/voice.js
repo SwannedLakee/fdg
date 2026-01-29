@@ -8,6 +8,12 @@ const makeJsonUrl = (slug) => {
 // --- Глобальное состояние ---
 let wakeLock = null; // Переменная для Wake Lock
 
+const SCROLL_STORAGE_KEY = 'tts_auto_scroll'; // Ключ для настройки скролла
+const MODE_STORAGE_KEY = 'tts_preferred_mode';
+const RATE_STORAGE_KEY = 'tts_preferred_rate';
+const LAST_SLUG_KEY = 'tts_last_slug';   
+const LAST_INDEX_KEY = 'tts_last_index'; 
+
 const ttsState = {
   playlist: [],
   currentIndex: 0,
@@ -16,16 +22,14 @@ const ttsState = {
   paused: false,
   utterance: null,
   langSettings: null,
-  userRate: parseFloat(localStorage.getItem('tts_preferred_rate')) || 1.0,
+  userRate: parseFloat(localStorage.getItem(RATE_STORAGE_KEY)) || 1.0,
+  // По умолчанию скролл включен (true), если в localStorage не записано 'false'
+  autoScroll: localStorage.getItem(SCROLL_STORAGE_KEY) !== 'false', 
   currentSlug: null,
   isNavigating: false 
 };
 
 const synth = window.speechSynthesis;
-const MODE_STORAGE_KEY = 'tts_preferred_mode';
-const RATE_STORAGE_KEY = 'tts_preferred_rate';
-const LAST_SLUG_KEY = 'tts_last_slug';   
-const LAST_INDEX_KEY = 'tts_last_index'; 
 
 // --- Утилиты ---
 
@@ -279,7 +283,12 @@ function playCurrentSegment() {
     }
     
     item.element.classList.add('tts-active');
-    item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // --- ПРОВЕРКА АВТОПРОКРУТКИ ---
+    // Скроллим, только если галочка включена
+    if (ttsState.autoScroll) {
+      item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   const utterance = new SpeechSynthesisUtterance(item.text);
@@ -394,7 +403,10 @@ async function handleSuttaClick(e) {
       const item = ttsState.playlist[ttsState.currentIndex];
       if (item && item.element) {
         item.element.classList.add('tts-active');
-        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Проверка скролла при ручной навигации на паузе
+        if (ttsState.autoScroll) {
+          item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     } else {
       playCurrentSegment();
@@ -436,7 +448,6 @@ async function handleSuttaClick(e) {
           synth.cancel();
           setButtonIcon('play');
           // На паузе экран можно гасить, но обычно лучше держать, если пауза короткая.
-          // В текущей реализации мы держим Lock, пока stopPlayback не вызван.
         }
       } else {
         const modeSelect = document.getElementById('tts-mode-select');
@@ -569,7 +580,7 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
   return `
   <span class="voice-dropdown">
-    <a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
+    <a style="transform: translateY(-2px)"  data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
     <span class="voice-player">
       <a href="javascript:void(0)" class="close-tts-btn">&times;</a>
 
@@ -598,69 +609,94 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
           `<option value="${r}" ${savedRate == r ? 'selected' : ''}>${r}x</option>`
         ).join('')}
       </select>
+      
+      <br>
+
+<label class="tts-checkbox-custom">
+  <input type="checkbox" id="tts-scroll-toggle" ${ttsState.autoScroll ? 'checked' : ''}>
+  Scroll
+</label>
+
+
+
       <br>
       <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
       <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>&nbsp;`;
 }
 
+
 // --- Обработчик изменения настроек ---
 async function handleTTSSettingChange(e) {
-  if (e.target.id === 'tts-mode-select' || e.target.id === 'tts-rate-select') {
+  // 1. Режим (Mode)
+  if (e.target.id === 'tts-mode-select') {
     e.preventDefault();
-    
-    if (e.target.id === 'tts-mode-select') {
-      const newMode = e.target.value;
-      localStorage.setItem(MODE_STORAGE_KEY, newMode);
+    const newMode = e.target.value;
+    localStorage.setItem(MODE_STORAGE_KEY, newMode);
       
-      if (ttsState.speaking || ttsState.paused) {
-        const wasPaused = ttsState.paused;
-        const currentId = ttsState.playlist[ttsState.currentIndex]?.id;
-        const pausedIndex = ttsState.currentIndex;
-        
-        synth.cancel();
-        
-        const textData = await prepareTextData(ttsState.currentSlug);
-        const newPlaylist = createPlaylistFromData(textData, newMode);
-        
-        if (!newPlaylist.length) return;
-        
-        let newIndex = 0;
-        if (currentId) {
-          const foundIndex = newPlaylist.findIndex(item => item.id === currentId);
-          if (foundIndex !== -1) newIndex = foundIndex;
-        } else if (pausedIndex < newPlaylist.length) {
-          newIndex = pausedIndex;
-        }
-        
-        ttsState.playlist = newPlaylist;
-        ttsState.currentIndex = newIndex;
-        ttsState.langSettings = newMode;
-        ttsState.speaking = true;
-        ttsState.paused = wasPaused;
-        
-        if (!wasPaused) {
-          setButtonIcon('pause');
-          playCurrentSegment();
-        } else {
-          setButtonIcon('play');
-          resetUI();
-          const item = ttsState.playlist[ttsState.currentIndex];
-          if (item && item.element) {
-            item.element.classList.add('tts-active');
+    if (ttsState.speaking || ttsState.paused) {
+      const wasPaused = ttsState.paused;
+      const currentId = ttsState.playlist[ttsState.currentIndex]?.id;
+      const pausedIndex = ttsState.currentIndex;
+      
+      synth.cancel();
+      
+      const textData = await prepareTextData(ttsState.currentSlug);
+      const newPlaylist = createPlaylistFromData(textData, newMode);
+      
+      if (!newPlaylist.length) return;
+      
+      let newIndex = 0;
+      if (currentId) {
+        const foundIndex = newPlaylist.findIndex(item => item.id === currentId);
+        if (foundIndex !== -1) newIndex = foundIndex;
+      } else if (pausedIndex < newPlaylist.length) {
+        newIndex = pausedIndex;
+      }
+      
+      ttsState.playlist = newPlaylist;
+      ttsState.currentIndex = newIndex;
+      ttsState.langSettings = newMode;
+      ttsState.speaking = true;
+      ttsState.paused = wasPaused;
+      
+      if (!wasPaused) {
+        setButtonIcon('pause');
+        playCurrentSegment();
+      } else {
+        setButtonIcon('play');
+        resetUI();
+        const item = ttsState.playlist[ttsState.currentIndex];
+        if (item && item.element) {
+          item.element.classList.add('tts-active');
+          if (ttsState.autoScroll) {
             item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
       }
-    }  
-          
-    if (e.target.id === 'tts-rate-select') {
-      ttsState.userRate = parseFloat(e.target.value);
-      localStorage.setItem(RATE_STORAGE_KEY, e.target.value);
-      if (ttsState.speaking && !ttsState.paused) {
-        synth.cancel();
-        playCurrentSegment();
-      }
     }
+  }
+  
+  // 2. Скорость (Rate)
+  if (e.target.id === 'tts-rate-select') {
+    ttsState.userRate = parseFloat(e.target.value);
+    localStorage.setItem(RATE_STORAGE_KEY, e.target.value);
+    if (ttsState.speaking && !ttsState.paused) {
+      synth.cancel();
+      playCurrentSegment();
+    }
+  }
+
+  // 3. Автопрокрутка (Scroll Toggle)
+  if (e.target.id === 'tts-scroll-toggle') {
+     ttsState.autoScroll = e.target.checked;
+     localStorage.setItem(SCROLL_STORAGE_KEY, e.target.checked);
+     // Если мы на паузе и включили скролл — сразу подкрутим к текущему элементу
+     if (ttsState.autoScroll && (ttsState.speaking || ttsState.paused)) {
+        const item = ttsState.playlist[ttsState.currentIndex];
+        if (item && item.element) {
+           item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+     }
   }
 }
 
@@ -716,6 +752,7 @@ document.addEventListener("click", function (e) {
     !e.target.closest(".voice-player") &&
     !e.target.closest(".tts-mode-select") &&
     !e.target.closest(".tts-rate-select") &&
+    !e.target.closest("#tts-scroll-toggle") && 
     !e.target.closest(".dynamic-tts-btn")
   ) {
     removeAllHighlights();
@@ -730,76 +767,41 @@ function removeAllHighlights() {
 
 // --- 2. ФУНКЦИЯ ДОБАВЛЕНИЯ КНОПКИ (FIX: Позиция и Плеер) ---
 function addTtsButton(container, sourceElement) {
-    // Удаляем старые
-    
-    if (ttsState.speaking || ttsState.paused) {
-        return;
-    }
-    if (ttsState.speaking || ttsState.paused) {
-        return;
-    }
-    if (ttsState.speaking || ttsState.paused) {
-        return;
-    }
-    if (ttsState.speaking || ttsState.paused) {
-        return;
-    }
-    
-    const oldBtns = document.querySelectorAll('.dynamic-tts-btn');
-    oldBtns.forEach(btn => btn.remove());
+    if (ttsState.speaking || ttsState.paused) return;
+
+    document.querySelectorAll('.dynamic-tts-btn').forEach(btn => btn.remove());
 
     const btnContainer = document.createElement('div');
     btnContainer.className = 'dynamic-tts-btn'; 
-    
-    btnContainer.innerHTML = `
-      <a href="javascript:void(0)" class="play-main-button tts-icon-btn large" style="text-decoration: none; border: none;">
-        <img src="/assets/svg/play-grey.svg" class="tts-icon play" style="width: 20px; height: 20px; vertical-align: middle;">
-      </a>
-    `;
-
-    // --- СТИЛИ ПОЗИЦИОНИРОВАНИЯ ---
-    // Чтобы кнопка была всегда справа в строке
-Object.assign(btnContainer.style, {
-    position: 'fixed',
-    right: '16px',
-    bottom: '70px',
-    zIndex: '100',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '50%'
-});
-
-    // Настраиваем родителя
-    container.style.position = 'relative';
-    // Добавляем отступ справа всему тексту внутри, чтобы он не заезжал под кнопку
-    // (Ищем детей-спанов и даем им padding, если нужно, или самому контейнеру)
-    // container.style.paddingRight = '40px'; // Можно включить, если текст налезает
+    // Оставляем только саму иконку без лишних оберток
+    btnContainer.innerHTML = `<img src="/assets/svg/play.svg" alt="Play (Alt+R)">`;
 
     container.appendChild(btnContainer);
 
-    // --- ОБРАБОТКА НАЖАТИЯ НА PLAY ---
-    const link = btnContainer.querySelector('a');
-    link.addEventListener('click', (e) => {
+    // Вешаем событие прямо на контейнер
+    btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
         e.preventDefault();
 
-        // 1. Получаем настройки
-        const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
-        const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
-        const mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn'; // Или 'pi', как настроено
+        let mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
 
-        // 2. Запускаем воспроизведение
-        startPlayback(document, mode, slug);
-
-        // 3. ПОКАЗЫВАЕМ ОКНО ПЛЕЕРА
-        const voiceDropdown = document.querySelector('.voice-dropdown');
-        if (voiceDropdown) {
-            voiceDropdown.classList.add('active'); // Класс, который делает меню видимым
+        if (mode !== 'pi-trn' && mode !== 'trn-pi') {
+            mode = sourceElement.classList.contains('pli-lang') ? 'pi' : 'trn';
+            localStorage.setItem(MODE_STORAGE_KEY, mode);
+            const modeSelect = document.getElementById('tts-mode-select');
+            if (modeSelect) modeSelect.value = mode;
         }
 
-        // 4. УДАЛЯЕМ КНОПКУ (она сделала своё дело)
+        const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
+        const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
+
+        startPlayback(document, mode, slug);
+
+        const voiceDropdown = document.querySelector('.voice-dropdown');
+        if (voiceDropdown) {
+            voiceDropdown.classList.add('active');
+        }
+
         btnContainer.remove();
     });
 }

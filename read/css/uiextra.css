@@ -807,3 +807,92 @@ transition: background-color 260ms ease-in-out;
 .tts-rate-select {
   font-size: 14px;
 }
+
+.dynamic-tts-btn {
+  position: fixed;
+  right: 20px; 
+  bottom: 70px; 
+  z-index: 99;
+  width: 30px;  
+  height: 30px;
+  
+  /* Идеальная центровка */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  box-sizing: border-box;
+  border-radius: 50%; /* Круглая форма */
+  border: 2px solid #5a5a5a; 
+  background-color: rgb(221, 221, 221);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  padding: 0;
+  margin: 0;
+}
+
+.dynamic-tts-btn img {
+  width: 14px;
+  height: 14px;
+  /* Убираем любые дефолтные смещения браузера */
+  display: block;
+  margin: 0 auto; 
+}
+
+/* Темная тема для соответствия uiextra.css */
+.dark .dynamic-tts-btn {
+  border-color: #5a5a5a;
+  background-color: #42426a;
+}
+
+.dark .dynamic-tts-btn img {
+  filter: invert(1);
+}
+
+/* 1. Контейнер лейбла */
+.tts-checkbox-custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  font-size: 14px;
+  padding: 2px 6px;
+  color: #666;
+  cursor: pointer;
+  margin-top: 5px;
+  width: auto;
+}
+
+/* 2. Сам чекбокс (базовые настройки для светлой темы) */
+.tts-checkbox-custom input {
+  appearance: checkbox !important;
+  -webkit-appearance: checkbox !important;
+  display: inline-block !important;
+  width: 13px !important;
+  height: 13px !important;
+  margin: 0 6px 0 0 !important;
+  cursor: pointer;
+  vertical-align: middle;
+  border-radius: 4px;
+  /* Принудительно задаем светлую схему для белого фона */
+  color-scheme: light; 
+}
+
+/* 3. Поддержка темной темы */
+.dark .tts-checkbox-custom {
+  border-color: #555;
+  color: #ccc;
+  background-color: #333;
+}
+
+.dark .tts-checkbox-custom input {
+    /* Принудительно задаем темную схему для темного фона */
+    color-scheme: dark;
+}
+
+/* Убираем или меняем accent-color, если он перекрывает стандартный вид */
+.tts-checkbox-custom input[type="checkbox"] {
+
+  accent-color: #5a5a5a; 
+}
