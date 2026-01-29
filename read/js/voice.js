@@ -737,13 +737,14 @@ document.addEventListener("click", function (e) {
   );
 
   if (clickedSegment) {
-
-    // Если уже активен — ничего не делаем
+    // ПРОВЕРКА ПОВТОРНОГО КЛИКА:
+    // Если нажали на уже активный сегмент — снимаем выделение и выходим
     if (clickedSegment.classList.contains("active-word")) {
+      removeAllHighlights();
       return;
     }
 
-    // 1. Снимаем все старые подсветки и кнопку
+    // 1. Снимаем все старые подсветки и кнопку перед тем как подсветить новый
     removeAllHighlights();
 
     // 2. Подсвечиваем ТОЛЬКО то, по чему кликнули
@@ -770,6 +771,8 @@ document.addEventListener("click", function (e) {
     removeAllHighlights();
   }
 });
+
+
 // Чистилка
 function removeAllHighlights() {
     document.querySelectorAll(".active-word").forEach(el => el.classList.remove("active-word"));

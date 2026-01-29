@@ -1,5 +1,5 @@
 @font-face {
-  font-family: "Robto Serif";
+  font-family: "Roboto Serif";
   src: url("./roboto-lightest.woff");
 }
 
@@ -48,7 +48,6 @@
 body {
   margin: 1rem 3rem;
   background-color: var(--light-off-white);
-  font-family: "Robto Serif", serif;
 }
 
 body.dark {
@@ -229,7 +228,6 @@ h2,
 h3,
 h4,
 h5 {
-font-family: sans-serif;
   color: var(--dark-gray) ;
 }
 
