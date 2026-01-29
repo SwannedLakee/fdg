@@ -74,6 +74,7 @@ function cleanTextForTTS(text) {
     
     .replace(/Trn:/g, 'Translated by') 
     .replace(/”/g, '')
+    .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
     .replace(/\{.*?\}/g, '')
     .replace(/\(.*?\)/g, '')
