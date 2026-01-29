@@ -345,24 +345,6 @@ window.addEventListener("keydown", (event) => {
         }
 
 
-const activeVoicePlayers = document.querySelectorAll('.voice-dropdown.active');
-        
-        if (activeVoicePlayers.length > 0) {
-            // Закрываем все открытые voice-players
-            activeVoicePlayers.forEach(dropdown => {
-                dropdown.classList.remove('active');
-            });
-            
-            // Останавливаем воспроизведение если играет
-            if (ttsState.speaking || ttsState.paused) {
-                stopPlayback(true);
-            }
-            
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
-
         const closeBtnElements = document.querySelectorAll('.btn-close');
         if (closeBtnElements.length > 0) {
             closeBtnElements.forEach(button => {
@@ -375,10 +357,6 @@ const activeVoicePlayers = document.querySelectorAll('.voice-dropdown.active');
         }
     }
  }, true);
-
-
-
-
 
     // Добавляем обработчик сочетания клавиш Alt + Space (физическая клавиша)
 document.addEventListener("keydown", (event) => {
