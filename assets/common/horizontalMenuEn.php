@@ -386,7 +386,6 @@ echo '<!--
    
    
            <a class="text-reset" target="Quick Links" 
-        href="javascript:void(0)"   
  onclick="toggleQuickModal();"            
            >sutta</a>  
 	       <!--  
@@ -394,7 +393,8 @@ echo '<!--
            href="/ru/tts.php" onclick="return openWithQuery(event, \'/t2s.html?q={{q}}\')" 
 	       <a class="text-reset" target=""  href="/new/">new</a> 
                   <a class="text-reset" target=""  href="' . $readerPage . '">index</a>  
-<a class="text-reset" target=""  href="/assets/texts/sutta.php">sutta</a>       -->                
+<a class="text-reset" target=""  href="/assets/texts/sutta.php">sutta</a>       -->  
+
       <a class="text-reset" target=""  href="/pm.php?expand=true">bupm</a>        
       <a class="text-reset" target=""  href="/bipm.php?expand=true">bipm</a> 
 

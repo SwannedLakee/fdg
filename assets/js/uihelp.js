@@ -165,7 +165,7 @@ else if (path.includes('/result/') || searchParams.get('q')?.trim()) {
             padding: '12px 20px',
             borderRadius: '8px',
             fontSize: '14px',
-            zIndex: '999',
+            zIndex: '99',
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
             animation: 'fadeInUp 0.5s ease-out',
             maxWidth: '600px',
