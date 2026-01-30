@@ -304,13 +304,13 @@ function playCurrentSegment() {
     utterance.lang = 'ru-RU';
   } else if (item.lang === 'th') { 
     utterance.lang = 'th-TH'; 
-    multiplier = 0.6; 
+    multiplier = 0.5; 
   } else if (item.lang === 'en') {
     utterance.lang = 'en-US';
   } else if (item.lang === 'pi-dev') {
     utterance.lang = 'sa-IN'; // ПЕРВАЯ ПОПЫТКА: санскрит
     utterance._fallbackAttempt = 0; // сохраняем номер попытки
-    multiplier = 0.6;
+    multiplier = 0.5;
   }
 
   utterance.rate = ttsState.userRate * multiplier;
@@ -339,7 +339,7 @@ function playCurrentSegment() {
         console.log('Sanskrit failed, trying Hindi...');
         utterance.lang = 'hi-IN';
         utterance._fallbackAttempt = 1;
-        utterance.rate = ttsState.userRate * 0.6; // тот же множитель
+        utterance.rate = ttsState.userRate * 0.5; // тот же множитель
         
         // Пробуем снова с хинди
         setTimeout(() => {
