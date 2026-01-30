@@ -13,6 +13,7 @@ const MODE_STORAGE_KEY = 'tts_preferred_mode';
 const RATE_STORAGE_KEY = 'tts_preferred_rate';
 const LAST_SLUG_KEY = 'tts_last_slug';   
 const LAST_INDEX_KEY = 'tts_last_index'; 
+const PALI_ALERT_KEY = 'tts_pali_alert_shown'; // Ключ для алерта
 
 const ttsState = {
   playlist: [],
@@ -269,9 +270,8 @@ function playCurrentSegment() {
 
   const item = ttsState.playlist[ttsState.currentIndex];
   
-  // 3. Сохранение позиции с условием "не сохранять в самом конце"
+  // 3. Сохранение позиции
   if (ttsState.currentSlug) {
-    // Если осталось играть меньше 2 сегментов (последний или предпоследний), чистим
     if (ttsState.currentIndex >= ttsState.playlist.length - 2) {
        clearTtsStorage(); 
     } else {
@@ -289,8 +289,7 @@ function playCurrentSegment() {
     
     item.element.classList.add('tts-active');
     
-    // --- ПРОВЕРКА АВТОПРОКРУТКИ ---
-    // Скроллим, только если галочка включена
+    // Автопрокрутка
     if (ttsState.autoScroll) {
       item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -298,7 +297,9 @@ function playCurrentSegment() {
 
   const utterance = new SpeechSynthesisUtterance(item.text);
   let multiplier = 1.0;
+  let fallbackAttempt = 0; // 0 = санскрит, 1 = хинди, 2 = английский
 
+  // Инициализируем utterance с санскритом по умолчанию для пали
   if (item.lang === 'ru') {
     utterance.lang = 'ru-RU';
   } else if (item.lang === 'th') { 
@@ -307,7 +308,8 @@ function playCurrentSegment() {
   } else if (item.lang === 'en') {
     utterance.lang = 'en-US';
   } else if (item.lang === 'pi-dev') {
-    utterance.lang = 'sa-IN';
+    utterance.lang = 'sa-IN'; // ПЕРВАЯ ПОПЫТКА: санскрит
+    utterance._fallbackAttempt = 0; // сохраняем номер попытки
     multiplier = 0.6;
   }
 
@@ -319,7 +321,6 @@ function playCurrentSegment() {
       if (ttsState.currentIndex < ttsState.playlist.length) {
         playCurrentSegment();
       } else {
-        // Конец плейлиста
         clearTtsStorage();
         stopPlayback();
       }
@@ -329,16 +330,78 @@ function playCurrentSegment() {
   utterance.onerror = (e) => {
     console.error('TTS Error', e);
     
-    // --- ЗАЩИТА ОТ УБЕГАНИЯ ---
-    // Если страница скрыта или ошибка 'interrupted', ставим паузу вместо пропуска
+    // --- ОБРАБОТКА FALLBACK ДЛЯ ПАЛИ ---
+    if (item.lang === 'pi-dev') {
+      const currentAttempt = utterance._fallbackAttempt || 0;
+      
+      // 1. САНСКРИТ УПАЛ -> ПРОБУЕМ ХИНДИ
+      if (currentAttempt === 0 && utterance.lang === 'sa-IN') {
+        console.log('Sanskrit failed, trying Hindi...');
+        utterance.lang = 'hi-IN';
+        utterance._fallbackAttempt = 1;
+        utterance.rate = ttsState.userRate * 0.6; // тот же множитель
+        
+        // Пробуем снова с хинди
+        setTimeout(() => {
+          if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
+            synth.speak(utterance);
+          }
+        }, 1);
+        return;
+      }
+      
+      // 2. ХИНДИ УПАЛ -> ПРОБУЕМ АНГЛИЙСКИЙ
+      if (currentAttempt === 1 && utterance.lang === 'hi-IN') {
+        console.log('Hindi failed, trying English...');
+        utterance.lang = 'en-US';
+        utterance._fallbackAttempt = 2;
+        utterance.rate = ttsState.userRate; // обычная скорость для английского
+        
+        // Пробуем с английским
+        setTimeout(() => {
+          if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
+            synth.speak(utterance);
+            
+       const pathLang = location.pathname.split('/')[1];
+        const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
+
+        const title = isRuLike ? 'TTS:' : 'TTS Hint:';
+        
+       // 1. Определяем правильную ссылку в зависимости от языка
+        const helpUrl = isRuLike 
+            ? '/assets/common/ttsHelp.html#tts-help-ru' 
+            : '/assets/common/ttsHelp.html#tts-help-en';
+
+        // 2. Формируем HTML ссылки
+        const helpLink = `<a href="${helpUrl}" target="_blank" style="color: #4da6ff; text-decoration: underline;">(?)</a>`;
+
+        const message = isRuLike 
+          ? `Не найдено модулей близких к Пали. Установлен Английский. См. помощь ${helpLink}, как включить Санскрит/Хинди/Непальский.`
+          : `No Pāḷi-friendly voices found. Using English. See help ${helpLink} on how to enable Sanskrit/Hindi/Nepali.`;
+        
+        showVoiceHint(title, message, PALI_ALERT_KEY);
+            
+          }
+        }, 1);
+        return;
+      }
+      
+      // 3. АНГЛИЙСКИЙ ТОЖЕ УПАЛ -> ПРОПУСКАЕМ СЕГМЕНТ
+      if (currentAttempt === 2 && utterance.lang === 'en-US') {
+        console.log('All fallbacks failed, skipping segment...');
+        // Продолжаем как обычную ошибку - переходим к следующему сегменту
+      }
+    }
+    
+    // --- ОБРАБОТКА ОСТАЛЬНЫХ ОШИБОК ---
     if (document.hidden || e.error === 'interrupted') {
-      console.warn('Playback paused due to background error to prevent skipping.');
+      console.warn('Playback paused due to background error');
       ttsState.paused = true;
       setButtonIcon('play');
       return; 
     }
 
-    // Если страница активна и ошибка другая — пробуем следующий сегмент
+    // Стандартная обработка: переходим к следующему сегменту
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
       if (ttsState.currentIndex < ttsState.playlist.length) {
@@ -573,6 +636,83 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
   playCurrentSegment();
 }
 
+// --- Функция показа красивого уведомления (копия стиля из uihelp.js) ---
+function showVoiceHint(title, message, storageKey) {
+  // 1. Если пользователь уже закрывал его ранее (глобально) — выходим
+  if (localStorage.getItem(storageKey)) return;
+
+  // 2. НОВОЕ: Если подсказка прямо сейчас уже висит на экране — выходим
+  if (document.getElementById('active-voice-hint')) return;
+
+  const notification = document.createElement('div');
+  notification.id = 'active-voice-hint'; // Даем ID для проверки
+
+  notification.innerHTML = `
+      <div class="hint" style="display: flex; align-items: center; gap: 10px;">
+          <div>💡 <strong>${title}</strong> ${message}</div>
+          <button id="closeVoiceHintBtn" style="
+              background: none;
+              border: none;
+              color: white;
+              font-size: 16px;
+              cursor: pointer;
+              padding: 0 0 0 10px;
+          " title="(Esc)">×</button>
+      </div>
+  `;
+
+  // Стилизация
+  Object.assign(notification.style, {
+      position: 'fixed',
+      top: '30%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: 'rgba(66, 66, 106, 1)',
+      color: 'white',
+      padding: '12px 20px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      zIndex: '9999',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      animation: 'fadeInUp 0.5s ease-out',
+      maxWidth: '600px',
+      minWidth: '200px',
+      textAlign: 'center',
+      border: '1px solid rgba(255,255,255,0.1)'
+  });
+
+  document.body.appendChild(notification);
+
+  // Анимации
+  if (!document.getElementById('voice-hint-styles')) {
+      const style = document.createElement('style');
+      style.id = 'voice-hint-styles';
+      style.textContent = `
+          @keyframes fadeInUp {
+              from { opacity: 0; transform: translate(-50%, 10px); }
+              to { opacity: 1; transform: translate(-50%, 0); }
+          }
+          @keyframes fadeOut {
+              from { opacity: 1; }
+              to { opacity: 0; }
+          }
+          #closeVoiceHintBtn:hover { color: #ccc; }
+      `;
+      document.head.appendChild(style);
+  }
+
+  // Обработчик закрытия
+  const closeBtn = notification.querySelector('#closeVoiceHintBtn');
+  closeBtn.addEventListener('click', function() {
+      notification.style.animation = 'fadeOut 0.3s ease-in';
+      setTimeout(() => {
+          notification.remove();
+          localStorage.setItem(storageKey, 'true'); // Запоминаем, что закрыли навсегда
+      }, 300);
+  });
+}
+
+
 
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
@@ -581,12 +721,22 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
   const savedRate = localStorage.getItem(RATE_STORAGE_KEY) || "1.0";
   
-  const modeLabels = { 
-    'pi': 'Pāḷi', 
-    'pi-trn': 'Pāḷi + Trn', 
-    'trn': 'Trn', 
-    'trn-pi': 'Trn + Pāḷi' 
-  };
+  const pathLang = location.pathname.split('/')[1];
+  const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
+
+  const modeLabels = isRuLike
+    ? {
+        'pi': 'Пали',
+        'pi-trn': 'Пали + Рус',
+        'trn': 'Перевод',
+        'trn-pi': 'Рус + Пали'
+      }
+    : {
+        'pi': 'Pāḷi',
+        'pi-trn': 'Pāḷi + Trn',
+        'trn': 'Trn',
+        'trn-pi': 'Trn + Pāḷi'
+      };
   
   const rates = [0.25, 0.5, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
 
