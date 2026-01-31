@@ -735,18 +735,13 @@ transition: background-color 260ms ease-in-out;
     -webkit-tap-highlight-color: transparent;
 }
 
-
-/* --- Начало замены --- */
-
 .voice-player {
-    /* Меняем display:none на block + visibility, чтобы работала анимация */
     display: block; 
     visibility: hidden;
     opacity: 0;
-
     position: fixed;
-    /* Привязываем к низу, а не к центру */
-    bottom: 0; 
+
+    bottom: 50px; 
     left: 50%;
     
     /* Состояние "Скрыто": смещаем вниз на 120% высоты элемента */
