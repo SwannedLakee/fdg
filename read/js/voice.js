@@ -291,7 +291,7 @@ function playCurrentSegment() {
     
     // Автопрокрутка
     if (ttsState.autoScroll) {
-      item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      item.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
@@ -473,7 +473,7 @@ async function handleSuttaClick(e) {
         item.element.classList.add('tts-active');
         // Проверка скролла при ручной навигации на паузе
         if (ttsState.autoScroll) {
-          item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          item.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
     } else {
@@ -831,7 +831,7 @@ async function handleTTSSettingChange(e) {
         if (item && item.element) {
           item.element.classList.add('tts-active');
           if (ttsState.autoScroll) {
-            item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            item.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }
       }
@@ -856,7 +856,7 @@ async function handleTTSSettingChange(e) {
      if (ttsState.autoScroll && (ttsState.speaking || ttsState.paused)) {
         const item = ttsState.playlist[ttsState.currentIndex];
         if (item && item.element) {
-           item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           item.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
      }
   }

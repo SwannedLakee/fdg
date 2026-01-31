@@ -590,7 +590,7 @@
     border-radius: 0.25rem;
     box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.2);
     transition: background-color 260ms ease-in-out;
-    
+    scroll-margin-top: 25vh;
     /* Чтобы подсветка красиво переносилась на новые строки */
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
