@@ -107,7 +107,7 @@ async function fetchSegmentsData(slug) {
 function detectTranslationLang() {
   const path = window.location.pathname;
   if (path.includes('/th/') || path.includes('/thml/')) return 'th';
-  if (path.includes('/en/') || path.includes('/read/')) return 'en';
+  if (path.includes('/en/') || path.includes('/b/') || path.includes('/read/')) return 'en';
   return 'ru';
 }
 
