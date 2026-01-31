@@ -68,15 +68,21 @@ function clearTtsStorage() {
 function cleanTextForTTS(text) {
   if (!text) return "";
   return text
-    .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/[Пп]ер\./g, 'Перевод') 
     .replace(/Англ,/g, 'английского,') 
     .replace(/[Рр]ед\./g, 'отредактировано') 
-    
+    //Eng-tts rules
     .replace(/Trn:/g, 'Translated by') 
+    //Pali-tts rules
+    .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/”/g, '')
+    .replace(/ पन[\.:,]/g, 'पना ') 
+    .replace(/ पन /g, 'पना ') 
+    .replace(/स्स /g, 'स्सा ')
+    .replace(/म्म /g, 'म्मा ')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
+    //general-tts rupes
     .replace(/\{.*?\}/g, '')
     .replace(/\(.*?\)/g, '')
     .replace(/[ \t]+/g, ' ')
