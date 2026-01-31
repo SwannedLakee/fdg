@@ -3,8 +3,7 @@ const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
   const suffix = '_rootd-pli-ms.json';
   const fullPath = `${basePath}${slug}${suffix}`;
-  
-  alert(fullPath); 
+//  alert(fullPath); 
   return fullPath;
 };
 
