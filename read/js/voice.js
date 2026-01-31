@@ -2,7 +2,10 @@
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
   const suffix = '_rootd-pli-ms.json';
-  return `${basePath}${slug}${suffix}`;
+  const fullPath = `${basePath}${slug}${suffix}`;
+  
+  alert(fullPath); 
+  return fullPath;
 };
 
 // --- Глобальное состояние ---
