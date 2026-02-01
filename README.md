@@ -1,18 +1,18 @@
-
 # Dhamma.Gift - Liberation Search Engine
 
-## Dhamma.Gift is available as:
+Dhamma.Gift is available as:
 
-- Website: [https://dhamma.gift](https://dhamma.gift)  
-- PWA (installable via browser on Android and desktop)  
-- APK files for manual installation:  
-  [Download dhamma.gift-v0.1.apk](https://dhamma.gift/assets/apk/dhamma.gift-v0.1.apk)  
+- Website: [https://dhamma.gift](https://dhamma.gift)
+- PWA (installable via browser on Android and desktop)
+- APK files for manual installation:
+  [Download dhamma.gift-v0.1.apk](https://dhamma.gift/assets/apk/dhamma.gift-v0.1.apk)
   [Download dict.dhamma.gift-v0.1.apk](https://dhamma.gift/assets/apk/dict.dhamma.gift-v0.1.apk)
 
-# online version
+## online version
+
 Grep-based search in all Texts of Pali Suttanta and Vinaya in 4 languages: Pali, English, Russian, Thai and Sinhala. Little script that will or at least might change Buddhism to better.
 Search all matches for the word in Suttas and Vinaya.
-Web implementation of bash script that generates comfortables datatables. 
+Web implementation of bash script that generates comfortables datatables.
 
 https://dhamma.gift/
 
@@ -20,26 +20,26 @@ Perfect for those who are looking for Awakening and study Pali.
 You can get all occurrences of the definition, metaphor, practice etc.
 By default search is made in DN, MN, SN, AN. But user has option to add other books of KN.
 
-# dg.offline
-Offline version of dg 
+## dg.offline
+
+Offline version of dg
 
 This instruction is only for Android devices. Check possible options for IOS in the end of this instruction. if you'll find out how to run it on IOS please let me know.
 
-# Option #1 
-# installation with script
+### Option #1 - installation with script
 
-# for Linux with apt 
+#### For Linux with apt
 
-copy-paste into terminal contents of the script from scripts/install-linix.sh (requires root)
+Copy+paste into terminal the contents of [`scripts/install-linux.sh`](./scripts/install-linux.sh) (requires root)
 
-# for Windows 10+ (WSL)
+#### For Windows 10+ (WSL)
 
 1. [Activate](https://learn.microsoft.com/en-us/windows/wsl/install) Windows Subsystem for Linux
 1. Install Ubuntu of your choice from Windows store
 1. Finalize the setup: set username and password
 1. Copy+paste into terminal the contents of [`scripts/install-linux.sh`](./scripts/install-linux.sh) (requires root)
 
-# For Android
+#### For Android
 
 1. Install Termux from [F-Droid](https://f-droid.org/packages/com.termux/) or [GitHub](https://github.com/termux/termux-app)
 
@@ -65,8 +65,9 @@ copy-paste into terminal contents of the script from scripts/install-linix.sh (r
     git clone https://github.com/o28o/dg.audio ./
     ```
 
-# Option #2
-# manual installation
+### Option #2 - manual installation
+
+#### For Android
 
 1. Install Termux from [F-Droid](https://f-droid.org/packages/com.termux/) or [GitHub](https://github.com/termux/termux-app)
 
@@ -209,13 +210,14 @@ termux-open-url http://localhost:8080/
 
 This should open http://localhost:8080 in your web browser.
 
-# for Windows?
-Not yet available 
+#### For Windows?
 
-# IOS installation?
+Not yet available
 
-Might be possible to run on IOS devices with 
-[phpwin](httpsp://apps.apple.com/us/app/phpwin/id1157634089) or similar 
+#### For iOS?
+
+Might be possible to run on IOS devices with
+[phpwin](httpsp://apps.apple.com/us/app/phpwin/id1157634089) or similar
 and some terminal emulator e.g. [from this article](https://alternativeto.net/software/termux/?platform=iphone)
 
 never tried. please let me know if there is a way.
