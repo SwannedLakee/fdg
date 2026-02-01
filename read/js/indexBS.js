@@ -251,18 +251,18 @@ if (paliData[segment] !== undefined && transData[segment] !== undefined && varDa
       ${linkToCopyStart}${varData[segment].trim()}${linkToCopy}   
       </font>     
             </span>
-            <span class="rus-lang" lang="en">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
+            <span class="eng-lang" lang="en">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
       </span>
             </span>${closeHtml}\n\n`;
       } else if (paliData[segment] !== undefined && transData[segment] !== undefined ) {
               html += `${openHtml}<span id="${anchor}">
             <span class="pli-lang " lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
-            <span class="rus-lang" lang="en">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}</span>
+            <span class="eng-lang" lang="en">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}</span>
             </span>${closeHtml}\n\n`;
       } else if (paliData[segment] !== undefined) {
         html += openHtml + '<span id="' + anchor + '"><span class="pli-lang inputscript-ISOPali" lang="pi">' + linkToCopyStart + paliData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
       } else if (transData[segment] !== undefined) {
-        html += openHtml + '<span id="' + anchor + '"><span class="rus-lang" lang="en">' + linkToCopyStart + transData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
+        html += openHtml + '<span id="' + anchor + '"><span class="eng-lang" lang="en">' + linkToCopyStart + transData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
       }
 });
 
@@ -294,7 +294,7 @@ if (translator === "o") {
 
      const translatorByline = `<div class="byline">
      <p>
-    <span class="pli-lang" lang="pi">Pāḷi <a class="text-decoration-none text-reset" href="/assets/texts/abbr.html?s=ms" title="Mahāsaṅgīti Pāḷi">MS</a> </span> <span class="rus-lang" lang="en">Trn: ${translatorforuser}</span>
+    <span class="pli-lang" lang="pi">Pāḷi <a class="text-decoration-none text-reset" href="/assets/texts/abbr.html?s=ms" title="Mahāsaṅgīti Pāḷi">MS</a> </span> <span class="eng-lang" lang="en">Trn: ${translatorforuser}</span>
      </p>
      </div>`;
      
@@ -742,29 +742,73 @@ function showPali() {
 
 function toggleThePali() {
   const languageButton = document.getElementById("language-button");
+  const suttaContainer = document.getElementById("sutta");
 
-	 // initial state
- if (!localStorage.paliToggle) {
+  // Инициализация (как в вашем коде)
+  if (!localStorage.paliToggle) {
     localStorage.paliToggle = "pli-eng";
   }   
 
-  languageButton.addEventListener("click", () => {
-    if (language === "pli") {
-      showPaliEnglish();
-      language = "pli-eng";
-      localStorage.paliToggle = "pli-eng";
-    } else if (language === "pli-eng") {
-      showEnglish();
-      language = "eng";
-      localStorage.paliToggle = "eng";
-    } else if (language === "eng") {
-      showPali();
-      language = "pli";
-      localStorage.paliToggle = "pli";
-    }
+  // Используем cloneNode, чтобы удалить старые слушатели событий (если они были)
+  const newButton = languageButton.cloneNode(true);
+  languageButton.parentNode.replaceChild(newButton, languageButton);
+
+  newButton.addEventListener("click", () => {
+    // 1. Запоминаем позицию (функция из common.js)
+    const anchorData = getTopVisibleSegment();
+
+    // 2. Скрываем текст (Fade Out)
+    if (suttaContainer) suttaContainer.classList.add("text-hidden");
+
+    // Ждем 200мс (анимация css)
+    setTimeout(() => {
+
+        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ (Ваша английская версия) ---
+        if (language === "pli") {
+          showPaliEnglish();
+          language = "pli-eng";
+          localStorage.paliToggle = "pli-eng";
+        } else if (language === "pli-eng") {
+          showEnglish();
+          language = "eng";
+          localStorage.paliToggle = "eng";
+        } else if (language === "eng") {
+          showPali();
+          language = "pli";
+          localStorage.paliToggle = "pli";
+        }
+
+        // --- ВОССТАНОВЛЕНИЕ ПОЗИЦИИ (Без скролла) ---
+        if (anchorData && anchorData.element) {
+             const currentRect = anchorData.element.getBoundingClientRect();
+             const currentAbsoluteTop = window.scrollY + currentRect.top;
+             const targetPos = currentAbsoluteTop - anchorData.topOffset;
+
+             // Отключаем плавную прокрутку
+             const html = document.documentElement;
+             const savedBehavior = html.style.scrollBehavior;
+             html.style.cssText += "scroll-behavior: auto !important;";
+             
+             // Прыжок
+             window.scrollTo(0, targetPos);
+
+             // Возвращаем настройки
+             setTimeout(() => {
+                html.style.scrollBehavior = savedBehavior;
+                html.style.removeProperty('scroll-behavior');
+             }, 50);
+        }
+
+        // 3. Показываем текст (Fade In)
+        requestAnimationFrame(() => {
+            if (suttaContainer) suttaContainer.classList.remove("text-hidden");
+        });
+
+    }, 150); 
   });
-  
 }
+
+
 
 // clicking an abbreviation on the home page will replace the input field with that abbreviation
 const abbreviations = document.querySelectorAll("span.abbr");
