@@ -485,7 +485,7 @@
   /* 4. КОНЕЧНАЯ ссылка (Новое поведение в правом углу) */
   .copyLink:not(.copyLink-start) {
       /* Координаты угла */
-      top: -0.2em;                   
+      bottom: 0em;                   
       right: 0;
       left: auto !important;
 

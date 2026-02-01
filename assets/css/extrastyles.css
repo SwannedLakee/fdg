@@ -1341,10 +1341,9 @@ p .quoteLink-start {
     display: inline !important; 
 }
 
-/* 4. КОНЕЧНАЯ ссылка (Справа в углу) - Делаем кнопкой */
 .quoteLink:not(.quoteLink-start) {
-    top: -0.2em;
-    right: -1.2em;
+    bottom: 0em;
+    right: 0em;
     left: auto !important;
     
     /* Задаем размеры области клика */
