@@ -425,8 +425,6 @@
     line-height: 1.4;
   }
 
-
-
   #language-button-dummy {
     border-radius: 32px !important;
     /*position: absolute;
@@ -435,128 +433,99 @@
     padding: 5px; 
   }
 
-  .copyLink {
-      position: relative;
-      display: inline-block;
-      vertical-align: middle;
-      -webkit-tap-highlight-color: transparent;
-    /*   touch-action: manipulation;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none; */
+
+  /* 2. БАЗОВЫЕ общие настройки (прозрачность и курсор) */
+  .copyLink,
+  .copyLink-start {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    
+    /* Обязательно абсолют, чтобы не ломать поток текста */
+    position: absolute !important;
+    
+    /* Исходная невидимость */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    
+    /* Сброс отступов */
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
   }
-
-  .copyLink::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: -2px;
-      bottom: -2px;
-      background-color: transparent;
-      transition: 
-          background-color 0.5s ease-out,
-          box-shadow 0.5s ease-out,
-          opacity 0.5s ease-out,
-          top 0.3s ease-out,
-          bottom 0.3s ease-out,
-          left 0.3s ease-out,
-          right 0.3s ease-out;
-      border-radius: 3px;
-      opacity: 0;
-      pointer-events: none;
-  }
-
-  /* Для десктопов - hover */
-  @media (hover: hover) {
-      .copyLink:hover::after {
-          background-color: rgba(19, 104, 87, 0.8); /* Полупрозрачный вариант */
-          top: -3px;
-          bottom: -3px;
-          left: -3px;
-          right: -3px;
-          box-shadow: 0 0 4px rgba(19, 104, 87, 0.5);
-          opacity: 1;
-      }
-  }
-
-  /* Яркое подтверждение при касании */
-  .copyLink:active::after {
-      background-color: #136857; /* Полностью непрозрачный */
-      box-shadow: 0 0 8px rgba(19, 104, 87, 0.8); /* Ярче свечение */
-      top: -4px;
-      bottom: -4px;
-      left: -4px;
-      right: -4px;
-      opacity: 1;
-      transition: 
-          background-color 0.1s ease-out,
-          box-shadow 0.1s ease-out,
-          top 0.1s ease-out,
-          bottom 0.1s ease-out,
-          left 0.1s ease-out,
-          right 0.1s ease-out; /* Очень быстрое появление */
-  }
-
-  /* Для тач-устройств - фокус после касания */
-  .copyLink:focus::after {
-      background-color: rgba(19, 104, 87, 0.6);
-      top: -3px;
-      bottom: -3px;
-      left: -3px;
-      right: -3px;
-      box-shadow: 0 0 4px rgba(19, 104, 87, 0.5);
-      opacity: 1;
-      outline: none;
-      transition-duration: 0.5s; /* Медленное затухание */
-  }
-
-  /* Убираем фокус для мыши */
-  @media (hover: hover) {
-      .copyLink:focus::after {
-          background-color: transparent;
-          box-shadow: none;
-          opacity: 0;
-      }
-  }
-
-  /* Делаем родительские элементы контекстом для позиционирования */
-  .pli-lang, .rus-lang, .eng-lang, .variant {
-    position: relative;
-  }
-
-
+  
+  /* Размер шрифта */
   p .copyLink,
   p .copyLink-start {
-      font-size: 1.2em; /* или другой желаемый размер */
+      font-size: 1.2em; 
   }
 
-  a.copyLink::before,
-  a.copyLink-start::before {
+  /* Сама иконка (звездочка) */
+  .copyLink::before,
+  .copyLink-start::before {
     content: '✦';
+    margin: 0 !important;
+    /* Плавный возврат цвета после клика */
+    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.1s ease;
   }
 
-  .copyLink {
-        opacity: 0;
-  }
-
+  /* 3. СТАРТОВАЯ ссылка (Возвращаем оригинальное поведение) */
   .copyLink-start {
-      position: absolute;
+      /* Координаты как были у вас раньше */
       top: -0.2em;
       left: -1.0em;
-
-      color: inherit;
-      opacity: 0;
-      text-decoration: none;
-      cursor: pointer;
-      transition: opacity 0.3s ease;
+      
+      /* Важно: не задаем ей ширину или flex, чтобы она не ехала */
+      right: auto !important; 
+      width: auto !important;
+      display: inline !important; 
   }
+
+  /* 4. КОНЕЧНАЯ ссылка (Новое поведение в правом углу) */
+  .copyLink:not(.copyLink-start) {
+      /* Координаты угла */
+      top: -0.2em;                   
+      right: 0;
+      left: auto !important;
+
+      /* Превращаем в кнопку-квадрат, чтобы удобно попадать пальцем */
+      width: 25px !important;        
+      height: 1.5em !important;      
+      display: inline-flex !important;
+      align-items: center;           
+      justify-content: center;       
+  }
+
+  /* 5. Логика появления (Hover на текст) 
+  .pli-lang:hover .copyLink,
+  .rus-lang:hover .copyLink,
+  .eng-lang:hover .copyLink,
+  .pli-lang:hover .copyLink-start,
+  .rus-lang:hover .copyLink-start,
+  .eng-lang:hover .copyLink-start {
+      opacity: 0.5;
+  }
+*/
+
+  /* 6. Hover на саму иконку (ярче) */
   .copyLink:hover,
   .copyLink:focus,
   .copyLink-start:hover,
   .copyLink-start:focus {
-      opacity: 0.9;
+      opacity: 1 !important;
   }
+
+  /* --- ЭФФЕКТ МИГАНИЯ (ЗЕЛЕНАЯ ВСПЫШКА) --- */
+  .copyLink:active::before,
+  .copyLink-start:active::before {
+      color: #136857 !important; /* Зеленый цвет */
+      text-shadow: 0 0 10px rgba(19, 104, 87, 0.9); /* Свечение */
+      transform: scale(1.3); /* Пульсация */
+      transition: none; /* Мгновенно */
+  }
+
+
 
   h1.sutta-title > span,
   header ul li > span {

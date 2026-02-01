@@ -858,10 +858,10 @@ video-container { position: relative; padding-bottom: 56.25%; padding-top: 30px;
 @media (hover: hover) {
     .fdgLink:hover::after {
         background-color: rgba(218, 66, 14, 0.6); /* Полупрозрачный вариант */
-        top: -3px;
-        bottom: -3px;
-        left: -3px;
-        right: -3px;
+        top: -1px;
+        bottom: -1px;
+        left: -1px;
+        right: -1px;
         box-shadow: 0 0 4px rgba(218, 66, 14, 0.6);
         opacity: 1;
     }
@@ -871,10 +871,10 @@ video-container { position: relative; padding-bottom: 56.25%; padding-top: 30px;
 .fdgLink:active::after {
     background-color: rgba(218, 66, 14, 0.8); /* Полностью непрозрачный */
     box-shadow: 0 0 8px rgba(218, 66, 14, 0.9); /* Ярче свечение */
-    top: -4px;
-    bottom: -4px;
-    left: -4px;
-    right: -4px;
+    top: -2px;
+    bottom: -2px;
+    left: -2px;
+    right: -2px;
     opacity: 1;
     transition: 
         background-color 0.1s ease-out,
@@ -1168,10 +1168,6 @@ video-container { position: relative; padding-bottom: 56.25%; padding-top: 30px;
 }
 
 
-
-
-
-
 select.text-center {
     text-align: center;          /* Центрирует текст по умолчанию */
     text-align-last: center;     /* Центрирует только выбранный элемент */
@@ -1278,45 +1274,115 @@ html {
   }
 }
 
-
-
 /* Делаем родительские элементы контекстом для позиционирования */
 .pli-lang, .rus-lang, .eng-lang, .variant {
   position: relative;
 }
 
+/* --- Стили для ссылок цитирования (Quote Links) --- */
+
+/* 1. БАЗОВЫЕ общие настройки */
+.quoteLink,
+.quoteLink-start {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    /* Абсолютное позиционирование */
+    position: absolute !important;
+    
+    /* Исходное состояние */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    
+    /* Сброс отступов */
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    
+    /* Убираем любые фоны и границы, чтобы не было квадратов */
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* 2. УБИРАЕМ КВАДРАТЫ (старые фоны ::after) */
+.quoteLink::after,
+.quoteLink-start::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Размер шрифта */
 p .quoteLink,
 p .quoteLink-start {
-    font-size: 1.2em; /* или другой желаемый размер */
+    font-size: 1.0em; 
 }
 
-a.quoteLink::before,
-a.quoteLink-start::before {
-  content: '✦';
+/* Сама иконка (звездочка) */
+.quoteLink::before,
+.quoteLink-start::before {
+    content: '✦';
+    margin: 0 !important;
+    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.1s ease;
 }
 
-
-.quoteLink {
-      opacity: 0;
-}
-
+/* 3. СТАРТОВАЯ ссылка (Слева) - Возвращаем "как было" */
 .quoteLink-start {
-    position: absolute;
     top: -0.2em;
     left: -1.0em;
-
-    color: inherit;
-    opacity: 0;
-    text-decoration: none;
-    cursor: pointer;
-    transition: opacity 0.3s ease;
+    
+    /* Важно: сбрасываем ширину и флекс, чтобы не съезжала */
+    right: auto !important; 
+    width: auto !important;
+    display: inline !important; 
 }
+
+/* 4. КОНЕЧНАЯ ссылка (Справа в углу) - Делаем кнопкой */
+.quoteLink:not(.quoteLink-start) {
+    top: -0.2em;
+    right: -1.2em;
+    left: auto !important;
+    
+    /* Задаем размеры области клика */
+    width: 25px !important;
+    height: 1.5em !important;
+    
+    /* Центруем звездочку */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 5. Видимость при наведении (Если нужно вернуть реакцию на наведение на текст - раскомментируйте блок ниже) */
+/*
+p:hover .quoteLink,
+p:hover .quoteLink-start {
+    opacity: 0.5;
+}
+*/
+
+/* При наведении точно на иконку - полная яркость */
 .quoteLink:hover,
 .quoteLink:focus,
 .quoteLink-start:hover,
 .quoteLink-start:focus {
-    opacity: 0.9;
+    opacity: 1 !important;
 }
+
+/* 6. ЭФФЕКТ МИГАНИЯ (ОРАНЖЕВАЯ ВСПЫШКА) только на звезде */
+.quoteLink:active::before,
+.quoteLink-start:active::before {
+    color: #da420e !important;
+    text-shadow: 0 0 10px rgba(218, 66, 14, 0.6);
+    transform: scale(1.3);
+    transition: none;
+}
+
+
 
 #pali td {
     white-space: normal;

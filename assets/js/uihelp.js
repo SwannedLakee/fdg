@@ -225,19 +225,19 @@ const hintSettings = {
     patterns: {
         '/ru/result/': {
             title: 'Подсказка:',
-            message: 'Чтобы открыть текст с нужного места, кликните по невидимой ссылке ✦ в начале или в конце фрагмента.'
+            message: 'Чтобы открыть текст с нужного места, кликните по невидимой ссылке ✦ в начале или в верхнем правом углу фрагмента.'
         },
         '/result/': {
             title: 'Hint:',
-            message: 'To open the text from a specific location, click the invisible link ✦ at the beginning or end of the fragment.'
+            message: 'To open the text from a specific location, click the invisible link ✦ at the beginning or upper right corner of the fragment.'
         },
         '/r/': {
             title: 'Подсказка:',
-            message: 'Чтобы скопировать цитату со ссылкой, кликните по невидимой ссылке ✦ в начале или в конце строки. Длинное нажатие или правый клик копирует только ссылку.'
+            message: 'Чтобы скопировать цитату со ссылкой, кликните по невидимой ссылке ✦ в начале или в верхнем правом углу строки. Длинное нажатие или правый клик копирует только ссылку.'
         },
         '/read/': {
             title: 'Hint:',
-            message: 'To copy a quote with a link, click the invisible link ✦ at the beginning or end of the line. Long press or right-click copies only the link.'
+            message: 'To copy a quote with a link, click the invisible link ✦ at the beginning or upper right corner of the line. Long press or right-click copies only the link.'
         }
     }
 };
