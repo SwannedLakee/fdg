@@ -93,3 +93,25 @@ function findItiVagga(suttaNumber) {
     return "11";
   }
 }
+
+
+// 1. Стабильная функция поиска (вернули рабочий вариант)
+function getTopVisibleSegment() {
+  const segments = document.querySelectorAll("#sutta span[id]");
+  const headerOffset = 80; 
+
+  if (segments.length === 0) return null;
+
+  for (let segment of segments) {
+    const rect = segment.getBoundingClientRect();
+    // Ищем первый элемент, который визуально находится на экране
+    if (rect.bottom > headerOffset) {
+      return {
+        element: segment,
+        topOffset: rect.top 
+      };
+    }
+  }
+  return null;
+}
+
