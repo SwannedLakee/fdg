@@ -853,29 +853,71 @@ function showPali() {
 function toggleThePali() {
   const languageButton = document.getElementById("language-button");
 
-// initial state
- if (!localStorage.paliToggleSpecial) {
-    localStorage.paliToggleRu = "pli-rus";
-  }   
+  // Инициализация
+  if (!localStorage.paliToggleSpecial) {
+    localStorage.paliToggleSpecial = "pli-rus";
+  }
 
-  languageButton.addEventListener("click", () => {
+  const newButton = languageButton.cloneNode(true);
+  languageButton.parentNode.replaceChild(newButton, languageButton);
+
+  newButton.addEventListener("click", () => {
+    
+    // 1. ИЩЕМ "ГЛАВНУЮ ПЕРВУЮ СТРОКУ"
+    // Логика: ищем первую строку, НАЧАЛО которой видно ниже шапки (например, > 70px)
+    const segments = document.querySelectorAll("#sutta span[id]");
+    const headerOffset = 70; // Высота шапки + небольшой отступ
+    let anchorData = null;
+
+    for (let segment of segments) {
+      const rect = segment.getBoundingClientRect();
+      // ИЗМЕНЕНИЕ: Ищем элемент, у которого ВЕРХ (top) ниже шапки.
+      // Это значит, мы берем именно НАЧАЛО строки, а не хвост предыдущей.
+      if (rect.top > headerOffset) {
+        anchorData = {
+          element: segment,
+          topOffset: rect.top 
+        };
+        break; // Нашли первую — останавливаемся
+      }
+    }
+
+    // 2. МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ
     if (language === "pli") {
       showPaliAll();
-      language = "pli-rus";    
+      language = "pli-rus";
       localStorage.paliToggleSpecial = "pli-rus";
     } else if (language === "pli-rus") {
-     showPali();
-           language = "pli";
+      showPali();
+      language = "pli";
       localStorage.paliToggleSpecial = "pli";
+    }
 
- /*   } else if (language === "rus") {
-     showPaliRussian();
-      language = "rus";
-      localStorage.paliToggleSpecial = "rus"; */
+    // 3. ЖЕСТКАЯ ФИКСАЦИЯ
+    if (anchorData && anchorData.element) {
+         setTimeout(() => {
+             const currentRect = anchorData.element.getBoundingClientRect();
+             const currentAbsoluteTop = window.scrollY + currentRect.top;
+             const targetPos = currentAbsoluteTop - anchorData.topOffset;
+
+             // Отключаем плавность
+             const html = document.documentElement;
+             const savedBehavior = html.style.scrollBehavior;
+             html.style.cssText += "scroll-behavior: auto !important;";
+             
+             // ПРЫЖОК: Ставим верх найденной строки ровно туда, где он был
+             window.scrollTo(0, targetPos);
+
+             // Возвращаем настройки
+             setTimeout(() => {
+                html.style.scrollBehavior = savedBehavior;
+                html.style.removeProperty('scroll-behavior');
+             }, 50);
+         }, 0);
     }
   });
-  
 }
+
 
 // clicking an abbreviation on the home page will replace the input field with that abbreviation
 const abbreviations = document.querySelectorAll("span.abbr");

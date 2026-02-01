@@ -844,28 +844,15 @@ function showPali() {
 
 function toggleThePali() {
   const languageButton = document.getElementById("language-button");
-  const suttaContainer = document.getElementById("sutta");
 
-  // Инициализация (как в вашем коде)
-  if (!localStorage.paliToggle) {
-    localStorage.paliToggle = "pli-eng";
-  }   
+  if (!localStorage.paliToggle) localStorage.paliToggle = "pli-eng";
 
-  // Используем cloneNode, чтобы удалить старые слушатели событий (если они были)
   const newButton = languageButton.cloneNode(true);
   languageButton.parentNode.replaceChild(newButton, languageButton);
 
   newButton.addEventListener("click", () => {
-    // 1. Запоминаем позицию (функция из common.js)
-    const anchorData = getTopVisibleSegment();
-
-    // 2. Скрываем текст (Fade Out)
-    if (suttaContainer) suttaContainer.classList.add("text-hidden");
-
-    // Ждем 200мс (анимация css)
-    setTimeout(() => {
-
-        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ (Ваша английская версия) ---
+    // Та же обертка, но логика внутри своя (английская)
+    runWithTransition(() => {
         if (language === "pli") {
           showPaliEnglish();
           language = "pli-eng";
@@ -879,34 +866,7 @@ function toggleThePali() {
           language = "pli";
           localStorage.paliToggle = "pli";
         }
-
-        // --- ВОССТАНОВЛЕНИЕ ПОЗИЦИИ (Без скролла) ---
-        if (anchorData && anchorData.element) {
-             const currentRect = anchorData.element.getBoundingClientRect();
-             const currentAbsoluteTop = window.scrollY + currentRect.top;
-             const targetPos = currentAbsoluteTop - anchorData.topOffset;
-
-             // Отключаем плавную прокрутку
-             const html = document.documentElement;
-             const savedBehavior = html.style.scrollBehavior;
-             html.style.cssText += "scroll-behavior: auto !important;";
-             
-             // Прыжок
-             window.scrollTo(0, targetPos);
-
-             // Возвращаем настройки
-             setTimeout(() => {
-                html.style.scrollBehavior = savedBehavior;
-                html.style.removeProperty('scroll-behavior');
-             }, 50);
-        }
-
-        // 3. Показываем текст (Fade In)
-        requestAnimationFrame(() => {
-            if (suttaContainer) suttaContainer.classList.remove("text-hidden");
-        });
-
-    }, 150); 
+    });
   });
 }
 

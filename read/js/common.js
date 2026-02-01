@@ -94,24 +94,59 @@ function findItiVagga(suttaNumber) {
   }
 }
 
-
-// 1. Стабильная функция поиска (вернули рабочий вариант)
+// Функция поиска элемента (та же, что мы утвердили)
 function getTopVisibleSegment() {
-  const segments = document.querySelectorAll("#sutta span[id]");
-  const headerOffset = 80; 
+  const segments = document.querySelectorAll("#sutta span[id]"); 
+  const targetLine = window.innerHeight * 0.3; 
 
   if (segments.length === 0) return null;
 
   for (let segment of segments) {
     const rect = segment.getBoundingClientRect();
-    // Ищем первый элемент, который визуально находится на экране
-    if (rect.bottom > headerOffset) {
-      return {
-        element: segment,
-        topOffset: rect.top 
-      };
+    if (rect.bottom > targetLine) {
+      return { element: segment, topOffset: rect.top };
     }
   }
   return null;
 }
 
+// УНИВЕРСАЛЬНАЯ ОБЕРТКА (Новая)
+// stateChangeCallback — это кусочек кода, который просто меняет язык
+function runWithTransition(stateChangeCallback) {
+  const suttaContainer = document.getElementById("sutta");
+  
+  // 1. Запоминаем место
+  const anchorData = getTopVisibleSegment();
+
+  // 2. Исчезаем
+  if (suttaContainer) suttaContainer.classList.add("text-hidden");
+
+  setTimeout(() => {
+      // 3. Выполняем уникальную логику переключения (которую передали)
+      stateChangeCallback();
+
+      // 4. Восстанавливаем позицию (Ядерный метод)
+      if (anchorData && anchorData.element) {
+           const currentRect = anchorData.element.getBoundingClientRect();
+           const currentAbsoluteTop = window.scrollY + currentRect.top;
+           const targetPos = currentAbsoluteTop - anchorData.topOffset;
+
+           const html = document.documentElement;
+           const savedBehavior = html.style.scrollBehavior;
+           html.style.cssText += "scroll-behavior: auto !important;";
+           
+           window.scrollTo(0, targetPos);
+
+           setTimeout(() => {
+              html.style.scrollBehavior = savedBehavior;
+              html.style.removeProperty('scroll-behavior');
+           }, 50);
+      }
+
+      // 5. Появляемся
+      requestAnimationFrame(() => {
+          if (suttaContainer) suttaContainer.classList.remove("text-hidden");
+      });
+
+  }, 150);
+}

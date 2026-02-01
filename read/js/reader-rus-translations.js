@@ -847,70 +847,34 @@ function showPali() {
   suttaArea.classList.remove('column-view'); // Отключаем двухколоночный режим
 }
 
-// 2. Функция с анимацией прозрачности
 function toggleThePali() {
   const languageButton = document.getElementById("language-button");
-  const suttaContainer = document.getElementById("sutta"); // Получаем контейнер текста
 
-  if (!localStorage.paliToggleRu) {
-    localStorage.paliToggleRu = "pli-rus";
-  }
+  if (!localStorage.paliToggleRu) localStorage.paliToggleRu = "pli-rus";
 
-  languageButton.addEventListener("click", () => {
-    
-    // 1. Запоминаем позицию ДО начала анимации
-    const anchorData = getTopVisibleSegment();
+  // Клон кнопки для сброса событий
+  const newButton = languageButton.cloneNode(true);
+  languageButton.parentNode.replaceChild(newButton, languageButton);
 
-    // 2. Скрываем текст (Fade Out)
-    suttaContainer.classList.add("text-hidden");
-
-    // Ждем 200мс, пока текст исчезнет, и только потом меняем язык
-    setTimeout(() => {
-        
-        // --- СМЕНА ЯЗЫКА (происходит пока невидимо) ---
+  newButton.addEventListener("click", () => {
+    // ВЫЗЫВАЕМ НАШУ ОБЕРТКУ и передаем внутрь только логику смены
+    runWithTransition(() => {
         if (language === "pli-rus") {
           showPali();
           language = "pli";
           localStorage.paliToggleRu = "pli";
         } else if (language === "rus") {
-          showPaliEnglish();
+          showPaliEnglish(); // тут у вас showPaliEnglish или showPaliRussian?
           language = "pli-rus";
           localStorage.paliToggleRu = "pli-rus";
         } else if (language === "pli") {
-          showEnglish();
+          showEnglish(); // или showRussian()
           language = "rus";
           localStorage.paliToggleRu = "rus";
         }
-
-        // --- ВОССТАНОВЛЕНИЕ ПОЗИЦИИ (Ядерный метод) ---
-        if (anchorData && anchorData.element) {
-             const currentRect = anchorData.element.getBoundingClientRect();
-             const currentAbsoluteTop = window.scrollY + currentRect.top;
-             const targetPos = currentAbsoluteTop - anchorData.topOffset;
-
-             // Отключаем плавный скролл браузера для рывка
-             const html = document.documentElement;
-             const savedBehavior = html.style.scrollBehavior;
-             html.style.cssText += "scroll-behavior: auto !important;";
-             
-             // Мгновенный прыжок
-             window.scrollTo(0, targetPos);
-
-             // Возвращаем настройки скролла
-             html.style.scrollBehavior = savedBehavior;
-             html.style.removeProperty('scroll-behavior');
-        }
-
-        // 3. Показываем текст обратно (Fade In)
-        // requestAnimationFrame гарантирует, что браузер отрисовал скролл перед тем как показать текст
-        requestAnimationFrame(() => {
-            suttaContainer.classList.remove("text-hidden");
-        });
-
-    }, 150); // Тайминг должен совпадать с CSS transition (0.2s = 200ms)
+    });
   });
 }
-
 
 // clicking an abbreviation on the home page will replace the input field with that abbreviation
 const abbreviations = document.querySelectorAll("span.abbr");
