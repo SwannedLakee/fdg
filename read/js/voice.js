@@ -127,37 +127,40 @@ function getElementId(el) {
 // Главная функция: собирает все данные для текста
 async function prepareTextData(slug) {
   const container = document.querySelector('.sutta-container') || document;
+  
+  // 1. Оставляем эти коллекции отдельно. Они нужны, чтобы ниже корректно находить 
+  // paliElement и translationElement для вашей логики старта.
   const paliElements = container.querySelectorAll('.pli-lang');
   const translationElements = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
   
   const paliJsonData = await fetchSegmentsData(slug);
   const cleanJsonMap = {};
   
-    if (paliJsonData) {
+  if (paliJsonData) {
     Object.keys(paliJsonData).forEach(key => {
       const cleanKey = key.split(':').pop();
-
       const rawText = paliJsonData[key].replace(/<[^>]*>/g, '').trim(); 
       cleanJsonMap[cleanKey] = cleanTextForTTS(rawText); 
     });
   }
 
-  
+  // 2. ИСПРАВЛЕНИЕ ПОРЯДКА (FIX)
+  // Собираем ID, проходя по всем элементам СРАЗУ в порядке их появления в HTML.
+  // Это гарантирует, что Origin Story (где нет пали) будет в начале, а не в конце.
   const allIds = new Set();
+  const allNodesInOrder = container.querySelectorAll('.pli-lang, .rus-lang, .tha-lang, .eng-lang');
   
-  paliElements.forEach(el => {
-    const id = getElementId(el);
-    if (id) allIds.add(id);
-  });
-  
-  translationElements.forEach(el => {
+  allNodesInOrder.forEach(el => {
     const id = getElementId(el);
     if (id) allIds.add(id);
   });
   
   const textData = [];
   
+  // 3. Логика формирования объектов остается вашей.
+  // Мы идем по правильному порядку ID, но ищем элементы в старых списках.
   allIds.forEach(id => {
+    // Здесь сохраняется ваша логика привязки конкретных элементов
     const paliElement = Array.from(paliElements).find(el => getElementId(el) === id);
     const translationElement = Array.from(translationElements).find(el => getElementId(el) === id);
     
@@ -179,6 +182,7 @@ async function prepareTextData(slug) {
         id: id,
         paliDev: paliDev,
         translation: translation,
+        // Ссылки на DOM-элементы на месте, логика клика по активному слову будет работать
         paliElement: paliElement || null,
         translationElement: translationElement || null
       });
@@ -187,6 +191,7 @@ async function prepareTextData(slug) {
   
   return textData;
 }
+
 
 function createPlaylistFromData(textData, mode) {
   const playlist = [];
@@ -943,8 +948,8 @@ function removeAllHighlights() {
     if (oldBtn) oldBtn.remove();
 }
 
-// --- 2. ФУНКЦИЯ ДОБАВЛЕНИЯ КНОПКИ (FIX: Позиция и Плеер) ---
-function addTtsButton(sourceElement) {
+// --- 2. ФУНКЦИЯ ДОБАВЛЕНИЯ КНОПКИ ---
+function addTtsButton(containerElement, specificElement) {
     if (ttsState.speaking || ttsState.paused) return;
 
     // Удаляем старую кнопку
@@ -955,18 +960,27 @@ function addTtsButton(sourceElement) {
     btnContainer.className = 'dynamic-tts-btn'; 
     btnContainer.innerHTML = `<img src="/assets/svg/play.svg" alt="Play">`;
 
-    // ДОБАВЛЯЕМ В BODY (это решит проблему с баблом и позицией)
     document.body.appendChild(btnContainer);
 
     btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
         e.preventDefault();
 
-        // Берем режим из выделенного сегмента
+        // Берем режим из выделенного сегмента или хранилища
         let mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+        
+        // Если режим не "смешанный", переключаем его под тип кликнутого элемента
         if (mode !== 'pi-trn' && mode !== 'trn-pi') {
-            mode = sourceElement.classList.contains('pli-lang') ? 'pi' : 'trn';
+            const targetEl = specificElement || containerElement; 
+            mode = targetEl.classList.contains('pli-lang') ? 'pi' : 'trn';
+            
             localStorage.setItem(MODE_STORAGE_KEY, mode);
+
+            // --- ОБНОВЛЯЕМ ДРОПДАУН В UI (FIX) ---
+            const modeSelect = document.getElementById('tts-mode-select');
+            if (modeSelect) {
+                modeSelect.value = mode;
+            }
         }
 
         const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
