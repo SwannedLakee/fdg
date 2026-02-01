@@ -575,7 +575,8 @@ document.head.appendChild(ogDescriptionMeta);
       let nextSlug = nextArray[0];
       let nextSlugPrint = nextSlug.replace(/pli-tv-|b[ui]-vb-/g, "");
 let nextName = nextArray.slice(1).join(" ");
-nextName = nextName.replace(/[0-9.]/g, '');
+nextName = nextName.replace(/[0-9.]/g, '').replace(/[{}]/g, '');
+
      if (nextName === undefined) {
       var nextPrint = nextSlugPrint;
       } else {
