@@ -398,7 +398,7 @@ DG
                    <a class="text-reset" target="" href="/ru/assets/rr.html">Патимоккха</a>
        </div>
          </li>     
-      
+                <li><a class="dropdown-item" target="_blank" href="https://www.dhammabytes.org/pali-practice/">Pali Practice App</a></li>    
               
     <!--        <li><a class="dropdown-item" href="#research">Исследование</a></li>
        <li><a class="dropdown-item" href="#read">Чтение</a></li>

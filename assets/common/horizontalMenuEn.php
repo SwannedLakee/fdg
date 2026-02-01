@@ -343,6 +343,7 @@ echo '<!--
          </li>     
 
 <li><a class="dropdown-item" target="" href="https://docs.google.com/document/d/1JWHEFqcaNhYwYneWBnTp9rkgWecDB4IIHX1l3AxSiWM/edit?usp=drivesdk">Memorisation Tips & Tricks</a></li> 
+    
                   <li>
          <div class="dropdown-item ">Trainer for
          <a class="text-reset" target=""   href="/ru/assets/grammar/nouns.html">Declentions</a>, for              
@@ -350,7 +351,8 @@ echo '<!--
        </div>
          </li>     
     
-       
+            <li><a class="dropdown-item" target="_blank" href="https://www.dhammabytes.org/pali-practice/">Pali Practice App</a></li>  
+             
   <!--     <li><a class="dropdown-item" href="#research">' . $anameresearch . '</a></li>
        <li><a class="dropdown-item" href="#read">' . $anameread . '</a></li>
     <li><a class="dropdown-item" href="#study">' . $anamestudy . '</a></li> -->
