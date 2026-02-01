@@ -890,6 +890,10 @@ document.addEventListener('visibilitychange', async () => {
 // --- 1. ОБРАБОТЧИК КЛИКОВ (ТОЛЬКО источник клика: pali ИЛИ перевод) ---
 document.addEventListener("click", function (e) {
 
+  if (e.target.closest('.tts-ignore') || e.target.closest('.dynamic-tts-btn')) {
+    return;
+  }
+  
   // Клик по сегменту текста
   const clickedSegment = e.target.closest(
     ".pli-lang, .rus-lang, .eng-lang, .tha-lang"
@@ -940,30 +944,29 @@ function removeAllHighlights() {
 }
 
 // --- 2. ФУНКЦИЯ ДОБАВЛЕНИЯ КНОПКИ (FIX: Позиция и Плеер) ---
-function addTtsButton(container, sourceElement) {
+function addTtsButton(sourceElement) {
     if (ttsState.speaking || ttsState.paused) return;
 
-    document.querySelectorAll('.dynamic-tts-btn').forEach(btn => btn.remove());
+    // Удаляем старую кнопку
+    const oldBtn = document.querySelector('.dynamic-tts-btn');
+    if (oldBtn) oldBtn.remove();
 
     const btnContainer = document.createElement('div');
     btnContainer.className = 'dynamic-tts-btn'; 
-    // Оставляем только саму иконку без лишних оберток
-    btnContainer.innerHTML = `<img src="/assets/svg/play.svg" alt="Play (Alt+R)">`;
+    btnContainer.innerHTML = `<img src="/assets/svg/play.svg" alt="Play">`;
 
-    container.appendChild(btnContainer);
+    // ДОБАВЛЯЕМ В BODY (это решит проблему с баблом и позицией)
+    document.body.appendChild(btnContainer);
 
-    // Вешаем событие прямо на контейнер
     btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
         e.preventDefault();
 
+        // Берем режим из выделенного сегмента
         let mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
-
         if (mode !== 'pi-trn' && mode !== 'trn-pi') {
             mode = sourceElement.classList.contains('pli-lang') ? 'pi' : 'trn';
             localStorage.setItem(MODE_STORAGE_KEY, mode);
-            const modeSelect = document.getElementById('tts-mode-select');
-            if (modeSelect) modeSelect.value = mode;
         }
 
         const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
@@ -972,9 +975,7 @@ function addTtsButton(container, sourceElement) {
         startPlayback(document, mode, slug);
 
         const voiceDropdown = document.querySelector('.voice-dropdown');
-        if (voiceDropdown) {
-            voiceDropdown.classList.add('active');
-        }
+        if (voiceDropdown) voiceDropdown.classList.add('active');
 
         btnContainer.remove();
     });

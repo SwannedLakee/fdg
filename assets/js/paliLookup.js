@@ -1098,6 +1098,7 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener('click', function(event) {
     // Проверяем, есть ли выделенный текст внутри элемента с пали
     const pliElement = event.target.closest('.pli-lang, [lang="pi"]');
+    if (pliElement && pliElement.classList.contains('dict-ignore')) return;
     const selectedText = getSelectedText();
 
     // Для выделенного текста

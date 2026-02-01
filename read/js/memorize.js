@@ -342,7 +342,7 @@ let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: p
 
 if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
     html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
+        <span class="pli-lang dict-ignore inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
         <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
             <font class="variant"><br>${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
         </span>
@@ -350,7 +350,7 @@ if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
 
 } else if (paliData[segment] !== paliData[segment]) {
     html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
+        <span class="pli-lang dict-ignore inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
         <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
     </span>${closeHtml}\n\n`;
 
@@ -365,7 +365,7 @@ if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
 
  else {
     html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
+        <span class="pli-lang dict-ignore inputscript-ISOPali" lang="pi">${linkToCopyStart}${преобразоватьТекст().trim()}${linkToCopy}</span>
         <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
     </span>${closeHtml}\n\n`;
 }
@@ -1043,7 +1043,7 @@ let hoverTimeout;
 window.showBubble = function(element, event, isHover = false) {
     if (event) event.stopPropagation();
 
-    // Проверка активности
+    // Проверка активности: если уже активно, обновляем таймеры или пиним
     if (element.classList.contains('mem-active')) {
         if (isHover) {
             clearTimeout(hoverTimeout);
@@ -1057,6 +1057,7 @@ window.showBubble = function(element, event, isHover = false) {
         }
     }
 
+    // Удаляем старые баблы
     window.removeBubbles(); 
 
     const word = element.getAttribute('data-word');
@@ -1065,10 +1066,19 @@ window.showBubble = function(element, event, isHover = false) {
     element.classList.add('mem-active');
 
     const bubble = document.createElement('div');
-    bubble.className = 'mem-bubble';
+    // Добавляем класс tts-ignore, чтобы voice.js игнорировал клики по баблу
+    bubble.className = 'mem-bubble tts-ignore';
     bubble.dataset.pinned = isHover ? "false" : "true";
     bubble.setAttribute('lang', 'pi');
     bubble.classList.add('pli-lang');
+
+    // Находим ID родительской строки и сохраняем его в атрибут (скрыто)
+    const parentSegment = element.closest('[id]');
+    if (parentSegment) {
+        bubble.dataset.segmentId = parentSegment.id;
+    }
+
+    // Внутри только текст
     bubble.innerText = word;
 
     // Обработчики на самом бабле
@@ -1079,12 +1089,12 @@ window.showBubble = function(element, event, isHover = false) {
         }
     });
 
-    // Добавляем в DOM (прозрачным)
+    // Добавляем в DOM
     document.body.appendChild(bubble);
 
     // --- УМНОЕ ПОЗИЦИОНИРОВАНИЕ ---
     const rect = element.getBoundingClientRect();
-    const bubbleRect = bubble.getBoundingClientRect(); // Здесь мы уже получим реальную высоту с учетом переноса строк
+    const bubbleRect = bubble.getBoundingClientRect(); 
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
     const windowWidth = window.innerWidth;
@@ -1111,7 +1121,7 @@ window.showBubble = function(element, event, isHover = false) {
     bubble.style.left = (leftPos + scrollX) + 'px';
     bubble.style.top = (rect.top + scrollY) + 'px';
 
-    // Расчет позиции стрелки (чтобы она указывала на букву, даже если бабл сдвинут)
+    // Расчет позиции стрелки
     const arrowX = triggerCenter - leftPos;
     bubble.style.setProperty('--arrow-x', arrowX + 'px');
 
@@ -1120,6 +1130,7 @@ window.showBubble = function(element, event, isHover = false) {
         bubble.classList.add('visible');
     });
 };
+
 
 // 3. Обработчики Hover для букв
 window.handleBubbleHover = function(element, event) {
