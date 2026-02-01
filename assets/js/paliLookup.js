@@ -150,19 +150,17 @@ let dictUrl;
 let externalDict = false;
 let inNewWindow = false;
 
-
+dhammaGift = '';
 if (isLocalhost) {
-    dhammaGift = '';
+   // dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
   dictUrl = "https://dict.dhamma.gift";
 //dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
-    dhammaGift = 'https://dhamma.gift';
     dictUrl = "https://dict.dhamma.gift";
     //dictUrl = "https://dpdict.net";
   }
   else {
-    dhammaGift = 'https://dhamma.gift';
     dictUrl = "https://dict.dhamma.gift";
 }
 
