@@ -129,7 +129,7 @@ if (
  * e.g. const wordSearchUrl = createDictSearchUrl(wordToLink);
  */
 function createDictSearchUrl(word) {
-    if (isLocalhost) {
+    if (isLocalhost || !navigator.onLine) {
         // This logic is now consistent with your other functions
         const isAndroid = /Android/i.test(navigator.userAgent);
         return isAndroid
@@ -602,7 +602,7 @@ function createClickableLink(wordToLink) {
     const wordSearchUrl = createDictSearchUrl(wordToLink);
     let clickAction;
 
-    if (isLocalhost) {
+    if (isLocalhost || !navigator.onLine) {
         // Для localhost просто переходим по ссылке
         clickAction = `window.location.href=this.href; return false;`;
     } else {

@@ -1,9 +1,14 @@
 
 const style = document.createElement('style');
 style.textContent = `
+
   .pli-lang {
-    font-size: 1.4em;
-  }
+  font-size: 1.4em;
+}
+
+.pli-lang .copyLink {
+  font-size:  1em;
+}
 `;
 document.head.appendChild(style);
 
