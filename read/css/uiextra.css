@@ -964,17 +964,5 @@ transition: background-color 260ms ease-in-out;
 
 /* Убираем или меняем accent-color, если он перекрывает стандартный вид */
 .tts-checkbox-custom input[type="checkbox"] {
-
   accent-color: #5a5a5a; 
-}
-
-/* Добавляем плавность для контейнера текста */
-#sutta {
-    transition: opacity 0.1s ease-in-out;
-    opacity: 1;
-}
-
-/* Класс для скрытия */
-.text-hidden {
-    opacity: 0 !important;
 }
