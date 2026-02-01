@@ -81,6 +81,7 @@ function cleanTextForTTS(text) {
     .replace(/ पन[\.:,]/g, 'पना ') 
     .replace(/ पन /g, 'पना ') 
     .replace(/स्स /g, 'स्सा ')
+    .replace(/स /g, 'सा ')
     .replace(/म्म /g, 'म्मा ')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
