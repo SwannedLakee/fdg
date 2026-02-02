@@ -11,7 +11,7 @@ style.textContent = `
 
   .copyLink:not(.copyLink-start) {
     bottom: 0em !important;
-    right: -0.5em !important;
+    right: -0.6em !important;
   }
 `;
 document.head.appendChild(style);
