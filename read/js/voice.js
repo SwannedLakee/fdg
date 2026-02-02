@@ -322,6 +322,7 @@ function playCurrentSegment() {
   } else if (item.lang === 'en') {
     utterance.lang = 'en-US';
   } else if (item.lang === 'pi-dev') {
+     //   utterance.lang = 'hi-IN';
     utterance.lang = 'sa-IN'; // ПЕРВАЯ ПОПЫТКА: санскрит
     utterance._fallbackAttempt = 0; // сохраняем номер попытки
     multiplier = 0.5;
