@@ -221,7 +221,7 @@ function getHintTextForCurrentPage(settings) {
 }
 
 // Настройки подсказок (без default)
-const hintSettings = {
+/* const hintSettings = {
     patterns: {
         '/ru/result/': {
             title: 'Подсказка:',
@@ -241,6 +241,29 @@ const hintSettings = {
         }
     }
 };
+*/
+
+const hintSettings = {
+    patterns: {
+        '/ru/result/': {
+            title: 'Подсказка:',
+            message: 'Чтобы открыть текст с нужного места, кликните по невидимой ссылке ✦ в начале или в конце фрагмента.'
+        },
+        '/result/': {
+            title: 'Hint:',
+            message: 'To open the text from a specific location, click the invisible link ✦ at the beginning or end of the fragment.'
+        },
+        '/r/': {
+            title: 'Подсказка:',
+            message: 'Чтобы скопировать цитату со ссылкой, кликните по невидимой ссылке ✦ в начале или в конце строки. Длинное нажатие или правый клик копирует только ссылку.'
+        },
+        '/read/': {
+            title: 'Hint:',
+            message: 'To copy a quote with a link, click the invisible link ✦ at the beginning or end of the line. Long press or right-click copies only the link.'
+        }
+    }
+};
+
 
 // Вызываем функцию с настройками
 showHint(hintSettings);
