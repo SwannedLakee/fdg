@@ -112,14 +112,17 @@ if (savedDict) {
     savedDict = "standalone";
 }
 
-// ── Универсальная переустановка на dpdfull ──
-if (
-    window.location.pathname.includes('/d/') &&
-    (savedDict === "standalone" || savedDict === "standaloneru")
-    || window.location.search.includes('script=devanagari')
-) {
-    savedDict = "dpdfull";
+// 1. Сначала проверяем, что РЕАЛЬНО сохранено у пользователя в браузере
+const userSelectedDict = localStorage.getItem('selectedDict');
+
+// 2. Мягкая логика только для специфических страниц
+if (window.location.search.includes('script=devanagari') || window.location.pathname.includes('/d/')) {
+    
+    if (!userSelectedDict) {
+        savedDict = "dpdfull";
+    }
 }
+
 
 
 /**
