@@ -82,18 +82,6 @@ body.dark {
   color: var(--dark-gray);
 }
 
-#language-button {
-  border-radius: 32px;
-  /*position: absolute;
-  right: 10px;
-  top: 20px;*/
-  position: fixed; 
-  bottom: 30px; 
-  right: 20px; 
-  z-index: 99; 
-  padding: 5px; 
-}
-
 #theme-button {
   position:relative;  
   top:-3px;

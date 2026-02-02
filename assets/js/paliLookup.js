@@ -993,6 +993,32 @@ iframe.addEventListener('mouseover', () => {
     window.focus();
 })
 
+/* заменить если хочеся без оверлея closeBtn.addEventListener и overlay.addEventListener
++ убрать оверлей из css 
+
+// Закрытие по кнопке (оставляем)
+closeBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    closeDictionary();
+});
+
+// Глобальный обработчик клика "мимо" окна
+document.addEventListener('mousedown', (event) => {
+    // Если попап открыт
+    if (popup.style.display === 'block') {
+        // Проверяем, что клик НЕ внутри попапа и НЕ по кнопке переключения
+        if (!popup.contains(event.target) && !event.target.closest('.toggle-dict-btn')) {
+            // Если кликнули по другому слову пали, словарь закроется здесь,
+            // а основной слушатель 'click' тут же откроет его с новым словом.
+            closeDictionary();
+        }
+    }
+});
+
+
+*/
+
+
 // Закрытие popup при нажатии на кнопку или на overlay
 closeBtn.addEventListener('click', () => {
       event.stopPropagation(); // Останавливаем всплытие события
