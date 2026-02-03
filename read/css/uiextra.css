@@ -427,15 +427,23 @@
 
 #language-button {
   border-radius: 32px;
-  /*position: absolute;
-  right: 10px;
-  top: 20px;*/
   position: fixed; 
   bottom: 30px; 
   right: 20px; 
   z-index: 100; 
   padding: 5px; 
+  /* Добавляем прозрачность и анимацию как у соседних кнопок */
+  opacity: 0.8; 
+  animation: btnPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
+
+/* Эффект при наведении, чтобы она становилась полностью непрозрачной */
+#language-button:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+}
+
 
 
   #language-button-dummy {
