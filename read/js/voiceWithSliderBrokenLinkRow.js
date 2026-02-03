@@ -12,19 +12,13 @@ let wakeLock = null;
 const SCROLL_STORAGE_KEY = 'tts_auto_scroll'; 
 const MODE_STORAGE_KEY = 'tts_preferred_mode';
 
+// ! ИЗМЕНЕНИЕ 1: Разделяем ключи скоростей
 const RATE_PALI_KEY = 'tts_rate_pali'; 
 const RATE_TRN_KEY = 'tts_rate_trn';
 
 const LAST_SLUG_KEY = 'tts_last_slug';   
 const LAST_INDEX_KEY = 'tts_last_index'; 
 const PALI_ALERT_KEY = 'tts_pali_alert_shown';
-
-// ! ИЗМЕНЕНИЕ: Добавлен коэффициент нормализации для Пали
-// В UI будет 1.0, а в движок пойдет 1.0 * 0.5 = 0.5
-const PALI_RATIO = 0.5; 
-
-const RATES_PALI = [0.25, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5];
-const RATES_TRN = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5];
 
 const ttsState = {
   playlist: [],
@@ -34,6 +28,7 @@ const ttsState = {
   paused: false,
   utterance: null,
   langSettings: null,
+  // userRate убрали, теперь берем динамически
   autoScroll: localStorage.getItem(SCROLL_STORAGE_KEY) !== 'false', 
   currentSlug: null,
   isNavigating: false 
@@ -43,36 +38,13 @@ const synth = window.speechSynthesis;
 
 // --- Утилиты ---
 
-function updateRateOptions(isPali, activeRate) {
-  const rateSelect = document.getElementById('tts-rate-select');
-  if (!rateSelect) return;
-
-  const ratesToUse = isPali ? RATES_PALI : RATES_TRN;
-  
-  let displayRates = [...ratesToUse];
-  // Используем activeRate (это UI значение, например 1.0)
-  if (!displayRates.includes(activeRate)) {
-    displayRates.push(activeRate);
-    displayRates.sort((a, b) => a - b);
-  }
-
-  const optionsHtml = displayRates.map(r => 
-    `<option value="${r}" ${r === activeRate ? 'selected' : ''}>${r}x</option>`
-  ).join('');
-
-  if (rateSelect.innerHTML !== optionsHtml) {
-    rateSelect.innerHTML = optionsHtml;
-  }
-  
-  rateSelect.value = activeRate;
-}
-
+// ! ИЗМЕНЕНИЕ 2: Хелпер для получения скорости
 function getRateForLang(lang) {
   if (lang === 'pi-dev') {
-    // ! ИЗМЕНЕНИЕ: Дефолт теперь 1.0 (как и у перевода)
-    // Мы сохраняем "визуальную" скорость. Реальное замедление будет в playCurrentSegment.
-    return parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 1.0; 
+    // Для Пали дефолт 0.8 (обычно санскрит читают быстро, лучше замедлить)
+    return parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 0.8; 
   } else {
+    // Для перевода дефолт 1.0
     return parseFloat(localStorage.getItem(RATE_TRN_KEY)) || 1.0; 
   }
 }
@@ -286,16 +258,19 @@ function createPlaylistFromData(textData, mode) {
 
 // --- Ядро TTS ---
 function playCurrentSegment() {
+  // 1. Проверка границ и очистка в конце
   if (ttsState.currentIndex < 0 || ttsState.currentIndex >= ttsState.playlist.length) {
     clearTtsStorage();
     stopPlayback();
     return;
   }
 
+  // 2. Включаем Wake Lock
   if (!wakeLock && !ttsState.paused) {
     requestWakeLock();
   }
 
+  // Очищаем старые обработчики
   if (ttsState.utterance) {
     ttsState.utterance.onend = null;
     ttsState.utterance.onerror = null;
@@ -306,6 +281,7 @@ function playCurrentSegment() {
 
   const item = ttsState.playlist[ttsState.currentIndex];
   
+  // 3. Сохранение позиции
   if (ttsState.currentSlug) {
     if (ttsState.currentIndex >= ttsState.playlist.length - 2) {
        clearTtsStorage(); 
@@ -315,6 +291,7 @@ function playCurrentSegment() {
     }
   }
   
+  // 4. Подсветка и Скролл
   if (item.element) {
     document.querySelectorAll('.active-word').forEach(e => e.classList.remove('active-word'));
     
@@ -331,51 +308,49 @@ function playCurrentSegment() {
 
   const utterance = new SpeechSynthesisUtterance(item.text);
   
-  // ! ИЗМЕНЕНИЕ: Разделяем UI-скорость и Аудио-скорость
-  let uiRate = 1.0;     // То, что видит пользователь (и сохраняется в localStorage)
-  let audioRate = 1.0;  // То, что реально идет в синтезатор
+  // 5. ОПРЕДЕЛЕНИЕ ЯЗЫКА И СКОРОСТИ
+  let targetRate = 1.0;
   let isPali = false;
 
   if (item.lang === 'ru') {
     utterance.lang = 'ru-RU';
-    uiRate = getRateForLang('ru');
-    audioRate = uiRate;
+    targetRate = getRateForLang('ru');
   } else if (item.lang === 'th') { 
     utterance.lang = 'th-TH'; 
-    uiRate = getRateForLang('th'); 
-    audioRate = uiRate;
+    targetRate = getRateForLang('th'); 
   } else if (item.lang === 'en') {
     utterance.lang = 'en-US';
-    uiRate = getRateForLang('en');
-    audioRate = uiRate;
+    targetRate = getRateForLang('en');
   } else if (item.lang === 'pi-dev') {
-    utterance.lang = 'sa-IN'; 
+    utterance.lang = 'sa-IN'; // Основной движок: Санскрит
     utterance._fallbackAttempt = 0; 
+    targetRate = getRateForLang('pi-dev');
     isPali = true;
-    
-    // Получаем сохраненную "визуальную" скорость (например, 1.0)
-    uiRate = getRateForLang('pi-dev');
-    
-    // Применяем коэффициент (1.0 превращается в 0.5)
-    audioRate = uiRate * PALI_RATIO;
   }
 
-  utterance.rate = audioRate;
-  
-  // Обновляем UI, используя "человеческую" uiRate (1.0), а не замедленную audioRate (0.5)
-  const rateSelect = document.getElementById('tts-rate-select');
-  if (rateSelect) {
-      updateRateOptions(isPali, uiRate);
+  utterance.rate = targetRate;
 
+  // 6. ОБНОВЛЕНИЕ СЛАЙДЕРА В UI (Slider Sync)
+  const rateSlider = document.getElementById('tts-rate-slider');
+  const rateValue = document.getElementById('tts-rate-value');
+  
+  if (rateSlider && rateValue) {
+      rateSlider.value = targetRate;
+      rateValue.textContent = targetRate + 'x';
+      
+      // Легкая визуальная индикация смены режима
       if (isPali) {
-          rateSelect.style.borderStyle = '';
-          rateSelect.title = "Скорость Пали (нормализована: 1.0 = медленно)";
+          // Пали: обычный стиль
+          rateValue.style.fontWeight = 'normal';
+          rateValue.style.color = ''; 
       } else {
-          rateSelect.style.borderStyle = 'dashed';
-          rateSelect.title = "Скорость Перевода";
+          // Перевод: чуть жирнее, чтобы заметить переключение
+          rateValue.style.fontWeight = 'bold';
+          rateValue.style.color = '#555';
       }
   }
 
+  // 7. Обработчики завершения и ошибок
   utterance.onend = () => {
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
@@ -391,14 +366,16 @@ function playCurrentSegment() {
   utterance.onerror = (e) => {
     console.error('TTS Error', e);
     
+    // --- FALLBACK LOGIC ДЛЯ ПАЛИ ---
     if (item.lang === 'pi-dev') {
       const currentAttempt = utterance._fallbackAttempt || 0;
       
+      // Попытка 1: Санскрит -> Хинди
       if (currentAttempt === 0 && utterance.lang === 'sa-IN') {
         console.log('Sanskrit failed, trying Hindi...');
         utterance.lang = 'hi-IN';
         utterance._fallbackAttempt = 1;
-        utterance.rate = audioRate; // Используем вычисленную скорость
+        utterance.rate = targetRate; 
         
         setTimeout(() => {
           if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
@@ -408,16 +385,18 @@ function playCurrentSegment() {
         return;
       }
       
+      // Попытка 2: Хинди -> Английский
       if (currentAttempt === 1 && utterance.lang === 'hi-IN') {
         console.log('Hindi failed, trying English...');
         utterance.lang = 'en-US';
         utterance._fallbackAttempt = 2;
-        utterance.rate = audioRate;
+        utterance.rate = targetRate;
         
         setTimeout(() => {
           if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
             synth.speak(utterance);
             
+            // Показываем хинт только при переключении на английский
             const pathLang = location.pathname.split('/')[1];
             const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
             const title = isRuLike ? 'TTS:' : 'TTS Hint:';
@@ -436,6 +415,7 @@ function playCurrentSegment() {
       }
     }
     
+    // Ошибки прерывания или сворачивания
     if (document.hidden || e.error === 'interrupted') {
       console.warn('Playback paused due to background error');
       ttsState.paused = true;
@@ -443,6 +423,7 @@ function playCurrentSegment() {
       return; 
     }
 
+    // Пропуск битого сегмента
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
       if (ttsState.currentIndex < ttsState.playlist.length) {
@@ -468,20 +449,26 @@ function playCurrentSegment() {
 // --- Обработчики событий ---
 async function handleSuttaClick(e) {
   const container = e.target.closest('.sutta-container') || document;
+  
   const voiceLink = e.target.closest('.voice-link');
   const playBtn = e.target.closest('.play-main-button');
   const navBtn = e.target.closest('.prev-main-button, .next-main-button');
+  const closeBtn = e.target.closest('.close-tts-btn');
 
+  // --- 1. Обработка меню Voice (Открытие компонента) ---
   if (voiceLink) {
     e.preventDefault();
-    const parent = voiceLink.closest('.voice-dropdown');
-    parent.classList.add('active');
+    // Ищем новый класс-обертку
+    const component = voiceLink.closest('.voice-component');
+    if (component) component.classList.add('active');
     
     if (!ttsState.speaking) {
+      // Пытаемся найти селект внутри компонента или берем из хранилища
       const modeSelect = document.getElementById('tts-mode-select');
-      const mode = e.target.closest('.voice-dropdown')?.querySelector('#tts-mode-select')?.value 
+      const mode = component?.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
                    || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
+      
       const targetSlug = voiceLink.dataset.slug;
       
       startPlayback(container, mode, targetSlug, 0);
@@ -489,6 +476,7 @@ async function handleSuttaClick(e) {
     return;
   }
 
+  // --- 2. Обработка кнопок Вперед/Назад ---
   if (navBtn) {
     e.preventDefault();
     if (!ttsState.speaking || ttsState.playlist.length === 0) return;
@@ -496,6 +484,7 @@ async function handleSuttaClick(e) {
     let direction = navBtn.classList.contains('prev-main-button') ? -1 : 1;
     let newIndex = ttsState.currentIndex + direction;
     
+    // Проверка границ
     if (direction < 0 && newIndex < 0) newIndex = 0;
     else if (direction > 0 && newIndex >= ttsState.playlist.length) newIndex = ttsState.playlist.length - 1;
     
@@ -504,6 +493,7 @@ async function handleSuttaClick(e) {
     synth.cancel();
     ttsState.currentIndex = newIndex;
     
+    // Если на паузе — просто обновляем UI и позицию
     if (ttsState.paused) {
       resetUI();
       const item = ttsState.playlist[ttsState.currentIndex];
@@ -514,11 +504,13 @@ async function handleSuttaClick(e) {
         }
       }
     } else {
+      // Если играет — запускаем новый сегмент
       playCurrentSegment();
     }
     return;
   }
 
+  // --- 3. Обработка кнопки PLAY (Главная логика) ---
   if (playBtn && !e.target.classList.contains('voice-link')) {
     e.preventDefault();
 
@@ -528,14 +520,19 @@ async function handleSuttaClick(e) {
     const currentItem = ttsState.playlist[ttsState.currentIndex];
     const currentId = currentItem ? currentItem.id : null;
 
+    // Проверяем, нужно ли прыгнуть к выделенному слову
     const shouldJump = activeId && (!ttsState.speaking || activeId !== currentId);
 
     if (shouldJump) {
       let mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
 
+      // ЛОГИКА АВТО-ПЕРЕКЛЮЧЕНИЯ РЕЖИМА
+      // Если режим не "смешанный" (pi-trn или trn-pi), меняем его под тип выделенного слова
       if (mode !== 'pi-trn' && mode !== 'trn-pi') {
         mode = activeWordElement.classList.contains('pli-lang') ? 'pi' : 'trn';
         localStorage.setItem(MODE_STORAGE_KEY, mode);
+        
+        // Синхронизируем селект
         const modeSelect = document.getElementById('tts-mode-select');
         if (modeSelect) modeSelect.value = mode;
       }
@@ -544,6 +541,7 @@ async function handleSuttaClick(e) {
       startPlayback(container, mode, targetSlug, 0);
       
     } else {
+      // Стандартная логика паузы/продолжения
       if (ttsState.speaking) {
         if (ttsState.paused) {
           ttsState.paused = false;
@@ -555,6 +553,7 @@ async function handleSuttaClick(e) {
           setButtonIcon('play');
         }
       } else {
+        // Старт с начала, если ничего не выделено и плеер стоял
         const mode = document.getElementById('tts-mode-select')?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
         let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
         startPlayback(container, mode, targetSlug, 0);
@@ -563,11 +562,13 @@ async function handleSuttaClick(e) {
     return;
   }
 
-  if (e.target.closest('.close-tts-btn')) {
+  // --- 4. Кнопка закрытия ---
+  if (closeBtn) {
     e.preventDefault();
     stopPlayback();
-    const dropdown = e.target.closest('.voice-dropdown');
-    if (dropdown) dropdown.classList.remove('active');
+    // Закрываем компонент
+    const component = closeBtn.closest('.voice-component');
+    if (component) component.classList.remove('active');
   }
 }
 
@@ -702,20 +703,12 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
   const defaultMode = isSpecialPath ? 'pi' : 'trn';
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
   
+  // Определяем начальную скорость для слайдера
   let initialRate;
-  let currentRatesList; 
-  
   if (savedMode === 'pi') {
-      // ! ИЗМЕНЕНИЕ: Дефолт = 1.0 (было 0.6)
-      initialRate = parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 1.0;
-      currentRatesList = RATES_PALI; 
+      initialRate = parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 0.8;
   } else {
       initialRate = parseFloat(localStorage.getItem(RATE_TRN_KEY)) || 1.0;
-      currentRatesList = RATES_TRN;  
-  }
-
-  if (!currentRatesList.includes(initialRate)) {
-      currentRatesList = [...currentRatesList, initialRate].sort((a,b) => a - b);
   }
 
   const pathLang = location.pathname.split('/')[1];
@@ -724,61 +717,69 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
   const modeLabels = isRuLike
     ? { 'pi': 'Пали', 'pi-trn': 'Пали + Рус', 'trn': 'Перевод', 'trn-pi': 'Рус + Пали' }
     : { 'pi': 'Pāḷi', 'pi-trn': 'Pāḷi + Trn', 'trn': 'Trn', 'trn-pi': 'Trn + Pāḷi' };
-  
+
+  // Используем div с inline-block, чтобы не ломать строку меню, но позволить блочные элементы внутри
   return `
-  <span class="voice-dropdown">
-    <a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
-    <span class="voice-player">
+  <div class="voice-component" style="display: inline-block; position: relative;">
+    
+    <a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Alt+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
+
+    <div class="voice-player">
       <a href="javascript:void(0)" class="close-tts-btn">&times;</a>
 
-      <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
-        <img src="/assets/svg/backward-step.svg" class="tts-icon backward">
-      </a>
+      <div class="tts-controls">
+        <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
+          <img src="/assets/svg/backward-step.svg" class="tts-icon backward">
+        </a>
 
-      <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
-        <img src="/assets/svg/play-grey.svg" class="tts-icon play">
-      </a> 
+        <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
+          <img src="/assets/svg/play-grey.svg" class="tts-icon play">
+        </a> 
 
-      <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
-        <img src="/assets/svg/forward-step.svg" class="tts-icon forward">
-      </a>
+        <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
+          <img src="/assets/svg/forward-step.svg" class="tts-icon forward">
+        </a>
+      </div>
 
-      <br>
+      <div class="tts-settings-row" style="margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <select id="tts-mode-select" class="tts-mode-select" style="max-width: 100px;">
+          ${Object.entries(modeLabels).map(([val, label]) =>
+            `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
+          ).join('')}
+        </select>
 
-      <select id="tts-mode-select" class="tts-mode-select">
-        ${Object.entries(modeLabels).map(([val, label]) =>
-          `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
-        ).join('')}
-      </select>
+        <div style="display: inline-flex; align-items: center;">
+          <input type="range" id="tts-rate-slider" min="0.5" max="3.0" step="0.1" value="${initialRate}" 
+                 style="width: 70px; margin: 0 5px; cursor: pointer;"
+                 oninput="document.getElementById('tts-rate-value').textContent = this.value + 'x'">
+          <span id="tts-rate-value" style="font-size: 13px; min-width: 28px; text-align: left;">${initialRate}x</span>
+        </div>
+      </div>
 
-      <select id="tts-rate-select" class="tts-rate-select" title="${savedMode === 'pi' ? 'Speed (Pali)' : 'Speed (Translation)'}">
-        ${currentRatesList.map(r =>
-          `<option value="${r}" ${initialRate == r ? 'selected' : ''}>${r}x</option>`
-        ).join('')}
-      </select>
-      
-      <br>
+      <div style="margin-top: 8px;">
+        <label class="tts-checkbox-custom">
+          <input type="checkbox" id="tts-scroll-toggle" ${ttsState.autoScroll ? 'checked' : ''}>
+          Scroll
+        </label>
+      </div>
 
-      <label class="tts-checkbox-custom">
-        <input type="checkbox" id="tts-scroll-toggle" ${ttsState.autoScroll ? 'checked' : ''}>
-        Scroll
-      </label>
-
-      <br>
-      <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
-      <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
-    `;
+      <div class="tts-footer">
+        <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
+        <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
+      </div>`;
 }
 
 // --- Обработчик изменения настроек ---
 async function handleTTSSettingChange(e) {
-  // 1. Режим (Mode)
+  // 1. Режим (Mode) - без изменений
   if (e.target.id === 'tts-mode-select') {
-    e.preventDefault();
-    const newMode = e.target.value;
-    localStorage.setItem(MODE_STORAGE_KEY, newMode);
+     // ... (весь старый код для mode) ...
+     // КОПИРУЙТЕ СЮДА СТАРЫЙ КОД ДЛЯ MODE
+     e.preventDefault();
+     const newMode = e.target.value;
+     localStorage.setItem(MODE_STORAGE_KEY, newMode);
       
-    if (ttsState.speaking || ttsState.paused) {
+     if (ttsState.speaking || ttsState.paused) {
       const wasPaused = ttsState.paused;
       const currentId = ttsState.playlist[ttsState.currentIndex]?.id;
       const pausedIndex = ttsState.currentIndex;
@@ -821,21 +822,24 @@ async function handleTTSSettingChange(e) {
     }
   }
   
-  // 2. Скорость (Rate)
-  if (e.target.id === 'tts-rate-select') {
+  // 2. СКОРОСТЬ (Слайдер) - ОБНОВЛЕНО
+  if (e.target.id === 'tts-rate-slider') {
     const newRate = parseFloat(e.target.value);
     
-    // Определяем, какую именно скорость обновлять
+    // Обновляем визуальную цифру на всякий случай (хотя oninput это делает)
+    const valSpan = document.getElementById('tts-rate-value');
+    if (valSpan) valSpan.textContent = newRate + 'x';
+
     let targetKey = RATE_TRN_KEY; 
 
-    // Если прямо сейчас идет воспроизведение — берем язык текущего сегмента
+    // Если сейчас играет Пали -> сохраняем в Пали
     if (ttsState.speaking && !ttsState.paused && ttsState.playlist[ttsState.currentIndex]) {
         const currentItem = ttsState.playlist[ttsState.currentIndex];
         if (currentItem.lang === 'pi-dev') {
             targetKey = RATE_PALI_KEY;
         }
     } else {
-        // Если плеер стоит, смотрим на общий режим
+        // Если пауза, смотрим на режим
         const currentMode = localStorage.getItem(MODE_STORAGE_KEY);
         if (currentMode === 'pi') {
             targetKey = RATE_PALI_KEY;
@@ -844,14 +848,14 @@ async function handleTTSSettingChange(e) {
 
     localStorage.setItem(targetKey, newRate);
     
-    // Применяем сразу же
+    // Перезапуск с новой скоростью (только когда отпустили ползунок)
     if (ttsState.speaking && !ttsState.paused) {
       synth.cancel();
       playCurrentSegment();
     }
   }
 
-  // 3. Автопрокрутка
+  // 3. Скролл - без изменений
   if (e.target.id === 'tts-scroll-toggle') {
      ttsState.autoScroll = e.target.checked;
      localStorage.setItem(SCROLL_STORAGE_KEY, e.target.checked);

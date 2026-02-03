@@ -12,6 +12,7 @@ let wakeLock = null;
 const SCROLL_STORAGE_KEY = 'tts_auto_scroll'; 
 const MODE_STORAGE_KEY = 'tts_preferred_mode';
 
+// ! ИЗМЕНЕНИЕ 1: Разделяем ключи скоростей
 const RATE_PALI_KEY = 'tts_rate_pali'; 
 const RATE_TRN_KEY = 'tts_rate_trn';
 
@@ -19,11 +20,7 @@ const LAST_SLUG_KEY = 'tts_last_slug';
 const LAST_INDEX_KEY = 'tts_last_index'; 
 const PALI_ALERT_KEY = 'tts_pali_alert_shown';
 
-// ! ИЗМЕНЕНИЕ: Добавлен коэффициент нормализации для Пали
-// В UI будет 1.0, а в движок пойдет 1.0 * 0.5 = 0.5
-const PALI_RATIO = 0.5; 
-
-const RATES_PALI = [0.25, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5];
+const RATES_PALI = [0.25, 0.4, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5];
 const RATES_TRN = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5];
 
 const ttsState = {
@@ -34,6 +31,7 @@ const ttsState = {
   paused: false,
   utterance: null,
   langSettings: null,
+  // userRate убрали, теперь берем динамически
   autoScroll: localStorage.getItem(SCROLL_STORAGE_KEY) !== 'false', 
   currentSlug: null,
   isNavigating: false 
@@ -43,36 +41,44 @@ const synth = window.speechSynthesis;
 
 // --- Утилиты ---
 
+// ! ИЗМЕНЕНИЕ 7: Функция динамической перерисовки опций
 function updateRateOptions(isPali, activeRate) {
   const rateSelect = document.getElementById('tts-rate-select');
   if (!rateSelect) return;
 
+  // Выбираем нужный массив шкал
   const ratesToUse = isPali ? RATES_PALI : RATES_TRN;
   
+  // Проверяем, есть ли текущая скорость в массиве. 
+  // Если нет (например, сохранено 1.1, а в шкале его нет) — временно добавляем, чтобы не сбить UI.
   let displayRates = [...ratesToUse];
-  // Используем activeRate (это UI значение, например 1.0)
   if (!displayRates.includes(activeRate)) {
     displayRates.push(activeRate);
     displayRates.sort((a, b) => a - b);
   }
 
+  // Генерируем новый HTML для опций
   const optionsHtml = displayRates.map(r => 
     `<option value="${r}" ${r === activeRate ? 'selected' : ''}>${r}x</option>`
   ).join('');
 
+  // Обновляем только если список реально изменился, чтобы не моргать лишний раз
   if (rateSelect.innerHTML !== optionsHtml) {
     rateSelect.innerHTML = optionsHtml;
   }
   
+  // Устанавливаем значение (на случай если HTML был тот же, но value сменился)
   rateSelect.value = activeRate;
 }
 
+
+// ! ИЗМЕНЕНИЕ 2: Хелпер для получения скорости
 function getRateForLang(lang) {
   if (lang === 'pi-dev') {
-    // ! ИЗМЕНЕНИЕ: Дефолт теперь 1.0 (как и у перевода)
-    // Мы сохраняем "визуальную" скорость. Реальное замедление будет в playCurrentSegment.
-    return parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 1.0; 
+    // Для Пали дефолт 0.6 (обычно санскрит читают быстро, лучше замедлить)
+    return parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 0.6; 
   } else {
+    // Для перевода дефолт 1.0
     return parseFloat(localStorage.getItem(RATE_TRN_KEY)) || 1.0; 
   }
 }
@@ -331,48 +337,42 @@ function playCurrentSegment() {
 
   const utterance = new SpeechSynthesisUtterance(item.text);
   
-  // ! ИЗМЕНЕНИЕ: Разделяем UI-скорость и Аудио-скорость
-  let uiRate = 1.0;     // То, что видит пользователь (и сохраняется в localStorage)
-  let audioRate = 1.0;  // То, что реально идет в синтезатор
+  // ! ИЗМЕНЕНИЕ 3: Логика выбора скорости и обновления UI
+  let targetRate = 1.0;
   let isPali = false;
 
   if (item.lang === 'ru') {
     utterance.lang = 'ru-RU';
-    uiRate = getRateForLang('ru');
-    audioRate = uiRate;
+    targetRate = getRateForLang('ru');
   } else if (item.lang === 'th') { 
     utterance.lang = 'th-TH'; 
-    uiRate = getRateForLang('th'); 
-    audioRate = uiRate;
+    targetRate = getRateForLang('th'); 
   } else if (item.lang === 'en') {
     utterance.lang = 'en-US';
-    uiRate = getRateForLang('en');
-    audioRate = uiRate;
+    targetRate = getRateForLang('en');
   } else if (item.lang === 'pi-dev') {
-    utterance.lang = 'sa-IN'; 
+    utterance.lang = 'sa-IN'; // Sanskrit
     utterance._fallbackAttempt = 0; 
+    targetRate = getRateForLang('pi-dev');
     isPali = true;
-    
-    // Получаем сохраненную "визуальную" скорость (например, 1.0)
-    uiRate = getRateForLang('pi-dev');
-    
-    // Применяем коэффициент (1.0 превращается в 0.5)
-    audioRate = uiRate * PALI_RATIO;
   }
 
-  utterance.rate = audioRate;
+  utterance.rate = targetRate;
   
-  // Обновляем UI, используя "человеческую" uiRate (1.0), а не замедленную audioRate (0.5)
+  // ! ИЗМЕНЕНИЕ 8: Динамическое обновление шкал и значения
   const rateSelect = document.getElementById('tts-rate-select');
   if (rateSelect) {
-      updateRateOptions(isPali, uiRate);
+      // 1. Сначала перерисовываем опции под текущий язык (Пали или Перевод)
+      updateRateOptions(isPali, targetRate);
 
+      // 2. Визуальная подсказка (меняем рамку) - оставляем вашу логику
       if (isPali) {
           rateSelect.style.borderStyle = '';
-          rateSelect.title = "Скорость Пали (нормализована: 1.0 = медленно)";
+          rateSelect.style.borderStyle = '';
+          rateSelect.title = "Скорость Пали (детальная шкала)";
       } else {
           rateSelect.style.borderStyle = 'dashed';
-          rateSelect.title = "Скорость Перевода";
+          rateSelect.title = "Скорость Перевода (стандартная шкала)";
       }
   }
 
@@ -398,7 +398,8 @@ function playCurrentSegment() {
         console.log('Sanskrit failed, trying Hindi...');
         utterance.lang = 'hi-IN';
         utterance._fallbackAttempt = 1;
-        utterance.rate = audioRate; // Используем вычисленную скорость
+        // Скорость сохраняем ту же (палийскую)
+        utterance.rate = targetRate; 
         
         setTimeout(() => {
           if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
@@ -412,7 +413,10 @@ function playCurrentSegment() {
         console.log('Hindi failed, trying English...');
         utterance.lang = 'en-US';
         utterance._fallbackAttempt = 2;
-        utterance.rate = audioRate;
+        // Английский движок обычно читает быстрее, можно либо оставить targetRate,
+        // либо временно переключить на рейт для перевода.
+        // Пока оставим палийский рейт, чтобы не ломать логику.
+        utterance.rate = targetRate; 
         
         setTimeout(() => {
           if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
@@ -698,26 +702,32 @@ function showVoiceHint(title, message, storageKey) {
 
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
+  // 1. Определение режима (Mode) по URL или LocalStorage
   const isSpecialPath = window.location.pathname.match(/\/d\/|\/memorize\//);
   const defaultMode = isSpecialPath ? 'pi' : 'trn';
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
   
+  // 2. Определение начальной скорости и шкалы
   let initialRate;
   let currentRatesList; 
   
   if (savedMode === 'pi') {
-      // ! ИЗМЕНЕНИЕ: Дефолт = 1.0 (было 0.6)
-      initialRate = parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 1.0;
+      // Если сохранен режим "Только Пали", берем палийскую скорость и детальную шкалу
+      initialRate = parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 0.6;
       currentRatesList = RATES_PALI; 
   } else {
+      // Для режимов "Перевод", "Микс" и остальных берем стандартную шкалу
       initialRate = parseFloat(localStorage.getItem(RATE_TRN_KEY)) || 1.0;
       currentRatesList = RATES_TRN;  
   }
 
+  // Защита: если сохраненная скорость (например 0.67) не попадает в список,
+  // добавляем её временно, чтобы в селекте отобразилось число, а не пустота.
   if (!currentRatesList.includes(initialRate)) {
       currentRatesList = [...currentRatesList, initialRate].sort((a,b) => a - b);
   }
 
+  // 3. Локализация подписей
   const pathLang = location.pathname.split('/')[1];
   const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
 
@@ -725,6 +735,7 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
     ? { 'pi': 'Пали', 'pi-trn': 'Пали + Рус', 'trn': 'Перевод', 'trn-pi': 'Рус + Пали' }
     : { 'pi': 'Pāḷi', 'pi-trn': 'Pāḷi + Trn', 'trn': 'Trn', 'trn-pi': 'Trn + Pāḷi' };
   
+  // 4. Генерация HTML
   return `
   <span class="voice-dropdown">
     <a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
@@ -766,8 +777,9 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
       <br>
       <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
-      <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
-    `;
+      <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>&nbsp;
+    </span>
+  </span>`;
 }
 
 // --- Обработчик изменения настроек ---
@@ -821,7 +833,7 @@ async function handleTTSSettingChange(e) {
     }
   }
   
-  // 2. Скорость (Rate)
+  // ! ИЗМЕНЕНИЕ 5: Умное сохранение скорости
   if (e.target.id === 'tts-rate-select') {
     const newRate = parseFloat(e.target.value);
     
@@ -840,6 +852,8 @@ async function handleTTSSettingChange(e) {
         if (currentMode === 'pi') {
             targetKey = RATE_PALI_KEY;
         }
+        // В режимах "mix" или "trn" по умолчанию меняем перевод (самый частый кейс)
+        // Но если хотите - можно добавить проверку последнего сыгранного.
     }
 
     localStorage.setItem(targetKey, newRate);
