@@ -1345,3 +1345,10 @@ a.quoteLink-start::before {
     z-index: 99999 !important;
 }
 */
+
+.quickCAS {
+ cursor: pointer; 
+ height: 25px; 
+ color: grey;
+ margin-left: 0.5em;
+}
