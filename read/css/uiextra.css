@@ -812,7 +812,7 @@ transition: background-color 260ms ease-in-out;
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .voice-player {
-     /*   width: 95%;  Чуть шире на мобильных */
+    width: 95%;  /* Чуть шире на мобильных */
         max-width: 210px;
         max-height: 80vh;
         overflow-y: auto;
