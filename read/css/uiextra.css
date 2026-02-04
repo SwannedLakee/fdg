@@ -818,9 +818,11 @@ transition: background-color 260ms ease-in-out;
         overflow-y: auto;
     }
     
-  .tts-link {
-    font-size: 0.7em;
-  }
+.tts-link {
+  font-size: 0.7em;
+  position: relative;
+  top: -2px;
+}
     /* При активном состоянии на мобильных можно поднимать чуть меньше, если нужно */
     .voice-dropdown.active .voice-player {
          transform: translate(-50%, -20px);
