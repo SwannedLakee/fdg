@@ -764,9 +764,8 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
         Scroll
       </label>
 
-      <br>
-      <a href="/tts.php${window.location.search}" class="tts-text-link">TTS</a> |
-      <a title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
+      <a href="/tts.php${window.location.search}" class="tts-link tts-text-link">TTS</a>
+      <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
     `;
 }
 

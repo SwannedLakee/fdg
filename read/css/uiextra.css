@@ -615,6 +615,11 @@
     box-decoration-break: clone;
 }
 
+@media (max-width: 768px) {
+  .tts-active {
+    scroll-margin-top: 5vh; 
+  }
+}
 
 /* 1. Общее правило для обычного текста (оставляем как есть) */
 #sutta.hide-pali .rus-lang,
@@ -771,7 +776,7 @@ transition: background-color 260ms ease-in-out;
     padding: 20px;
     border: 1px solid #ddd;
     z-index: 999;
-    min-width: 150px;
+    min-width: 130px;
     max-width: 90vw;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 24px;
@@ -807,13 +812,15 @@ transition: background-color 260ms ease-in-out;
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .voice-player {
-        /* На мобильных можно прижать чуть ближе к низу или оставить так же */
-        width: 95%; /* Чуть шире на мобильных */
+     /*   width: 95%;  Чуть шире на мобильных */
         max-width: 210px;
         max-height: 80vh;
         overflow-y: auto;
     }
     
+  .tts-link {
+    font-size: 0.7em;
+  }
     /* При активном состоянии на мобильных можно поднимать чуть меньше, если нужно */
     .voice-dropdown.active .voice-player {
          transform: translate(-50%, -20px);
