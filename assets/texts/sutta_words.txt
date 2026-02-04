@@ -88228,16 +88228,16 @@ ud7.7 Papañcakhayasutta
 ud7.8 Kaccānasutta
 ud7.9udapānasutta
 ud7.10 Utenasutta
-ud.1 Paṭhamanibbānapaṭisaṁyuttasutta
-ud.2 Dutiyanibbānapaṭisaṁyuttasutta
-ud.3 Tatiyanibbānapaṭisaṁyuttasutta
-ud.4 Catutthanibbānapaṭisaṁyuttasutta
-ud.5 Cundasutta
-ud.6 Pāṭaligāmiyasutta
-ud.7 Dvidhāpathasutta
-ud.8 Visākhāsutta
-ud.9 Paṭhamadabbasutta
-ud.10 Dutiyadabbasutta
+ud8.1 Paṭhamanibbānapaṭisaṁyuttasutta
+ud8.2 Dutiyanibbānapaṭisaṁyuttasutta
+ud8.3 Tatiyanibbānapaṭisaṁyuttasutta
+ud8.4 Catutthanibbānapaṭisaṁyuttasutta
+ud8.5 Cundasutta
+ud8.6 Pāṭaligāmiyasutta
+ud8.7 Dvidhāpathasutta
+ud8.8 Visākhāsutta
+ud8.9 Paṭhamadabbasutta
+ud8.10 Dutiyadabbasutta
 dhp1-20
 dhp21-32
 dhp33-43
