@@ -995,3 +995,37 @@ transition: background-color 260ms ease-in-out;
 .tts-checkbox-custom input[type="checkbox"] {
   accent-color: #5a5a5a; 
 }
+
+
+/* --- ГРУППОВАЯ ПОДСВЕТКА БЛОКА (Мягкий стиль) --- */
+#sutta span[id]:has(.tts-active) {
+    display: block; 
+
+    background-color: rgba(var(--bs-primary-rgb), 0.30);
+    
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 4px -10px; /* Компенсация отступов */
+    transition: background-color 0.3s ease;
+    
+    /* Сглаживание при переносе */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.dark #sutta span[id]:has(.tts-active),
+body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
+    background-color: rgba(var(--bs-primary-rgb), 0.25); 
+}
+
+/* 3. Убираем фон и обводку с САМОЙ строки внутри блока */
+#sutta span[id]:has(.tts-active) .tts-active {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0;
+}
+
+/* 4. Режим колонок (чтобы не ломалась верстка) */
+.column-view #sutta span[id]:has(.tts-active) {
+    display: flow-root;
+}
