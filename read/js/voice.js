@@ -318,11 +318,31 @@ function playCurrentSegment() {
   if (item.element) {
     document.querySelectorAll('.active-word').forEach(e => e.classList.remove('active-word'));
     
+    // Логика для active-word (словарь) остается только на Пали элементе, если он активен
     if (item.element.classList.contains('pli-lang')) {
       item.element.classList.add('active-word');
     }
     
-    item.element.classList.add('tts-active');
+    // ! ИЗМЕНЕНИЕ: Подсветка всей группы (Пали + Перевод)
+    const segmentId = item.id;
+    // Ищем элемент-контейнер по ID (обычно ID висит на обертке сегмента)
+    const segmentContainer = document.getElementById(segmentId);
+
+    if (segmentContainer) {
+        // Находим внутри контейнера все текстовые блоки (пали и переводы)
+        const connectedElements = segmentContainer.querySelectorAll('.pli-lang, .rus-lang, .tha-lang, .eng-lang');
+        
+        if (connectedElements.length > 0) {
+            // Если нашли - подсвечиваем их все
+            connectedElements.forEach(el => el.classList.add('tts-active'));
+        } else {
+            // Если структура другая и вложенности нет - подсвечиваем сам контейнер
+            segmentContainer.classList.add('tts-active');
+        }
+    } else {
+        // Фолбэк: если по ID контейнер не найден, подсвечиваем только то, что играет
+        item.element.classList.add('tts-active');
+    }
     
     if (ttsState.autoScroll) {
       item.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -332,8 +352,8 @@ function playCurrentSegment() {
   const utterance = new SpeechSynthesisUtterance(item.text);
   
   // ! ИЗМЕНЕНИЕ: Разделяем UI-скорость и Аудио-скорость
-  let uiRate = 1.0;     // То, что видит пользователь (и сохраняется в localStorage)
-  let audioRate = 1.0;  // То, что реально идет в синтезатор
+  let uiRate = 1.0;     
+  let audioRate = 1.0;  
   let isPali = false;
 
   if (item.lang === 'ru') {
@@ -353,16 +373,12 @@ function playCurrentSegment() {
     utterance._fallbackAttempt = 0; 
     isPali = true;
     
-    // Получаем сохраненную "визуальную" скорость (например, 1.0)
     uiRate = getRateForLang('pi-dev');
-    
-    // Применяем коэффициент (1.0 превращается в 0.5)
     audioRate = uiRate * PALI_RATIO;
   }
 
   utterance.rate = audioRate;
   
-  // Обновляем UI, используя "человеческую" uiRate (1.0), а не замедленную audioRate (0.5)
   const rateSelect = document.getElementById('tts-rate-select');
   if (rateSelect) {
       updateRateOptions(isPali, uiRate);
@@ -398,7 +414,7 @@ function playCurrentSegment() {
         console.log('Sanskrit failed, trying Hindi...');
         utterance.lang = 'hi-IN';
         utterance._fallbackAttempt = 1;
-        utterance.rate = audioRate; // Используем вычисленную скорость
+        utterance.rate = audioRate; 
         
         setTimeout(() => {
           if (ttsState.speaking && !ttsState.paused && ttsState.utterance === utterance) {
@@ -464,6 +480,7 @@ function playCurrentSegment() {
     }, 50);
   }
 }
+
 
 // --- Обработчики событий ---
 async function handleSuttaClick(e) {

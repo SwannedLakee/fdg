@@ -462,7 +462,7 @@ else {
 
 //const translatorCapitalized = translator.charAt(0).toUpperCase() + translator.slice(1);
 
-     const translatorByline = `<div class="byline">
+     const translatorByline = `<div id="trn" class="byline">
      <p>
     <span class="pli-lang" lang="pi">Pāḷi <a class="text-decoration-none text-reset" href="/assets/texts/abbr.html?s=ms" title="Mahāsaṅgīti Pāḷi">MS</a></span> <span class="rus-lang" lang="ru"> Пер. ${translatorforuser}</span>
      </p>
