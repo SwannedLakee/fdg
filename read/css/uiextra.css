@@ -679,9 +679,9 @@
 
 /* Подсветка последнего нажатого слова (Bootstrap primary) */
 .active-word {
-  background-color: rgba(var(--bs-primary-rgb), 0.25);
+  background-color: rgba(var(--bs-primary-rgb), 0.35);
   border-radius: 0.25rem;
-    box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.25);
+    box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.15);
 }
 
   .pli-lang, .rus-lang, .eng-lang {
@@ -996,36 +996,46 @@ transition: background-color 260ms ease-in-out;
   accent-color: #5a5a5a; 
 }
 
+/* --- ГРУППОВАЯ ПОДСВЕТКА БЛОКА (Исправленная) --- */
 
-/* --- ГРУППОВАЯ ПОДСВЕТКА БЛОКА (Мягкий стиль) --- */
+/* 1. Сам блок-контейнер */
 #sutta span[id]:has(.tts-active) {
     display: block; 
-
-    background-color: rgba(var(--bs-primary-rgb), 0.30);
     
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin: 4px -10px; /* Компенсация отступов */
-    transition: background-color 0.3s ease;
+    /* Зеленоватый цвет (тот же тон, что и active-word), прозрачность 0.15 */
+    background-color: rgba(var(--bs-primary-rgb), 0.25);
     
-    /* Сглаживание при переносе */
+    border-radius: 6px;
+    padding: 6px 10px; /* Немного воздуха вокруг текста */
+    margin: 4px -10px; /* Компенсация, чтобы блок был шире текста */
+    
+    transition: background-color 0.2s ease;
+    
+    /* Убирает разрывы заливки, если блок переносится */
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
 }
 
+/* 2. Поддержка темной темы */
 .dark #sutta span[id]:has(.tts-active),
 body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
-    background-color: rgba(var(--bs-primary-rgb), 0.25); 
+    /* В темной теме чуть плотнее, чтобы было видно */
+    background-color: rgba(var(--bs-primary-rgb), 0.30); 
 }
 
-/* 3. Убираем фон и обводку с САМОЙ строки внутри блока */
-#sutta span[id]:has(.tts-active) .tts-active {
+/* 3. УБИРАЕМ АРТЕФАКТЫ ВНУТРИ (Самое важное) */
+/* Мы говорим: если блок подсвечен целиком, то внутренние элементы (.active-word и .tts-active)
+   должны стать полностью прозрачными и без рамок */
+#sutta span[id]:has(.tts-active) .tts-active,
+#sutta span[id]:has(.tts-active) .active-word {
     background-color: transparent !important;
-    box-shadow: none !important;
+    box-shadow: none !important; /* Убирает "тень" или обводку вокруг слов */
+    border: none !important;
     border-radius: 0;
+    padding: 0; /* Убираем отступы, чтобы текст не прыгал */
 }
 
-/* 4. Режим колонок (чтобы не ломалась верстка) */
+/* 4. Исправление для режима колонок */
 .column-view #sutta span[id]:has(.tts-active) {
     display: flow-root;
 }
