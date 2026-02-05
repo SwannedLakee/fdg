@@ -201,8 +201,8 @@ if ($lang === 'pi') {
 <link rel="stylesheet" href="/assets/css/jquery-ui.min.css">
 <link href="/assets/css/paliLookup.css" rel="stylesheet" />
 
-<script src="/assets/js/jquery-3.7.0.min.js" defer></script>
-<script src="/assets/js/jquery-ui.min.js" defer></script>
+<script src="/assets/js/jquery-3.7.0.min.js"></script>
+<script src="/assets/js/jquery-ui.min.js"></script>
   <title><?= $title ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>

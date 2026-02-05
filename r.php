@@ -589,8 +589,8 @@ body.dark .dt-button-background {
     </div>
   </div>
 </div>
- <script src="/assets/js/jquery-3.7.0.min.js" defer></script>
- <script src="/assets/js/jquery-ui.min.js" defer></script>
+ <script src="/assets/js/jquery-3.7.0.min.js"></script>
+ <script src="/assets/js/jquery-ui.min.js"></script>
  <script src="/assets/js/bootstrap.bundle.5.3.1.min.js"></script>
  <script type="text/javascript" src="/assets/js/datatables/datatables.js"></script>
  <script type="text/javascript" src="/assets/js/natural.js"></script>
@@ -706,7 +706,7 @@ $(document).ready(function() {
     buttons: [{
       extend: 'colvis',
       text: '🌐',
-      className: 'btn-light btn-sm'
+      className: 'btn-secondary btn-sm'
     }],
        searchBuilder: {
             preDefined: {
