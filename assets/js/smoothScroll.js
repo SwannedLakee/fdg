@@ -1,214 +1,214 @@
 /**
- * Подсвечивает элемент по его ID вместе со всеми потомками равномерно
- * С красивой анимацией через обертку и интеграцией TTS
+ * Подсвечивает элемент по его ID.
+ * Сначала активирует TTS, затем запускает анимацию.
+ * Использует безопасный метод наложения (Overlay), чтобы не ломать структуру DOM.
  * @param {string} elementId - ID элемента для подсветки
  */
 function highlightAllById(elementId) {
-    // 1. Находим элемент по ID
-    const elementToHighlight = document.getElementById(elementId);
-    
-    // 2. Если элемент не существует, ничего не делаем
-    if (!elementToHighlight) {
+    const element = document.getElementById(elementId);
+    if (!element) {
         console.log(`[Highlight] Элемент с ID "${elementId}" не найден.`);
         return;
     }
 
-    // 3. Сохраняем оригинальные стили
-    const originalBgColor = elementToHighlight.style.backgroundColor;
-    const originalTransition = elementToHighlight.style.transition;
+    // --- 1. СНАЧАЛА ВКЛЮЧАЕМ TTS (UX ПРИОРИТЕТ) ---
+    // Это сразу добавит класс .active-word и покажет кнопку Play
+    if (typeof window.activateSegmentForTTS === 'function') {
+        // Если это контейнер строки, пытаемся найти внутри языковой блок, 
+        // чтобы кнопка Play встала красиво.
+        if (element.matches('.pli-lang, .rus-lang, .eng-lang')) {
+             window.activateSegmentForTTS(element);
+        } else {
+            const childLang = element.querySelector('.pli-lang, .rus-lang, .eng-lang');
+            window.activateSegmentForTTS(childLang || element);
+        }
+    } else {
+        element.classList.add('active-word');
+    }
+
+    // --- 2. ЗАПУСКАЕМ АНИМАЦИЮ (МИГАНИЕ) ПОВЕРХ ---
     
-    // 4. Применяем стили для анимации ко всему блоку
-    elementToHighlight.style.transition = 'background-color 0.45s ease-in-out';
-    
+    // Сохраняем позиционирование, чтобы absolute overlay работал корректно
+    const originalPosition = element.style.position;
+    if (getComputedStyle(element).position === 'static') {
+        element.style.position = 'relative';
+    }
+
+    // Создаем слой-накладку (Overlay)
+    const overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.pointerEvents = 'none'; // Пропускаем клики сквозь подсветку
+    overlay.style.zIndex = '10'; // Поверх текста
+    overlay.style.borderRadius = getComputedStyle(element).borderRadius; // Копируем скругление
+    overlay.style.transition = 'background-color 0.45s ease-in-out';
+    overlay.style.backgroundColor = 'transparent';
+
+    // Добавляем накладку внутрь элемента
+    element.appendChild(overlay);
+
     let blinkCount = 0;
-    const maxBlinks = 4;
-    const intervalDuration = 500;
-    
-    // 5. Создаем временный элемент-обертку для равномерной подсветки
-    const highlightWrapper = document.createElement('div');
-    highlightWrapper.style.position = 'relative';
-    
-    // 6. Клонируем содержимое элемента
-    // (Это позволяет подсветить фон поверх текста, не перекрывая его)
-    const contentClone = elementToHighlight.cloneNode(true);
-    
-    // 7. Настраиваем слой подсветки
-    const highlightEffect = document.createElement('div');
-    highlightEffect.style.position = 'absolute';
-    highlightEffect.style.top = '0';
-    highlightEffect.style.left = '0';
-    highlightEffect.style.width = '100%';
-    highlightEffect.style.height = '100%';
-    highlightEffect.style.zIndex = '0';
-    highlightEffect.style.pointerEvents = 'none'; // Чтобы клики проходили сквозь подсветку
-    highlightEffect.style.transition = 'background-color 0.45s ease-in-out';
-    
-    // 8. Вставляем элементы в DOM (заменяем содержимое на обертку)
-    highlightWrapper.appendChild(highlightEffect);
-    highlightWrapper.appendChild(contentClone);
-    elementToHighlight.innerHTML = '';
-    elementToHighlight.appendChild(highlightWrapper);
-    
-    // 9. Запускаем анимацию мигания
+    const maxBlinks = 3; 
+    const intervalDuration = 450;
+
+    // Запускаем цикл мигания на Overlay
     const blinkInterval = setInterval(() => {
-        highlightEffect.style.backgroundColor = blinkCount % 2 === 0 
-            ? 'rgba(26, 188, 156, 0.2)' // Красивый бирюзовый цвет
+        // Мигаем бирюзовым
+        overlay.style.backgroundColor = blinkCount % 2 === 0 
+            ? 'rgba(26, 188, 156, 0.25)' // Бирюзовый, полупрозрачный
             : 'transparent';
         
         blinkCount++;
 
-        // 10. По окончании (когда мигнуло нужное количество раз)
-        if (blinkCount >= maxBlinks) {
+        // Остановка
+        if (blinkCount >= maxBlinks * 2) { 
             clearInterval(blinkInterval);
             
+            // Даем доиграть последнюю анимацию затухания
             setTimeout(() => {
-                // А. Возвращаем оригинальное содержимое (убираем обертки)
-                elementToHighlight.innerHTML = '';
-                elementToHighlight.appendChild(contentClone);
-                elementToHighlight.style.backgroundColor = originalBgColor;
-                elementToHighlight.style.transition = originalTransition;
-                
-                // Б. --- ИНТЕГРАЦИЯ ТТС (НОВОЕ) ---
-                // Теперь, когда структура восстановлена, вызываем логику из voice.js
-                // Это добавит класс .active-word и покажет кнопку Play
-                if (typeof window.activateSegmentForTTS === 'function') {
-                    window.activateSegmentForTTS(elementToHighlight);
-                } else {
-                    // Если voice.js вдруг не загружен, просто подсветим желтым
-                    elementToHighlight.classList.add('active-word');
+                // Удаляем накладку
+                if (overlay.parentNode === element) {
+                    element.removeChild(overlay);
                 }
-
+                
+                // Восстанавливаем original position (если меняли)
+                if (!originalPosition) {
+                    element.style.removeProperty('position');
+                } else {
+                    element.style.position = originalPosition;
+                }
             }, intervalDuration);
         }
     }, intervalDuration);
 }
 
-// Функция для выделения элемента по ID (без подсветки дочерних элементов)
+// Функция для выделения элемента по ID (упрощенная)
 function highlightById(elementId) {
     const element = document.getElementById(elementId);
     if (!element) return;
 
-    // Сохраняем оригинальные стили
+    // --- 1. СНАЧАЛА TTS ---
+    if (typeof window.activateSegmentForTTS === 'function') {
+        window.activateSegmentForTTS(element);
+    } else {
+        element.classList.add('active-word');
+    }
+
+    // --- 2. ЗАТЕМ АНИМАЦИЯ (Box Shadow) ---
     const originalTransition = element.style.transition;
-    const originalBorderRadius = element.style.borderRadius;
     const originalBoxShadow = element.style.boxShadow;
+    const originalBorderRadius = element.style.borderRadius;
 
     // Настройки анимации
-    element.style.borderRadius = '10px';
+    element.style.borderRadius = '6px';
     element.style.transition = 'box-shadow 0.3s ease-in-out';
+    
     let blinkCount = 0;
-    const maxBlinks = 4; 
+    const maxBlinks = 3; 
     let isWide = false;
 
-    // Функция для мерцания
     const blinkInterval = setInterval(function() {
-        // Подсветка ТОЛЬКО основного элемента (рамкой/тенью)
-        element.style.boxShadow = isWide ? '0 0 0 2px grey' : '0 0 0 4px grey';
-        
+        // Пульсация рамкой
+        element.style.boxShadow = isWide ? '0 0 0 2px grey' : '0 0 0 5px rgba(128,128,128, 0.5)';
         isWide = !isWide;
         blinkCount++;
 
-        // Останавливаем после 3 мерцаний
-        if (blinkCount >= maxBlinks) {
+        if (blinkCount >= maxBlinks * 2) {
             clearInterval(blinkInterval);
             
-            // Возвращаем оригинальные стили
             setTimeout(() => {
-                element.style.boxShadow = originalBoxShadow;
-                element.style.transition = originalTransition;
-                element.style.borderRadius = originalBorderRadius;
+                // Чистим стили анимации
+                element.style.removeProperty('box-shadow');
+                element.style.removeProperty('transition');
+                element.style.removeProperty('border-radius');
                 
-                // --- ИНТЕГРАЦИЯ ТТС ЗДЕСЬ ТОЖЕ ---
-                if (typeof window.activateSegmentForTTS === 'function') {
-                    window.activateSegmentForTTS(element);
-                } else {
-                    element.classList.add('active-word');
-                }
-
+                // Если были старые стили - вернем их
+                if (originalBoxShadow) element.style.boxShadow = originalBoxShadow;
+                if (originalTransition) element.style.transition = originalTransition;
+                if (originalBorderRadius) element.style.borderRadius = originalBorderRadius;
             }, 300);
         }
-    }, 500);
+    }, 400);
 }
 
 function highlightMultipleById(ids) {
     ids.forEach(highlightById);
 }
 
-// Эта функция будет периодически проверять наличие элемента на странице
+// Умный скролл при загрузке/изменении хеша
 function intelligentScrollToHash() {
     const hash = window.location.hash;
-    if (!hash) return; // Если якоря нет, ничего не делаем
+    if (!hash) return; 
 
     const hashContent = hash.substring(1);
 
-    // ПРОВЕРКА: Если в хеше есть запятая, значит, это список ID для подсветки
+    // Сценарий 1: Список ID (запятая)
     if (hashContent.includes(',')) {
-        const ids = hashContent.split(','); // Разделяем строку на массив ID
+        const ids = hashContent.split(','); 
         highlightMultipleById(ids); 
         
-        // Скроллим к первому элементу
         const firstElement = document.getElementById(ids[0]);
         if (firstElement) {
              firstElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-    // ИНАЧЕ: работаем по старой логике с одним элементом
+    // Сценарий 2: Одиночный ID (Красивая анимация)
     } else {
         const elementId = hashContent;
         
-        const checkInterval = 250; // Проверять каждые 250 мс
-        const totalWaitTime = 10000; // Ждем до 10 сек (мобильные сети бывают медленными)
+        const checkInterval = 250; 
+        const totalWaitTime = 10000; 
         let timeElapsed = 0;
         
         const pollingInterval = setInterval(() => {
             const element = document.getElementById(elementId);
 
-            // 1. УСПЕХ: Элемент найден
+            // 1. Элемент найден
             if (element) {
-                clearInterval(pollingInterval); // Останавливаем проверку
+                clearInterval(pollingInterval); 
+                
+                // Скроллим
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                highlightAllById(elementId); // Запускаем красивую анимацию + ТТС
+                
+                // Активируем TTS и анимацию
+                highlightAllById(elementId); 
                 return;
             }
 
-            // 2. ПРОДОЛЖЕНИЕ: Элемент еще не найден, проверяем время
+            // 2. Ждем дальше
             timeElapsed += checkInterval;
             
-            // 3. ТАЙМ-АУТ: Время ожидания истекло
+            // 3. Тайм-аут
             if (timeElapsed >= totalWaitTime) {
-                console.log(`[Scroll] Элемент #${elementId} не найден за ${totalWaitTime / 1000} секунд. Остановка поиска.`);
-                clearInterval(pollingInterval); // Останавливаем проверку
+                console.log(`[Scroll] Элемент #${elementId} не найден за ${totalWaitTime / 1000} секунд.`);
+                clearInterval(pollingInterval); 
             }
         }, checkInterval);
     }
 }
 
-// Запускаем интеллектуальную прокрутку при начальной загрузке страницы...
+// Запуски
 window.addEventListener('DOMContentLoaded', intelligentScrollToHash);
-
-// ...и при каждом изменении якоря в URL.
 window.addEventListener('hashchange', intelligentScrollToHash);
 
-
+// Кнопка "Наверх"
 document.addEventListener('DOMContentLoaded', function() {
-    // Создаем элемент кнопки
     var scrollToTopBtn = document.createElement('button');
     scrollToTopBtn.id = 'scrollToTopBtn';
     scrollToTopBtn.className = 'btn btn-secondary rounded-pill hide-button';
     scrollToTopBtn.style.display = 'none';
 
-    // Создаем элемент изображения
     var img = document.createElement('img');
     img.id = 'arrowImg';
     img.alt = 'To top';
-    // ВСЕГДА используем одну и ту же картинку - тёмную стрелку
     img.src = '/assets/svg/arrow-up-dark.svg';
     scrollToTopBtn.appendChild(img);
     
-    // Добавляем кнопку на страницу
     document.body.appendChild(scrollToTopBtn);
 
-    // Функция для проверки позиции прокрутки
     function checkScrollPosition() {
         if (window.scrollY > 600) {
             scrollToTopBtn.style.display = 'block';
@@ -220,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
     checkScrollPosition();
     window.addEventListener('scroll', checkScrollPosition);
 
-    // Плавная прокрутка наверх по клику
     scrollToTopBtn.addEventListener('click', function(event) {
         event.preventDefault();
         window.scrollTo({
