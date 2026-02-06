@@ -8,9 +8,11 @@ BASE_AUDIO="/storage/emulated/0/Download/Sutta Audio"
 # ===== НАБОР =====
 
 SET="DN22#13.0.2"
+SET="an5.55#3.3"
 # SET="MN9#14.4"
 
 AUDIO_FILE="dn22-4-1.mp3"
+AUDIO_FILE="an5.55.mp3"
 # AUDIO_FILE="dn22-4-2.mp3"
 # AUDIO_FILE="mn91.mp3"
 

@@ -1,5 +1,6 @@
 /**
  * Подсвечивает элемент по его ID вместе со всеми потомками равномерно
+ * С красивой анимацией через обертку и интеграцией TTS
  * @param {string} elementId - ID элемента для подсветки
  */
 function highlightAllById(elementId) {
@@ -28,9 +29,10 @@ function highlightAllById(elementId) {
     highlightWrapper.style.position = 'relative';
     
     // 6. Клонируем содержимое элемента
+    // (Это позволяет подсветить фон поверх текста, не перекрывая его)
     const contentClone = elementToHighlight.cloneNode(true);
     
-    // 7. Настраиваем подсветку
+    // 7. Настраиваем слой подсветки
     const highlightEffect = document.createElement('div');
     highlightEffect.style.position = 'absolute';
     highlightEffect.style.top = '0';
@@ -38,31 +40,44 @@ function highlightAllById(elementId) {
     highlightEffect.style.width = '100%';
     highlightEffect.style.height = '100%';
     highlightEffect.style.zIndex = '0';
-    highlightEffect.style.pointerEvents = 'none';
+    highlightEffect.style.pointerEvents = 'none'; // Чтобы клики проходили сквозь подсветку
     highlightEffect.style.transition = 'background-color 0.45s ease-in-out';
     
-    // 8. Вставляем элементы в DOM
+    // 8. Вставляем элементы в DOM (заменяем содержимое на обертку)
     highlightWrapper.appendChild(highlightEffect);
     highlightWrapper.appendChild(contentClone);
     elementToHighlight.innerHTML = '';
     elementToHighlight.appendChild(highlightWrapper);
     
-    // 9. Запускаем анимацию
+    // 9. Запускаем анимацию мигания
     const blinkInterval = setInterval(() => {
         highlightEffect.style.backgroundColor = blinkCount % 2 === 0 
-            ? 'rgba(26, 188, 156, 0.2)' 
+            ? 'rgba(26, 188, 156, 0.2)' // Красивый бирюзовый цвет
             : 'transparent';
         
         blinkCount++;
 
-        // 10. По окончании возвращаем оригинальное состояние
+        // 10. По окончании (когда мигнуло нужное количество раз)
         if (blinkCount >= maxBlinks) {
             clearInterval(blinkInterval);
+            
             setTimeout(() => {
+                // А. Возвращаем оригинальное содержимое (убираем обертки)
                 elementToHighlight.innerHTML = '';
                 elementToHighlight.appendChild(contentClone);
                 elementToHighlight.style.backgroundColor = originalBgColor;
                 elementToHighlight.style.transition = originalTransition;
+                
+                // Б. --- ИНТЕГРАЦИЯ ТТС (НОВОЕ) ---
+                // Теперь, когда структура восстановлена, вызываем логику из voice.js
+                // Это добавит класс .active-word и покажет кнопку Play
+                if (typeof window.activateSegmentForTTS === 'function') {
+                    window.activateSegmentForTTS(elementToHighlight);
+                } else {
+                    // Если voice.js вдруг не загружен, просто подсветим желтым
+                    elementToHighlight.classList.add('active-word');
+                }
+
             }, intervalDuration);
         }
     }, intervalDuration);
@@ -87,13 +102,13 @@ function highlightById(elementId) {
 
     // Функция для мерцания
     const blinkInterval = setInterval(function() {
-        // Подсветка ТОЛЬКО основного элемента
+        // Подсветка ТОЛЬКО основного элемента (рамкой/тенью)
         element.style.boxShadow = isWide ? '0 0 0 2px grey' : '0 0 0 4px grey';
         
         isWide = !isWide;
         blinkCount++;
 
-        // Останавливаем после 3 мерцаний (6 изменений состояния)
+        // Останавливаем после 3 мерцаний
         if (blinkCount >= maxBlinks) {
             clearInterval(blinkInterval);
             
@@ -102,6 +117,14 @@ function highlightById(elementId) {
                 element.style.boxShadow = originalBoxShadow;
                 element.style.transition = originalTransition;
                 element.style.borderRadius = originalBorderRadius;
+                
+                // --- ИНТЕГРАЦИЯ ТТС ЗДЕСЬ ТОЖЕ ---
+                if (typeof window.activateSegmentForTTS === 'function') {
+                    window.activateSegmentForTTS(element);
+                } else {
+                    element.classList.add('active-word');
+                }
+
             }, 300);
         }
     }, 500);
@@ -121,14 +144,20 @@ function intelligentScrollToHash() {
     // ПРОВЕРКА: Если в хеше есть запятая, значит, это список ID для подсветки
     if (hashContent.includes(',')) {
         const ids = hashContent.split(','); // Разделяем строку на массив ID
-        highlightMultipleById(ids); // Вызываем функцию для подсветки нескольких элементов
+        highlightMultipleById(ids); 
+        
+        // Скроллим к первому элементу
+        const firstElement = document.getElementById(ids[0]);
+        if (firstElement) {
+             firstElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
 
     // ИНАЧЕ: работаем по старой логике с одним элементом
     } else {
         const elementId = hashContent;
         
-        const checkInterval = 500; // Проверять каждые 500 мс
-        const totalWaitTime = 8500; // Общее время ожидания
+        const checkInterval = 250; // Проверять каждые 250 мс
+        const totalWaitTime = 10000; // Ждем до 10 сек (мобильные сети бывают медленными)
         let timeElapsed = 0;
         
         const pollingInterval = setInterval(() => {
@@ -138,7 +167,7 @@ function intelligentScrollToHash() {
             if (element) {
                 clearInterval(pollingInterval); // Останавливаем проверку
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                highlightAllById(elementId);
+                highlightAllById(elementId); // Запускаем красивую анимацию + ТТС
                 return;
             }
 
@@ -153,6 +182,7 @@ function intelligentScrollToHash() {
         }, checkInterval);
     }
 }
+
 // Запускаем интеллектуальную прокрутку при начальной загрузке страницы...
 window.addEventListener('DOMContentLoaded', intelligentScrollToHash);
 

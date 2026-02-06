@@ -893,24 +893,50 @@ document.addEventListener('visibilitychange', async () => {
   }
 });
 
+// --- НОВАЯ ЭКСПОРТИРУЕМАЯ ФУНКЦИЯ ---
+// Позволяет активировать сегмент программно (например, из smoothScroll.js)
+window.activateSegmentForTTS = function(element) {
+  if (!element) return;
+  
+  // Если передали контейнер (строку целиком), ищем внутри неё текстовый блок
+  let targetElement = element;
+  if (!targetElement.matches(".pli-lang, .rus-lang, .eng-lang, .tha-lang")) {
+      const childLang = targetElement.querySelector(".pli-lang, .rus-lang, .eng-lang, .tha-lang");
+      if (childLang) {
+          targetElement = childLang;
+      } else {
+          // Если внутри нет языковых классов, выходим
+          return;
+      }
+  }
+
+  removeAllHighlights();
+  targetElement.classList.add("active-word");
+  
+  const rowContainer = targetElement.closest("[id]") || targetElement;
+  addTtsButton(rowContainer, targetElement);
+};
+
 document.addEventListener("click", function (e) {
+  // Игнорируем клики по служебным элементам
   if (e.target.closest('.tts-ignore') || e.target.closest('.dynamic-tts-btn')) return;
   
+  // Проверяем, был ли клик по сегменту текста
   const clickedSegment = e.target.closest(".pli-lang, .rus-lang, .eng-lang, .tha-lang");
 
   if (clickedSegment) {
+    // Если кликнули по уже активному — снимаем выделение
     if (clickedSegment.classList.contains("active-word")) {
       removeAllHighlights();
       return;
     }
 
-    removeAllHighlights();
-    clickedSegment.classList.add("active-word");
-    const rowContainer = clickedSegment.closest("[id]") || clickedSegment;
-    addTtsButton(rowContainer, clickedSegment);
+    // Иначе активируем через нашу новую функцию
+    window.activateSegmentForTTS(clickedSegment);
     return;
   }
 
+  // Если клик был в пустоту (не по плееру и не по кнопкам) — убираем выделение
   if (
     !e.target.closest(".voice-player") &&
     !e.target.closest(".tts-mode-select") &&
@@ -939,6 +965,10 @@ function addTtsButton(containerElement, specificElement) {
     btnContainer.innerHTML = `<img src="/assets/svg/play.svg" alt="Play">`;
 
     document.body.appendChild(btnContainer);
+
+    // Позиционируем кнопку относительно элемента
+    // Можно добавить логику позиционирования, если CSS (fixed) не подходит
+    // Но сейчас она fixed right: 20px, так что ок.
 
     btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
