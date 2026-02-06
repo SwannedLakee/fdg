@@ -684,6 +684,11 @@
     box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.15);
 }
 
+.dark .active-word {
+  background-color: rgba(var(--bs-primary-rgb), 0.25);
+    box-shadow: 0 0 0 1px rgba(var(--bs-secondary-rgb), 0.15);
+}
+
   .pli-lang, .rus-lang, .eng-lang {
 transition: background-color 260ms ease-in-out;
 }
@@ -1006,8 +1011,8 @@ transition: background-color 260ms ease-in-out;
     background-color: rgba(var(--bs-primary-rgb), 0.25);
     
     border-radius: 6px;
-    padding: 6px 10px; /* Немного воздуха вокруг текста */
-    margin: 4px -10px; /* Компенсация, чтобы блок был шире текста */
+    padding: 6px 6px; /* Немного воздуха вокруг текста */
+    margin: 4px -5px; /* Компенсация, чтобы блок был шире текста */
     
     transition: background-color 0.2s ease;
     
