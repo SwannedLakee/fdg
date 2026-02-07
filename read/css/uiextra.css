@@ -1009,13 +1009,10 @@ transition: background-color 260ms ease-in-out;
     
     /* Зеленоватый цвет (тот же тон, что и active-word), прозрачность 0.15 */
     background-color: rgba(var(--bs-primary-rgb), 0.25);
-    
     border-radius: 6px;
-    padding: 6px 6px; /* Немного воздуха вокруг текста */
-    margin: 4px -5px; /* Компенсация, чтобы блок был шире текста */
-    
+ /*   padding: 2px 2px; 
+    margin: 2px -2px; */
     transition: background-color 0.2s ease;
-    
     /* Убирает разрывы заливки, если блок переносится */
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
