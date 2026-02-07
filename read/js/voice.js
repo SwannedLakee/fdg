@@ -150,6 +150,8 @@ async function fetchSegmentsData(slug) {
 
 function detectTranslationLang() {
   const path = window.location.pathname;
+  
+  if (path.match(/\/d\/|\/memorize\//)) return 'pi-dev'; 
   if (path.includes('/th/') || path.includes('/thml/')) return 'th';
   if (path.includes('/en/') || path.includes('/b/') || path.includes('/read/')) return 'en';
   return 'ru';
