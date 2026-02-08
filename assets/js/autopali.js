@@ -109,14 +109,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Преобразуем возможную русскую раскладку в английскую
         .replace(/[а-яё]/g, char => ruToEn[char] || char)
 		.replace(/,/g, ".")    
-		.replace(/ /g, ".")    
-		.replace(/m/g, "n")    
-		.replace(/\b(bu|bi)\s+([a-z0-9])/gi, "$1-$2")
         // Нормализация форматов
         .replace(/([a-zA-Z]+)\s+(\d+)\s+(\d+)/g, "$1$2.$3")    // an 3 70 → an3.70
         .replace(/([a-zA-Z]+)(\d+)\s+(\d+)/g, "$1$2.$3")       // an3 70 → an3.70
         .replace(/([a-zA-Z]+)\s+(\d+)\.(\d+)/g, "$1$2.$3")     // an 3.70 → an3.70
-        .replace(/([a-zA-Z]+)\s+(\d+)/g, "$1$2");              // dn 1 → dn1
+        .replace(/([a-zA-Z]+)\s+(\d+)/g, "$1$2") 				// dn 1 → dn1
+		.replace(/(b[ui]) (pm)/gi, "$1-$2")
+		.replace(/(bu) ([a-zA-Z].*)/gi, "$1-$2")
+		.replace(/(bi) ([a-zA-Z].*)/gi, "$1-$2")
+		.replace(/ /g, ".")    
+;              
 }
 
 var normalizedTerm = normalizeTerm(request.term);
