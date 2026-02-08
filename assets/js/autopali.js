@@ -109,8 +109,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Преобразуем возможную русскую раскладку в английскую
         .replace(/[а-яё]/g, char => ruToEn[char] || char)
 		.replace(/,/g, ".")    
+		.replace(/ /g, ".")    
 		.replace(/m/g, "n")    
-        .replace(/ /g, "-")
+		.replace(/\b(bu|bi)\s+([a-z0-9])/gi, "$1-$2")
         // Нормализация форматов
         .replace(/([a-zA-Z]+)\s+(\d+)\s+(\d+)/g, "$1$2.$3")    // an 3 70 → an3.70
         .replace(/([a-zA-Z]+)(\d+)\s+(\d+)/g, "$1$2.$3")       // an3 70 → an3.70
