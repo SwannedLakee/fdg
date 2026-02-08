@@ -298,15 +298,13 @@ async def inline_query(update: Update, context: CallbackContext):
     share_lang = get_user_share_lang(user_id)
     
     # 1. Сначала преобразуем ввод (pa.ticca -> paṭicca)
-    # Это нужно для красивого отображения и правильной ссылки
     display_text = uniCoder(query_text)
     
-    # 2. Генерируем "чистый" запрос для ссылки на основе уже преобразованного текста
+    # 2. Генерируем "чистый" запрос для ссылки (mn2 sabbasava -> mn2)
     link_q = get_link_query(display_text)
     
     # Формируем текст кнопки WebApp
     action_text = "Открыть Dhamma.gift Ru" if share_lang == "ru" else "Open Dhamma.gift En"
-    # В кнопке теперь будет Unicode (paṭicca)
     btn_text = f"🔎 {action_text}: {link_q}" if query_text else f"🔎 {action_text}"
     
     # Формируем URL для WebApp
@@ -318,27 +316,25 @@ async def inline_query(update: Update, context: CallbackContext):
     results = []
 
     if query_text:
-        # Для автодополнения используем исходный ввод (или display_text - normalize справится с обоими)
         suggestions = autocomplete(query_text)
         
-        # === Результат 1: То, что ввел пользователь (но уже красивое) ===
+        # === Результат 1: То, что ввел пользователь ===
         results.append(InlineQueryResultArticle(
             id="user_input",
-            # Заголовок с Unicode (paṭicca)
             title=f"✏️ Send: {display_text}" if interface_lang == "en" else f"✏️ Отправить: {display_text}",
             input_message_content=InputTextMessageContent(
-                # Сообщение в чат с правильными ссылками
+                # В сообщение вставляем полный текст, но ссылки формируем на основе короткого link_q
                 format_message_with_links(display_text, link_q, lang=share_lang), 
                 parse_mode="HTML", 
                 disable_web_page_preview=True
             ),
-            # Клавиатура под сообщением: передаем link_q, чтобы кнопки "Словарь/Читать" вели на paṭicca
-            reply_markup=create_keyboard(link_q, lang=share_lang, is_inline=True)
+            # ВАЖНО: Сюда передаем display_text (полный), чтобы кнопка "Язык" запомнила полное название.
+            # Внутри create_keyboard сама вызовет get_link_query для URL-кнопок.
+            reply_markup=create_keyboard(display_text, lang=share_lang, is_inline=True)
         ))
         
         # === Результат 2+: Подсказки из словаря ===
         for idx, word in enumerate(suggestions):
-            # word уже в Unicode из словаря, поэтому uniCoder не нужен
             word_link_q = get_link_query(word)
             results.append(InlineQueryResultArticle(
                 id=f"dict_{idx}", 
@@ -348,7 +344,8 @@ async def inline_query(update: Update, context: CallbackContext):
                     parse_mode="HTML", 
                     disable_web_page_preview=True
                 ),
-                reply_markup=create_keyboard(word_link_q, lang=share_lang, is_inline=True)
+                # Здесь тоже передаем полное слово 'word'
+                reply_markup=create_keyboard(word, lang=share_lang, is_inline=True)
             ))
     
     await update.inline_query.answer(results, button=hot_button, cache_time=0, is_personal=True)
