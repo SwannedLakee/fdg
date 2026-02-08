@@ -238,12 +238,14 @@ $stringForOpen = preg_replace(
         '/\bm.\s*([\d.-]+)/',
         '/\bd.\s*([\d.-]+)/',
         '/\ba.\s*([\d.-]+)/',
+		'/\bsm\s*([\d.-]+)/',
     ],
     [
         'sn$1',
         'mn$1',
         'dn$1',
         'an$1',
+		'sn$1',
     ],
     $stringForOpen
 );
