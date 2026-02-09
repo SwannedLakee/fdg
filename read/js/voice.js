@@ -123,8 +123,8 @@ function cleanTextForTTS(text) {
     .replace(/म्म[\.:, ]/g, 'म्मा ')
     .replace(/म[\.:, ]/g, 'मा ')
 	//f into ph  
-	.replace(/फस्स/g, 'प्हस्स');
-	.replace(/फ/g, 'प्ह');
+	.replace(/फस्स/g, 'प्हस्स')
+	.replace(/फ/g, 'प्ह')
 
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
