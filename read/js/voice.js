@@ -114,16 +114,18 @@ function cleanTextForTTS(text) {
     .replace(/Trn:/g, 'Translated by') 
     .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/”/g, '')
+	//pan into pana
     .replace(/ पन[\.:, ]/g, 'पना ') 
     //.replace(/ पन /g, 'पना ') 
+	//ss s mm m into ssa sa mma ma 
     .replace(/स्स[\.:, ]/g, 'स्सा ')
     .replace(/स[\.:, ]/g, 'सा ')
+    .replace(/म्म[\.:, ]/g, 'म्मा ')
     .replace(/म[\.:, ]/g, 'मा ')
+	//f into ph  
 	.replace(/फस्स/g, 'प्हस्स');
 	.replace(/फ/g, 'प्ह');
 
-    //.replace(/म /g, 'मा ')
-    .replace(/म्म[\.:, ]/g, 'म्मा ')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
     .replace(/\{.*?\}/g, '')
