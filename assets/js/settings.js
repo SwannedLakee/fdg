@@ -799,53 +799,104 @@ function getQueryParams() {
 }
 
 // Функция для обновления ссылок
+// --- DYNAMIC LINKS UPDATE SYSTEM (Merged) ---
+
 function updateDemoLinks() {
-  const params = getQueryParams();
-  const queryString = Object.keys(params).map(key => `${key}=${params[key]}`).join('&');
-  const hash = window.location.hash;
-
-  // Проверяем, есть ли цифры в параметре q
-const hasNumbersInQ = params.q && (/\d/.test(params.q) || /(bupm|bu-pm|bipm|bi-pm)/.test(params.q));
-
-if (!hasNumbersInQ && !window.location.pathname.match(/\/(ml|d|memorize|rev|frev)\//)) {
-  return;
-}
-
-  // Определяем базовый URL в зависимости от языка
-  let baseUrl;
-  if (window.location.href.includes('/ru/') || window.location.href.includes('/r/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
-    baseUrl = window.location.origin + "/r/"; // Для русского языка
-  } else if (window.location.href.includes('/th') || (localStorage.siteLanguage && localStorage.siteLanguage === 'th')) {
-    baseUrl = window.location.origin + "/th/read/"; // Для тайского языка
-  } else {
-    baseUrl = window.location.origin + "/read/"; // Для других языков
+  // 1. Определяем приоритетный источник запроса (q)
+  let q = '';
+  
+  // А. Инпут (наивысший приоритет)
+  const input = document.getElementById('paliauto');
+  if (input && input.value && input.value.trim() !== "") {
+    q = input.value.trim();
+  } 
+  // Б. Активное слово (если инпут пуст)
+  else {
+    const activeWord = document.querySelector('.active-word');
+    if (activeWord) {
+       // Берем ID самого элемента или его родителя
+       q = activeWord.id || activeWord.closest('[id]')?.id || '';
+    }
+  }
+  
+  // В. URL параметр (если всё остальное пусто)
+  if (!q) {
+     q = new URLSearchParams(window.location.search).get('q') || '';
   }
 
-  // Ссылки для демо-режимов
-  const demoLinks = {
-    stDemo: baseUrl, // Используем baseUrl для stDemo
+  // 2. Определяем базовый URL для "Standard" режима (логика языков из старой функции)
+  let standardBaseUrl;
+  const currentPath = window.location.href;
+  const storedLang = localStorage.siteLanguage;
+
+  if (currentPath.includes('/ru/') || currentPath.includes('/r/') || storedLang === 'ru') {
+    standardBaseUrl = window.location.origin + "/r/";
+  } else if (currentPath.includes('/th') || storedLang === 'th') {
+    standardBaseUrl = window.location.origin + "/th/read/";
+  } else {
+    standardBaseUrl = window.location.origin + "/read/";
+  }
+
+  // 3. Карта ссылок
+  const linksMap = {
+    stDemo: standardBaseUrl, 
     mlDemo: window.location.origin + "/ml/",
     memDemo: window.location.origin + "/memorize/",
     dDemo: window.location.origin + "/d/",
     thDemo: window.location.origin + "/th/read/",
     rvDemo: window.location.origin + "/rev/",
     frDemo: window.location.origin + "/frev/",
-	mlthDemo: window.location.origin + "/mlth/"
+    mlthDemo: window.location.origin + "/mlth/"
   };
 
-  // Обновляем ссылки
-  Object.keys(demoLinks).forEach(id => {
-    const linkElement = document.getElementById(id);
-    if (linkElement) {
-      const baseUrl = demoLinks[id];
-      const newUrl = `${baseUrl}?${queryString}${hash}`;
-      linkElement.href = newUrl; // Обновляем атрибут href
+  // 4. Обновляем href элементов
+  const hash = window.location.hash || ''; // Сохраняем якорь, если есть
+
+  Object.keys(linksMap).forEach(id => {
+    const linkEl = document.getElementById(id);
+    if (!linkEl) return;
+
+    // Формируем новый URL
+    // Логика: Базовый путь + ?q=ЗАПРОС + #hash
+    let newUrl = linksMap[id];
+    
+    // Если есть запрос, добавляем его. Если нет — ссылка ведет в корень раздела.
+    if (q) {
+        newUrl += `?q=${q}`;
     }
+    
+    // Добавляем хэш в конец
+    linkEl.href = newUrl + hash;
   });
 }
 
-// Вызываем функцию обновления ссылок при загрузке страницы
-window.onload = updateDemoLinks;
+// --- Триггеры (Events) ---
+
+// 1. При загрузке страницы
+document.addEventListener("DOMContentLoaded", updateDemoLinks);
+
+// 2. При вводе в поиск
+const searchInput = document.getElementById('paliauto');
+if (searchInput) {
+    searchInput.addEventListener('input', updateDemoLinks);
+    searchInput.addEventListener('focus', updateDemoLinks);
+}
+
+// 3. При наведении мыши (Hover) на кнопки меню
+document.body.addEventListener('mouseenter', (e) => {
+    // Реагируем, если навели на ссылку с ID, содержащим "Demo"
+    if (e.target.closest && e.target.closest('[id*="Demo"]')) {
+        updateDemoLinks();
+    }
+}, true);
+
+// 4. Перед правым кликом (чтобы скопировать актуальную ссылку)
+document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('a')) {
+        updateDemoLinks();
+    }
+}, true);
+
   //end 
 
 
@@ -943,8 +994,11 @@ const digit = parseInt(event.code.replace("Digit", ""), 10);
 
 // Проверяем, существует ли такая цифра в нашем объекте demoLinks
 if (demoLinks.hasOwnProperty(digit)) {
-    event.preventDefault(); // Предотвращаем системное действие только если ключ совпал
-    
+    event.preventDefault(); // Предотвращаем системное действие
+
+    // !!! ВАЖНО: Обновляем ссылки прямо перед кликом !!!
+    updateDemoLinks(); 
+
     const linkId = demoLinks[digit];
     const linkElement = document.getElementById(linkId);
 
