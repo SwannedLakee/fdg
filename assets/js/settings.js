@@ -390,6 +390,32 @@ function shouldIgnoreKeyEvent() {
 window.addEventListener("keydown", (event) => {
     if (event.key === 'Escape' || event.code === 'Escape') {
 
+// --- B. Подсказка о голосах (Voice Hint) ---
+      const voiceHint = document.getElementById('active-voice-hint');
+      if (voiceHint) {
+        const closeHintBtn = document.getElementById('closeVoiceHintBtn');
+        if (closeHintBtn) closeHintBtn.click();
+        event.preventDefault();
+        return;
+      }
+
+      // --- C. TTS Плеер и Выделения ---
+      const dropdown = document.querySelector('.voice-dropdown');
+      const isDropdownActive = dropdown && dropdown.classList.contains('active');
+      const isHighlightActive = document.querySelector('.active-word');
+
+      // Если что-то играет, открыто меню или выделен текст
+      if (ttsState.speaking || ttsState.paused || isDropdownActive || isHighlightActive) {
+        event.preventDefault();
+        
+        stopPlayback();        // Остановить звук, сбросить state
+        removeAllHighlights(); // Убрать желтое выделение и мини-кнопку
+        
+        // Закрываем само меню плеера визуально
+        if (dropdown) dropdown.classList.remove('active');
+        return;
+      }
+	  
     // --- 0. Close PWA banner ---
     const pwaBanner = document.getElementById('pwa-banner');
     if (pwaBanner && pwaBanner.offsetParent !== null) { // проверка, что видим
@@ -552,14 +578,44 @@ document.addEventListener("keydown", (event) => {
   }
 
 // Alt + R — Voice / TTS (если доступно)
-if (event.altKey && event.code === "KeyR") {
-  // не мешаем вводу текста
-  const voiceLink = document.querySelector('.voice-link');
-  // если плеера нет на странице — тихо выходим
-  if (!voiceLink) return;
-  event.preventDefault();
-  voiceLink.click();
-}
+// --- Обработчик горячих клавиш (Alt + R) ---
+    // Проверяем комбинацию Alt + R
+    if (event.altKey && event.code === "KeyR") {
+      
+      // 1. Пропускаем, если фокус в поле ввода
+      const activeTag = document.activeElement.tagName;
+      if (['INPUT', 'TEXTAREA'].includes(activeTag) || document.activeElement.isContentEditable) {
+        return;
+      }
+
+      event.preventDefault();
+
+      // 2. Сценарий: Плеер уже активен (играет или на паузе)
+      // Мы просто нажимаем программно на кнопку Play/Pause основного плеера.
+      // Это сработает как Play -> Pause или Pause -> Resume.
+      if (ttsState.speaking) {
+         const mainPlayBtn = document.querySelector('.play-main-button');
+         if (mainPlayBtn) {
+             mainPlayBtn.click();
+         }
+         return;
+      }
+
+      // 3. Сценарий: Плеер выключен, но выбран конкретный сегмент
+      // Ищем миникнопку и запускаем её
+      const miniPlayBtn = document.querySelector('.dynamic-tts-btn');
+      if (miniPlayBtn) {
+        miniPlayBtn.click();
+        return;
+      }
+
+      // 4. Сценарий: Плеер выключен, ничего не выбрано
+      // Запускаем через главную ссылку (откроет плеер и начнет сначала)
+      const voiceLink = document.querySelector('.voice-link');
+      if (voiceLink) {
+        voiceLink.click();
+      }
+    }
 
 
     if (event.altKey && event.code === "KeyS") {
