@@ -498,20 +498,15 @@ async function handleSuttaClick(e) {
 
   if (voiceLink) {
     e.preventDefault();
-    
-    // Получаем slug из ссылки (например: sutta/mn1 или vinaya/bu-pm)
-    const targetSlug = voiceLink.dataset.slug;
-    
-    // ! ИЗМЕНЕНИЕ: Передаем slug сразу в плеер, чтобы найти аудио-файл до начала воспроизведения
-    const player = getOrBuildPlayer(targetSlug);
+    const player = getOrBuildPlayer();
     player.classList.add('active');
     
     if (!ttsState.speaking) {
       const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
                    || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
+      const targetSlug = voiceLink.dataset.slug;
       
-      // Запускаем воспроизведение
       startPlayback(container, mode, targetSlug, 0);
     }
     return;
@@ -569,10 +564,6 @@ async function handleSuttaClick(e) {
       }
 
       let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
-      
-      // Обновляем плеер с текущим slug при клике на Play
-      getOrBuildPlayer(targetSlug);
-      
       startPlayback(container, mode, targetSlug, 0);
       
     } else {
@@ -589,10 +580,6 @@ async function handleSuttaClick(e) {
       } else {
         const mode = document.getElementById('tts-mode-select')?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
         let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
-        
-        // Обновляем плеер
-        getOrBuildPlayer(targetSlug);
-        
         startPlayback(container, mode, targetSlug, 0);
       }
     }
@@ -604,7 +591,6 @@ async function handleSuttaClick(e) {
     stopPlayback();
   }
 }
-
 
 function stopPlayback() {
   synth.cancel();
@@ -818,7 +804,7 @@ function getPlayerHtml() {
     `;
 }
 
-function getOrBuildPlayer(slugOverride) {
+function getOrBuildPlayer() {
     const playerId = 'voice-player-container';
     let playerContainer = document.getElementById(playerId);
 
@@ -835,42 +821,33 @@ function getOrBuildPlayer(slugOverride) {
     
     const playerInner = playerContainer.querySelector('.voice-player');
     if (playerInner) {
-        // Обновляем HTML плеера, чтобы убедиться, что плейсхолдер существует
         playerInner.innerHTML = getPlayerHtml();
     }
 
-    // Определяем активный slug. Приоритет у переданного (новый клик),
-    // иначе берем из состояния (если плеер уже играет).
-    const activeSlug = slugOverride || ttsState.currentSlug;
+    const currentSlug = ttsState.currentSlug; 
     
-    const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
-    
-    if (activeSlug && placeholder) {
-        // Очищаем старую ссылку перед запросом, чтобы не мигало старым файлом
-        placeholder.innerHTML = "";
-        placeholder.style.display = "none";
-
-        // ! ВАЖНО: Чистим slug. Обычно приходит "sutta/mn1", нам нужно "mn1" для поиска файла в PHP.
-        // Если пришло просто "mn1", split вернет массив из 1 элемента, pop возьмет его же.
-        const cleanSlug = activeSlug.split('/').pop();
-
-        console.log(`[TTS] Requesting audio for: ${cleanSlug}`);
-        
-        // Добавляем timestamp, чтобы избежать кеширования запроса браузером
-        fetch(`/read/php/voice.php?fromjs=${cleanSlug}&t=${Date.now()}`)
+    if (currentSlug) {
+        console.log(`[TTS] Requesting audio for: ${currentSlug}`);
+        fetch(`/read/php/voice.php?fromjs=${currentSlug}`)
             .then(response => response.text())
             .then(audioLinkHtml => {
-                const output = audioLinkHtml.trim();
+                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
                 
-                if (output.startsWith("NOT_FOUND") || output.startsWith("Debug")) {
-                    console.warn(`[TTS] PHP response: ${output}`);
-                    placeholder.style.display = "none";
-                } else if (output !== "") {
-                    console.log(`[TTS] Audio link found!`);
-                    placeholder.innerHTML = output;
-                    placeholder.style.display = "inline"; // Показываем span
-                } else {
-                    placeholder.style.display = "none";
+                if (placeholder) {
+                    const output = audioLinkHtml.trim();
+                    
+                    if (output.startsWith("NOT_FOUND") || output.startsWith("Debug")) {
+                        console.warn(`[TTS] PHP could not find file. ${output}`);
+                        placeholder.innerHTML = "";
+                        placeholder.style.display = "none";
+                    } else if (output !== "") {
+                        console.log(`[TTS] Audio link found!`);
+                        placeholder.innerHTML = output;
+                        placeholder.style.display = "inline";
+                    } else {
+                        console.log(`[TTS] No audio available for this sutta.`);
+                        placeholder.style.display = "none";
+                    }
                 }
             })
             .catch(error => {
@@ -1095,8 +1072,10 @@ function addTtsButton(containerElement, specificElement) {
 
     document.body.appendChild(btnContainer);
 
-    // Позиционируем кнопку (CSS handle it mostly)
-    
+    // Позиционируем кнопку относительно элемента
+    // Можно добавить логику позиционирования, если CSS (fixed) не подходит
+    // Но сейчас она fixed right: 20px, так что ок.
+
     btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
         e.preventDefault();
@@ -1113,14 +1092,12 @@ function addTtsButton(containerElement, specificElement) {
         }
 
         const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
-        // Пытаемся найти slug из главной кнопки или текущего состояния
         const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
 
-        // Передаем slug, чтобы подтянуть ссылку на файл
-        const player = getOrBuildPlayer(slug);
+        const player = getOrBuildPlayer();
         player.classList.add('active');
-        
         startPlayback(document, mode, slug);
+
 
         btnContainer.remove();
     });
