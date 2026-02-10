@@ -7,7 +7,7 @@ error_reporting(E_ERROR | E_PARSE);
 
 function extraLinks($fromjs) {
 
-$playIcon = "<img src='/assets/svg/play-grey.svg' style='width: 17px; height: 17px; vertical-align: middle;' alt='Play'>";  
+  
   
   include_once('../../config/config.php');
   $forthru = str_replace(".", '_', $fromjs);
@@ -59,10 +59,9 @@ $is_ru_referer = false;
     $book = "";
   }
 
-  $hasAudio = false;
-  $playerHtml = "";
-  $voiceLinkText = "Voice";
 
+
+/*
   if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
       // Если $fromjs содержит *bu-vb* или *bi-vb*
       $parts = explode("-", $fromjs);
@@ -156,13 +155,14 @@ $playerHtml = " <a title='TTS help' class='tts-link'  href='/assets/common/ttsHe
 </div>";
 
   }
+*/
 
   if ($mode == "offline") {
     $output = shell_exec("
       ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1 2>/dev/null` ;
       ruslinkdn=`cd $locationrudn ; ls -R . | grep -m1 \"{$fromjs}.html\" ` ;
 
-      echo -n \"{$playerHtml}{$final}\"
+      echo -n \"{$final}\"
   
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
         [ ! -z \$ruslink ] && echo -n \"&nbsp;<a target='' title='Theravada.ru' href=$linkforthru/\$ruslink>Th.ru</a>\"
@@ -208,7 +208,7 @@ $playerHtml = " <a title='TTS help' class='tts-link'  href='/assets/common/ttsHe
 
           $output = shell_exec("ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1` ; ruslinkdn=\"$thsulink\";
 
-          echo -n \"{$playerHtml}{$final}\";
+          echo -n \"{$final}\";
 
           [[ $bwlink != \"\" ]] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href='$linktbw/$bwlink'>TBW</a>\";
 

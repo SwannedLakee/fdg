@@ -802,19 +802,31 @@ function getOrBuildPlayer() {
     if (!playerContainer) {
         playerContainer = document.createElement('div');
         playerContainer.id = playerId;
-        // The player is a "dropdown" of the container, so we add the active class to the container
         playerContainer.className = 'voice-dropdown'; 
         
         const player = document.createElement('div');
         player.className = 'voice-player';
-        player.innerHTML = getPlayerHtml();
-        
         playerContainer.appendChild(player);
         document.body.appendChild(playerContainer);
     }
-    // We need to refresh the content in case settings have changed
-    playerContainer.querySelector('.voice-player').innerHTML = getPlayerHtml();
+    
+    const playerInner = playerContainer.querySelector('.voice-player');
+    if (playerInner) {
+        playerInner.innerHTML = getPlayerHtml();
+    }
 
+    const currentSlug = ttsState.currentSlug; 
+    if (currentSlug) {
+        fetch(`/read/php/voice.php?fromjs=${currentSlug}`)
+            .then(response => response.text())
+            .then(audioLinkHtml => {
+                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = audioLinkHtml;
+                }
+            })
+            .catch(error => console.error('Error fetching audio link:', error));
+    }
     return playerContainer;
 }
 
