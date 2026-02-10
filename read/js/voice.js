@@ -853,7 +853,7 @@ function getOrBuildPlayer() {
 }
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
-  return `<a style="transform: translateY(-3px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>`;
+  return `<a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="voice-link">Voice</a>`;
 }
 
 // --- Обработчик изменения настроек ---
@@ -954,6 +954,24 @@ document.addEventListener('change', handleTTSSettingChange);
 window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
 document.addEventListener('click', handleSuttaClick);
 document.addEventListener('DOMContentLoaded', () => { 
+
+
+
+    // 5. ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ПРАВОГО КЛИКА / ДОЛГОГО ТАПА (ИСПРАВЛЕННЫЙ)
+document.addEventListener('contextmenu', function(e) {
+    if (!e.target.closest('a.voice-link')) return;
+
+    if (localStorage.getItem('ttsMode') === 'true') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        // Просто берем текущие параметры как есть
+        const currentSearch = window.location.search; 
+        const ttsUrl = `${window.location.origin}/t2s.html${currentSearch}`;
+
+        setTimeout(() => window.open(ttsUrl, '_blank'), 500);
+    }
+}, { passive: false });
 
 //для аудио voice 
 
@@ -1095,3 +1113,5 @@ function addTtsButton(containerElement, specificElement) {
         btnContainer.remove();
     });
 }
+
+
