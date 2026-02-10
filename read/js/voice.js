@@ -819,44 +819,40 @@ function getOrBuildPlayer() {
         document.body.appendChild(playerContainer);
     }
     
+    // Обновляем HTML плеера (кнопки и т.д.)
     const playerInner = playerContainer.querySelector('.voice-player');
     if (playerInner) {
         playerInner.innerHTML = getPlayerHtml();
     }
 
-    const currentSlug = ttsState.currentSlug; 
+    // --- НОВАЯ ЛОГИКА: Ищем скрытую ссылку в DOM вместо fetch ---
+    const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
     
-    if (currentSlug) {
-        fetch(`/read/php/voice.php?fromjs=${currentSlug}`)
-            .then(response => response.text())
-            .then(audioLinkHtml => {
-                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
-                
-                if (placeholder && audioLinkHtml.trim() !== "") {
-                    // Вставляем ссылку
-                    placeholder.innerHTML = audioLinkHtml;
-                    // Показываем как inline элемент (чтобы быть в одной строке)
-                    placeholder.style.display = "inline";
-                    
-                    // Небольшой хак: добавляем отступ самой ссылке внутри, если нужно, 
-                    // но мы уже задали margin-right плейсхолдеру в getPlayerHtml.
-                } else if (placeholder) {
-                    placeholder.innerHTML = "";
-                    placeholder.style.display = "none";
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching audio link:', error);
-                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
-                if (placeholder) placeholder.style.display = "none";
-            });
+    // Ищем элемент с классом .tts-link, который скрыт (display:none)
+    // Это гарантирует, что мы не возьмем кнопки TTS/VSC из самого плеера
+    const sourceLink = document.querySelector('a.tts-link[style*="display:none"], a.tts-link[style*="display: none"]');
+
+    if (sourceLink && placeholder) {
+        const fileUrl = sourceLink.getAttribute('href');
+        
+        if (fileUrl) {
+            // Создаем видимую кнопку File внутри плеера, используя найденный URL
+            placeholder.innerHTML = `<a class='tts-link' href='${fileUrl}' target='_blank'>File</a>`;
+            placeholder.style.display = "inline";
+        } else {
+             placeholder.style.display = "none";
+        }
+    } else if (placeholder) {
+        // Если скрытой ссылки на странице нет
+        placeholder.style.display = "none";
     }
 
     return playerContainer;
 }
+
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
-  return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;`;
+  return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>`;
 }
 
 // --- Обработчик изменения настроек ---
