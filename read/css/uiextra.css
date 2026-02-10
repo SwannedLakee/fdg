@@ -758,12 +758,13 @@ transition: background-color 260ms ease-in-out;
   right: 6px;
 }
 
+/*
 .voice-link {
     position: relative; 
     display: inline-block;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-}
+}*/
 
 .voice-player {
     display: block; 
