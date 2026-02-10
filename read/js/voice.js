@@ -794,10 +794,10 @@ function getPlayerHtml() {
         Scroll
       </label>
 
-      <a href="/tts.php${window.location.search}" class="tts-link tts-text-link" style="margin-right: 5px;">TTS</a>
-      <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs' style="margin-right: 5px;">VSC</a>
+      <a href="/tts.php${window.location.search}" class="tts-link tts-text-link" style="margin-right: 3px;">TTS</a>
+      <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs' style="margin-right: 3px;">VSC</a>
       
-      <span id="audio-file-link-placeholder" style="display: none; margin-right: 5px;"></span>
+      <span id="audio-file-link-placeholder" style="display: none; margin-right: 3px;"></span>
       
       <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
     </div>
