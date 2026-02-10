@@ -496,17 +496,25 @@ async function handleSuttaClick(e) {
   const playBtn = e.target.closest('.play-main-button');
   const navBtn = e.target.closest('.prev-main-button, .next-main-button');
 
-  if (voiceLink) {
+    if (voiceLink) {
     e.preventDefault();
     const player = getOrBuildPlayer();
+    
+    // ! ИСПРАВЛЕНИЕ: Явно переносим slug из ссылки в кнопку Play плеера
+    const targetSlug = voiceLink.dataset.slug;
+    const internalPlayBtn = player.querySelector('.play-main-button');
+    if (internalPlayBtn && targetSlug) {
+        internalPlayBtn.dataset.slug = targetSlug;
+    }
+
     player.classList.add('active');
     
     if (!ttsState.speaking) {
       const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
                    || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
-      const targetSlug = voiceLink.dataset.slug;
       
+      // Теперь targetSlug точно есть
       startPlayback(container, mode, targetSlug, 0);
     }
     return;
@@ -1086,7 +1094,6 @@ function addTtsButton(containerElement, specificElement) {
     // Позиционируем кнопку относительно элемента
     // Можно добавить логику позиционирования, если CSS (fixed) не подходит
     // Но сейчас она fixed right: 20px, так что ок.
-
     btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
         e.preventDefault();
@@ -1102,16 +1109,36 @@ function addTtsButton(containerElement, specificElement) {
             if (modeSelect) modeSelect.value = mode;
         }
 
-        const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
-        const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
+        // ! ИСПРАВЛЕНИЕ: Старый селектор '.voice-dropdown .voice-link' больше не работает.
+        // Ищем просто первую доступную ссылку Voice с данными на странице.
+        // Или берем текущий глобальный, если уже играло.
+        let slug = ttsState.currentSlug;
+        
+        if (!slug) {
+            const mainPlayBtn = document.querySelector('a.voice-link[data-slug]');
+            if (mainPlayBtn) {
+                slug = mainPlayBtn.dataset.slug;
+            }
+        }
+        
+        // Если slug все еще не найден, ничего не делаем (избегаем ошибки undefined)
+        if (!slug) {
+            console.warn("TTS: Не удалось найти slug сутты.");
+            return;
+        }
 
         const player = getOrBuildPlayer();
-        player.classList.add('active');
-        startPlayback(document, mode, slug);
+        
+        // Тоже обновляем кнопку в плеере, чтобы пауза/плей работали корректно
+        const internalPlayBtn = player.querySelector('.play-main-button');
+        if (internalPlayBtn) internalPlayBtn.dataset.slug = slug;
 
+        player.classList.add('active');
+        startPlayback(document, mode, slug); // Здесь можно передать specificElement.id как startId, если нужно
 
         btnContainer.remove();
     });
+
 }
 
 
