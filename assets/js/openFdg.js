@@ -296,39 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 5. ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ПРАВОГО КЛИКА / ДОЛГОГО ТАПА (ИСПРАВЛЕННЫЙ)
-    document.addEventListener('contextmenu', function(e) {
-        const link = e.target.closest('a.fdgLink');
-        if (!link) return;
-
-        if (link.classList.contains('mainLink') && localStorage.getItem('ttsMode') === 'true') {
-            
-            // 1. Блокируем стандартное поведение
-            e.preventDefault(); 
-            e.stopImmediatePropagation();
-
-            // 2. Снимаем выделение текста (важно для iOS/Android)
-            // При долгом тапе текст выделяется, и если это состояние не сбросить, UI может зависнуть
-            if (window.getSelection) {
-                window.getSelection().removeAllRanges();
-            }
-
-            // 3. Подготавливаем ссылку
-            const slug = link.getAttribute('data-slug');
-            const filter = link.getAttribute('data-filter');
-            const ttsBaseUrl = window.location.origin + "/t2s.html";
-            const ttsUrl = findFdgTextUrl(slug, filter || searchValue, ttsBaseUrl);
-
-            // 4. Открываем с задержкой (FIX ЗАВИСАНИЯ)
-            // Даем браузеру время (100мс) завершить внутренние процессы обработки тача
-            // перед тем, как фокус уйдет на новую вкладку.
-            setTimeout(() => {
-                window.open(ttsUrl, '_blank');
-            }, 500);
-        }
-    }, { passive: false });
-});
-
 function findFdgTextUrl(slug, searchValue, baseUrl) {
     const exceptions = ["bv", "ja", "ne", "pv[0-9]", "cnd", "mil", "pe", "thi-ap", "tha-ap", "cp", "kp", "mnd", "ps", "vv", 'ds', 'dt', 'kv', 'patthana', 'pp', 'ya'];
     const isSuttaCentral =
