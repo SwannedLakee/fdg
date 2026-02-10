@@ -852,7 +852,7 @@ function getOrBuildPlayer() {
 
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
-  return `<a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>`;
+  return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>`;
 }
 
 // --- Обработчик изменения настроек ---
