@@ -296,6 +296,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+});
+
 function findFdgTextUrl(slug, searchValue, baseUrl) {
     const exceptions = ["bv", "ja", "ne", "pv[0-9]", "cnd", "mil", "pe", "thi-ap", "tha-ap", "cp", "kp", "mnd", "ps", "vv", 'ds', 'dt', 'kv', 'patthana', 'pp', 'ya'];
     const isSuttaCentral =

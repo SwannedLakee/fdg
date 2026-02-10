@@ -1129,4 +1129,3 @@ function addTtsButton(containerElement, specificElement) {
             }, 500);
         }
     }, { passive: false });
-});
