@@ -446,9 +446,7 @@ function playCurrentSegment() {
             const pathLang = location.pathname.split('/')[1];
             const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
             const title = isRuLike ? 'TTS:' : 'TTS Hint:';
-            const helpUrl = isRuLike 
-                ? '/assets/common/ttsHelp.html#tts-help-ru' 
-                : '/assets/common/ttsHelp.html#tts-help-en';
+        
             const helpLink = `<a href="${helpUrl}" target="_blank" style="color: #4da6ff; text-decoration: underline;">(?)</a>`;
             const message = isRuLike 
               ? `Не найдено модулей близких к Пали. Установлен Английский. См. помощь ${helpLink}.`
@@ -750,11 +748,17 @@ function getPlayerHtml() {
   const pathLang = location.pathname.split('/')[1];
   const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
 
+  const helpUrl = isRuLike 
+    ? '/assets/common/ttsHelp.html#tts-help-ru' 
+    : '/assets/common/ttsHelp.html#tts-help-en';
+
   const modeLabels = isRuLike
     ? { 'pi': 'Пали', 'pi-trn': 'Пали + Рус', 'trn': 'Перевод', 'trn-pi': 'Рус + Пали' }
     : { 'pi': 'Pāḷi', 'pi-trn': 'Pāḷi + Trn', 'trn': 'Trn', 'trn-pi': 'Trn + Pāḷi' };
   
+  // Оборачиваем все в div с text-align: center, чтобы кнопки были посередине
   return `
+    <div style="text-align: center;">
       <a href="javascript:void(0)" class="close-tts-btn">&times;</a>
 
       <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
@@ -785,13 +789,18 @@ function getPlayerHtml() {
       
       <br>
 
-      <label class="tts-checkbox-custom">
+      <label class="tts-checkbox-custom" style="margin-right: 8px;">
         <input type="checkbox" id="tts-scroll-toggle" ${ttsState.autoScroll ? 'checked' : ''}>
         Scroll
       </label>
 
-      <a href="/tts.php${window.location.search}" class="tts-link tts-text-link">TTS</a>
-      <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
+      <a href="/tts.php${window.location.search}" class="tts-link tts-text-link" style="margin-right: 5px;">TTS</a>
+      <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs' style="margin-right: 5px;">VSC</a>
+      
+      <span id="audio-file-link-placeholder" style="display: none; margin-right: 5px;"></span>
+      
+      <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
+    </div>
     `;
 }
 
@@ -816,20 +825,35 @@ function getOrBuildPlayer() {
     }
 
     const currentSlug = ttsState.currentSlug; 
+    
     if (currentSlug) {
         fetch(`/read/php/voice.php?fromjs=${currentSlug}`)
             .then(response => response.text())
             .then(audioLinkHtml => {
                 const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
-                if (placeholder) {
+                
+                if (placeholder && audioLinkHtml.trim() !== "") {
+                    // Вставляем ссылку
                     placeholder.innerHTML = audioLinkHtml;
+                    // Показываем как inline элемент (чтобы быть в одной строке)
+                    placeholder.style.display = "inline";
+                    
+                    // Небольшой хак: добавляем отступ самой ссылке внутри, если нужно, 
+                    // но мы уже задали margin-right плейсхолдеру в getPlayerHtml.
+                } else if (placeholder) {
+                    placeholder.innerHTML = "";
+                    placeholder.style.display = "none";
                 }
             })
-            .catch(error => console.error('Error fetching audio link:', error));
+            .catch(error => {
+                console.error('Error fetching audio link:', error);
+                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
+                if (placeholder) placeholder.style.display = "none";
+            });
     }
+
     return playerContainer;
 }
-
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
   return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;`;
