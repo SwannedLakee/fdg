@@ -500,12 +500,11 @@ async function handleSuttaClick(e) {
 
   if (voiceLink) {
     e.preventDefault();
-    const parent = voiceLink.closest('.voice-dropdown');
-    parent.classList.add('active');
+    const player = getOrBuildPlayer();
+    player.classList.add('active');
     
     if (!ttsState.speaking) {
-      const modeSelect = document.getElementById('tts-mode-select');
-      const mode = e.target.closest('.voice-dropdown')?.querySelector('#tts-mode-select')?.value 
+      const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
                    || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
       const targetSlug = voiceLink.dataset.slug;
@@ -592,8 +591,6 @@ async function handleSuttaClick(e) {
   if (e.target.closest('.close-tts-btn')) {
     e.preventDefault();
     stopPlayback();
-    const dropdown = e.target.closest('.voice-dropdown');
-    if (dropdown) dropdown.classList.remove('active');
   }
 }
 
@@ -603,6 +600,11 @@ function stopPlayback() {
   ttsState.paused = false;
   ttsState.isNavigating = false;
   releaseWakeLock();
+
+  const player = document.getElementById('voice-player-container');
+  if (player) {
+    player.classList.remove('active');
+  }
 
   if (ttsState.utterance) {
     ttsState.utterance.onend = null;
@@ -660,15 +662,18 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
     }
   }
   
-  stopPlayback();
+  // Unlike before, we don't call stopPlayback() here which would hide the player.
+  // We just reset the state before starting a new playback.
+  synth.cancel();
+  ttsState.speaking = false;
+  ttsState.paused = false;
+  ttsState.isNavigating = false;
   
   ttsState.playlist = playlist;
   ttsState.currentIndex = actualStartIndex;
   ttsState.currentSlug = slug;
   ttsState.langSettings = mode;
   ttsState.speaking = true;
-  ttsState.paused = false;
-  ttsState.isNavigating = false;
   
   setButtonIcon('pause');
   playCurrentSegment();
@@ -722,8 +727,7 @@ function showVoiceHint(title, message, storageKey) {
   });
 }
 
-// --- Интерфейс ---
-function getTTSInterfaceHTML(texttype, slugReady, slug) {
+function getPlayerHtml() {
   const isSpecialPath = window.location.pathname.match(/\/d\/|\/memorize\//);
   const defaultMode = isSpecialPath ? 'pi' : 'trn';
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
@@ -732,7 +736,6 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
   let currentRatesList; 
   
   if (savedMode === 'pi') {
-      // ! ИЗМЕНЕНИЕ: Дефолт = 1.0 (было 0.6)
       initialRate = parseFloat(localStorage.getItem(RATE_PALI_KEY)) || 1.0;
       currentRatesList = RATES_PALI; 
   } else {
@@ -752,9 +755,6 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
     : { 'pi': 'Pāḷi', 'pi-trn': 'Pāḷi + Trn', 'trn': 'Trn', 'trn-pi': 'Trn + Pāḷi' };
   
   return `
-  <span class="voice-dropdown">
-    <a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;
-    <span class="voice-player">
       <a href="javascript:void(0)" class="close-tts-btn">&times;</a>
 
       <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
@@ -793,6 +793,34 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
       <a href="/tts.php${window.location.search}" class="tts-link tts-text-link">TTS</a>
       <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs'>VSC</a>
     `;
+}
+
+function getOrBuildPlayer() {
+    const playerId = 'voice-player-container';
+    let playerContainer = document.getElementById(playerId);
+
+    if (!playerContainer) {
+        playerContainer = document.createElement('div');
+        playerContainer.id = playerId;
+        // The player is a "dropdown" of the container, so we add the active class to the container
+        playerContainer.className = 'voice-dropdown'; 
+        
+        const player = document.createElement('div');
+        player.className = 'voice-player';
+        player.innerHTML = getPlayerHtml();
+        
+        playerContainer.appendChild(player);
+        document.body.appendChild(playerContainer);
+    }
+    // We need to refresh the content in case settings have changed
+    playerContainer.querySelector('.voice-player').innerHTML = getPlayerHtml();
+
+    return playerContainer;
+}
+
+// --- Интерфейс ---
+function getTTSInterfaceHTML(texttype, slugReady, slug) {
+  return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;`;
 }
 
 // --- Обработчик изменения настроек ---
@@ -899,66 +927,27 @@ document.addEventListener('DOMContentLoaded', () => {
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 function initVoicePlayers() {
-document.querySelectorAll('.voice-link').forEach(link => {
-link.removeEventListener('click', handleClick);
-link.removeEventListener('touchstart', handleTouch);
-
-if (isSafari) {
-link.addEventListener('touchstart', handleTouch, {
-passive: true
-});
-link.addEventListener('click', handleClick);
-} else {
-link.addEventListener('click', handleClick);
-}
-});
-
-// Кнопка закрытия
-document.querySelectorAll('.close-player').forEach(btn => {
-btn.addEventListener('click', function(e) {
-e.stopPropagation();
-this.closest('.voice-dropdown').classList.remove('active');
-});
-});
-}
-
-function handleClick(e) {
-e.preventDefault();
-togglePlayer(this);
-}
-
-function handleTouch(e) {
-e.preventDefault();
-togglePlayer(this);
-}
-
-function togglePlayer(link) {
-const dropdown = link.closest('.voice-dropdown');
-const wasActive = dropdown.classList.contains('active');
-
-closeAllPlayers();
-
-if (!wasActive) {
-dropdown.classList.add('active');
-// Убрал автозапуск аудио для всех браузеров, включая Safari
-// Теперь аудио будет запускаться только при клике на Play внутри плеера
-}
+  // This function might be for other audio players, we leave it, but our new player is self-contained.
+  // To avoid conflicts, we make sure our new logic doesn't interfere with this.
+  // The original logic was based on `.voice-dropdown` which our player now has, but it's dynamically created.
+  // The original `togglePlayer` logic might be problematic. Let's disable it for our player.
 }
 
 function closeAllPlayers() {
-document.querySelectorAll('.voice-dropdown.active').forEach(dropdown => {
-dropdown.classList.remove('active');
-});
+  document.querySelectorAll('.voice-dropdown.active').forEach(dropdown => {
+    // We only want to close our player, which has a specific ID
+    if (dropdown.id === 'voice-player-container') {
+       dropdown.classList.remove('active');
+    }
+  });
 }
 
-initVoicePlayers();
-
-if (typeof MutationObserver !== 'undefined') {
-new MutationObserver(initVoicePlayers).observe(document.body, {
-childList: true,
-subtree: true
-});
-}
+// The old init logic is not fully compatible with the new dynamic player.
+// We are relying on handleSuttaClick for everything.
+// initVoicePlayers(); 
+// if (typeof MutationObserver !== 'undefined') {
+//  new MutationObserver(initVoicePlayers).observe(document.body, { childList: true, subtree: true });
+// }
 
 
   synth.getVoices();
@@ -1065,10 +1054,10 @@ function addTtsButton(containerElement, specificElement) {
         const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
         const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
 
+        const player = getOrBuildPlayer();
+        player.classList.add('active');
         startPlayback(document, mode, slug);
 
-        const voiceDropdown = document.querySelector('.voice-dropdown');
-        if (voiceDropdown) voiceDropdown.classList.add('active');
 
         btnContainer.remove();
     });

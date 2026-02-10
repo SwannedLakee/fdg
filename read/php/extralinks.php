@@ -124,8 +124,8 @@ $is_ru_referer = false;
 $playerHtml = " <a class='tts-link' href='$voicefile'>File
         </a> 
             <a class='tts-link' title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
-    </span>
-</span>";
+    </div>
+</div>";
       }
 
 } else {
@@ -156,16 +156,16 @@ $playerHtml = " <a class='tts-link' href='$voicefile'>File
 $playerHtml = " <a class='tts-link' href='$voicefile'>File
         </a>
             <a class='tts-link' title='TTS help' href='/assets/common/ttsHelp.html'>?</a>
-    </span>
-</span>";
+    </div>
+</div>";
     }
 }
 
 
   // Если аудио нет, используем простую ссылку
   if (!$hasAudio) {
-$playerHtml = "<a class='tts-link' title='TTS help' href='/assets/common/ttsHelp.html'>?</a> </span>
-</span>";
+$playerHtml = "<a class='tts-link' title='TTS help' href='/assets/common/ttsHelp.html'>?</a> </div>
+</div>";
 
   }
 
