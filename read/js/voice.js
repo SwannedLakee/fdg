@@ -789,7 +789,7 @@ function getPlayerHtml() {
       
       <br>
 
-      <label class="tts-checkbox-custom" style="margin-right: 8px;">
+      <label class="tts-checkbox-custom" style="margin-right: 3px;">
         <input type="checkbox" id="tts-scroll-toggle" ${ttsState.autoScroll ? 'checked' : ''}>
         Scroll
       </label>
