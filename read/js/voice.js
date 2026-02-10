@@ -498,15 +498,20 @@ async function handleSuttaClick(e) {
 
   if (voiceLink) {
     e.preventDefault();
-    const player = getOrBuildPlayer();
+    
+    // Получаем slug из ссылки (например: sutta/mn1 или vinaya/bu-pm)
+    const targetSlug = voiceLink.dataset.slug;
+    
+    // ! ИЗМЕНЕНИЕ: Передаем slug сразу в плеер, чтобы найти аудио-файл до начала воспроизведения
+    const player = getOrBuildPlayer(targetSlug);
     player.classList.add('active');
     
     if (!ttsState.speaking) {
       const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
                    || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
-      const targetSlug = voiceLink.dataset.slug;
       
+      // Запускаем воспроизведение
       startPlayback(container, mode, targetSlug, 0);
     }
     return;
@@ -564,6 +569,10 @@ async function handleSuttaClick(e) {
       }
 
       let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+      
+      // Обновляем плеер с текущим slug при клике на Play
+      getOrBuildPlayer(targetSlug);
+      
       startPlayback(container, mode, targetSlug, 0);
       
     } else {
@@ -580,6 +589,10 @@ async function handleSuttaClick(e) {
       } else {
         const mode = document.getElementById('tts-mode-select')?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
         let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+        
+        // Обновляем плеер
+        getOrBuildPlayer(targetSlug);
+        
         startPlayback(container, mode, targetSlug, 0);
       }
     }
@@ -591,6 +604,7 @@ async function handleSuttaClick(e) {
     stopPlayback();
   }
 }
+
 
 function stopPlayback() {
   synth.cancel();
@@ -804,7 +818,7 @@ function getPlayerHtml() {
     `;
 }
 
-function getOrBuildPlayer() {
+function getOrBuildPlayer(slugOverride) {
     const playerId = 'voice-player-container';
     let playerContainer = document.getElementById(playerId);
 
@@ -821,39 +835,52 @@ function getOrBuildPlayer() {
     
     const playerInner = playerContainer.querySelector('.voice-player');
     if (playerInner) {
+        // Обновляем HTML плеера, чтобы убедиться, что плейсхолдер существует
         playerInner.innerHTML = getPlayerHtml();
     }
 
-    const currentSlug = ttsState.currentSlug; 
+    // Определяем активный slug. Приоритет у переданного (новый клик),
+    // иначе берем из состояния (если плеер уже играет).
+    const activeSlug = slugOverride || ttsState.currentSlug;
     
-    if (currentSlug) {
-        fetch(`/read/php/voice.php?fromjs=${currentSlug}`)
+    const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
+    
+    if (activeSlug && placeholder) {
+        // Очищаем старую ссылку перед запросом, чтобы не мигало старым файлом
+        placeholder.innerHTML = "";
+        placeholder.style.display = "none";
+
+        // ! ВАЖНО: Чистим slug. Обычно приходит "sutta/mn1", нам нужно "mn1" для поиска файла в PHP.
+        // Если пришло просто "mn1", split вернет массив из 1 элемента, pop возьмет его же.
+        const cleanSlug = activeSlug.split('/').pop();
+
+        console.log(`[TTS] Requesting audio for: ${cleanSlug}`);
+        
+        // Добавляем timestamp, чтобы избежать кеширования запроса браузером
+        fetch(`/read/php/voice.php?fromjs=${cleanSlug}&t=${Date.now()}`)
             .then(response => response.text())
             .then(audioLinkHtml => {
-                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
+                const output = audioLinkHtml.trim();
                 
-                if (placeholder && audioLinkHtml.trim() !== "") {
-                    // Вставляем ссылку
-                    placeholder.innerHTML = audioLinkHtml;
-                    // Показываем как inline элемент (чтобы быть в одной строке)
-                    placeholder.style.display = "inline";
-                    
-                    // Небольшой хак: добавляем отступ самой ссылке внутри, если нужно, 
-                    // но мы уже задали margin-right плейсхолдеру в getPlayerHtml.
-                } else if (placeholder) {
-                    placeholder.innerHTML = "";
+                if (output.startsWith("NOT_FOUND") || output.startsWith("Debug")) {
+                    console.warn(`[TTS] PHP response: ${output}`);
+                    placeholder.style.display = "none";
+                } else if (output !== "") {
+                    console.log(`[TTS] Audio link found!`);
+                    placeholder.innerHTML = output;
+                    placeholder.style.display = "inline"; // Показываем span
+                } else {
                     placeholder.style.display = "none";
                 }
             })
             .catch(error => {
-                console.error('Error fetching audio link:', error);
-                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
-                if (placeholder) placeholder.style.display = "none";
+                console.error('[TTS] Fetch error:', error);
             });
     }
 
     return playerContainer;
 }
+
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
   return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;`;
@@ -1068,10 +1095,8 @@ function addTtsButton(containerElement, specificElement) {
 
     document.body.appendChild(btnContainer);
 
-    // Позиционируем кнопку относительно элемента
-    // Можно добавить логику позиционирования, если CSS (fixed) не подходит
-    // Но сейчас она fixed right: 20px, так что ок.
-
+    // Позиционируем кнопку (CSS handle it mostly)
+    
     btnContainer.addEventListener('click', (e) => {
         e.stopPropagation(); 
         e.preventDefault();
@@ -1088,13 +1113,70 @@ function addTtsButton(containerElement, specificElement) {
         }
 
         const mainPlayBtn = document.querySelector('.voice-dropdown .voice-link');
+        // Пытаемся найти slug из главной кнопки или текущего состояния
         const slug = mainPlayBtn ? mainPlayBtn.dataset.slug : ttsState.currentSlug;
 
-        const player = getOrBuildPlayer();
+        // Передаем slug, чтобы подтянуть ссылку на файл
+        const player = getOrBuildPlayer(slug);
         player.classList.add('active');
+        
         startPlayback(document, mode, slug);
-
 
         btnContainer.remove();
     });
+}
+
+function getAudioLink($fromjs) {
+    global $basedir; 
+
+    if (empty($fromjs)) return "Debug: Empty slug";
+
+    // Пытаемся определить корень, если basedir не задан
+    $root = $basedir ? $basedir : $_SERVER['DOCUMENT_ROOT'];
+
+    $nikaya = strtolower(preg_replace("/[0-9-.]/i", "", $fromjs));
+    $book = "";
+    if (preg_match("/(an|sn)/i", $nikaya)) {
+        $book = "/" . preg_replace("/\..*/i", "", $fromjs);
+    }
+
+    $hasAudio = false;
+    $voicefile = "";
+
+    // Логика для Винаи
+    if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
+        $parts = explode("-", $fromjs);
+        $pmtype = (strpos($fromjs, "bu") !== false) ? "bu" : "bi";
+        $vbIndex = array_search("vb", $parts);
+        $rule = $vbIndex !== false && isset($parts[$vbIndex + 1]) ? implode("-", array_slice($parts, $vbIndex + 1)) : "";
+
+        if (strpos($fromjs, 'bi-') !== false) {
+            $rule = "Bi-" . $rule;
+        } else {
+            $rule = ucfirst($rule);
+        }
+        
+        $searchPattern = $root . "/assets/audio/" . $pmtype . "-pm/" . $rule . ".m4a";
+    } else { 
+        // Логика для сутт (маска _* подхватит и .mp3 и .m4a)
+        $searchPattern = $root . "/assets/audio/" . $nikaya . $book . "/" . $fromjs . "_*";
+    }
+
+    $voicematches = glob($searchPattern);
+    
+    if (!empty($voicematches)) {
+        $fullPath = $voicematches[0];
+        $voicefilename = basename($fullPath);
+        
+        // Формируем путь для браузера
+        if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
+            $voicefile = "/assets/audio/" . $pmtype . "-pm/" . $voicefilename;
+        } else {
+            $voicefile = "/assets/audio/" . $nikaya . $book . "/" . $voicefilename;
+        }
+        return "&nbsp;<a class='tts-link' href='$voicefile'>File</a>";
+    }
+
+    // Если ничего не нашли, возвращаем техническую информацию для логов JS
+    return "NOT_FOUND: tried " . $searchPattern;
 }

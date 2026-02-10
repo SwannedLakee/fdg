@@ -1,59 +1,86 @@
 <?php
-header("Content-Type:text/plain");
+header("Content-Type: text/plain");
 error_reporting(E_ERROR | E_PARSE);
 
-include('../../config/config.php');
+// Подключаем конфиг, чтобы получить $basedir
+$configPath = __DIR__ . '/../../config/config.php';
+if (file_exists($configPath)) {
+    include($configPath);
+}
 
+// Функция поиска ссылки
 function getAudioLink($fromjs) {
     global $basedir; 
 
-    // Extract nikaya and book for audio path construction
-    $nikaya = strtolower(preg_replace("/[0-9-.]/i","","$fromjs"));
-    $book = "";
-    if (preg_match("/(an|sn)/i",$nikaya)) {
-        $book = "/" . preg_replace("/\..*/i","","$fromjs") ;
+    // Если конфиг не подключился или basedir пуст, пытаемся определить корень сервера
+    if (empty($basedir)) {
+        $basedir = $_SERVER['DOCUMENT_ROOT'];
     }
 
-    $hasAudio = false;
-    $voicefile = "";
+    if (empty($fromjs)) return "Debug: Empty slug";
 
-    // Logic for vinaya texts (bu-vb, bi-vb)
-    if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
-        $parts = explode("-", $fromjs);
-        $pmtype = (strpos($fromjs, "bu") !== false) ? "bu" : ((strpos($fromjs, "bi") !== false) ? "bi" : "");
+    // Очистка slug от возможных путей типа "sutta/" если они всё же прошли
+    $cleanSlug = basename($fromjs); 
+    
+    // Определяем никая и книгу для структуры папок
+    $nikaya = strtolower(preg_replace("/[0-9-.]/i", "", $cleanSlug));
+    $book = "";
+    
+    if (preg_match("/(an|sn)/i", $nikaya)) {
+        // Для AN и SN есть подпапки (например, an1, sn56)
+        $book = "/" . preg_replace("/\..*/i", "", $cleanSlug);
+    }
+
+    $voicefile = "";
+    $searchPattern = "";
+    $pmtype = "";
+
+    // Логика для Винаи (Патимоккха и т.д.)
+    if (strpos($cleanSlug, "bu-vb") !== false || strpos($cleanSlug, "bi-vb") !== false) {
+        $parts = explode("-", $cleanSlug);
+        $pmtype = (strpos($cleanSlug, "bu") !== false) ? "bu" : "bi";
+        
         $vbIndex = array_search("vb", $parts);
         $rule = $vbIndex !== false && isset($parts[$vbIndex + 1]) ? implode("-", array_slice($parts, $vbIndex + 1)) : "";
 
-        if (strpos($fromjs, 'bi-') !== false) {
+        if (strpos($cleanSlug, 'bi-') !== false) {
             $rule = "Bi-" . $rule;
         } else {
             $rule = ucfirst($rule);
         }
-        $fullpathvoicefile = $basedir . "/assets/audio/" . $pmtype . "-pm" . "/" . $rule . ".m4a";
-        $voicematches = glob($fullpathvoicefile);
-        if (!empty($voicematches)) {
-            $hasAudio = true;
-            $voicefilename = basename($voicematches[0]);
-            $voicefile = "/assets/audio/" . $pmtype . "-pm" . "/" . $voicefilename;
-        }
-    } else { // Logic for suttas
-        $fullpathvoicefile = $basedir . "/assets/audio/" . $nikaya . $book . "/" . $fromjs . "_*";
-        $voicematches = glob($fullpathvoicefile);
-        if (!empty($voicematches)) {
-            $hasAudio = true;
-            $voicefilename = basename($voicematches[0]);
-            $voicefile = "/assets/audio/" . $nikaya . $book . "/". $voicefilename;
-        }
+        
+        $searchPattern = $basedir . "/assets/audio/" . $pmtype . "-pm/" . $rule . ".m4a";
+    } else { 
+        // Логика для обычных сутт
+        // Ищем .mp3, .m4a и т.д.
+        $searchPattern = $basedir . "/assets/audio/" . $nikaya . $book . "/" . $cleanSlug . "_*";
     }
 
-    if ($hasAudio) {
-        return "&nbsp;<a class='tts-link' href='$voicefile'>File</a>";
-    } else {
-        return "";
+    // Ищем файлы
+    $voicematches = glob($searchPattern);
+    
+    if (!empty($voicematches)) {
+        $fullPath = $voicematches[0];
+        $voicefilename = basename($fullPath);
+        
+        // Формируем веб-путь
+        if (strpos($cleanSlug, "bu-vb") !== false || strpos($cleanSlug, "bi-vb") !== false) {
+            $voicefile = "/assets/audio/" . $pmtype . "-pm/" . $voicefilename;
+        } else {
+            $voicefile = "/assets/audio/" . $nikaya . $book . "/" . $voicefilename;
+        }
+        
+        // Возвращаем HTML ссылку. &nbsp; нужен для отступа от предыдущего элемента
+        return "&nbsp;<a class='tts-link' href='$voicefile' target='_blank'>File</a>";
     }
+
+    return "NOT_FOUND: tried " . $searchPattern;
 }
 
+// Запуск
 if (isset($_GET['fromjs'])) {
     echo getAudioLink($_GET['fromjs']);
+} else {
+    echo "Debug: No fromjs param";
 }
 ?>
