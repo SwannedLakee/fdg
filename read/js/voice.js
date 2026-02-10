@@ -853,7 +853,7 @@ function getOrBuildPlayer() {
 }
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
-  return `<a style="transform: translateY(-3px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="voice-link">Voice</a>`;
+  return `<a data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="voice-link">Voice</a>`;
 }
 
 // --- Обработчик изменения настроек ---
@@ -954,6 +954,40 @@ document.addEventListener('change', handleTTSSettingChange);
 window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
 document.addEventListener('click', handleSuttaClick);
 document.addEventListener('DOMContentLoaded', () => { 
+
+
+
+    // 5. ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ПРАВОГО КЛИКА / ДОЛГОГО ТАПА (ИСПРАВЛЕННЫЙ)
+    document.addEventListener('contextmenu', function(e) {
+        const link = e.target.closest('a.voice-link');
+        if (!link) return;
+
+        if (localStorage.getItem('ttsMode') === 'true') {
+            
+            // 1. Блокируем стандартное поведение
+            e.preventDefault(); 
+            e.stopImmediatePropagation();
+
+            // 2. Снимаем выделение текста (важно для iOS/Android)
+            // При долгом тапе текст выделяется, и если это состояние не сбросить, UI может зависнуть
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+
+            // 3. Подготавливаем ссылку
+            const slug = link.getAttribute('data-slug');
+            const filter = link.getAttribute('data-filter');
+            const ttsBaseUrl = window.location.origin + "/t2s.html";
+            const ttsUrl = findFdgTextUrl(slug, filter || searchValue, ttsBaseUrl);
+
+            // 4. Открываем с задержкой (FIX ЗАВИСАНИЯ)
+            // Даем браузеру время (100мс) завершить внутренние процессы обработки тача
+            // перед тем, как фокус уйдет на новую вкладку.
+            setTimeout(() => {
+                window.open(ttsUrl, '_blank');
+            }, 500);
+        }
+    }, { passive: false });
 
 //для аудио voice 
 
@@ -1097,35 +1131,3 @@ function addTtsButton(containerElement, specificElement) {
 }
 
 
-
-    // 5. ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ПРАВОГО КЛИКА / ДОЛГОГО ТАПА (ИСПРАВЛЕННЫЙ)
-    document.addEventListener('contextmenu', function(e) {
-        const link = e.target.closest('a.voice-link');
-        if (!link) return;
-
-        if (localStorage.getItem('ttsMode') === 'true') {
-            
-            // 1. Блокируем стандартное поведение
-            e.preventDefault(); 
-            e.stopImmediatePropagation();
-
-            // 2. Снимаем выделение текста (важно для iOS/Android)
-            // При долгом тапе текст выделяется, и если это состояние не сбросить, UI может зависнуть
-            if (window.getSelection) {
-                window.getSelection().removeAllRanges();
-            }
-
-            // 3. Подготавливаем ссылку
-            const slug = link.getAttribute('data-slug');
-            const filter = link.getAttribute('data-filter');
-            const ttsBaseUrl = window.location.origin + "/t2s.html";
-            const ttsUrl = findFdgTextUrl(slug, filter || searchValue, ttsBaseUrl);
-
-            // 4. Открываем с задержкой (FIX ЗАВИСАНИЯ)
-            // Даем браузеру время (100мс) завершить внутренние процессы обработки тача
-            // перед тем, как фокус уйдет на новую вкладку.
-            setTimeout(() => {
-                window.open(ttsUrl, '_blank');
-            }, 500);
-        }
-    }, { passive: false });
