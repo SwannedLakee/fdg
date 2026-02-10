@@ -827,37 +827,33 @@ function getOrBuildPlayer() {
     const currentSlug = ttsState.currentSlug; 
     
     if (currentSlug) {
-        console.log(`[TTS] Requesting audio for: ${currentSlug}`);
         fetch(`/read/php/voice.php?fromjs=${currentSlug}`)
             .then(response => response.text())
             .then(audioLinkHtml => {
                 const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
                 
-                if (placeholder) {
-                    const output = audioLinkHtml.trim();
+                if (placeholder && audioLinkHtml.trim() !== "") {
+                    // Вставляем ссылку
+                    placeholder.innerHTML = audioLinkHtml;
+                    // Показываем как inline элемент (чтобы быть в одной строке)
+                    placeholder.style.display = "inline";
                     
-                    if (output.startsWith("NOT_FOUND") || output.startsWith("Debug")) {
-                        console.warn(`[TTS] PHP could not find file. ${output}`);
-                        placeholder.innerHTML = "";
-                        placeholder.style.display = "none";
-                    } else if (output !== "") {
-                        console.log(`[TTS] Audio link found!`);
-                        placeholder.innerHTML = output;
-                        placeholder.style.display = "inline";
-                    } else {
-                        console.log(`[TTS] No audio available for this sutta.`);
-                        placeholder.style.display = "none";
-                    }
+                    // Небольшой хак: добавляем отступ самой ссылке внутри, если нужно, 
+                    // но мы уже задали margin-right плейсхолдеру в getPlayerHtml.
+                } else if (placeholder) {
+                    placeholder.innerHTML = "";
+                    placeholder.style.display = "none";
                 }
             })
             .catch(error => {
-                console.error('[TTS] Fetch error:', error);
+                console.error('Error fetching audio link:', error);
+                const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
+                if (placeholder) placeholder.style.display = "none";
             });
     }
 
     return playerContainer;
 }
-
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
   return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>&nbsp;`;
@@ -1101,59 +1097,4 @@ function addTtsButton(containerElement, specificElement) {
 
         btnContainer.remove();
     });
-}
-
-function getAudioLink($fromjs) {
-    global $basedir; 
-
-    if (empty($fromjs)) return "Debug: Empty slug";
-
-    // Пытаемся определить корень, если basedir не задан
-    $root = $basedir ? $basedir : $_SERVER['DOCUMENT_ROOT'];
-
-    $nikaya = strtolower(preg_replace("/[0-9-.]/i", "", $fromjs));
-    $book = "";
-    if (preg_match("/(an|sn)/i", $nikaya)) {
-        $book = "/" . preg_replace("/\..*/i", "", $fromjs);
-    }
-
-    $hasAudio = false;
-    $voicefile = "";
-
-    // Логика для Винаи
-    if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
-        $parts = explode("-", $fromjs);
-        $pmtype = (strpos($fromjs, "bu") !== false) ? "bu" : "bi";
-        $vbIndex = array_search("vb", $parts);
-        $rule = $vbIndex !== false && isset($parts[$vbIndex + 1]) ? implode("-", array_slice($parts, $vbIndex + 1)) : "";
-
-        if (strpos($fromjs, 'bi-') !== false) {
-            $rule = "Bi-" . $rule;
-        } else {
-            $rule = ucfirst($rule);
-        }
-        
-        $searchPattern = $root . "/assets/audio/" . $pmtype . "-pm/" . $rule . ".m4a";
-    } else { 
-        // Логика для сутт (маска _* подхватит и .mp3 и .m4a)
-        $searchPattern = $root . "/assets/audio/" . $nikaya . $book . "/" . $fromjs . "_*";
-    }
-
-    $voicematches = glob($searchPattern);
-    
-    if (!empty($voicematches)) {
-        $fullPath = $voicematches[0];
-        $voicefilename = basename($fullPath);
-        
-        // Формируем путь для браузера
-        if (strpos($fromjs, "bu-vb") !== false || strpos($fromjs, "bi-vb") !== false) {
-            $voicefile = "/assets/audio/" . $pmtype . "-pm/" . $voicefilename;
-        } else {
-            $voicefile = "/assets/audio/" . $nikaya . $book . "/" . $voicefilename;
-        }
-        return "&nbsp;<a class='tts-link' href='$voicefile'>File</a>";
-    }
-
-    // Если ничего не нашли, возвращаем техническую информацию для логов JS
-    return "NOT_FOUND: tried " . $searchPattern;
 }
