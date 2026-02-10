@@ -7,8 +7,6 @@ error_reporting(E_ERROR | E_PARSE);
 
 function extraLinks($fromjs) {
   
-$playIcon = "<img src='/assets/svg/play-grey.svg' style='width: 17px; height: 17px; vertical-align: middle;' alt='Play'>";
-
   include_once('../../config/config.php');
   $forthru = str_replace(".", '_', $fromjs);
 $cleaned = preg_replace('/\d.*$/', '', $fromjs);
@@ -121,7 +119,7 @@ $is_ru_referer = false;
           $mimeType = ($fileExt === 'mp3') ? 'audio/mpeg' : 'audio/mp4; codecs="mp4a.40.2"';
       //    <button class='close-player' aria-label='Close player'>×</button>
 
-$playerHtml = " <a class='tts-link' style='display:none;' href='$voicefile'>File</a>";
+$playerHtml = " <span class='tts-link' style='display:none;' data-src='$voicefile'>File</span>";
       }
 
 } else {
@@ -149,8 +147,7 @@ $playerHtml = " <a class='tts-link' style='display:none;' href='$voicefile'>File
             $mimeType = 'audio/wav';
         }
 
-$playerHtml = " <a class='tts-link' style='display:none;' href='$voicefile'>File
-        </a>";
+$playerHtml = "<span class='tts-link' style='display:none;' data-src='$voicefile'>File</span>";
     }
 }
 

@@ -819,40 +819,41 @@ function getOrBuildPlayer() {
         document.body.appendChild(playerContainer);
     }
     
-    // Обновляем HTML плеера (кнопки и т.д.)
+    // Обновляем HTML плеера
     const playerInner = playerContainer.querySelector('.voice-player');
     if (playerInner) {
         playerInner.innerHTML = getPlayerHtml();
     }
 
-    // --- НОВАЯ ЛОГИКА: Ищем скрытую ссылку в DOM вместо fetch ---
     const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
     
-    // Ищем элемент с классом .tts-link, который скрыт (display:none)
-    // Это гарантирует, что мы не возьмем кнопки TTS/VSC из самого плеера
-    const sourceLink = document.querySelector('a.tts-link[style*="display:none"], a.tts-link[style*="display: none"]');
+    // --- УЛУЧШЕНИЕ ЗДЕСЬ ---
+    // Ищем span с классом tts-link, у которого ЕСТЬ атрибут data-src.
+    // Это самый точный способ, который не зависит от пробелов в стилях.
+    const sourceLink = document.querySelector('span.tts-link[data-src]');
 
     if (sourceLink && placeholder) {
-        const fileUrl = sourceLink.getAttribute('href');
+        // Берем URL из data-src
+        const fileUrl = sourceLink.getAttribute('data-src');
         
         if (fileUrl) {
-            // Создаем видимую кнопку File внутри плеера, используя найденный URL
+            // Генерируем видимую ссылку (здесь уже тег <a>, чтобы пользователь мог кликнуть)
+            // Добавляем class='tts-link', чтобы стили кнопки подтянулись, если нужно
             placeholder.innerHTML = `<a class='tts-link' href='${fileUrl}' target='_blank'>File</a>`;
-            placeholder.style.display = "inline";
+            placeholder.style.display = "inline"; // Или "inline-block"
         } else {
              placeholder.style.display = "none";
         }
     } else if (placeholder) {
-        // Если скрытой ссылки на странице нет
+        // Если скрытого спана нет на странице
         placeholder.style.display = "none";
     }
 
     return playerContainer;
 }
-
 // --- Интерфейс ---
 function getTTSInterfaceHTML(texttype, slugReady, slug) {
-  return `<a style="transform: translateY(-2px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>`;
+  return `<a style="transform: translateY(-3px)" data-slug="${texttype}/${slugReady}" href="javascript:void(0)" title="Text-to-Speech (Atl+R)" class="fdgLink mainLink voice-link">Voice</a>`;
 }
 
 // --- Обработчик изменения настроек ---

@@ -109,8 +109,8 @@ $is_ru_referer = false;
           $mimeType = ($fileExt === 'mp3') ? 'audio/mpeg' : 'audio/mp4; codecs="mp4a.40.2"';
       //    <button class='close-player' aria-label='Close player'>×</button>
 
-$playerHtml = " <a class='tts-link' style='display:none;' href='$voicefile'>File
-        </a>";
+$playerHtml = "<span class='tts-link' style='display:none;' data-src='$voicefile'>File</span>";
+
       }
 
 } else {
@@ -138,8 +138,8 @@ $playerHtml = " <a class='tts-link' style='display:none;' href='$voicefile'>File
             $mimeType = 'audio/wav';
         }
 
-$playerHtml = "<a style='display:none;' class='tts-link' href='$voicefile'>File
-        </a>";
+$playerHtml = "<span class='tts-link' style='display:none;' data-src='$voicefile'>File</span>";
+
     }
 }
 
