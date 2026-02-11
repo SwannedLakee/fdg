@@ -117,9 +117,9 @@ function toggleSilence(enable) {
                 // --- НАСТРОЙКА ПЛЕЕРА В ТРЕЕ (Media Session) ---
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.metadata = new MediaMetadata({
-                        title: "Sutta Reading",
-                        artist: "SC-Voice.net",
-                        artwork: [{ src: '/assets/img/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' }]
+                        title: "Dhamma Vinaya",
+                        artist: "Dhamma.Gift Read",
+                        artwork: [{ src: '/assets/img/pwa-bold-monocolor-192.png', sizes: '192x192', type: 'image/png' }]
                     });
 
                     // Кнопки в шторке/на экране блокировки
