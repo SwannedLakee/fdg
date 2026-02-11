@@ -29,7 +29,16 @@ let googleVoicesList = [];
 
 // Дефолтные настройки
 const DEFAULT_PALI_CONFIG = { languageCode: 'kn-IN', name: 'kn-IN-Chirp3-HD-Algenib' };
-const DEFAULT_TRN_CONFIG  = { languageCode: 'en-US', name: 'en-US-Standard-D' };
+
+// Логика выбора дефолтного голоса перевода (RU или EN)
+const isRuPath = window.location.pathname.includes('/ru') || 
+                 window.location.pathname.includes('/r/') || 
+                 window.location.pathname.includes('/ml');
+
+const DEFAULT_TRN_CONFIG = isRuPath
+  ? { languageCode: 'ru-RU', name: 'ru-RU-Standard-D' }  // Русский (если в URL есть маркеры)
+  : { languageCode: 'en-US', name: 'en-US-Standard-D' }; // Иначе Английский
+
 
 const PALI_RATIO = 0.6; 
 
@@ -53,6 +62,104 @@ const ttsState = {
 const synth = window.speechSynthesis;
 
 // --- Утилиты ---
+
+// --- "Вечная Тишина" (Heartbeat Audio) ---
+// Используем реальный файл с сервера
+const SILENCE_URL = '/assets/common/silence.mp3';
+
+let silenceAudio = new Audio(SILENCE_URL);
+silenceAudio.loop = true; // Зацикливаем навечно
+silenceAudio.volume = 0.05; // 5% громкости, чтобы не мешало, но система видела активность
+
+// Функция показа уведомлений (Тост)
+function showToast(message) {
+    const oldToast = document.getElementById('tts-toast');
+    if (oldToast) oldToast.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'tts-toast';
+    toast.innerText = message;
+    Object.assign(toast.style, {
+        position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+        backgroundColor: 'rgba(50, 50, 50, 0.9)', color: '#00ff00', padding: '12px 24px',
+        borderRadius: '8px', zIndex: '10000', fontSize: '14px', pointerEvents: 'none',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.5)', fontFamily: 'sans-serif', textAlign: 'center',
+        transition: 'opacity 0.5s'
+    });
+    document.body.appendChild(toast);
+    
+    // Удаляем через 3 секунды
+    setTimeout(() => { 
+        if(toast.parentNode) {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        } 
+    }, 3000);
+}
+
+function toggleSilence(enable) {
+    if (enable) {
+        // Если уже играет, не трогаем
+        if (!silenceAudio.paused) return;
+
+        // Если вдруг src слетел или объект пересоздан
+        if (!silenceAudio.src || silenceAudio.src === '') {
+             silenceAudio.src = SILENCE_URL;
+        }
+
+        const playPromise = silenceAudio.play();
+
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+         //       console.log("Silence started (File mode)");
+     //           showToast("🔈 ТТС АКТИВЕН\n(Фоновый режим включен)");
+                
+                // --- НАСТРОЙКА ПЛЕЕРА В ТРЕЕ (Media Session) ---
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: "Sutta Reading",
+                        artist: "SC-Voice.net",
+                        artwork: [{ src: '/assets/img/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' }]
+                    });
+
+                    // Кнопки в шторке/на экране блокировки
+                    navigator.mediaSession.setActionHandler('play', () => { 
+                        document.querySelector('.play-main-button')?.click();
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        document.querySelector('.play-main-button')?.click();
+                    });
+                    navigator.mediaSession.setActionHandler('previoustrack', () => {
+                        document.querySelector('.prev-main-button')?.click();
+                    });
+                    navigator.mediaSession.setActionHandler('nexttrack', () => {
+                        document.querySelector('.next-main-button')?.click();
+                    });
+                }
+            }).catch(e => {
+               console.warn("Silence file playback failed:", e);
+        //        showToast("⚠️ Ошибка фона: " + e.message);
+            });
+        }
+    } else {
+        if (!silenceAudio.paused) {
+            silenceAudio.pause();
+            silenceAudio.currentTime = 0; // Сброс в начало
+      //      showToast("🛑 ТТС ОСТАНОВЛЕН");
+            
+            // Очищаем статус в трее
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = null;
+                navigator.mediaSession.setActionHandler('play', null);
+                navigator.mediaSession.setActionHandler('pause', null);
+                navigator.mediaSession.setActionHandler('previoustrack', null);
+                navigator.mediaSession.setActionHandler('nexttrack', null);
+            }
+        }
+    }
+}
+
+
 
 function updateRateOptions(isPali, activeRate) {
   const rateSelect = document.getElementById('tts-rate-select');
@@ -90,9 +197,9 @@ async function requestWakeLock() {
     try {
       wakeLock = await navigator.wakeLock.request('screen');
       wakeLock.addEventListener('release', () => {
-        console.log('Wake Lock released');
+    //    console.log('Wake Lock released');
       });
-      console.log('Wake Lock active');
+  //    console.log('Wake Lock active');
     } catch (err) {
       console.error(`${err.name}, ${err.message}`);
     }
@@ -103,14 +210,14 @@ async function releaseWakeLock() {
   if (wakeLock !== null) {
     await wakeLock.release();
     wakeLock = null;
-    console.log('Wake Lock released manually');
+ //   console.log('Wake Lock released manually');
   }
 }
 
 function clearTtsStorage() {
   localStorage.removeItem(LAST_SLUG_KEY);
   localStorage.removeItem(LAST_INDEX_KEY);
-  console.log('TTS Storage cleared (end of track reached)');
+ // console.log('TTS Storage cleared (end of track reached)');
 }
 
 function cleanTextForTTS(text) {
@@ -898,19 +1005,26 @@ async function handleSuttaClick(e) {
     } else {
       if (ttsState.speaking) {
         if (ttsState.paused) {
+          // --- RESUME ---
           ttsState.paused = false;
           setButtonIcon('pause');
+          
+          // Проверяем и запускаем тишину
+          toggleSilence(true);
+
           if (ttsState.googleAudio) {
               ttsState.googleAudio.play();
           } else {
               playCurrentSegment(); 
           }
         } else {
+          // --- PAUSE ---
           ttsState.paused = true;
           synth.cancel();
           if (ttsState.googleAudio) {
               ttsState.googleAudio.pause();
           }
+          // НЕ выключаем тишину, чтобы кнопка в шторке работала
           setButtonIcon('play');
         }
       } else {
@@ -928,12 +1042,18 @@ async function handleSuttaClick(e) {
   }
 }
 
+
 function stopPlayback() {
   synth.cancel();
   if (ttsState.googleAudio) {
       ttsState.googleAudio.pause();
       ttsState.googleAudio = null;
   }
+  
+  // === ОСТАНОВКА ТИШИНЫ ===
+  toggleSilence(false);
+  // ========================
+
   ttsState.speaking = false;
   ttsState.paused = false;
   ttsState.isNavigating = false;
@@ -1002,6 +1122,10 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
       ttsState.googleAudio = null;
   }
   
+  // === ЗАПУСК ТИШИНЫ ===
+  toggleSilence(true);
+  // =====================
+  
   ttsState.playlist = playlist;
   ttsState.currentIndex = actualStartIndex;
   ttsState.currentSlug = slug;
@@ -1011,8 +1135,13 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
   ttsState.isNavigating = false;
   
   setButtonIcon('pause');
-  playCurrentSegment();
+  
+  // Небольшой таймаут для гарантии загрузки аудио
+  setTimeout(() => {
+     playCurrentSegment();
+  }, 100);
 }
+
 
 function showVoiceHint(title, message, storageKey) {
   if (localStorage.getItem(storageKey)) return;
