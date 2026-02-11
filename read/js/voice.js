@@ -174,17 +174,23 @@ async function prepareTextData(slug) {
   const paliElements = container.querySelectorAll('.pli-lang');
   const translationElements = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
   
+  // Загружаем "сырой" JSON с Пали (там сегменты всегда разделены)
   const paliJsonData = await fetchSegmentsData(slug);
   const cleanJsonMap = {};
   
+  // Ключи JSON в правильном порядке
+  const jsonKeys = []; 
+
   if (paliJsonData) {
     Object.keys(paliJsonData).forEach(key => {
       const cleanKey = key.split(':').pop();
       const rawText = paliJsonData[key].replace(/<[^>]*>/g, '').trim(); 
-      cleanJsonMap[cleanKey] = cleanTextForTTS(rawText); 
+      cleanJsonMap[cleanKey] = cleanTextForTTS(rawText);
+      jsonKeys.push(cleanKey); // Сохраняем порядок сегментов
     });
   }
 
+  // Собираем все ID, которые РЕАЛЬНО есть в DOM прямо сейчас
   const allIds = new Set();
   const allNodesInOrder = container.querySelectorAll('.pli-lang, .rus-lang, .tha-lang, .eng-lang');
   
@@ -195,6 +201,7 @@ async function prepareTextData(slug) {
   
   const textData = [];
   
+  // Итерируемся только по тем ID, которые есть на странице
   allIds.forEach(id => {
     const paliElement = Array.from(paliElements).find(el => getElementId(el) === id);
     const translationElement = Array.from(translationElements).find(el => getElementId(el) === id);
@@ -202,10 +209,44 @@ async function prepareTextData(slug) {
     let paliDev = '';
     let translation = '';
     
+    // 1. Логика для ПАЛИ (с учетом объединения Гатх)
     if (cleanJsonMap[id]) {
-      paliDev = cleanJsonMap[id].replace(/<[^>]*>/g, '').trim();
+      paliDev = cleanJsonMap[id];
+
+      // === НАЧАЛО: Умная склейка для TTS ===
+      // Ищем индекс текущего ID в массиве ключей JSON
+      const currentIndex = jsonKeys.indexOf(id);
+      
+      if (currentIndex !== -1) {
+        let lookAheadIndex = currentIndex + 1;
+        
+        // Смотрим вперед по JSON
+        while (lookAheadIndex < jsonKeys.length) {
+          const nextKey = jsonKeys[lookAheadIndex];
+          
+          // Если следующий сегмент (напр. 6.2) ЕСТЬ в DOM -> значит это не гатха или режим четверостиший (/read/).
+          // Прерываем цикл, ничего клеить не надо.
+          if (allIds.has(nextKey)) {
+            break;
+          }
+          
+          // Если следующего сегмента НЕТ в DOM, но он есть в JSON -> значит он был "вклеен" в текущий.
+          // Добавляем его текст к текущему.
+          const nextVal = cleanJsonMap[nextKey];
+          if (nextVal) {
+             // Добавляем пробел и делаем первую букву строчной (как в UI)
+             const lowerNext = nextVal.charAt(0).toLowerCase() + nextVal.slice(1);
+             paliDev += " " + lowerNext;
+          }
+          
+          lookAheadIndex++;
+        }
+      }
+      // === КОНЕЦ: Умная склейка ===
     }
     
+    // 2. Логика для ПЕРЕВОДА
+    // Здесь проще: мы берем textContent из DOM, а в DOM текст уже склеен скриптом reader-rus.
     if (translationElement) {
       const clone = translationElement.cloneNode(true);
       clone.querySelectorAll('.variant, .not_translate, sup, .ref').forEach(v => v.remove());
@@ -215,7 +256,7 @@ async function prepareTextData(slug) {
     if (paliDev || translation) {
       textData.push({
         id: id,
-        paliDev: paliDev,
+        paliDev: paliDev, // Теперь здесь полный текст строки гатхи
         translation: translation,
         paliElement: paliElement || null,
         translationElement: translationElement || null
@@ -225,7 +266,6 @@ async function prepareTextData(slug) {
   
   return textData;
 }
-
 
 function createPlaylistFromData(textData, mode) {
   const playlist = [];
