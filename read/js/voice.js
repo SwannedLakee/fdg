@@ -335,8 +335,6 @@ async function populateVoiceSelectors(apiKey, forceRefresh = false) {
 }
 */
 
-
-
 async function populateVoiceSelectors(apiKey, forceRefresh = false) {
     const container = document.getElementById('google-voice-settings-container');
     if (container) container.style.display = 'block';
@@ -380,9 +378,22 @@ async function populateVoiceSelectors(apiKey, forceRefresh = false) {
     const defaultTrnMap = { 'ru': 'ru-RU', 'en': 'en-US', 'th': 'th-TH' };
     const defaultTrnCode = defaultTrnMap[pageLang] || 'en-US';
     
-    // Ищем дефолтный голос внутри отфильтрованного списка trnVoices
-    const bestDefaultVoice = trnVoices.find(v => v.languageCodes[0] === defaultTrnCode && v.name.includes('Standard')) || 
+    // Карта предпочтительных голосов (Standard-D для RU/EN)
+    const preferredVoices = {
+        'ru': 'ru-RU-Standard-D',
+        'en': 'en-US-Standard-D',
+        'th': 'th-TH-Standard-A'
+    };
+    
+    // Ищем дефолтный голос с приоритетом на preferredVoices
+    const bestDefaultVoice = 
+                             // 1. Пробуем найти конкретный предпочтительный голос (Standard-D)
+                             trnVoices.find(v => v.name === preferredVoices[pageLang]) || 
+                             // 2. Если нет, берем любой Standard для этого языка
+                             trnVoices.find(v => v.languageCodes[0] === defaultTrnCode && v.name.includes('Standard')) || 
+                             // 3. Если нет, берем первый попавшийся голос для этого языка
                              trnVoices.find(v => v.languageCodes[0] === defaultTrnCode) || 
+                             // 4. Фолбэк на глобальную константу
                              DEFAULT_TRN_CONFIG;
 
     const trnConfig = { languageCode: defaultTrnCode, name: bestDefaultVoice.name };
