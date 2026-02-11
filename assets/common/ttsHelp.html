@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <li><strong>Навигация:</strong> Нажмите паузу. Кликните на любое предложение пали, чтобы оно выделилось цветом. Нажмите Play, чтобы проигрывать с него.</li>
       <li><strong>Настройки:</strong> Выбор режима (Пали / Перевод / Пали+Перевод / Перевод + Пали) и скорости чтения.</li>
     </ul>
+	
 <p id="tts-help-ru" class="mt-2">
   Для синтеза речи близкой к пали активируйте один из голосовых модулей на своём устройстве:
   <strong>Sanskrit (India)</strong>, <strong>Hindi (India)</strong>, <strong>Nepali</strong> или <strong>Indonesian</strong>.
@@ -147,7 +148,19 @@ document.addEventListener('DOMContentLoaded', function() {
       <li><strong>File:</strong> (Если доступен) Прямая ссылка на аудиофайл. Это может быть сохранённый TTS-файл или запись чтения на пали.</li>
       <li><strong>?</strong>: Ссылка на эту страницу помощи.</li>
     </ul>
- 
+	
+	<div class="form-text mt-1" id="google-tts-help-ru">
+  <strong>Google API Key (необязательно)</strong><br>
+  Позволяет использовать облачный синтез речи Google (Google Cloud Text-to-Speech).
+  Даёт более стабильное качество и лучшие голоса по сравнению со встроенным TTS браузера.
+  <br>
+  <small class="text-muted">
+    Как получить ключ: создайте API-ключ в Google Cloud Console и включите
+    <strong>Text-to-Speech API</strong>.<br>
+    Подробную инструкцию можно найти в интернете по запросу:
+    <strong>google tts cloud api key</strong>
+  </small>
+</div>
   </div>
 </div>
 
@@ -209,6 +222,21 @@ document.addEventListener('DOMContentLoaded', function() {
       <li><strong>File:</strong> (If available) Direct link to an audio file. This may be a saved TTS file or a Pali reading recording.</li>
       <li><strong>?</strong>: Link to this help page.</li>
     </ul>
+	
+	<div class="form-text mt-1" id="google-tts-help-en" style="display:none;">
+  <strong>Google API Key (optional)</strong><br>
+  Enables Google Cloud Text-to-Speech.
+  Provides more stable output and higher-quality voices than the browser’s built-in TTS.
+  <br>
+  <small class="text-muted">
+    How to get a key: create an API key in Google Cloud Console and enable
+    <strong>Text-to-Speech API</strong>.<br>
+    Search online for:
+    <strong>google tts cloud api key</strong>
+  </small>
+</div>
+
+	
   </div>
 </div>
 <script src="/assets/js/dark-mode-switch/dark-mode-switch.js"></script>
