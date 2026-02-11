@@ -881,33 +881,73 @@ function getPlayerHtml() {
         padding-top: 10px;
         border-top: 1px solid #444;
     }
+	
+	
+	/* Выстраиваем всё в один ряд и центрируем по вертикали */
+.tts-main-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 15px;
+    height: 40px;
+}
+
+/* Навигация строго по центру */
+.tts-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Сбрасываем абсолютное позиционирование для кнопок */
+.tts-top-btn {
+    position: static !important;
+    color: #999; /* Нейтральный серый */
+    font-size: 24px;
+    text-decoration: none !important;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.tts-top-btn:hover {
+    color: #fff;
+}
+
+/* Фильтр для иконок навигации, чтобы не были слишком черными */
+.tts-icon {
+    filter: invert(0.5);
+}
   </style>
   `;
 
   return style + `
     <div style="text-align: center;">
-      <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
+   <div class="tts-main-row">
+    <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
         <svg id="tts-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.3s ease;">
-           <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
         </svg>
-      </a>
+    </a>
 
-      <div class="tts-controls-row">
-          <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
-            <img src="/assets/svg/backward-step.svg" class="tts-icon backward">
-          </a>
+    <div class="tts-controls-row">
+        <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
+            <img src="/assets/svg/backward-step.svg" class="tts-icon backward" width="20">
+        </a>
+        <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
+            <img src="/assets/svg/play-grey.svg" class="tts-icon play" width="34">
+        </a>
+        <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
+            <img src="/assets/svg/forward-step.svg" class="tts-icon forward" width="20">
+        </a>
+    </div>
 
-          <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
-            <img src="/assets/svg/play-grey.svg" class="tts-icon play">
-          </a> 
-
-          <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
-            <img src="/assets/svg/forward-step.svg" class="tts-icon forward">
-          </a>
-      </div>
-
- <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
-
+    <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
+</div>
       <div id="tts-settings-panel">
           <select id="tts-mode-select" class="tts-mode-select">
             ${Object.entries(modeLabels).map(([val, label]) =>
