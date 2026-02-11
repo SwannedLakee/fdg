@@ -531,9 +531,19 @@ async function handleSuttaClick(e) {
   // --- 1. Обработка кнопки настроек (Анимация) ---
   if (e.target.closest('#tts-settings-toggle')) {
     e.preventDefault();
-    const player = document.querySelector('.voice-player');
-    if (player) {
-      player.classList.toggle('expanded');
+    const panel = document.getElementById('tts-settings-panel');
+    const icon = document.getElementById('tts-settings-icon');
+    
+    if (panel) {
+        // Переключаем класс видимости
+        panel.classList.toggle('visible');
+        
+        // Вращаем иконку
+        if (panel.classList.contains('visible')) {
+            if (icon) icon.style.transform = 'rotate(90deg)';
+        } else {
+            if (icon) icon.style.transform = 'rotate(0deg)';
+        }
     }
     return;
   }
@@ -671,8 +681,6 @@ function stopPlayback() {
   const player = document.getElementById('voice-player-container');
   if (player) {
     player.classList.remove('active');
-    const playerInner = player.querySelector('.voice-player');
-    if (playerInner) playerInner.classList.remove('expanded');
   }
 
   if (ttsState.utterance) {
@@ -827,233 +835,113 @@ function getPlayerHtml() {
   
   const style = `
   <style>
-    /* 1. КОНТЕЙНЕР "ПИЛЮЛЯ" (Свернутый) */
-    .voice-player {
-        /* Цвета как на скриншотах: темно-серый фон */
-        background: #2a2a2a; 
-        border: 1px solid #444;
-        color: #ddd;
-        
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        
-        /* Форма пилюли */
-        border-radius: 50px; 
-        padding: 5px 15px;
-        
-        /* Плавные переходы */
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        
-        min-width: 240px; 
-        width: auto;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    /* Настройки для Шестеренки и Закрытия */
+    .tts-top-btn {
+      position: absolute;
+      top: 10px; /* Одинаковый отступ сверху */
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      color: #999;
+      text-decoration: none !important;
+      z-index: 10;
+      transition: color 0.2s, transform 0.3s;
     }
     
-    /* Светлая тема (инверсия, если нужно, но делаем под скриншот) */
-    body:not(.dark) .voice-player {
-        background: #f0f0f0;
-        border-color: #ccc;
-        color: #333;
-    }
+    .tts-settings-btn { left: 15px; }
+    .close-tts-btn    { right: 15px; }
 
-    /* 2. ВЕРХНЯЯ СТРОКА (Bar) - Всегда видна */
-    .tts-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        gap: 10px;
-        height: 40px; /* Фиксированная высота строки */
-    }
+    .tts-top-btn:hover { color: #333; }
+    .dark .tts-top-btn { color: #bbb; }
+    .dark .tts-top-btn:hover { color: #fff; }
 
-    /* Кнопки иконок */
-    .tts-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        /* Цвет нейтрально-серый по умолчанию */
-        color: #999; 
+    /* Контейнер кнопок управления: Центрирование и отступ от верха */
+    .tts-controls-row {
         display: flex;
-        align-items: center;
         justify-content: center;
-        padding: 0;
-        transition: color 0.2s, transform 0.2s;
-        -webkit-tap-highlight-color: transparent;
-    }
-    
-    .tts-btn:hover {
-        color: #fff; /* Белый при наведении в темной теме */
-    }
-    body:not(.dark) .tts-btn:hover {
-        color: #000;
-    }
-
-    /* Центральные кнопки управления */
-    .tts-controls-center {
-        display: flex;
         align-items: center;
-        gap: 12px;
+        margin-top: 15px; /* Отступ от верхних кнопок */
+        margin-bottom: 5px;
     }
 
-    /* 3. ПАНЕЛЬ НАСТРОЕК (Скрыта по умолчанию) */
-    .tts-settings-panel {
-        width: 100%;
+    /* Анимация панели */
+    #tts-settings-panel {
         max-height: 0;
         opacity: 0;
         overflow: hidden;
-        transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
-        text-align: center;
+        transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease;
         margin-top: 0;
-        
-        /* Возвращаем компактный старый дизайн внутри */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
     }
-
-    /* 4. СОСТОЯНИЕ: РАЗВЕРНУТ (Expanded) */
-    .voice-player.expanded {
-        border-radius: 20px; /* Прямоугольник со скруглением */
-        padding: 15px 20px;
-        width: 260px; /* Фиксированная компактная ширина */
-    }
-
-    .voice-player.expanded .tts-settings-panel {
-        max-height: 300px;
+    
+    #tts-settings-panel.visible {
+        max-height: 500px; /* Достаточно места для контента */
         opacity: 1;
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid #555;
-    }
-    
-    body:not(.dark) .voice-player.expanded .tts-settings-panel {
-        border-top-color: #ccc;
-    }
-
-    /* Вращение шестеренки */
-    .voice-player.expanded #tts-settings-icon {
-        transform: rotate(90deg);
-        color: #fff;
-    }
-    body:not(.dark) .voice-player.expanded #tts-settings-icon {
-        color: #000;
-    }
-
-    /* --- Стили элементов внутри настроек (Как было раньше) --- */
-    .tts-row {
-        display: flex;
-        gap: 5px;
-        justify-content: center;
-        width: 100%;
-    }
-    
-    .tts-mode-select, 
-    .tts-rate-select {
-        background: transparent;
-        border: 1px solid #666;
-        border-radius: 4px;
-        font-size: 13px;
-        padding: 2px 5px;
-        color: inherit;
-        cursor: pointer;
-    }
-    
-    .tts-checkbox-custom {
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        cursor: pointer;
-    }
-    
-    .tts-links-row {
-        font-size: 13px;
-    }
-    .tts-links-row a {
-        color: inherit;
-        text-decoration: none;
-        margin: 0 4px;
-        opacity: 0.7;
-    }
-    .tts-links-row a:hover { opacity: 1; text-decoration: underline; }
-
-    #google-api-key-input {
-        width: 100%; 
-        box-sizing: border-box; 
-        background: rgba(0,0,0,0.2); 
-        border: 1px solid #555; 
-        color: inherit; 
-        border-radius: 4px; 
-        padding: 4px; 
-        font-size: 11px;
+        border-top: 1px solid #444;
     }
   </style>
   `;
 
   return style + `
-    <div class="tts-bar">
-        <button id="tts-settings-toggle" class="tts-btn" title="Settings">
-           <svg id="tts-settings-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="transition: transform 0.3s;">
-               <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-           </svg>
-        </button>
+    <div style="text-align: center;">
+      <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
+        <svg id="tts-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.3s ease;">
+           <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+        </svg>
+      </a>
 
-        <div class="tts-controls-center">
-            <a href="javascript:void(0)" class="prev-main-button tts-btn">
-              <img src="/assets/svg/backward-step.svg" width="18" class="tts-icon backward" style="filter: grayscale(100%) brightness(1.5);"> 
-              </a>
+      <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
 
-            <a href="javascript:void(0)" class="play-main-button tts-btn">
-              <img src="/assets/svg/play-grey.svg" width="34" class="tts-icon play">
-            </a> 
+      <div class="tts-controls-row">
+          <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
+            <img src="/assets/svg/backward-step.svg" class="tts-icon backward">
+          </a>
 
-            <a href="javascript:void(0)" class="next-main-button tts-btn">
-              <img src="/assets/svg/forward-step.svg" width="18" class="tts-icon forward" style="filter: grayscale(100%) brightness(1.5);">
-            </a>
-        </div>
+          <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
+            <img src="/assets/svg/play-grey.svg" class="tts-icon play">
+          </a> 
 
-        <button class="close-tts-btn tts-btn" title="Close">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-            </svg>
-        </button>
-    </div>
+          <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
+            <img src="/assets/svg/forward-step.svg" class="tts-icon forward">
+          </a>
+      </div>
 
-    <div class="tts-settings-panel">
-        <div class="tts-row">
-            <select id="tts-mode-select" class="tts-mode-select">
-                ${Object.entries(modeLabels).map(([val, label]) =>
-                  `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
-                ).join('')}
-            </select>
+      <div id="tts-settings-panel">
+          <select id="tts-mode-select" class="tts-mode-select">
+            ${Object.entries(modeLabels).map(([val, label]) =>
+              `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
+            ).join('')}
+          </select>
 
-            <select id="tts-rate-select" class="tts-rate-select" title="${savedMode === 'pi' ? 'Speed (Pali)' : 'Speed (Translation)'}">
-                ${currentRatesList.map(r =>
-                  `<option value="${r}" ${initialRate == r ? 'selected' : ''}>${r}x</option>`
-                ).join('')}
-            </select>
-        </div>
+          <select id="tts-rate-select" class="tts-rate-select" title="${savedMode === 'pi' ? 'Speed (Pali)' : 'Speed (Translation)'}">
+            ${currentRatesList.map(r =>
+              `<option value="${r}" ${initialRate == r ? 'selected' : ''}>${r}x</option>`
+            ).join('')}
+          </select>
+          
+          <br>
 
-        <label class="tts-checkbox-custom">
+          <label class="tts-checkbox-custom" style="margin-right: 3px;">
             <input type="checkbox" id="tts-scroll-toggle" ${ttsState.autoScroll ? 'checked' : ''}>
             Scroll
-        </label>
+          </label>
 
-        <div class="tts-links-row">
-            <a href="/tts.php${window.location.search}" target="_blank">TTS</a>
-            <a href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs' target="_blank" title='sc-voice.net'>VSC</a>
-            <span id="audio-file-link-placeholder" style="display: none;"></span>
-            <a href="${helpUrl}" target="_blank" title="Help">?</a>
-        </div>
+          <a href="/tts.php${window.location.search}" class="tts-link tts-text-link" style="margin-right: 3px;">TTS</a>
+          <a class="tts-link" title='sc-voice.net' href='https://www.sc-voice.net/?src=sc#/sutta/$fromjs' style="margin-right: 3px;">VSC</a>
+          
+          <span id="audio-file-link-placeholder" style="display: none; margin-right: 3px;"></span>
+          
+          <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
 
-        <div style="width: 100%;">
+          <div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px;">
             <input type="password" id="google-api-key-input" 
                value="${savedKey}" 
                placeholder="Google API Key (Optional)" 
-               title="Enter Google Cloud TTS API Key">
-        </div>
+               title="Enter Google Cloud TTS API Key for premium voices"
+               style="width: 140px; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; padding: 2px 5px; font-size: 11px;">
+          </div>
+      </div>
     </div>
     `;
 }

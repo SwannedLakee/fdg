@@ -835,7 +835,7 @@ transition: background-color 260ms ease-in-out;
     }
 }
 
-
+/*
 .close-tts-btn {
   position: absolute; 
   top: 8px;    
@@ -847,7 +847,7 @@ transition: background-color 260ms ease-in-out;
   text-decoration: none !important;
   z-index: 10;
 }
-
+*/
 .close-tts-btn:hover {
   opacity: 0.7;
   color: #333;        /* Затемнение при наведении */
