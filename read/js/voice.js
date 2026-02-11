@@ -928,6 +928,24 @@ function getPlayerHtml() {
   transform: translate(-5px, -3px);
 }
 
+#google-api-key-input {
+    width: 140px;
+    background: #eee; /* Цвет для светлой темы */
+    border: 1px solid #ccc;
+    color: #333;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 11px;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Стили для темной темы */
+.dark #google-api-key-input {
+    background: #333;
+    border: 1px solid #555;
+    color: #ccc;
+}
+
   </style>
   `;
 
@@ -981,12 +999,11 @@ function getPlayerHtml() {
           
           <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
 
-          <div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px;">
-            <input type="password" id="google-api-key-input" 
-               value="${savedKey}" 
-               placeholder="Google API Key (Optional)" 
-               title="Enter Google Cloud TTS API Key for premium voices"
-               style="width: 140px; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; padding: 2px 5px; font-size: 11px;">
+          <div class="">
+<input type="password" id="google-api-key-input" 
+       value="${savedKey}" 
+       placeholder="Google API Key (Optional)" 
+       title="Enter Google Cloud TTS API Key for premium voices">
           </div>
       </div>
     </div>
