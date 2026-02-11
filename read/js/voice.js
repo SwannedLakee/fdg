@@ -506,6 +506,82 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
           try { targetConfig = JSON.parse(savedPali); } catch (e) {}
       }
       if (!targetConfig) targetConfig = DEFAULT_PALI_CONFIG;
+
+      // === GOOGLE-SPECIFIC PALI PATCH (Schwa Deletion Fix) ===
+      // Современные голоса (Хинди, Каннада и т.д.) "глотают" короткие гласные в конце.
+      // Мы искусственно удлиняем их ТОЛЬКО для запроса в Google, чтобы вернуть полное звучание.
+      if (text) {
+          // Диапазон согласных Деванагари (ka-ha + la)
+          const C = '[\u0915-\u0939\u0933]'; 
+          // Границы слов: пробел, конец строки или знаки препинания
+          const B = '(?=\\s|[।,:;.?!\"]|$)';
+
+          // 1. a -> ā (Добавляем матру 'aa' к согласной в конце слова)
+          // Было: Ayameva (अयमेव) -> Стало: Ayamevaa (अयमेवा)
+          text = text.replace(new RegExp(`(${C})${B}`, 'g'), '$1ा');
+
+          // 2. i -> ī (Заменяем матру 'i' на 'ii')
+          // Было: kacci (कच्चि) -> Стало: kaccī (कच्ची)
+          text = text.replace(new RegExp(`(${C})ि${B}`, 'g'), '$1ी');
+
+          // 3. u -> ū (Заменяем матру 'u' на 'uu')
+          // Было: bhavatu (भवतु) -> Стало: bhavatū (भवतू)
+          text = text.replace(new RegExp(`(${C})ु${B}`, 'g'), '$1ू');
+      }
+      // ========================================================
+
+  } else {
+      // --- TRANSLATION (Dynamic) ---
+      const context = getContextInfo(); 
+      
+      const savedTrn = localStorage.getItem(context.storageKey);
+      if (savedTrn) {
+          try { targetConfig = JSON.parse(savedTrn); } catch (e) {}
+      }
+      
+      if (!targetConfig) targetConfig = context.defaultConfig;
+  }
+
+  const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
+  
+  const payload = {
+    input: { text: text },
+    voice: { languageCode: targetConfig.languageCode, name: targetConfig.name },
+    audioConfig: { 
+        audioEncoding: 'MP3',
+        speakingRate: rate 
+    }
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (data.error) {
+        throw new Error(data.error.message);
+    }
+    return data.audioContent; 
+  } catch (e) {
+    console.warn('Google TTS Fetch Error:', e);
+    return null;
+  }
+}
+
+/*
+async function fetchGoogleAudio(text, lang, rate, apiKey) {
+  let targetConfig = null;
+
+  if (lang === 'pi-dev') {
+      // --- PALI ---
+      const savedPali = localStorage.getItem(GOOGLE_PALI_SETTINGS_KEY);
+      if (savedPali) {
+          try { targetConfig = JSON.parse(savedPali); } catch (e) {}
+      }
+      if (!targetConfig) targetConfig = DEFAULT_PALI_CONFIG;
   } else {
       // --- TRANSLATION (Dynamic) ---
       const context = getContextInfo(); // Получаем текущий контекст
@@ -548,6 +624,7 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
   }
 }
 
+*/
 // --- Подготовка данных ---
 async function prepareTextData(slug) {
   const container = document.querySelector('.sutta-container') || document;
