@@ -922,6 +922,11 @@ function getPlayerHtml() {
 .tts-icon {
     filter: invert(0.5);
 }
+
+.close-tts-btn {
+  transform: translate(-5px, -3px);
+}
+
   </style>
   `;
 
