@@ -235,6 +235,11 @@ function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, de
         
         currentVoices.sort((a, b) => {
             if (a.ssmlGender !== b.ssmlGender) {
+
+                // Принудительно ставим MALE выше (return -1)
+                if (a.ssmlGender === 'MALE') return -1;
+                if (b.ssmlGender === 'MALE') return 1;
+                // Для всех остальных (FEMALE, NEUTRAL) оставляем алфавитный порядок
                 return a.ssmlGender.localeCompare(b.ssmlGender);
             }
             const aPrem = isPremium(a.name);
@@ -244,6 +249,7 @@ function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, de
             
             return a.name.localeCompare(b.name);
         });
+
 
         let activeVoiceName = selectedVoiceName;
         if (!currentVoices.find(v => v.name === activeVoiceName)) {
