@@ -28,7 +28,7 @@ const GOOGLE_TRN_SETTINGS_KEY  = 'tts_google_trn_custom_voice';
 let googleVoicesList = []; 
 
 // Дефолтные настройки
-const DEFAULT_PALI_CONFIG = { languageCode: 'kn-IN', name: 'kn-IN-Chirp3-HD-Algenib' };
+const DEFAULT_PALI_CONFIG = { languageCode: 'pa-IN', name: 'pa-IN-Chirp3-HD-Achird' };
 
 // Логика выбора дефолтного голоса перевода (RU или EN)
 const isRuPath = window.location.pathname.includes('/ru') || 
