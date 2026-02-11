@@ -254,7 +254,7 @@ function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, de
 
         voiceSelect.innerHTML = currentVoices.map(v => {
             const shortName = v.name.replace(langCode + '-', '');
-            const premiumMarker = isPremium(v.name) ? '💎' : '🤖'; 
+            const premiumMarker = isPremium(v.name) ? '💎' : '📦'; 
             const genderMarker = v.ssmlGender === 'MALE' ? 'M' : (v.ssmlGender === 'FEMALE' ? 'F' : '?');
             
             const label = `${premiumMarker} [${genderMarker}] ${shortName}`;
