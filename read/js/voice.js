@@ -11,6 +11,7 @@ let wakeLock = null;
 
 const SCROLL_STORAGE_KEY = 'tts_auto_scroll'; 
 const MODE_STORAGE_KEY = 'tts_preferred_mode';
+const NATIVE_PALI_KEY  = 'tts_native_pali_enabled'; 
 
 const RATE_PALI_KEY = 'tts_rate_pali'; 
 const RATE_TRN_KEY = 'tts_rate_trn';
@@ -21,14 +22,14 @@ const PALI_ALERT_KEY = 'tts_pali_alert_shown';
 
 // --- Google TTS Config ---
 const GOOGLE_KEY_STORAGE = 'tts_google_key';
+const GOOGLE_PALI_SETTINGS_KEY = 'tts_google_pali_custom_voice'; 
+const GOOGLE_TRN_SETTINGS_KEY  = 'tts_google_trn_custom_voice';  
 
-const GOOGLE_VOICES = {
-  'pi-dev': { languageCode: 'kn-IN', name: 'kn-IN-Standard-D' }, 
-//  'pi-dev': { languageCode: 'hi-IN', name: 'hi-IN-Standard-C' }, 
-  'ru':     { languageCode: 'ru-RU', name: 'ru-RU-Standard-D' }, 
-  'en':     { languageCode: 'en-US', name: 'en-US-Standard-D' }, 
-  'th':     { languageCode: 'th-TH', name: 'th-TH-Standard-A' }  
-};
+let googleVoicesList = []; 
+
+// Дефолтные настройки
+const DEFAULT_PALI_CONFIG = { languageCode: 'kn-IN', name: 'kn-IN-Chirp3-HD-Algenib' };
+const DEFAULT_TRN_CONFIG  = { languageCode: 'en-US', name: 'en-US-Standard-D' };
 
 const PALI_RATIO = 0.6; 
 
@@ -168,18 +169,201 @@ function getElementId(el) {
   return el.id || el.closest('[id]')?.id;
 }
 
-// --- Google API Helper ---
+// --- Google API Helper & Voice Management ---
+
+async function loadGoogleVoices(apiKey) {
+    if (googleVoicesList.length > 0) return googleVoicesList; 
+
+    try {
+        const response = await fetch(`https://texttospeech.googleapis.com/v1/voices?key=${apiKey}`);
+        const data = await response.json();
+        if (data.voices) {
+            googleVoicesList = data.voices;
+            return googleVoicesList;
+        } else if (data.error) {
+             console.warn('Google API Error:', data.error);
+             return [];
+        }
+    } catch (e) {
+        console.warn('Не удалось загрузить список голосов Google:', e);
+    }
+    return [];
+}
+
+function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, defaultConfig) {
+    const langSelect = document.getElementById(langSelectId);
+    const voiceSelect = document.getElementById(voiceSelectId);
+    
+    if (!langSelect || !voiceSelect) return;
+
+    const languages = {}; 
+    const voicesByLang = {}; 
+
+    voices.forEach(v => {
+        const langCode = v.languageCodes[0];
+        if (!voicesByLang[langCode]) {
+            voicesByLang[langCode] = [];
+            languages[langCode] = langCode; 
+        }
+        voicesByLang[langCode].push(v);
+    });
+
+    const sortedLangs = Object.keys(languages).sort();
+
+    let currentConfig = defaultConfig;
+    const savedSettingRaw = localStorage.getItem(storageKey);
+    if (savedSettingRaw) {
+        try {
+            currentConfig = JSON.parse(savedSettingRaw);
+        } catch(e) {}
+    }
+
+    if (!languages[currentConfig.languageCode]) {
+        currentConfig = defaultConfig; 
+    }
+
+    langSelect.innerHTML = sortedLangs.map(code => 
+        `<option value="${code}" ${code === currentConfig.languageCode ? 'selected' : ''}>${code}</option>`
+    ).join('');
+
+    const isPremium = (name) => {
+        return name.includes('Wavenet') || name.includes('Neural2') || name.includes('Chirp') || name.includes('Polyglot');
+    };
+
+    const renderVoices = (langCode, selectedVoiceName) => {
+        const currentVoices = voicesByLang[langCode] || [];
+        
+        currentVoices.sort((a, b) => {
+            if (a.ssmlGender !== b.ssmlGender) {
+                return a.ssmlGender.localeCompare(b.ssmlGender);
+            }
+            const aPrem = isPremium(a.name);
+            const bPrem = isPremium(b.name);
+            if (aPrem && !bPrem) return -1;
+            if (!aPrem && bPrem) return 1;
+            
+            return a.name.localeCompare(b.name);
+        });
+
+        let activeVoiceName = selectedVoiceName;
+        if (!currentVoices.find(v => v.name === activeVoiceName)) {
+            if (currentVoices.length > 0) {
+                activeVoiceName = currentVoices[0].name;
+            }
+        }
+
+        voiceSelect.innerHTML = currentVoices.map(v => {
+            const shortName = v.name.replace(langCode + '-', '');
+            const premiumMarker = isPremium(v.name) ? '💎' : '🤖'; 
+            const genderMarker = v.ssmlGender === 'MALE' ? 'M' : (v.ssmlGender === 'FEMALE' ? 'F' : '?');
+            
+            const label = `${premiumMarker} [${genderMarker}] ${shortName}`;
+            const isSelected = v.name === activeVoiceName;
+            
+            return `<option value="${v.name}" ${isSelected ? 'selected' : ''}>${label}</option>`;
+        }).join('');
+        
+        return { languageCode: langCode, name: activeVoiceName };
+    };
+
+    let validConfig = renderVoices(langSelect.value, currentConfig.name);
+    saveGoogleChoice(storageKey, validConfig.languageCode, validConfig.name);
+
+    const newLangSelect = langSelect.cloneNode(true);
+    langSelect.parentNode.replaceChild(newLangSelect, langSelect);
+    
+    const newVoiceSelect = voiceSelect.cloneNode(true);
+    voiceSelect.parentNode.replaceChild(newVoiceSelect, voiceSelect);
+
+    newLangSelect.onchange = () => {
+        const newLang = newLangSelect.value;
+        const newValidConfig = renderVoices(newLang, ''); 
+        saveGoogleChoice(storageKey, newValidConfig.languageCode, newValidConfig.name);
+    };
+
+    newVoiceSelect.onchange = () => {
+        saveGoogleChoice(storageKey, newLangSelect.value, newVoiceSelect.value);
+    };
+}
+
+function saveGoogleChoice(key, langCode, voiceName) {
+    if (!langCode || !voiceName) return;
+    const settings = {
+        languageCode: langCode,
+        name: voiceName
+    };
+    localStorage.setItem(key, JSON.stringify(settings));
+}
+
+async function populateVoiceSelectors(apiKey, forceRefresh = false) {
+    const container = document.getElementById('google-voice-settings-container');
+    if (container) container.style.display = 'block';
+
+    if (forceRefresh) {
+        googleVoicesList = []; 
+    }
+
+    const allSelects = document.querySelectorAll('.google-voice-select-group select');
+    if (googleVoicesList.length === 0) {
+        allSelects.forEach(s => s.innerHTML = '<option>Loading...</option>');
+    }
+
+    const voices = await loadGoogleVoices(apiKey);
+    if (!voices || !voices.length) {
+        allSelects.forEach(s => s.innerHTML = '<option>Error / No Key</option>');
+        return;
+    }
+
+    setupVoiceSelectors(voices, 'google-lang-select-pali', 'google-voice-select-pali', GOOGLE_PALI_SETTINGS_KEY, DEFAULT_PALI_CONFIG);
+
+    const pageLang = detectTranslationLang(); 
+    const defaultTrnMap = { 'ru': 'ru-RU', 'en': 'en-US', 'th': 'th-TH' };
+    const defaultTrnCode = defaultTrnMap[pageLang] || 'en-US';
+    
+    const bestDefaultVoice = voices.find(v => v.languageCodes[0] === defaultTrnCode && v.name.includes('Standard')) || 
+                             voices.find(v => v.languageCodes[0] === defaultTrnCode) || 
+                             DEFAULT_TRN_CONFIG;
+
+    const trnConfig = { languageCode: defaultTrnCode, name: bestDefaultVoice.name };
+
+    setupVoiceSelectors(voices, 'google-lang-select-trn', 'google-voice-select-trn', GOOGLE_TRN_SETTINGS_KEY, trnConfig);
+    
+    togglePaliDropdownVisibility();
+}
+
+function togglePaliDropdownVisibility() {
+    const isNative = document.getElementById('native-pali-toggle')?.checked;
+    const paliDropdowns = document.getElementById('pali-google-dropdowns');
+    if (paliDropdowns) {
+        paliDropdowns.style.display = isNative ? 'none' : 'block';
+    }
+}
+
 async function fetchGoogleAudio(text, lang, rate, apiKey) {
-  const voiceConfig = GOOGLE_VOICES[lang] || GOOGLE_VOICES['en'];
+  let targetConfig = null;
+
+  if (lang === 'pi-dev') {
+      const savedPali = localStorage.getItem(GOOGLE_PALI_SETTINGS_KEY);
+      if (savedPali) {
+          try { targetConfig = JSON.parse(savedPali); } catch (e) {}
+      }
+      if (!targetConfig) targetConfig = DEFAULT_PALI_CONFIG;
+  } else {
+      const savedTrn = localStorage.getItem(GOOGLE_TRN_SETTINGS_KEY);
+      if (savedTrn) {
+          try { targetConfig = JSON.parse(savedTrn); } catch (e) {}
+      }
+      if (!targetConfig) targetConfig = DEFAULT_TRN_CONFIG;
+  }
+
   const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
   
   const payload = {
     input: { text: text },
-    voice: { languageCode: voiceConfig.languageCode, name: voiceConfig.name },
+    voice: { languageCode: targetConfig.languageCode, name: targetConfig.name },
     audioConfig: { 
         audioEncoding: 'MP3',
-        speakingRate: rate, 
-        pitch: lang === 'pi-dev' ? -2.0 : 0 
+        speakingRate: rate 
     }
   };
 
@@ -365,27 +549,34 @@ async function playCurrentSegment() {
   }
 
   let uiRate = 1.0;     
-  let audioRate = 1.0;  
+  let audioRateBrowser = 1.0; 
+  let audioRateGoogle = 1.0;  
+  
   let isPali = false;
   let targetLang = 'en';
 
   if (item.lang === 'ru') {
     uiRate = getRateForLang('ru');
-    audioRate = uiRate;
+    audioRateBrowser = uiRate;
+    audioRateGoogle = uiRate;
     targetLang = 'ru';
   } else if (item.lang === 'th') { 
     uiRate = getRateForLang('th'); 
-    audioRate = uiRate;
+    audioRateBrowser = uiRate;
+    audioRateGoogle = uiRate;
     targetLang = 'th';
   } else if (item.lang === 'en') {
     uiRate = getRateForLang('en');
-    audioRate = uiRate;
+    audioRateBrowser = uiRate;
+    audioRateGoogle = uiRate;
     targetLang = 'en';
   } else if (item.lang === 'pi-dev') {
     isPali = true;
     targetLang = 'pi-dev';
     uiRate = getRateForLang('pi-dev');
-    audioRate = uiRate * PALI_RATIO;
+    
+    audioRateBrowser = uiRate * PALI_RATIO; 
+    audioRateGoogle  = uiRate;              
   }
   
   const rateSelect = document.getElementById('tts-rate-select');
@@ -400,12 +591,27 @@ async function playCurrentSegment() {
       }
   }
 
-  // === ПРОВЕРКА: Использовать ли Google TTS? ===
+  // === ГИБРИДНЫЙ РЕЖИМ ===
   const googleKey = localStorage.getItem(GOOGLE_KEY_STORAGE);
+  const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
   
+  let tryGoogle = false;
+
   if (googleKey && googleKey.length > 10) {
+      if (isPali) {
+          // Если Пали, используем Google ТОЛЬКО если Native выключен
+          if (!useNativePali) {
+              tryGoogle = true;
+          }
+      } else {
+          // Если Перевод, всегда пробуем Google
+          tryGoogle = true;
+      }
+  }
+
+  if (tryGoogle) {
       try {
-          const audioContent = await fetchGoogleAudio(item.text, targetLang, audioRate, googleKey);
+          const audioContent = await fetchGoogleAudio(item.text, targetLang, audioRateGoogle, googleKey);
           
           if (audioContent) {
               const audio = new Audio("data:audio/mp3;base64," + audioContent);
@@ -421,7 +627,7 @@ async function playCurrentSegment() {
               
               audio.onerror = (err) => {
                   console.error("Google Audio playback error", err);
-                  playBrowserTTS(item.text, targetLang, audioRate, isPali); 
+                  playBrowserTTS(item.text, targetLang, audioRateBrowser, isPali); 
               };
 
               if (!ttsState.paused) {
@@ -441,7 +647,8 @@ async function playCurrentSegment() {
       }
   }
 
-  playBrowserTTS(item.text, targetLang, audioRate, isPali);
+  // Фолбэк на Native (Browser)
+  playBrowserTTS(item.text, targetLang, audioRateBrowser, isPali);
 }
 
 function playBrowserTTS(text, langKey, rate, isPali) {
@@ -529,17 +736,13 @@ function playBrowserTTS(text, langKey, rate, isPali) {
 
 // --- Обработчики событий ---
 async function handleSuttaClick(e) {
-  // --- 1. Обработка кнопки настроек (Анимация) ---
   if (e.target.closest('#tts-settings-toggle')) {
     e.preventDefault();
     const panel = document.getElementById('tts-settings-panel');
     const icon = document.getElementById('tts-settings-icon');
     
     if (panel) {
-        // Переключаем класс видимости
         panel.classList.toggle('visible');
-        
-        // Вращаем иконку
         if (panel.classList.contains('visible')) {
             if (icon) icon.style.transform = 'rotate(90deg)';
         } else {
@@ -557,20 +760,17 @@ async function handleSuttaClick(e) {
   if (voiceLink) {
     e.preventDefault();
     const player = getOrBuildPlayer();
-    
     const targetSlug = voiceLink.dataset.slug;
     const internalPlayBtn = player.querySelector('.play-main-button');
     if (internalPlayBtn && targetSlug) {
         internalPlayBtn.dataset.slug = targetSlug;
     }
-
     player.classList.add('active');
     
     if (!ttsState.speaking) {
       const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
                    || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
-      
       startPlayback(container, mode, targetSlug, 0);
     }
     return;
@@ -595,7 +795,6 @@ async function handleSuttaClick(e) {
     }
 
     ttsState.currentIndex = newIndex;
-    
     if (ttsState.paused) {
       resetUI();
       const item = ttsState.playlist[ttsState.currentIndex];
@@ -613,13 +812,10 @@ async function handleSuttaClick(e) {
 
   if (playBtn && !e.target.classList.contains('voice-link')) {
     e.preventDefault();
-
     const activeWordElement = container.querySelector('.active-word');
     const activeId = activeWordElement ? getElementId(activeWordElement) : null;
-    
     const currentItem = ttsState.playlist[ttsState.currentIndex];
     const currentId = currentItem ? currentItem.id : null;
-
     const shouldJump = activeId && (!ttsState.speaking || activeId !== currentId);
 
     if (shouldJump) {
@@ -632,13 +828,11 @@ async function handleSuttaClick(e) {
       }
       let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
       startPlayback(container, mode, targetSlug, 0);
-      
     } else {
       if (ttsState.speaking) {
         if (ttsState.paused) {
           ttsState.paused = false;
           setButtonIcon('pause');
-          
           if (ttsState.googleAudio) {
               ttsState.googleAudio.play();
           } else {
@@ -673,17 +867,14 @@ function stopPlayback() {
       ttsState.googleAudio.pause();
       ttsState.googleAudio = null;
   }
-
   ttsState.speaking = false;
   ttsState.paused = false;
   ttsState.isNavigating = false;
   releaseWakeLock();
-
   const player = document.getElementById('voice-player-container');
   if (player) {
     player.classList.remove('active');
   }
-
   if (ttsState.utterance) {
     ttsState.utterance.onend = null;
     ttsState.utterance.onerror = null;
@@ -699,7 +890,6 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
     console.warn('Нет данных для воспроизведения');
     return;
   }
-  
   const playlist = createPlaylistFromData(textData, mode);
   if (!playlist.length) {
     console.warn('Плейлист пуст для режима:', mode);
@@ -807,6 +997,7 @@ function getPlayerHtml() {
   const defaultMode = isSpecialPath ? 'pi' : 'trn';
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
   const savedKey = localStorage.getItem(GOOGLE_KEY_STORAGE) || ''; 
+  const isNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true'; 
   
   let initialRate;
   let currentRatesList; 
@@ -836,20 +1027,6 @@ function getPlayerHtml() {
   
   const style = `
   <style>
-    /* Настройки для Шестеренки и Закрытия 
-    .tts-top-btn {
-      position: absolute;
-      top: 10px; 
-      font-size: 20px;
-      line-height: 1;
-      cursor: pointer;
-      color: #999;
-      text-decoration: none !important;
-      z-index: 10;
-      transition: color 0.2s, transform 0.3s;
-    }
-	*/
-    
     .tts-settings-btn { left: 15px; }
     .close-tts-btn    { right: 15px; }
 
@@ -857,16 +1034,14 @@ function getPlayerHtml() {
     .dark .tts-top-btn { color: #bbb; }
     .dark .tts-top-btn:hover { color: #fff; }
 
-    /* Контейнер кнопок управления: Центрирование и отступ от верха */
     .tts-controls-row {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px; /* Отступ от верхних кнопок */
+        margin-top: 15px;
         margin-bottom: 5px;
     }
 
-    /* Анимация панели */
     #tts-settings-panel {
         max-height: 0;
         opacity: 0;
@@ -876,76 +1051,126 @@ function getPlayerHtml() {
     }
     
     #tts-settings-panel.visible {
-        max-height: 500px; /* Достаточно места для контента */
+        max-height: 600px;
         opacity: 1;
         margin-top: 10px;
         padding-top: 10px;
         border-top: 1px solid #444;
     }
 	
-	
-	/* Выстраиваем всё в один ряд и центрируем по вертикали */
-.tts-main-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 15px;
-    height: 40px;
-}
+    .tts-main-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 15px;
+        height: 40px;
+    }
 
-/* Навигация строго по центру */
-.tts-controls-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
+    .tts-controls-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
 
-/* Сбрасываем абсолютное позиционирование для кнопок */
-.tts-top-btn {
-    position: static !important;
-    color: #999; /* Нейтральный серый */
-    font-size: 24px;
-    text-decoration: none !important;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
-}
+    .tts-top-btn {
+        position: static !important;
+        color: #999;
+        font-size: 24px;
+        text-decoration: none !important;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
 
-.tts-top-btn:hover {
-    color: #fff;
-}
+    .tts-top-btn:hover {
+        color: #fff;
+    }
 
-/* Фильтр для иконок навигации, чтобы не были слишком черными */
-.tts-icon {
-    filter: invert(0.5);
-}
+    .tts-icon {
+        filter: invert(0.5);
+    }
 
-.close-tts-btn {
-  transform: translate(-5px, -3px);
-}
+    .close-tts-btn {
+      transform: translate(-5px, -3px);
+    }
 
-#google-api-key-input {
-    width: 140px;
-    background: #eee; /* Цвет для светлой темы */
-    border: 1px solid #ccc;
-    color: #333;
-    border-radius: 4px;
-    padding: 2px 5px;
-    font-size: 11px;
-    transition: background 0.3s, color 0.3s;
-}
+    #google-api-key-input {
+        width: 120px;
+        background: #eee;
+        border: 1px solid #ccc;
+        color: #333;
+        border-radius: 4px;
+        padding: 2px 5px;
+        font-size: 11px;
+        transition: background 0.3s, color 0.3s;
+    }
 
-/* Стили для темной темы */
-.dark #google-api-key-input {
-    background: #333;
-    border: 1px solid #555;
-    color: #ccc;
-}
+    .dark #google-api-key-input {
+        background: #333;
+        border: 1px solid #555;
+        color: #ccc;
+    }
 
+    .refresh-api-btn {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 0 5px;
+        transition: color 0.2s;
+        display: inline-flex;
+        align-items: center;
+    }
+    .refresh-api-btn:hover {
+        color: #fff;
+    }
+    
+    .api-key-row {
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        gap: 5px;
+        margin-top: 12px;
+    }
+
+    .google-voice-select-group {
+        margin-bottom: 8px;
+    }
+    
+    .voice-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2px;
+    }
+
+    .google-voice-label {
+        font-size: 11px; color: #aaa; margin-bottom: 0;
+    }
+    
+    .google-voice-dropdown {
+        width: 100%; 
+        max-width: 150px; 
+        margin-bottom: 4px; 
+        font-size: 11px; 
+        border: 1px solid #ccc;
+        background: #eee; 
+        color: #333; 
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    
+    .dark .google-voice-dropdown {
+        background: #333; 
+        color: #ccc; 
+        border: 1px solid #555;
+    }
   </style>
   `;
 
@@ -999,11 +1224,37 @@ function getPlayerHtml() {
           
           <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
 
-          <div class="">
-<input type="password" id="google-api-key-input" 
-       value="${savedKey}" 
-       placeholder="Google API Key (Optional)" 
-       title="Enter Google Cloud TTS API Key for premium voices">
+          <div class="api-key-row">
+            <input type="password" id="google-api-key-input" 
+                   value="${savedKey}" 
+                   placeholder="Google API Key" 
+                   title="Enter Google Cloud TTS API Key for premium voices">
+            <button id="refresh-voices-btn" class="refresh-api-btn" title="Refresh Voice List">↻</button>
+          </div>
+
+          <div id="google-voice-settings-container" style="display:none; margin-top: 8px; border-top: 1px dashed #555; padding-top: 5px;">
+              
+              <div class="google-voice-select-group">
+                       <div class="google-voice-label">Pāḷi Voice (Google):
+					   <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
+                          <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
+                          Native
+                       </label>
+
+					   </div>
+                       
+                  <div id="pali-google-dropdowns" style="display: ${isNativePali ? 'none' : 'block'};">
+                       <select id="google-lang-select-pali" class="google-voice-dropdown"></select>
+                       <select id="google-voice-select-pali" class="google-voice-dropdown"></select>
+                  </div>
+              </div>
+
+              <div class="google-voice-select-group">
+                  <div class="google-voice-label">Translation Voice (Google):</div>
+                  <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
+                  <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
+              </div>
+
           </div>
       </div>
     </div>
@@ -1028,6 +1279,11 @@ function getOrBuildPlayer() {
     const playerInner = playerContainer.querySelector('.voice-player');
     if (playerInner) {
         playerInner.innerHTML = getPlayerHtml();
+
+        const savedKey = localStorage.getItem(GOOGLE_KEY_STORAGE);
+        if (savedKey && savedKey.length > 10) {
+            setTimeout(() => populateVoiceSelectors(savedKey), 100);
+        }
     }
 
     const placeholder = playerContainer.querySelector('#audio-file-link-placeholder');
@@ -1055,14 +1311,33 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
 // --- Обработчик изменения настроек ---
 async function handleTTSSettingChange(e) {
-  // Save API Key
+  // 0. Toggle Native Pali
+  if (e.target.id === 'native-pali-toggle') {
+      const isChecked = e.target.checked;
+      localStorage.setItem(NATIVE_PALI_KEY, isChecked);
+      togglePaliDropdownVisibility();
+      return; 
+  }
+
+  // 1. Refresh Button (Обработка клика по кнопке обновления)
+  if (e.target.id === 'refresh-voices-btn') {
+      e.preventDefault();
+      const input = document.getElementById('google-api-key-input');
+      const key = input ? input.value.trim() : '';
+      if (key.length > 10) {
+          populateVoiceSelectors(key, true); // forceRefresh = true
+      }
+      return;
+  }
+
+  // 2. Save API Key
   if (e.target.id === 'google-api-key-input') {
       const key = e.target.value.trim();
       localStorage.setItem(GOOGLE_KEY_STORAGE, key);
       return;
   }
 
-  // 1. Mode
+  // 3. Mode
   if (e.target.id === 'tts-mode-select') {
     e.preventDefault();
     const newMode = e.target.value;
@@ -1115,7 +1390,7 @@ async function handleTTSSettingChange(e) {
     }
   }
   
-  // 2. Rate
+  // 4. Rate
   if (e.target.id === 'tts-rate-select') {
     const newRate = parseFloat(e.target.value);
     
@@ -1144,7 +1419,7 @@ async function handleTTSSettingChange(e) {
     }
   }
 
-  // 3. Scroll
+  // 5. Scroll
   if (e.target.id === 'tts-scroll-toggle') {
      ttsState.autoScroll = e.target.checked;
      localStorage.setItem(SCROLL_STORAGE_KEY, e.target.checked);
@@ -1158,8 +1433,15 @@ async function handleTTSSettingChange(e) {
 }
 
 document.addEventListener('change', handleTTSSettingChange);
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'refresh-voices-btn') {
+        handleTTSSettingChange(e);
+    } else {
+        handleSuttaClick(e);
+    }
+});
+
 window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
-document.addEventListener('click', handleSuttaClick);
 document.addEventListener('DOMContentLoaded', () => { 
 
   document.addEventListener('contextmenu', function(e) {
