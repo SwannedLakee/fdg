@@ -23,22 +23,49 @@ const PALI_ALERT_KEY = 'tts_pali_alert_shown';
 // --- Google TTS Config ---
 const GOOGLE_KEY_STORAGE = 'tts_google_key';
 const GOOGLE_PALI_SETTINGS_KEY = 'tts_google_pali_custom_voice'; 
-const GOOGLE_TRN_SETTINGS_KEY  = 'tts_google_trn_custom_voice';  
+
+// Раздельные ключи для голоса перевода в зависимости от контекста
+const GOOGLE_TRN_KEY_RU    = 'tts_google_trn_ru';
+const GOOGLE_TRN_KEY_EN    = 'tts_google_trn_en';
+const GOOGLE_TRN_KEY_STUDY = 'tts_google_trn_study'; // Для /d/ и /memorize/
 
 let googleVoicesList = []; 
 
-// Дефолтные настройки
+// Дефолтные настройки для Пали
 const DEFAULT_PALI_CONFIG = { languageCode: 'pa-IN', name: 'pa-IN-Chirp3-HD-Achird' };
 
-// Логика выбора дефолтного голоса перевода (RU или EN)
-const isRuPath = window.location.pathname.includes('/ru') || 
-                 window.location.pathname.includes('/r/') || 
-                 window.location.pathname.includes('/ml');
+// --- ЛОГИКА ОПРЕДЕЛЕНИЯ КОНТЕКСТА (URL) ---
+function getContextInfo() {
+  const path = window.location.pathname;
+  
+  // 1. Режим заучивания /d/ или /memorize/ (Индийский контекст для обоих слотов)
+  if (path.includes('/d/') || path.includes('/memorize/')) {
+      return {
+          type: 'study',
+          storageKey: GOOGLE_TRN_KEY_STUDY,
+          defaultConfig: { languageCode: 'pa-IN', name: 'pa-IN-Chirp3-HD-Achird' }, 
+          isIndianContext: true
+      };
+  }
 
-const DEFAULT_TRN_CONFIG = isRuPath
-  ? { languageCode: 'ru-RU', name: 'ru-RU-Standard-D' }  // Русский (если в URL есть маркеры)
-  : { languageCode: 'en-US', name: 'en-US-Standard-D' }; // Иначе Английский
+  // 2. Русский контекст
+  if (path.includes('/ru') || path.includes('/r/') || path.includes('/ml')) {
+      return {
+          type: 'ru',
+          storageKey: GOOGLE_TRN_KEY_RU,
+          defaultConfig: { languageCode: 'ru-RU', name: 'ru-RU-Standard-D' },
+          isIndianContext: false
+      };
+  }
 
+  // 3. Дефолт (Английский/Тайский и прочие)
+  return {
+      type: 'en',
+      storageKey: GOOGLE_TRN_KEY_EN,
+      defaultConfig: { languageCode: 'en-US', name: 'en-US-Standard-D' },
+      isIndianContext: false
+  };
+}
 
 const PALI_RATIO = 0.6; 
 
@@ -64,14 +91,11 @@ const synth = window.speechSynthesis;
 // --- Утилиты ---
 
 // --- "Вечная Тишина" (Heartbeat Audio) ---
-// Используем реальный файл с сервера
 const SILENCE_URL = '/assets/common/silence.mp3';
-
 let silenceAudio = new Audio(SILENCE_URL);
-silenceAudio.loop = true; // Зацикливаем навечно
-silenceAudio.volume = 0.05; // 5% громкости, чтобы не мешало, но система видела активность
+silenceAudio.loop = true; 
+silenceAudio.volume = 0.05;
 
-// Функция показа уведомлений (Тост)
 function showToast(message) {
     const oldToast = document.getElementById('tts-toast');
     if (oldToast) oldToast.remove();
@@ -88,7 +112,6 @@ function showToast(message) {
     });
     document.body.appendChild(toast);
     
-    // Удаляем через 3 секунды
     setTimeout(() => { 
         if(toast.parentNode) {
             toast.style.opacity = '0';
@@ -99,10 +122,7 @@ function showToast(message) {
 
 function toggleSilence(enable) {
     if (enable) {
-        // Если уже играет, не трогаем
         if (!silenceAudio.paused) return;
-
-        // Если вдруг src слетел или объект пересоздан
         if (!silenceAudio.src || silenceAudio.src === '') {
              silenceAudio.src = SILENCE_URL;
         }
@@ -111,10 +131,7 @@ function toggleSilence(enable) {
 
         if (playPromise !== undefined) {
             playPromise.then(() => {
-         //       console.log("Silence started (File mode)");
-     //           showToast("🔈 ТТС АКТИВЕН\n(Фоновый режим включен)");
-                
-                // --- НАСТРОЙКА ПЛЕЕРА В ТРЕЕ (Media Session) ---
+                // Media Session Setup
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: "Dhamma Vinaya",
@@ -122,7 +139,6 @@ function toggleSilence(enable) {
                         artwork: [{ src: '/assets/img/pwa-bold-monocolor-192.png', sizes: '192x192', type: 'image/png' }]
                     });
 
-                    // Кнопки в шторке/на экране блокировки
                     navigator.mediaSession.setActionHandler('play', () => { 
                         document.querySelector('.play-main-button')?.click();
                     });
@@ -138,16 +154,13 @@ function toggleSilence(enable) {
                 }
             }).catch(e => {
                console.warn("Silence file playback failed:", e);
-        //        showToast("⚠️ Ошибка фона: " + e.message);
             });
         }
     } else {
         if (!silenceAudio.paused) {
             silenceAudio.pause();
-            silenceAudio.currentTime = 0; // Сброс в начало
-      //      showToast("🛑 ТТС ОСТАНОВЛЕН");
+            silenceAudio.currentTime = 0;
             
-            // Очищаем статус в трее
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
                 navigator.mediaSession.setActionHandler('play', null);
@@ -158,8 +171,6 @@ function toggleSilence(enable) {
         }
     }
 }
-
-
 
 function updateRateOptions(isPali, activeRate) {
   const rateSelect = document.getElementById('tts-rate-select');
@@ -196,10 +207,7 @@ async function requestWakeLock() {
   if ('wakeLock' in navigator) {
     try {
       wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => {
-    //    console.log('Wake Lock released');
-      });
-  //    console.log('Wake Lock active');
+      wakeLock.addEventListener('release', () => {});
     } catch (err) {
       console.error(`${err.name}, ${err.message}`);
     }
@@ -210,14 +218,12 @@ async function releaseWakeLock() {
   if (wakeLock !== null) {
     await wakeLock.release();
     wakeLock = null;
- //   console.log('Wake Lock released manually');
   }
 }
 
 function clearTtsStorage() {
   localStorage.removeItem(LAST_SLUG_KEY);
   localStorage.removeItem(LAST_INDEX_KEY);
- // console.log('TTS Storage cleared (end of track reached)');
 }
 
 function cleanTextForTTS(text) {
@@ -342,11 +348,8 @@ function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, de
         
         currentVoices.sort((a, b) => {
             if (a.ssmlGender !== b.ssmlGender) {
-
-                // Принудительно ставим MALE выше (return -1)
                 if (a.ssmlGender === 'MALE') return -1;
                 if (b.ssmlGender === 'MALE') return 1;
-                // Для всех остальных (FEMALE, NEUTRAL) оставляем алфавитный порядок
                 return a.ssmlGender.localeCompare(b.ssmlGender);
             }
             const aPrem = isPremium(a.name);
@@ -356,7 +359,6 @@ function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, de
             
             return a.name.localeCompare(b.name);
         });
-
 
         let activeVoiceName = selectedVoiceName;
         if (!currentVoices.find(v => v.name === activeVoiceName)) {
@@ -369,7 +371,6 @@ function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, de
             const shortName = v.name.replace(langCode + '-', '');
             const premiumMarker = isPremium(v.name) ? '💎' : '📦'; 
             const genderMarker = v.ssmlGender === 'MALE' ? 'M' : (v.ssmlGender === 'FEMALE' ? 'F' : '?');
-            
             const label = `${premiumMarker} [${genderMarker}] ${shortName}`;
             const isSelected = v.name === activeVoiceName;
             
@@ -408,9 +409,7 @@ function saveGoogleChoice(key, langCode, voiceName) {
     localStorage.setItem(key, JSON.stringify(settings));
 }
 
-
-
-/*
+// --- ОСНОВНАЯ ФУНКЦИЯ ПОПУЛЯЦИИ СПИСКОВ (УЧИТЫВАЕТ КОНТЕКСТ) ---
 async function populateVoiceSelectors(apiKey, forceRefresh = false) {
     const container = document.getElementById('google-voice-settings-container');
     if (container) container.style.display = 'block';
@@ -430,88 +429,60 @@ async function populateVoiceSelectors(apiKey, forceRefresh = false) {
         return;
     }
 
-    setupVoiceSelectors(voices, 'google-lang-select-pali', 'google-voice-select-pali', GOOGLE_PALI_SETTINGS_KEY, DEFAULT_PALI_CONFIG);
-
-    const pageLang = detectTranslationLang(); 
-    const defaultTrnMap = { 'ru': 'ru-RU', 'en': 'en-US', 'th': 'th-TH' };
-    const defaultTrnCode = defaultTrnMap[pageLang] || 'en-US';
-    
-    const bestDefaultVoice = voices.find(v => v.languageCodes[0] === defaultTrnCode && v.name.includes('Standard')) || 
-                             voices.find(v => v.languageCodes[0] === defaultTrnCode) || 
-                             DEFAULT_TRN_CONFIG;
-
-    const trnConfig = { languageCode: defaultTrnCode, name: bestDefaultVoice.name };
-
-    setupVoiceSelectors(voices, 'google-lang-select-trn', 'google-voice-select-trn', GOOGLE_TRN_SETTINGS_KEY, trnConfig);
-    
-    togglePaliDropdownVisibility();
-}
-*/
-
-async function populateVoiceSelectors(apiKey, forceRefresh = false) {
-    const container = document.getElementById('google-voice-settings-container');
-    if (container) container.style.display = 'block';
-
-    if (forceRefresh) {
-        googleVoicesList = []; 
-    }
-
-    const allSelects = document.querySelectorAll('.google-voice-select-group select');
-    if (googleVoicesList.length === 0) {
-        allSelects.forEach(s => s.innerHTML = '<option>Loading...</option>');
-    }
-
-    const voices = await loadGoogleVoices(apiKey);
-    if (!voices || !voices.length) {
-        allSelects.forEach(s => s.innerHTML = '<option>Error / No Key</option>');
-        return;
-    }
-
-    // --- ФИЛЬТРАЦИЯ ЯЗЫКОВ ---
-
-    // 1. Для Пали: Только Индийские (IN), Непал (NP) и Шри-Ланка (LK)
-    const paliVoices = voices.filter(v => {
-        const code = v.languageCodes[0];
+    // Вспомогательная функция проверки на "Индийский регион"
+    const isIndianLang = (code) => {
         return code.includes('-IN') || code.includes('ne-NP') || code.includes('si-LK');
-    });
+    };
 
-    // 2. Для Перевода: Только Русский (ru), Английский (en), Тайский (th)
-    const trnVoices = voices.filter(v => {
-        const code = v.languageCodes[0];
-        return code.startsWith('ru-') || code.startsWith('en-') || code.startsWith('th-');
-    });
+    // 1. Для Пали: Только Индийские
+    const paliVoices = voices.filter(v => isIndianLang(v.languageCodes[0]));
+
+    // 2. Для Перевода: Зависит от контекста URL
+    const context = getContextInfo();
+    let trnVoices = [];
+
+    if (context.isIndianContext) {
+        // Если это /d/ или /memorize/ -> предлагаем Индийские языки
+        trnVoices = voices.filter(v => isIndianLang(v.languageCodes[0]));
+    } else {
+        // Иначе -> Русский, Английский, Тайский
+        trnVoices = voices.filter(v => {
+            const code = v.languageCodes[0];
+            return code.startsWith('ru-') || code.startsWith('en-') || code.startsWith('th-');
+        });
+    }
 
     // --- НАСТРОЙКА UI ---
 
-    // 1. Настройка Pali (передаем отфильтрованный список)
+    // 1. Настройка Pali
     setupVoiceSelectors(paliVoices, 'google-lang-select-pali', 'google-voice-select-pali', GOOGLE_PALI_SETTINGS_KEY, DEFAULT_PALI_CONFIG);
 
-    // 2. Настройка Translation (передаем отфильтрованный список)
-    const pageLang = detectTranslationLang(); 
-    const defaultTrnMap = { 'ru': 'ru-RU', 'en': 'en-US', 'th': 'th-TH' };
-    const defaultTrnCode = defaultTrnMap[pageLang] || 'en-US';
+    // 2. Настройка Translation (используем динамический ключ и конфиг)
     
-    // Карта предпочтительных голосов (Standard-D для RU/EN)
-    const preferredVoices = {
-        'ru': 'ru-RU-Standard-D',
-        'en': 'en-US-Standard-D',
-        'th': 'th-TH-Standard-A'
-    };
+    // Пытаемся найти умный дефолт, если сохраненного нет
+    let bestDefaultVoice = null;
+
+    if (context.isIndianContext) {
+         // Для Study режима ищем Хинди или Санскрит
+         bestDefaultVoice = trnVoices.find(v => v.name.includes('pa-IN-Standard-D')) || 
+                            trnVoices.find(v => v.languageCodes[0] === 'pa-IN') ||
+                            trnVoices[0];
+    } else {
+        // Для обычного режима
+        const pageLang = detectTranslationLang(); 
+        const preferredName = (pageLang === 'ru') ? 'ru-RU-Standard-D' : 
+                              (pageLang === 'th') ? 'th-TH-Standard-A' : 'en-US-Standard-D';
+        
+        bestDefaultVoice = trnVoices.find(v => v.name === preferredName) || 
+                           trnVoices.find(v => v.name.includes('Standard') && v.languageCodes[0].startsWith(pageLang)) ||
+                           context.defaultConfig;
+    }
     
-    // Ищем дефолтный голос с приоритетом на preferredVoices
-    const bestDefaultVoice = 
-                             // 1. Пробуем найти конкретный предпочтительный голос (Standard-D)
-                             trnVoices.find(v => v.name === preferredVoices[pageLang]) || 
-                             // 2. Если нет, берем любой Standard для этого языка
-                             trnVoices.find(v => v.languageCodes[0] === defaultTrnCode && v.name.includes('Standard')) || 
-                             // 3. Если нет, берем первый попавшийся голос для этого языка
-                             trnVoices.find(v => v.languageCodes[0] === defaultTrnCode) || 
-                             // 4. Фолбэк на глобальную константу
-                             DEFAULT_TRN_CONFIG;
+    // Fallback
+    const finalDefaultConfig = bestDefaultVoice ? { languageCode: bestDefaultVoice.languageCodes[0], name: bestDefaultVoice.name } : context.defaultConfig;
 
-    const trnConfig = { languageCode: defaultTrnCode, name: bestDefaultVoice.name };
-
-    setupVoiceSelectors(trnVoices, 'google-lang-select-trn', 'google-voice-select-trn', GOOGLE_TRN_SETTINGS_KEY, trnConfig);
+    // Важно: передаем context.storageKey
+    setupVoiceSelectors(trnVoices, 'google-lang-select-trn', 'google-voice-select-trn', context.storageKey, finalDefaultConfig);
     
     togglePaliDropdownVisibility();
 }
@@ -524,21 +495,28 @@ function togglePaliDropdownVisibility() {
     }
 }
 
+// --- ПОЛУЧЕНИЕ АУДИО (УЧИТЫВАЕТ КОНТЕКСТ) ---
 async function fetchGoogleAudio(text, lang, rate, apiKey) {
   let targetConfig = null;
 
   if (lang === 'pi-dev') {
+      // --- PALI ---
       const savedPali = localStorage.getItem(GOOGLE_PALI_SETTINGS_KEY);
       if (savedPali) {
           try { targetConfig = JSON.parse(savedPali); } catch (e) {}
       }
       if (!targetConfig) targetConfig = DEFAULT_PALI_CONFIG;
   } else {
-      const savedTrn = localStorage.getItem(GOOGLE_TRN_SETTINGS_KEY);
+      // --- TRANSLATION (Dynamic) ---
+      const context = getContextInfo(); // Получаем текущий контекст
+      
+      const savedTrn = localStorage.getItem(context.storageKey);
       if (savedTrn) {
           try { targetConfig = JSON.parse(savedTrn); } catch (e) {}
       }
-      if (!targetConfig) targetConfig = DEFAULT_TRN_CONFIG;
+      
+      // Если настройки нет, берем дефолт из контекста
+      if (!targetConfig) targetConfig = context.defaultConfig;
   }
 
   const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
@@ -1020,7 +998,6 @@ async function handleSuttaClick(e) {
           ttsState.paused = false;
           setButtonIcon('pause');
           
-          // Проверяем и запускаем тишину
           toggleSilence(true);
 
           if (ttsState.googleAudio) {
@@ -1035,7 +1012,6 @@ async function handleSuttaClick(e) {
           if (ttsState.googleAudio) {
               ttsState.googleAudio.pause();
           }
-          // НЕ выключаем тишину, чтобы кнопка в шторке работала
           setButtonIcon('play');
         }
       } else {
@@ -1061,9 +1037,7 @@ function stopPlayback() {
       ttsState.googleAudio = null;
   }
   
-  // === ОСТАНОВКА ТИШИНЫ ===
   toggleSilence(false);
-  // ========================
 
   ttsState.speaking = false;
   ttsState.paused = false;
@@ -1133,9 +1107,7 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
       ttsState.googleAudio = null;
   }
   
-  // === ЗАПУСК ТИШИНЫ ===
   toggleSilence(true);
-  // =====================
   
   ttsState.playlist = playlist;
   ttsState.currentIndex = actualStartIndex;
@@ -1147,7 +1119,6 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
   
   setButtonIcon('pause');
   
-  // Небольшой таймаут для гарантии загрузки аудио
   setTimeout(() => {
      playCurrentSegment();
   }, 100);
@@ -1543,7 +1514,13 @@ async function handleTTSSettingChange(e) {
           const keysToRemove = [
               GOOGLE_KEY_STORAGE, 
               GOOGLE_PALI_SETTINGS_KEY, 
-              GOOGLE_TRN_SETTINGS_KEY, 
+              // Старый ключ
+              'tts_google_trn_custom_voice',
+              // Новые ключи
+              GOOGLE_TRN_KEY_RU,
+              GOOGLE_TRN_KEY_EN,
+              GOOGLE_TRN_KEY_STUDY,
+              
               SCROLL_STORAGE_KEY, 
               MODE_STORAGE_KEY, 
               NATIVE_PALI_KEY,
