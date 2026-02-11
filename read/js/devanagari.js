@@ -231,146 +231,127 @@ const varResponse = fetchVariant();
   Promise.all([rootResponse, rootDevResponse, htmlResponse, varResponse]).then(responses => {
     const [paliData, paliDevanagariData, htmlData, varData] = responses;
 
-    Object.keys(htmlData).forEach(segment => {
+    const segments = Object.keys(htmlData);
+
+    for (let i = 0; i < segments.length; i++) {
+      let segment = segments[i];
+
+      if (paliData[segment] === undefined) paliData[segment] = "";
+      if (paliDevanagariData[segment] === undefined) paliDevanagariData[segment] = "";
+
+      // === НАЧАЛО: Логика объединения Гатх ===
+      let nextSegment = segments[i + 1];
+
+      if (htmlData[segment] && htmlData[segment].includes('verse-line') &&
+          nextSegment && htmlData[nextSegment] && htmlData[nextSegment].includes('verse-line')) {
+          
+          let [nextOpen, nextClose] = htmlData[nextSegment].split(/{}/);
+          
+          if (!nextOpen.includes('<p>')) {
+              
+              const toLower = (str) => {
+                  if (!str) return "";
+                  return str.charAt(0).toLowerCase() + str.slice(1);
+              };
+
+              // 1. Объединяем Пали (Латиница)
+              if (paliData[nextSegment]) {
+                  paliData[segment] = (paliData[segment] || "").trim() + " " + toLower(paliData[nextSegment].trim());
+              }
+
+              // 2. Объединяем Пали (Второй скрипт - Деванагари/Тай)
+              if (paliDevanagariData[nextSegment]) {
+                  paliDevanagariData[segment] = (paliDevanagariData[segment] || "").trim() + " " + toLower(paliDevanagariData[nextSegment].trim());
+              }
+
+              // 3. Объединяем Варианты
+              if (varData[nextSegment]) {
+                  varData[segment] = (varData[segment] || "").trim() + " " + toLower(varData[nextSegment].trim());
+              }
+
+              // 4. Склеиваем HTML
+              let [currOpen, currClose] = htmlData[segment].split(/{}/);
+              htmlData[segment] = (currOpen || '') + "{}" + (nextClose || '');
+              
+              // 5. Пропускаем
+              i++; 
+          }
+      }
+      // === КОНЕЦ: Логика объединения Гатх ===
 
       let [openHtml, closeHtml] = htmlData[segment].split(/{}/);
-      /* openHtml = openHtml.replace(/^<span class='verse-line'>/, "<br><span class='verse-line'>"); inputscript-IASTPali 
-      Roman (IAST)     	IAST
-Roman (IAST: Pāḷi)     	IASTPali
-Roman (IPA)            	IPA
-Roman (ISO 15919)      	ISO
-Roman (ISO 15919: Pāḷi)	ISOPali */
-// ISOPali ISO IASTPali IAST
 
+      let startIndex = segment.indexOf(':') + 1;
+      let anchor = segment.substring(startIndex);
 
-let startIndex = segment.indexOf(':') + 1;
-let anchor = segment.substring(startIndex);
+      if (slug.includes('-') && (slug.includes('an') || slug.includes('sn') || slug.includes('dhp'))) {
+        anchor = segment;
+      }
 
-if (slug.includes('-') && (slug.includes('an') || slug.includes('sn') || slug.includes('dhp'))) {
-anchor = segment;
-}
+      var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
 
-var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
+      let params = new URLSearchParams(document.location.search);
 
-if (paliData[segment] === undefined) {
-  paliData[segment] = "";
-}
+      // (Ваш код пунктуации)
+      if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== undefined) {
+          paliData[segment] = paliData[segment].replace(/[-—–]/g, ' ');  
+          paliData[segment] = paliData[segment].replace(/[:;“”‘’,"']/g, '');  
+          paliData[segment] = paliData[segment].replace(/[.?!]/g, ' | '); 
+       
+          paliDevanagariData[segment] = paliDevanagariData[segment].replace(/[-—–]/g, ' ');  
+          paliDevanagariData[segment] = paliDevanagariData[segment].replace(/[:;“”‘’,"']/g, '');  
+          paliDevanagariData[segment] = paliDevanagariData[segment].replace(/[.?!]/g, ' | '); 
+      }
 
+      let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 
+      if (finder && finder.trim() !== "") {
+        let regex = new RegExp(finder, 'gi'); // 'gi' - игнорировать регистр
 
-let params = new URLSearchParams(document.location.search);
+        try {
+          paliData[segment] = paliData[segment]?.replace(regex, match => `<b class='match finder'>${match}</b>`);
+        } catch (error) {
+          console.error("Ошибка при выделении совпадений в paliData:", error);
+        }
 
-function преобразоватьТекст() {
-    let входнойТекст = paliData[segment];
+        if (varData[segment] !== undefined) {  
+          try {
+            varData[segment] = varData[segment].replace(regex, match => `<b class="match finder">${match}</b>`);
+          } catch (error) {
+            console.error("Ошибка при выделении совпадений в varData:", error);
+          }
+        }
+      }
 
-    // Разбиваем текст на строки
-    let строкиСКавычками = входнойТекст.split('\n');
+      if (paliData[segment] !== undefined) {
+        paliData[segment] = paliData[segment].replace(/[—–—]/, ' — ');
+      }
 
-const строки = строкиСКавычками.map(строка => {
-    return строка.replace(/"/g, ' " ').replace(/—/g, ' — ').replace(/“/g, ' “ ').replace(/‘/g, " ‘ " ).replace(/\?/g, " ? " ).replace(/,/g, " , " ).replace(/\./g, " . " ).replace(/:/g, " : " ).replace(/;/g, " ; " );
-});
+      let linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
+      let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
 
-    let результат = строки.map(строка => {
-        // Разбиваем каждую строку на слова
-        let слова = строка.split(/\s+/);
-        
-        // Преобразуем каждое слово в первую букву или пустую строку
-let преобразованныеСлова = слова.map(word => {
-    let перваяБуква = word.match(/^\p{L}/u); // Используйте \p{L} для букв из разных языков
-    if (перваяБуква) {
-        return перваяБуква[0];
-    } else {
-        let диакритическиеСимволы = word.match(/^[\p{M}\p{N}\p{S}\p{P}]/u);
-        return диакритическиеСимволы ? диакритическиеСимволы[0] : '';
-    }
-});
+      if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
+          html += `${openHtml}<span id="${anchor}">
+              <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
+              <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
+                  <font class="variant"><br>${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
+              </span>
+          </span>${closeHtml}\n\n`;
 
-        // Объединяем преобразованные слова снова в строку
-        return преобразованныеСлова.join(' ').replace(/ \?/g, "?" ).replace(/“ /g, '').replace(/ ,/g, ", " ).replace(/ \. /g, ". " ).replace(/ : /g, ": " ).replace(/ ; /g, "; " ).replace(/ ‘ /g, " " );
-    }).join('\n'); // Объединяем строки с переносами
+      } else if (paliData[segment] !== paliData[segment]) {
+          html += `${openHtml}<span id="${anchor}">
+              <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
+              <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
+          </span>${closeHtml}\n\n`;
 
-    return результат;
-}
+      } else {
+          html += `${openHtml}<span id="${anchor}">
+              <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
+              <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
+          </span>${closeHtml}\n\n`;
+      }
+    } // Конец цикла for
 
-if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== undefined) {
-    paliData[segment] = paliData[segment].replace(/[-—–]/g, ' ');  
-    paliData[segment] = paliData[segment].replace(/[:;“”‘’,"']/g, '');  
-    paliData[segment] = paliData[segment].replace(/[.?!]/g, ' | '); 
- 
-    paliDevanagariData[segment] = paliDevanagariData[segment].replace(/[-—–]/g, ' ');  
-    paliDevanagariData[segment] = paliDevanagariData[segment].replace(/[:;“”‘’,"']/g, '');  
-    paliDevanagariData[segment] = paliDevanagariData[segment].replace(/[.?!]/g, ' | '); 
-    
-    
-    
-    //।   ॥  
-}
-
-
-  let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
-
-if (finder && finder.trim() !== "") {
-  let regex = new RegExp(finder, 'gi'); // 'gi' - игнорировать регистр
-
-  try {
-    paliData[segment] = paliData[segment]?.replace(regex, match => `<b class='match finder'>${match}</b>`);
-  } catch (error) {
-    console.error("Ошибка при выделении совпадений в paliData:", error);
-  }
-
-
-
-  if (varData[segment] !== undefined) {  
-    try {
-      varData[segment] = varData[segment].replace(regex, match => `<b class="match finder">${match}</b>`);
-    } catch (error) {
-      console.error("Ошибка при выделении совпадений в varData:", error);
-    }
-  }
-}
-
-
-if (paliData[segment] !== undefined) {
-paliData[segment] = paliData[segment].replace(/[—–—]/, ' — ');
-}
-
-let linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
-let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
-let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`;
-
-if (paliData[segment] !== paliData[segment] && varData[segment] !== undefined) {
-    html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
-            <font class="variant"><br>${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
-        </span>
-    </span>${closeHtml}\n\n`;
-
-} else if (paliData[segment] !== paliData[segment]) {
-    html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
-    </span>${closeHtml}\n\n`;
-
-} 
-
-/*else if (varData[segment] !== undefined) {
-    html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout eng-lang" lang="en">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span><br>
-        <font class="variant">${linkToCopyStart}${varData[segment].trim()}${linkToCopy}</font>
-    </span>${closeHtml}\n\n`;
-
-} */ 
-
-else {
-    html += `${openHtml}<span id="${anchor}">
-        <span class="pli-lang inputscript-ISOPali" lang="pi">${linkToCopyStart}${paliDevanagariData[segment].trim()}${linkToCopy}</span>
-        <span class="greyedout rus-lang" lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
-    </span>${closeHtml}\n\n`;
-}
-
-    });
 
 if (translator === "o") {
   translatorforuser = '<a href=/assets/common/o.html>o</a>';
