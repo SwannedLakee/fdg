@@ -295,6 +295,9 @@ function saveGoogleChoice(key, langCode, voiceName) {
     localStorage.setItem(key, JSON.stringify(settings));
 }
 
+
+
+/*
 async function populateVoiceSelectors(apiKey, forceRefresh = false) {
     const container = document.getElementById('google-voice-settings-container');
     if (container) container.style.display = 'block';
@@ -327,6 +330,64 @@ async function populateVoiceSelectors(apiKey, forceRefresh = false) {
     const trnConfig = { languageCode: defaultTrnCode, name: bestDefaultVoice.name };
 
     setupVoiceSelectors(voices, 'google-lang-select-trn', 'google-voice-select-trn', GOOGLE_TRN_SETTINGS_KEY, trnConfig);
+    
+    togglePaliDropdownVisibility();
+}
+*/
+
+
+
+async function populateVoiceSelectors(apiKey, forceRefresh = false) {
+    const container = document.getElementById('google-voice-settings-container');
+    if (container) container.style.display = 'block';
+
+    if (forceRefresh) {
+        googleVoicesList = []; 
+    }
+
+    const allSelects = document.querySelectorAll('.google-voice-select-group select');
+    if (googleVoicesList.length === 0) {
+        allSelects.forEach(s => s.innerHTML = '<option>Loading...</option>');
+    }
+
+    const voices = await loadGoogleVoices(apiKey);
+    if (!voices || !voices.length) {
+        allSelects.forEach(s => s.innerHTML = '<option>Error / No Key</option>');
+        return;
+    }
+
+    // --- ФИЛЬТРАЦИЯ ЯЗЫКОВ ---
+
+    // 1. Для Пали: Только Индийские (IN), Непал (NP) и Шри-Ланка (LK)
+    const paliVoices = voices.filter(v => {
+        const code = v.languageCodes[0];
+        return code.includes('-IN') || code.includes('ne-NP') || code.includes('si-LK');
+    });
+
+    // 2. Для Перевода: Только Русский (ru), Английский (en), Тайский (th)
+    const trnVoices = voices.filter(v => {
+        const code = v.languageCodes[0];
+        return code.startsWith('ru-') || code.startsWith('en-') || code.startsWith('th-');
+    });
+
+    // --- НАСТРОЙКА UI ---
+
+    // 1. Настройка Pali (передаем отфильтрованный список)
+    setupVoiceSelectors(paliVoices, 'google-lang-select-pali', 'google-voice-select-pali', GOOGLE_PALI_SETTINGS_KEY, DEFAULT_PALI_CONFIG);
+
+    // 2. Настройка Translation (передаем отфильтрованный список)
+    const pageLang = detectTranslationLang(); 
+    const defaultTrnMap = { 'ru': 'ru-RU', 'en': 'en-US', 'th': 'th-TH' };
+    const defaultTrnCode = defaultTrnMap[pageLang] || 'en-US';
+    
+    // Ищем дефолтный голос внутри отфильтрованного списка trnVoices
+    const bestDefaultVoice = trnVoices.find(v => v.languageCodes[0] === defaultTrnCode && v.name.includes('Standard')) || 
+                             trnVoices.find(v => v.languageCodes[0] === defaultTrnCode) || 
+                             DEFAULT_TRN_CONFIG;
+
+    const trnConfig = { languageCode: defaultTrnCode, name: bestDefaultVoice.name };
+
+    setupVoiceSelectors(trnVoices, 'google-lang-select-trn', 'google-voice-select-trn', GOOGLE_TRN_SETTINGS_KEY, trnConfig);
     
     togglePaliDropdownVisibility();
 }
@@ -1130,6 +1191,21 @@ function getPlayerHtml() {
         color: #fff;
     }
     
+    .reset-tts-btn {
+        background: none;
+        border: none;
+        color: #777;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 0 5px;
+        transition: color 0.2s;
+        display: inline-flex;
+        align-items: center;
+    }
+    .reset-tts-btn:hover {
+        color: #ff5555;
+    }
+    
     .api-key-row {
         display: flex; 
         align-items: center; 
@@ -1144,8 +1220,9 @@ function getPlayerHtml() {
     
     .voice-header-container {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
         margin-bottom: 2px;
     }
 
@@ -1230,19 +1307,18 @@ function getPlayerHtml() {
                    placeholder="Google API Key" 
                    title="Enter Google Cloud TTS API Key for premium voices">
             <button id="refresh-voices-btn" class="refresh-api-btn" title="Refresh Voice List">↻</button>
+            <button id="reset-tts-btn" class="reset-tts-btn" title="Full Reset (Clear Data)">🗑️</button>
           </div>
 
           <div id="google-voice-settings-container" style="display:none; margin-top: 8px; border-top: 1px dashed #555; padding-top: 5px;">
               
               <div class="google-voice-select-group">
-                       <div class="google-voice-label">Pāḷi Voice (Google):
-					   <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
+                       <div class="google-voice-label">Pāḷi Voice (Google): <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
                           <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
                           Native
-                       </label>
+                       </label></div>
 
-					   </div>
-                       
+
                   <div id="pali-google-dropdowns" style="display: ${isNativePali ? 'none' : 'block'};">
                        <select id="google-lang-select-pali" class="google-voice-dropdown"></select>
                        <select id="google-voice-select-pali" class="google-voice-dropdown"></select>
@@ -1311,6 +1387,35 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
 // --- Обработчик изменения настроек ---
 async function handleTTSSettingChange(e) {
+  // 0. RESET BUTTON (Сброс всего)
+  if (e.target.id === 'reset-tts-btn') {
+      e.preventDefault();
+      // Нативное подтверждение
+      if (confirm("Сбросить все настройки TTS, удалить API ключ и очистить кэш?")) {
+          
+          // Список всех ключей, которые мы используем
+          const keysToRemove = [
+              GOOGLE_KEY_STORAGE, 
+              GOOGLE_PALI_SETTINGS_KEY, 
+              GOOGLE_TRN_SETTINGS_KEY, 
+              SCROLL_STORAGE_KEY, 
+              MODE_STORAGE_KEY, 
+              NATIVE_PALI_KEY,
+              RATE_PALI_KEY, 
+              RATE_TRN_KEY, 
+              LAST_SLUG_KEY, 
+              LAST_INDEX_KEY, 
+              PALI_ALERT_KEY
+          ];
+          
+          keysToRemove.forEach(k => localStorage.removeItem(k));
+          
+          // Перезагружаем страницу, чтобы применить изменения начисто
+          window.location.reload();
+      }
+      return;
+  }
+
   // 0. Toggle Native Pali
   if (e.target.id === 'native-pali-toggle') {
       const isChecked = e.target.checked;
@@ -1434,7 +1539,7 @@ async function handleTTSSettingChange(e) {
 
 document.addEventListener('change', handleTTSSettingChange);
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'refresh-voices-btn') {
+    if (e.target.id === 'refresh-voices-btn' || e.target.id === 'reset-tts-btn') {
         handleTTSSettingChange(e);
     } else {
         handleSuttaClick(e);
