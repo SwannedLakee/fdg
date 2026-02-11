@@ -23,7 +23,8 @@ const PALI_ALERT_KEY = 'tts_pali_alert_shown';
 const GOOGLE_KEY_STORAGE = 'tts_google_key';
 
 const GOOGLE_VOICES = {
-  'pi-dev': { languageCode: 'hi-IN', name: 'hi-IN-Standard-C' }, 
+  'pi-dev': { languageCode: 'kn-IN', name: 'kn-IN-Standard-D' }, 
+//  'pi-dev': { languageCode: 'hi-IN', name: 'hi-IN-Standard-C' }, 
   'ru':     { languageCode: 'ru-RU', name: 'ru-RU-Standard-D' }, 
   'en':     { languageCode: 'en-US', name: 'en-US-Standard-D' }, 
   'th':     { languageCode: 'th-TH', name: 'th-TH-Standard-A' }  
