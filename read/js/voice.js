@@ -135,8 +135,8 @@ function toggleSilence(enable) {
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: "Dhamma Vinaya",
-                        artist: "Dhamma.Gift Read",
-                        artwork: [{ src: '/assets/img/pwa-bold-monocolor-192.png', sizes: '192x192', type: 'image/png' }]
+                        artist: "Dhamma.Gift Voice",
+                        artwork: [{ src: '/assets/img/albumart.jpg', sizes: '1024x1024', type: 'image/jpg' }]
                     });
 
                     navigator.mediaSession.setActionHandler('play', () => { 
