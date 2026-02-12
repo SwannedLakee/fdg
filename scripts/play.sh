@@ -8,11 +8,13 @@ BASE_AUDIO="/storage/emulated/0/Download/Sutta Audio"
 # ===== НАБОР =====
 
 SET="DN22#13.0.2"
-SET="an5.55#3.3"
+SET="an4.199#3.2"
+#SET="an5.55#3.3"
 # SET="MN9#14.4"
 
 AUDIO_FILE="dn22-4-1.mp3"
 AUDIO_FILE="an5.55.mp3"
+AUDIO_FILE="an4.199.mp3"
 # AUDIO_FILE="dn22-4-2.mp3"
 # AUDIO_FILE="mn91.mp3"
 
@@ -31,7 +33,7 @@ if command -v ffprobe >/dev/null 2>&1; then
   AUDIO_LEN=$(ffprobe -v error -show_entries format=duration \
     -of default=noprint_wrappers=1:nokey=1 "$AUDIO")
   AUDIO_LEN=$(printf "%.0f" "$AUDIO_LEN")
-  AUDIO_MSG="длина файла ${AUDIO_LEN} сек"
+  AUDIO_MSG="файл ${AUDIO_FILE} длина ${AUDIO_LEN} сек"
 fi
 
 # ===== ВВОД ИНТЕРВАЛА =====
