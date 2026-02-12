@@ -136,7 +136,7 @@ function toggleSilence(enable) {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: "Dhamma Vinaya",
                         artist: "Dhamma.Gift Voice",
-                        artwork: [{ src: '/assets/img/albumart.jpg', sizes: '1024x1024', type: 'image/jpg' }]
+                        artwork: [{ src: '/assets/img/albumart.png', sizes: '1024x1024', type: 'image/png' }]
                     });
 
                     navigator.mediaSession.setActionHandler('play', () => { 
