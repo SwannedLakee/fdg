@@ -5,6 +5,23 @@ const isMobileLike = (
         );
 const isLocalhost = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1');
 
+
+// Определяем текущий домен динамически
+const currentHost = window.location.origin; 
+
+function getEffectiveTheme() {
+  if (localStorage.theme === 'light' || localStorage.theme === 'dark') {
+    return localStorage.theme;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
+//const theme = 'dark';
+const theme = getEffectiveTheme();
+
+
 const isRussian = window.location.pathname.includes('/ru/') ||
                          window.location.pathname.includes('/r/') ||
                          window.location.pathname.includes('/ml/') ||
@@ -133,17 +150,18 @@ if (window.location.search.includes('script=devanagari') || window.location.path
  */
 function createDictSearchUrl(word) {
     if (isLocalhost || !navigator.onLine) {
-        // This logic is now consistent with your other functions
         const isAndroid = /Android/i.test(navigator.userAgent);
         return isAndroid
             ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`
             : `goldendict://${encodeURIComponent(word)}`;
     }
-    // This part remains the same
-      return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(word)}`;
-  //  return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?q=${encodeURIComponent(word)}`;
-}
 
+    // Динамически подставляем текущий хост, заменяя 'f.' или 'find.' на 'dict.' 
+    // Либо просто используем относительный путь, если словари лежат на том же домене
+    const dictBase = currentHost.replace(/(f|find|ru)\./, 'dict.');
+    
+    return `${dictBase}/${savedDict.includes("ru") ? "ru/" : ""}?silent&theme=${theme}&q=${encodeURIComponent(word)}`;
+}
 
 // Устанавливаем правильный URL для словаря в зависимости от языка
 let dhammaGift;
@@ -182,8 +200,7 @@ if (savedDict.includes("dpd")) {
   }
 
   if (savedDict.includes("full")) {
-    //    dictUrl += "/?silent&source=pwa&q=";
-  dictUrl += "/?silent&q=";
+dictUrl += `/?silent&theme=${theme}&q=`; 
 //    dictUrl += "/?q=";
 
   } else if (savedDict.includes("compact")) {
@@ -199,10 +216,11 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dict.dhamma.gift/?silent&q=";
+ dictUrl = "https://dict.dhamma.gift/?silent&theme=${theme}&q=";
+
    //   dictUrl = "https://dict.dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/?silent&q=";
+  dictUrl = "https://dict.dhamma.gift/ru/?silent&theme=${theme}&q=";
   //dictUrl = "https://dict.dhamma.gift/ru/?q=";
 // before this line:
 }
@@ -304,18 +322,20 @@ if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
     const wordLink = `<strong>${createClickableLink(word)}</strong>`;
 
     // Подставляем готовую ссылку в сообщение
+ const fallbackUrl = `${currentHost}${isRussian ? "/ru" : ""}/?q=${encodeURIComponent(word)}`;
+
 translation = isRussian ?
     `<div style="padding: 10px;">
         ${wordLink} не найдено во встроенном словаре.
         <br><br>
-        <a href="https://dhamma.gift/ru/?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на dhamma.gift</a>
+        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на Dhamma.gift</a>   
         <br>
         <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать в интернете</a>
     </div>` :
     `<div style="padding: 10px;">
         ${wordLink} is not found in the built-in dictionary.
         <br><br>
-        <a href="https://dhamma.gift/?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on dhamma.gift</a>
+        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on dlDhamma.gift</a>
         <br>
         <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on the internet</a>
     </div>`;
