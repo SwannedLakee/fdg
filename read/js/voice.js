@@ -1639,7 +1639,15 @@ async function handleTTSSettingChange(e) {
   if (e.target.id === 'reset-tts-btn') {
       e.preventDefault();
       // Нативное подтверждение
-      if (confirm("Сбросить все настройки TTS, удалить API ключ и очистить кэш?")) {
+
+const pathLang = location.pathname.split('/')[1];
+const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
+
+const resetMessage = isRuLike
+  ? 'Сбросить все настройки TTS, удалить API-ключ и очистить кэш?'
+  : 'Reset all TTS settings, remove API key and clear cache?'; 
+     
+if (confirm(resetMessage)) {
           
           // Список всех ключей, которые мы используем
           const keysToRemove = [
