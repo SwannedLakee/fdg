@@ -1306,12 +1306,48 @@ function getPlayerHtml() {
     }
     
     #tts-settings-panel.visible {
-        max-height: 600px;
+        max-height: 800px; /* Увеличили запас высоты */
         opacity: 1;
         margin-top: 10px;
         padding-top: 10px;
         border-top: 1px solid #444;
     }
+
+    /* --- Advanced Settings Styles --- */
+    #tts-advanced-settings {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, opacity 0.4s ease;
+        margin-top: 0;
+        border-top: 1px solid #555;
+        padding-top: 0;
+    }
+
+    #tts-advanced-settings.visible {
+        max-height: 500px;
+        opacity: 1;
+        margin-top: 8px;
+        padding-top: 8px;
+    }
+
+    .extra-settings-toggle {
+        background: none;
+        border: none;
+        color: #777;
+        font-size: 11px;
+        width: 100%;
+        cursor: pointer;
+        margin-top: 8px;
+        padding: 4px 0;
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    .extra-settings-toggle:hover { color: #ccc; }
+    /* ----------------------------- */
 	
     .tts-main-row {
         display: flex;
@@ -1405,7 +1441,7 @@ function getPlayerHtml() {
         align-items: center; 
         justify-content: center;
         gap: 5px;
-        margin-top: 12px;
+        margin-top: 5px;
     }
 
     .google-voice-select-group {
@@ -1447,28 +1483,29 @@ function getPlayerHtml() {
 
   return style + `
     <div style="text-align: center;">
-   <div class="tts-main-row">
-    <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
-        <svg id="tts-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.3s ease;">
-            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-        </svg>
-    </a>
+       <div class="tts-main-row">
+        <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
+            <svg id="tts-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.3s ease;">
+                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+            </svg>
+        </a>
 
-    <div class="tts-controls-row">
-        <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
-            <img src="/assets/svg/backward-step.svg" class="tts-icon backward" width="20">
-        </a>
-        <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
-            <img src="/assets/svg/play-grey.svg" class="tts-icon play" width="34">
-        </a>
-        <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
-            <img src="/assets/svg/forward-step.svg" class="tts-icon forward" width="20">
-        </a>
+        <div class="tts-controls-row">
+            <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
+                <img src="/assets/svg/backward-step.svg" class="tts-icon backward" width="20">
+            </a>
+            <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
+                <img src="/assets/svg/play-grey.svg" class="tts-icon play" width="34">
+            </a>
+            <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
+                <img src="/assets/svg/forward-step.svg" class="tts-icon forward" width="20">
+            </a>
+        </div>
+
+        <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
     </div>
 
-    <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
-</div>
-      <div id="tts-settings-panel">
+    <div id="tts-settings-panel">
           <select id="tts-mode-select" class="tts-mode-select">
             ${Object.entries(modeLabels).map(([val, label]) =>
               `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
@@ -1495,41 +1532,46 @@ function getPlayerHtml() {
           
           <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
 
-          <div class="api-key-row">
-            <input type="password" id="google-api-key-input" 
-                   value="${savedKey}" 
-                   placeholder="Google API Key" 
-                   title="Enter Google Cloud TTS API Key for premium voices">
-            <button id="refresh-voices-btn" class="refresh-api-btn" title="Refresh Voice List">↻</button>
-            <button id="reset-tts-btn" class="reset-tts-btn" title="Full Reset (Clear Data)">🗑️</button>
-          </div>
+          <button id="tts-advanced-toggle-btn" class="extra-settings-toggle">
+              🔧 Extra Settings
+          </button>
 
-          <div id="google-voice-settings-container" style="display:none; margin-top: 8px; border-top: 1px dashed #555; padding-top: 5px;">
-              
-              <div class="google-voice-select-group">
-                       <div class="google-voice-label">Pāḷi Voice (Google): <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
-                          <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
-                          Native
-                       </label></div>
+          <div id="tts-advanced-settings">
+              <div class="api-key-row">
+                <input type="password" id="google-api-key-input" 
+                       value="${savedKey}" 
+                       placeholder="Google API Key" 
+                       title="Enter Google Cloud TTS API Key for premium voices">
+                <button id="refresh-voices-btn" class="refresh-api-btn" title="Refresh Voice List">↻</button>
+                <button id="reset-tts-btn" class="reset-tts-btn" title="Full Reset (Clear Data)">🗑️</button>
+              </div>
 
+              <div id="google-voice-settings-container" style="display:none; margin-top: 8px;">
+                  
+                  <div class="google-voice-select-group">
+                           <div class="google-voice-label">Pāḷi Voice (Google): <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
+                              <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
+                              Native
+                           </label></div>
 
-                  <div id="pali-google-dropdowns" style="display: ${isNativePali ? 'none' : 'block'};">
-                       <select id="google-lang-select-pali" class="google-voice-dropdown"></select>
-                       <select id="google-voice-select-pali" class="google-voice-dropdown"></select>
+                      <div id="pali-google-dropdowns" style="display: ${isNativePali ? 'none' : 'block'};">
+                           <select id="google-lang-select-pali" class="google-voice-dropdown"></select>
+                           <select id="google-voice-select-pali" class="google-voice-dropdown"></select>
+                      </div>
+                  </div>
+
+                  <div class="google-voice-select-group">
+                      <div class="google-voice-label">Translation Voice (Google):</div>
+                      <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
+                      <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
                   </div>
               </div>
-
-              <div class="google-voice-select-group">
-                  <div class="google-voice-label">Translation Voice (Google):</div>
-                  <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
-                  <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
-              </div>
-
           </div>
       </div>
     </div>
     `;
 }
+
 
 function getOrBuildPlayer() {
     const playerId = 'voice-player-container';
@@ -1581,6 +1623,18 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
 // --- Обработчик изменения настроек ---
 async function handleTTSSettingChange(e) {
+
+  // --- Toggle Advanced Settings ---
+  if (e.target.id === 'tts-advanced-toggle-btn') {
+      e.preventDefault();
+      const advancedPanel = document.getElementById('tts-advanced-settings');
+      if (advancedPanel) {
+          advancedPanel.classList.toggle('visible');
+      }
+      return;
+  }
+  
+
   // 0. RESET BUTTON (Сброс всего)
   if (e.target.id === 'reset-tts-btn') {
       e.preventDefault();
@@ -1739,12 +1793,16 @@ async function handleTTSSettingChange(e) {
 
 document.addEventListener('change', handleTTSSettingChange);
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'refresh-voices-btn' || e.target.id === 'reset-tts-btn') {
+    // Добавили проверку e.target.id === 'tts-advanced-toggle-btn'
+    if (e.target.id === 'refresh-voices-btn' || 
+        e.target.id === 'reset-tts-btn' || 
+        e.target.id === 'tts-advanced-toggle-btn') {
         handleTTSSettingChange(e);
     } else {
         handleSuttaClick(e);
     }
 });
+
 
 window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
 document.addEventListener('DOMContentLoaded', () => { 
