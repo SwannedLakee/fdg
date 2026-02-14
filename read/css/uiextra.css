@@ -1045,7 +1045,7 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 10000;
+    z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
