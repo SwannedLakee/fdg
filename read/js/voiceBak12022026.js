@@ -1,21 +1,3 @@
-// --- КОНФИГУРАЦИЯ "БЕСПЛАТНОГО ПРОБНОГО ПЕРИОДА" ---
-window.TRIAL_KEY = ""; 
-
-(async function loadTrialKey() {
-    try {
-        const response = await fetch('/config/tts-config.json');
-        if (response.ok) {
-            const data = await response.json();
-            if (data.key) {
-                window.TRIAL_KEY = data.key;
-                console.log("🎁 Trial TTS Key Loaded");
-            }
-        }
-    } catch (e) { }
-})();
-
-
-
 /// --- Конфигурация путей ---
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
@@ -152,9 +134,9 @@ function toggleSilence(enable) {
                 // Media Session Setup
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.metadata = new MediaMetadata({
-                        title: "Dhamma.Gift Voice",
-                        artist: "Dhamma Vinaya",
-                        artwork: [{ src: '/assets/img/albumart.png', sizes: '1024x1024', type: 'image/png' }]
+                        title: "Dhamma Vinaya",
+                        artist: "Dhamma.Gift Voice",
+                        artwork: [{ src: '/assets/img/albumart.jpg', sizes: '1024x1024', type: 'image/jpg' }]
                     });
 
                     navigator.mediaSession.setActionHandler('play', () => { 
@@ -260,8 +242,6 @@ function cleanTextForTTS(text) {
     .replace(/म[\.:, ]/g, 'मा ')
     .replace(/फस्स/g, 'प्हस्स')
     .replace(/फ/g, 'प्ह')
-  .replace(/,/g, '।.')
-  //  .replace(/।/g, '।.')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
     .replace(/\{.*?\}/g, '')
@@ -269,55 +249,6 @@ function cleanTextForTTS(text) {
     .replace(/[ \t]+/g, ' ')
     .replace(/_/g, '').trim();
 }
-
-/*
-function cleanTextForTTS(text) {
-  if (!text) return "";
-
-  // 1. Стандартная базовая очистка (мусор, теги, сокращения)
-  let clean = text
-    .replace(/[Пп]ер\./g, 'Перевод') 
-    .replace(/Англ,/g, 'английского,') 
-    .replace(/[Рр]ед\./g, 'отредактировано') 
-    .replace(/Trn:/g, 'Translated by') 
-    .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
-    .replace(/”/g, '')
-    .replace(/ पन[\.:, ]/g, 'पना ') 
-    .replace(/स्स[\.:, ]/g, 'स्सा ')
-    .replace(/स[\.:, ]/g, 'सा ')
-    .replace(/म्म[\.:, ]/g, 'म्मा ')
-    .replace(/म[\.:, ]/g, 'मा ')
-    .replace(/फस्स/g, 'प्हस्स')
-    .replace(/फ/g, 'प्ह')
-  .replace(/,/g, '।.')
-  //  .replace(/।/g, '।.')
-    .replace(/…पे…/g, '…पेय्याल…')
-    .replace(/’ति/g, 'ति')
-    .replace(/\{.*?\}/g, '')
-    .replace(/\(.*?\)/g, '')
-    .replace(/[ \t]+/g, ' ')
-    .replace(/_/g, '').trim();
-
-  // --- УМНАЯ ЛОГИКА (SMART SPLIT) ---
-  
-  // Лимит "безопасности" для Google TTS без точек.
-  // Обычно 200 символов сплошного текста (без пауз) - это предел, где нейросеть начинает сбоить.
-  const SAFE_LENGTH_LIMIT = 200;
-
-  if (clean.length > SAFE_LENGTH_LIMIT) {
-      // Только если текст ДЛИННЫЙ, мы меняем структуру:
-      
-      // 1. Превращаем запятые и точки с запятой в "Данды" (полные остановки)
-      clean = clean.replace(/,/g, ' ।');
-      clean = clean.replace(/;/g, ' ।');
-
-      clean = clean.replace(/ होती /g, ' होती । ');
-  }
-
-  return clean;
-}
-
-*/
 
 function setButtonIcon(type) {
   const allImgs = document.querySelectorAll('.play-main-button img');
@@ -360,11 +291,7 @@ async function loadGoogleVoices(apiKey) {
         const response = await fetch(`https://texttospeech.googleapis.com/v1/voices?key=${apiKey}`);
         const data = await response.json();
         if (data.voices) {
-            // --- ФИЛЬТР БЕЗОПАСНОСТИ ---
-            // Убираем голоса Studio, так как они платные сразу (без Free Tier)
-            googleVoicesList = data.voices.filter(v => !v.name.includes('Studio'));
-            // ---------------------------
-            
+            googleVoicesList = data.voices;
             return googleVoicesList;
         } else if (data.error) {
              console.warn('Google API Error:', data.error);
@@ -375,7 +302,6 @@ async function loadGoogleVoices(apiKey) {
     }
     return [];
 }
-
 
 function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, defaultConfig) {
     const langSelect = document.getElementById(langSelectId);
@@ -582,13 +508,24 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
       if (!targetConfig) targetConfig = DEFAULT_PALI_CONFIG;
 
       // === GOOGLE-SPECIFIC PALI PATCH (Schwa Deletion Fix) ===
+      // Современные голоса (Хинди, Каннада и т.д.) "глотают" короткие гласные в конце.
+      // Мы искусственно удлиняем их ТОЛЬКО для запроса в Google, чтобы вернуть полное звучание.
       if (text) {
+          // Диапазон согласных Деванагари (ka-ha + la)
           const C = '[\u0915-\u0939\u0933]'; 
+          // Границы слов: пробел, конец строки или знаки препинания
           const B = '(?=\\s|[।,:;.?!\"]|$)';
 
-          // Модификации текста для Google
+          // 1. a -> ā (Добавляем матру 'aa' к согласной в конце слова)
+          // Было: Ayameva (अयमेव) -> Стало: Ayamevaa (अयमेवा)
           text = text.replace(new RegExp(`(${C})${B}`, 'g'), '$1ा');
+
+          // 2. i -> ī (Заменяем матру 'i' на 'ii')
+          // Было: kacci (कच्चि) -> Стало: kaccī (कच्ची)
           text = text.replace(new RegExp(`(${C})ि${B}`, 'g'), '$1ी');
+
+          // 3. u -> ū (Заменяем матру 'u' на 'uu')
+          // Было: bhavatu (भवतु) -> Стало: bhavatū (भवतू)
           text = text.replace(new RegExp(`(${C})ु${B}`, 'g'), '$1ू');
       }
       // ========================================================
@@ -596,10 +533,12 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
   } else {
       // --- TRANSLATION (Dynamic) ---
       const context = getContextInfo(); 
+      
       const savedTrn = localStorage.getItem(context.storageKey);
       if (savedTrn) {
           try { targetConfig = JSON.parse(savedTrn); } catch (e) {}
       }
+      
       if (!targetConfig) targetConfig = context.defaultConfig;
   }
 
@@ -622,29 +561,15 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
     });
 
     const data = await response.json();
-
-    // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ---
     if (data.error) {
-        const errorMsg = JSON.stringify(data.error, null, 2);
-        alert(`⚠️ GOOGLE TTS ERROR!\n\nTEXT SENT:\n${text}\n\nERROR:\n${errorMsg}`);
         throw new Error(data.error.message);
     }
-    // -------------------------------------
-
     return data.audioContent; 
   } catch (e) {
-    // --- DEBUG ALERT: ЕСЛИ СЕТЕВОЙ СБОЙ ИЛИ ДРУГОЕ ---
-    // Показываем алерт, только если это не ошибка, которую мы уже показали выше
-    if (!e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
-         alert(`⚠️ CRITICAL FAIL:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
-    }
-    // ------------------------------------------------
-    
     console.warn('Google TTS Fetch Error:', e);
     return null;
   }
 }
-
 
 /*
 async function fetchGoogleAudio(text, lang, rate, apiKey) {
@@ -907,8 +832,8 @@ async function playCurrentSegment() {
   }
 
   // === ГИБРИДНЫЙ РЕЖИМ ===
-const googleKey = (localStorage.getItem(GOOGLE_KEY_STORAGE) || window.TRIAL_KEY); 
-const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
+  const googleKey = localStorage.getItem(GOOGLE_KEY_STORAGE);
+  const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
   
   let tryGoogle = false;
 
@@ -1271,38 +1196,11 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
   
   setButtonIcon('pause');
   
-  // --- НОВОЕ: Показываем Hint при первом воспроизведении, если активен триал ---
-  // --- НОВОЕ: Показываем Hint при первом воспроизведении (с ссылкой) ---
-  if (window.TRIAL_KEY && !localStorage.getItem(GOOGLE_KEY_STORAGE)) {
-      if (!localStorage.getItem('tts_trial_play_hint_shown')) {
-          
-          const isRu = window.location.pathname.includes('/ru') || window.location.pathname.includes('/r/');
-          const title = isRu ? "Демо-режим:" : "Demo Mode:";
-          
-          // Ссылки на поиск Google
-          const searchUrlRu = "https://www.google.com/search?q=%D0%BA%D0%B0%D0%BA+%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C+%D0%B0%D0%BF%D0%B8+%D0%BA%D0%BB%D1%8E%D1%87+%D0%B3%D1%83%D0%B3%D0%BB+tts";
-          const searchUrlEn = "https://www.google.com/search?q=how+to+get+google+cloud+text+to+speech+api+key";
-          
-          // Стиль для ссылки (светло-голубой, чтобы видно на темном)
-          const linkStyle = "color: #4da6ff; text-decoration: underline; font-weight: bold;";
-
-          const message = isRu 
-              ? `Включены <b>голоса от Google</b>. Если понравится, вы можете <a href="${searchUrlRu}" target="_blank" style="${linkStyle}">получить свой ключ</a> бесплатно.` 
-              : `<b>Google voices</b> active. If you like it, you can <a href="${searchUrlEn}" target="_blank" style="${linkStyle}">get your own key</a> for free.`;
-
-          if (typeof showVoiceHint === 'function') {
-              showVoiceHint(title, message, 'tts_trial_play_hint_shown');
-          }
-      }
-  }
-  // -----------------------------------------------------------------------
-
-  // ---------------------------------------------------------------------------
-  
   setTimeout(() => {
      playCurrentSegment();
   }, 100);
 }
+
 
 function showVoiceHint(title, message, storageKey) {
   if (localStorage.getItem(storageKey)) return;
@@ -1353,9 +1251,7 @@ function getPlayerHtml() {
   const isSpecialPath = window.location.pathname.match(/\/d\/|\/memorize\//);
   const defaultMode = isSpecialPath ? 'pi' : 'trn';
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
-  
-  const saved = localStorage.getItem(GOOGLE_KEY_STORAGE);
-  const savedKey = saved ?? window.TRIAL_KEY ?? '';
+  const savedKey = localStorage.getItem(GOOGLE_KEY_STORAGE) || ''; 
   const isNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true'; 
   
   let initialRate;
@@ -1410,48 +1306,12 @@ function getPlayerHtml() {
     }
     
     #tts-settings-panel.visible {
-        max-height: 800px; /* Увеличили запас высоты */
+        max-height: 600px;
         opacity: 1;
         margin-top: 10px;
         padding-top: 10px;
         border-top: 1px solid #444;
     }
-
-    /* --- Advanced Settings Styles --- */
-    #tts-advanced-settings {
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transition: max-height 0.4s ease, opacity 0.4s ease;
-        margin-top: 0;
-        border-top: 1px solid #555;
-        padding-top: 0;
-    }
-
-    #tts-advanced-settings.visible {
-        max-height: 500px;
-        opacity: 1;
-        margin-top: 8px;
-        padding-top: 8px;
-    }
-
-    .extra-settings-toggle {
-        background: none;
-        border: none;
-        color: #777;
-        font-size: 11px;
-        width: 100%;
-        cursor: pointer;
-        margin-top: 8px;
-        padding: 4px 0;
-        transition: color 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-    .extra-settings-toggle:hover { color: #ccc; }
-    /* ----------------------------- */
 	
     .tts-main-row {
         display: flex;
@@ -1468,10 +1328,10 @@ function getPlayerHtml() {
         justify-content: center;
         gap: 10px;
     }
-  
+
     .tts-top-btn {
         position: static !important;
-        color: #555; /* Было #999. Сделали темнее для видимости на белом */
+        color: #999;
         font-size: 24px;
         text-decoration: none !important;
         line-height: 1;
@@ -1482,17 +1342,8 @@ function getPlayerHtml() {
     }
 
     .tts-top-btn:hover {
-        color: #000; /* Было #fff. Теперь черный при наведении в светлой теме */
+        color: #fff;
     }
-
-    /* Стили для темной темы (оставляем белую подсветку) */
-    .dark .tts-top-btn {
-        color: #bbb; 
-    }
-    .dark .tts-top-btn:hover {
-        color: #fff; 
-    }
-    
 
     .tts-icon {
         filter: invert(0.5);
@@ -1503,12 +1354,12 @@ function getPlayerHtml() {
     }
 
     #google-api-key-input {
-        width: 100px;
+        width: 120px;
         background: #eee;
         border: 1px solid #ccc;
         color: #333;
         border-radius: 4px;
-        padding: 2px 4px;
+        padding: 2px 5px;
         font-size: 11px;
         transition: background 0.3s, color 0.3s;
     }
@@ -1525,7 +1376,7 @@ function getPlayerHtml() {
         color: #999;
         cursor: pointer;
         font-size: 14px;
-        padding: 0 4px;
+        padding: 0 5px;
         transition: color 0.2s;
         display: inline-flex;
         align-items: center;
@@ -1540,7 +1391,7 @@ function getPlayerHtml() {
         color: #777;
         cursor: pointer;
         font-size: 14px;
-        padding: 0 4px;
+        padding: 0 5px;
         transition: color 0.2s;
         display: inline-flex;
         align-items: center;
@@ -1554,7 +1405,7 @@ function getPlayerHtml() {
         align-items: center; 
         justify-content: center;
         gap: 5px;
-        margin-top: 5px;
+        margin-top: 12px;
     }
 
     .google-voice-select-group {
@@ -1596,29 +1447,28 @@ function getPlayerHtml() {
 
   return style + `
     <div style="text-align: center;">
-       <div class="tts-main-row">
-        <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
-            <svg id="tts-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.3s ease;">
-                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-            </svg>
+   <div class="tts-main-row">
+    <a href="javascript:void(0)" id="tts-settings-toggle" class="tts-top-btn tts-settings-btn" title="Settings">
+        <svg id="tts-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.3s ease;">
+            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+        </svg>
+    </a>
+
+    <div class="tts-controls-row">
+        <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
+            <img src="/assets/svg/backward-step.svg" class="tts-icon backward" width="20">
         </a>
-
-        <div class="tts-controls-row">
-            <a href="javascript:void(0)" class="prev-main-button tts-icon-btn">
-                <img src="/assets/svg/backward-step.svg" class="tts-icon backward" width="20">
-            </a>
-            <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
-                <img src="/assets/svg/play-grey.svg" class="tts-icon play" width="34">
-            </a>
-            <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
-                <img src="/assets/svg/forward-step.svg" class="tts-icon forward" width="20">
-            </a>
-        </div>
-
-        <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
+        <a href="javascript:void(0)" class="play-main-button tts-icon-btn large">
+            <img src="/assets/svg/play-grey.svg" class="tts-icon play" width="34">
+        </a>
+        <a href="javascript:void(0)" class="next-main-button tts-icon-btn">
+            <img src="/assets/svg/forward-step.svg" class="tts-icon forward" width="20">
+        </a>
     </div>
 
-    <div id="tts-settings-panel">
+    <a href="javascript:void(0)" class="tts-top-btn close-tts-btn">&times;</a>
+</div>
+      <div id="tts-settings-panel">
           <select id="tts-mode-select" class="tts-mode-select">
             ${Object.entries(modeLabels).map(([val, label]) =>
               `<option value="${val}" ${savedMode === val ? 'selected' : ''}>${label}</option>`
@@ -1645,46 +1495,41 @@ function getPlayerHtml() {
           
           <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
 
-          <button id="tts-advanced-toggle-btn" class="extra-settings-toggle">
-              🔧 Extra Settings
-          </button>
+          <div class="api-key-row">
+            <input type="password" id="google-api-key-input" 
+                   value="${savedKey}" 
+                   placeholder="Google API Key" 
+                   title="Enter Google Cloud TTS API Key for premium voices">
+            <button id="refresh-voices-btn" class="refresh-api-btn" title="Refresh Voice List">↻</button>
+            <button id="reset-tts-btn" class="reset-tts-btn" title="Full Reset (Clear Data)">🗑️</button>
+          </div>
 
-          <div id="tts-advanced-settings">
-              <div class="api-key-row">
-                <input type="password" id="google-api-key-input" 
-                       value="${savedKey}" 
-                       placeholder="Google API Key" 
-                       title="Enter Google Cloud TTS API Key for premium voices">
-                <button id="refresh-voices-btn" class="refresh-api-btn" title="Refresh Voice List">↻</button>
-                <button id="reset-tts-btn" class="reset-tts-btn" title="Full Reset (Clear Data)">🗑️</button>
-              </div>
+          <div id="google-voice-settings-container" style="display:none; margin-top: 8px; border-top: 1px dashed #555; padding-top: 5px;">
+              
+              <div class="google-voice-select-group">
+                       <div class="google-voice-label">Pāḷi Voice (Google): <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
+                          <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
+                          Native
+                       </label></div>
 
-              <div id="google-voice-settings-container" style="display:none; margin-top: 8px;">
-                  
-                  <div class="google-voice-select-group">
-                           <div class="google-voice-label">Pāḷi Voice (Google): <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
-                              <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
-                              Native
-                           </label></div>
 
-                      <div id="pali-google-dropdowns" style="display: ${isNativePali ? 'none' : 'block'};">
-                           <select id="google-lang-select-pali" class="google-voice-dropdown"></select>
-                           <select id="google-voice-select-pali" class="google-voice-dropdown"></select>
-                      </div>
-                  </div>
-
-                  <div class="google-voice-select-group">
-                      <div class="google-voice-label">Translation Voice (Google):</div>
-                      <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
-                      <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
+                  <div id="pali-google-dropdowns" style="display: ${isNativePali ? 'none' : 'block'};">
+                       <select id="google-lang-select-pali" class="google-voice-dropdown"></select>
+                       <select id="google-voice-select-pali" class="google-voice-dropdown"></select>
                   </div>
               </div>
+
+              <div class="google-voice-select-group">
+                  <div class="google-voice-label">Translation Voice (Google):</div>
+                  <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
+                  <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
+              </div>
+
           </div>
       </div>
     </div>
     `;
 }
-
 
 function getOrBuildPlayer() {
     const playerId = 'voice-player-container';
@@ -1705,7 +1550,7 @@ function getOrBuildPlayer() {
     if (playerInner) {
         playerInner.innerHTML = getPlayerHtml();
 
-        const savedKey = (localStorage.getItem(GOOGLE_KEY_STORAGE) || window.TRIAL_KEY);
+        const savedKey = localStorage.getItem(GOOGLE_KEY_STORAGE);
         if (savedKey && savedKey.length > 10) {
             setTimeout(() => populateVoiceSelectors(savedKey), 100);
         }
@@ -1736,31 +1581,11 @@ function getTTSInterfaceHTML(texttype, slugReady, slug) {
 
 // --- Обработчик изменения настроек ---
 async function handleTTSSettingChange(e) {
-
-  // --- Toggle Advanced Settings ---
-  if (e.target.id === 'tts-advanced-toggle-btn') {
-      e.preventDefault();
-      const advancedPanel = document.getElementById('tts-advanced-settings');
-      if (advancedPanel) {
-          advancedPanel.classList.toggle('visible');
-      }
-      return;
-  }
-  
-
   // 0. RESET BUTTON (Сброс всего)
   if (e.target.id === 'reset-tts-btn') {
       e.preventDefault();
       // Нативное подтверждение
-
-const pathLang = location.pathname.split('/')[1];
-const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
-
-const resetMessage = isRuLike
-  ? 'Сбросить все настройки TTS, удалить API-ключ и очистить кэш?'
-  : 'Reset all TTS settings, remove API key and clear cache?'; 
-     
-if (confirm(resetMessage)) {
+      if (confirm("Сбросить все настройки TTS, удалить API ключ и очистить кэш?")) {
           
           // Список всех ключей, которые мы используем
           const keysToRemove = [
@@ -1914,16 +1739,12 @@ if (confirm(resetMessage)) {
 
 document.addEventListener('change', handleTTSSettingChange);
 document.addEventListener('click', (e) => {
-    // Добавили проверку e.target.id === 'tts-advanced-toggle-btn'
-    if (e.target.id === 'refresh-voices-btn' || 
-        e.target.id === 'reset-tts-btn' || 
-        e.target.id === 'tts-advanced-toggle-btn') {
+    if (e.target.id === 'refresh-voices-btn' || e.target.id === 'reset-tts-btn') {
         handleTTSSettingChange(e);
     } else {
         handleSuttaClick(e);
     }
 });
-
 
 window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
 document.addEventListener('DOMContentLoaded', () => { 

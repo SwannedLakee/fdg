@@ -109,11 +109,8 @@ $is_ru_referer = false;
           $mimeType = ($fileExt === 'mp3') ? 'audio/mpeg' : 'audio/mp4; codecs="mp4a.40.2"';
       //    <button class='close-player' aria-label='Close player'>×</button>
 
-$playerHtml = " <a class='tts-link' href='$voicefile'>File
-        </a> 
-            <a title='TTS help' class='tts-link'  href='/assets/common/ttsHelp.html'>?</a>
-    </span>
-</span>";
+$playerHtml = "<span class='tts-link' style='display:none;' data-src='$voicefile'>File</span>";
+
       }
 
 } else {
@@ -141,19 +138,15 @@ $playerHtml = " <a class='tts-link' href='$voicefile'>File
             $mimeType = 'audio/wav';
         }
 
-$playerHtml = "<a class='tts-link' href='$voicefile'>File
-        </a>
-            <a title='TTS help' class='tts-link'  href='/assets/common/ttsHelp.html'>?</a>
-    </span>
-</span>";
+$playerHtml = "<span class='tts-link' style='display:none;' data-src='$voicefile'>File</span>";
+
     }
 }
 
 
   // Если аудио нет, используем простую ссылку
   if (!$hasAudio) {
-$playerHtml = " <a title='TTS help' class='tts-link'  href='/assets/common/ttsHelp.html'>?</a> </span>
-</span>";
+$playerHtml = "";
 
   }
 
@@ -162,7 +155,7 @@ $playerHtml = " <a title='TTS help' class='tts-link'  href='/assets/common/ttsHe
       ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1 2>/dev/null` ;
       ruslinkdn=`cd $locationrudn ; ls -R . | grep -m1 \"{$fromjs}.html\" ` ;
 
-      echo -n \"{$playerHtml}{$final}\"
+      echo -n \"{$final}{$playerHtml}\"
   
         [ ! -z $bwlink ] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href=$linktbw/$bwlink>TBW</a>\"
         [ ! -z \$ruslink ] && echo -n \"&nbsp;<a target='' title='Theravada.ru' href=$linkforthru/\$ruslink>Th.ru</a>\"
@@ -208,7 +201,7 @@ $playerHtml = " <a title='TTS help' class='tts-link'  href='/assets/common/ttsHe
 
           $output = shell_exec("ruslink=`cd $locationru ; ls . | grep -m1 \"{$forthru}-\" | sort -V | head -n1` ; ruslinkdn=\"$thsulink\";
 
-          echo -n \"{$playerHtml}{$final}\";
+          echo -n \"{$final}{$playerHtml}\";
 
           [[ $bwlink != \"\" ]] && echo -n \"&nbsp;<a target='' title='TheBuddhasWords.net' href='$linktbw/$bwlink'>TBW</a>\";
 

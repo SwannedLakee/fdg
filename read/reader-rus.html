@@ -746,6 +746,43 @@ alt="DPPN search icon"></a>
 <small><a target="_blank" rel="license" href="/ru/#copyrightnote">О правах</a> &copy; Dhamma.gift 2022</a>-<span id="date"></span></small> <button class="btn btn-secondary text-center installButton" id="" style="display:none;"><?php echo $installpwa;?></button>
 </div>
 </div>
+<div id="smart-gear-container">
+    <button id="smart-gear-btn" title="Быстрые настройки">
+        <img src="/assets/svg/gear.svg" alt="Settings">
+    </button>
+
+    <div id="smart-panel">
+        
+        <button class="smart-btn" data-target="#theme-button img" title="Тема (Alt+T)">
+            <img src="/assets/svg/circle-half-stroke.svg" alt="Theme">
+        </button>
+        
+        <button class="smart-btn" data-target="#toggle-mode img" title="Вид (Alt+C)">
+            <img src="/assets/svg/align-left.svg" alt="Columns">
+        </button>
+        
+        <button class="smart-btn" data-target="#toggle-variants" title="Варианты (Alt+V)">
+            <img src="/assets/svg/eye.svg" alt="Variants">
+        </button>
+
+
+        <button class="smart-btn" data-target=".toggle-dict-btn img" title="Словарь (Alt+A)">
+             <img src="/assets/svg/comment.svg" alt="Dictionary">
+        </button>
+
+        <button class="smart-btn" data-target="#settingsButton" title="Настройки (Alt+S)">
+             <img src="/assets/svg/gear.svg" alt="Settings">
+        </button>
+
+        <hr style="margin: 4px 0; border-color: #ccc;">
+
+        <button class="smart-btn" data-target="#home-button a" title="На главную">
+            <img src="/assets/svg/home-icon.svg" alt="Home">
+        </button>
+    </div>
+    
+</div>
+
 <script>
 const now = new Date();
 const formattedDate = now.getFullYear();
@@ -843,10 +880,10 @@ window.addEventListener("DOMContentLoaded", function() {
 <script src="/assets/js/variantsButton.js" defer></script>
 <script src="/assets/js/settings.js" defer></script>
 <!-- <script src="/assets/js/showHideHelp.js"></script>
+<script src="/assets/js/openFdg.js" defer></script>
 -->
 <script src="/assets/js/linksbjt.js"></script>
 <script src="/assets/js/openDicts.js" defer></script>
-<script src="/assets/js/openFdg.js" defer></script>
 
 <script src="/assets/js/paliLookup.js" defer></script>
 <script src="/assets/js/textinfo.js" defer></script>

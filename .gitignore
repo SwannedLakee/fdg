@@ -7,3 +7,4 @@ scripts/api/__pycache__
 helpdocs
 .well-known
 
+config/tts-config.json

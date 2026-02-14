@@ -834,19 +834,16 @@ transition: background-color 260ms ease-in-out;
          transform: translate(-50%, -20px);
     }
 }
-
-
+/*
 .close-tts-btn {
-  position: absolute; 
-  top: 8px;    
-  right: 12px;        
-  font-size: 24px;
-  line-height: 1;   
+  position: relative; 
+  top: -3px;    
   cursor: pointer;
   color: #999;
   text-decoration: none !important;
   z-index: 10;
 }
+*/
 
 .close-tts-btn:hover {
   opacity: 0.7;
@@ -1040,4 +1037,135 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
 /* 4. Исправление для режима колонок */
 .column-view #sutta span[id]:has(.tts-active) {
     display: flow-root;
+}
+
+
+/* Контейнер для умной кнопки */
+#smart-gear-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    
+    /* ВАЖНО: Контейнер прозрачен для кликов, чтобы не перекрывать сайт */
+    pointer-events: none;
+}
+
+/* Кнопка-триггер (шестеренка) */
+#smart-gear-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    
+    background-color: rgb(221, 221, 221); 
+    border: 2px solid #5a5a5a;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: none;
+    padding: 0;
+    
+    opacity: 0;
+    transform: translateY(-20px) scale(0.5);
+    visibility: hidden;
+    transition: transform 0.2s ease, opacity 0.2s ease, visibility 0.2s;
+
+    /* ВАЖНО: Кнопка ловит клики, но только когда станет visible */
+    pointer-events: auto; 
+}
+
+/* Размер иконки */
+#smart-gear-btn img {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+/* Когда добавляем класс visible через JS */
+#smart-gear-btn.visible {
+    opacity: 0.8;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+    /* pointer-events: auto уже наследуется, а visibility: visible включает его */
+}
+
+/* Эффект при наведении */
+#smart-gear-btn:hover {
+    opacity: 1 !important;
+    transform: scale(1.15) !important;
+    background-color: rgb(221, 221, 221);
+}
+
+/* Темная тема */
+.dark #smart-gear-btn {
+    background-color: #42426a;
+    border-color: #5a5a5a;
+}
+.dark #smart-gear-btn img {
+    filter: invert(1);
+}
+
+/* Панель с кнопками */
+#smart-panel {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+    transform-origin: top right;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* ВАЖНО: Скрытая панель не должна ловить клики */
+    pointer-events: none;
+}
+
+#smart-panel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    
+    /* ВАЖНО: Активная панель начинает ловить клики */
+    pointer-events: auto;
+}
+
+.smart-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.smart-btn:hover {
+    background-color: rgba(0,0,0,0.1);
+}
+
+.smart-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.dark #smart-panel {
+    background-color: #333;
+    border-color: #555;
+}
+.dark .smart-btn img {
+    filter: invert(1);
+}
+.dark .smart-btn:hover {
+    background-color: rgba(255,255,255,0.1);
 }

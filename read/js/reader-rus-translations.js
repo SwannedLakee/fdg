@@ -234,81 +234,111 @@ const varResponse = fetchVariant();
 Promise.all([rootResponse, translationResponse, htmlResponse, varResponse]).then(responses => {
     const [paliData, transData, htmlData, varData] = responses;
 	
+// === НАЧАЛО ИЗМЕНЕНИЙ: Логика объединения Гатх ===
+    const segments = Object.keys(htmlData);
+    
+    for (let i = 0; i < segments.length; i++) {
+      let segment = segments[i];
 
-    Object.keys(htmlData).forEach(segment => {
-      if (transData[segment] === undefined) {
-        transData[segment] = "";
-      }
-      if (transData[segment] === "") {
-        transData[segment] = "";
-      }      
+      // Проверки на undefined (как в оригинале)
+      if (transData[segment] === undefined) transData[segment] = "";
+      if (transData[segment] === "") transData[segment] = "";
+
+      // ЛОГИКА ОБЪЕДИНЕНИЯ (MERGE):
+      // Проверяем, является ли текущий сегмент частью стиха (verse-line)
+      // и есть ли следующий сегмент, который тоже часть стиха.
+      let nextSegment = segments[i + 1];
       
-let [openHtml, closeHtml] = htmlData[segment].split(/{}/);
-   openHtml = openHtml || ''; // Запасное значение
-   closeHtml = closeHtml || ''; // Запасное значение 
- 
-      /* openHtml = openHtml.replace(/^<span class='verse-line'>/, "<br><span class='verse-line'>"); inputscript-IASTPali 
-      Roman (IAST)     	IAST
-Roman (IAST: Pāḷi)     	IASTPali
-Roman (IPA)            	IPA
-Roman (ISO 15919)      	ISO
-Roman (ISO 15919: Pāḷi)	ISOPali */
-// ISOPali ISO IASTPali IAST
+      if (htmlData[segment] && htmlData[segment].includes('verse-line') &&
+          nextSegment && htmlData[nextSegment] && htmlData[nextSegment].includes('verse-line')) {
+          
+      // ... внутри цикла for ...
+          
+          let [nextOpen, nextClose] = htmlData[nextSegment].split(/{}/);
+          
+          // Проверяем, что следующий сегмент не начинает новый абзац
+          if (!nextOpen.includes('<p>')) {
+              
+              // Функция для перевода первой буквы в нижний регистр
+              const toLower = (str) => {
+                  if (!str) return "";
+                  // Если строка начинается с кавычки или скобки, пробуем понизить вторую букву, 
+                  // но для простоты понижаем первую найденную букву.
+                  // Здесь простой вариант:
+                  return str.charAt(0).toLowerCase() + str.slice(1);
+              };
 
-let startIndex = segment.indexOf(':') + 1;
-let anchor = segment.substring(startIndex);
+              // 1. Объединяем ПАЛИ
+              if (paliData[nextSegment]) {
+                  // trim() убирает пробелы по краям
+                  // " " добавляет ровно один пробел между частями
+                  // toLower() делает вторую часть с маленькой буквы
+                  paliData[segment] = (paliData[segment] || "").trim() + " " + toLower(paliData[nextSegment].trim());
+              }
 
-if (slug.includes('-') && (slug.includes('an') || slug.includes('sn') || slug.includes('dhp'))) {
-anchor = segment;
-}
+              // 2. Объединяем ПЕРЕВОД (Русский)
+              if (transData[nextSegment]) {
+                  transData[segment] = (transData[segment] || "").trim() + " " + toLower(transData[nextSegment].trim());
+              }
 
-// Получите полный URL с якорем
+              // 3. Объединяем ВАРИАНТЫ (если есть)
+              if (varData[nextSegment]) {
+                  varData[segment] = (varData[segment] || "").trim() + " " + toLower(varData[nextSegment].trim());
+              }
 
-var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
+              // 4. Склеиваем HTML (оставляем обертку)
+              let [currOpen, currClose] = htmlData[segment].split(/{}/);
+              
+              // Переписываем htmlData текущего сегмента: начало от первого, конец от второго
+              htmlData[segment] = (currOpen || '') + "{}" + (nextClose || '');
+              
+              // 5. Пропускаем следующий сегмент (мы его только что приклеили)
+              i++; 
+          }
+      }
+      // === КОНЕЦ ЛОГИКИ ОБЪЕДИНЕНИЯ ===
 
-  let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
- //  finder = finder.replace(/\\b/g, '');
-//  finder = finder.replace(/%08/g, '\\b');
- // console.log(finder);
-   // let finder = decodeURIComponent(params.get("s"));
+      let [openHtml, closeHtml] = htmlData[segment].split(/{}/);
+      openHtml = openHtml || ''; 
+      closeHtml = closeHtml || ''; 
 
-if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== undefined) {    
-  paliData[segment] = paliData[segment].replace(/[-—–]/g, ' ');  
-    paliData[segment] = paliData[segment].replace(/[:;“”‘’,"']/g, '');  
-    paliData[segment] = paliData[segment].replace(/[.?!]/g, ' | '); 
-    //।   ॥  
-}
+      let startIndex = segment.indexOf(':') + 1;
+      let anchor = segment.substring(startIndex);
 
-if (finder && finder.trim() !== "") {
-  let regex = new RegExp(finder, 'gi'); // 'gi' - игнорировать регистр
+      if (slug.includes('-') && (slug.includes('an') || slug.includes('sn') || slug.includes('dhp'))) {
+        anchor = segment;
+      }
 
-  try {
-    paliData[segment] = paliData[segment]?.replace(regex, match => `<b class='match finder'>${match}</b>`);
-  } catch (error) {
-  //  console.log("Ошибка при выделении совпадений в paliData:", info);
-  }
+      var fullUrlWithAnchor = window.location.href.split('#')[0] + '#' + anchor;
 
-  try {
-    transData[segment] = transData[segment]?.replace(regex, match => `<b class="match finder">${match}</b>`);
-  } catch (error) {
- //   console.log("Ошибка при выделении совпадений в transData:", info);
-  }
+      let finder = (params.get("s") || "").replace(/ṃ/g, "ṁ");
 
-  if (varData[segment] !== undefined) {  
-    try {
-      varData[segment] = varData[segment].replace(regex, match => `<b class="match finder">${match}</b>`);
-    } catch (error) {
-    //  console.log("Ошибка при выделении совпадений в varData:", info);
-    }
-  }
-}
+      if (localStorage.getItem("removePunct") === "true" && paliData[segment] !== undefined) {
+        paliData[segment] = paliData[segment].replace(/[-—–]/g, ' ');
+        paliData[segment] = paliData[segment].replace(/[:;“”‘’,"']/g, '');
+        paliData[segment] = paliData[segment].replace(/[.?!]/g, ' | ');
+      }
 
-const linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
-let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`
-let linkWithDataSet = `<a class="text-decoration-none copyLink" style="cursor: pointer;" data-copy-text="${fullUrlWithAnchor}">&nbsp;</a>`
+      if (finder && finder.trim() !== "") {
+        let regex = new RegExp(finder, 'gi');
+        try {
+          paliData[segment] = paliData[segment]?.replace(regex, match => `<b class='match finder'>${match}</b>`);
+        } catch (error) {}
+        try {
+          transData[segment] = transData[segment]?.replace(regex, match => `<b class="match finder">${match}</b>`);
+        } catch (error) {}
+        if (varData[segment] !== undefined) {
+          try {
+            varData[segment] = varData[segment].replace(regex, match => `<b class="match finder">${match}</b>`);
+          } catch (error) {}
+        }
+      }
 
-if (paliData[segment] !== undefined && transData[segment] !== undefined && varData[segment] !== undefined) {
-              html += `${openHtml}<span id="${anchor}">
+      const linkToCopyStart = `<a class="text-decoration-none copyLink copyLink-start" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`;
+      let linkToCopy = `<a class="text-decoration-none copyLink" style="cursor: pointer;" onclick="copyToClipboard('${fullUrlWithAnchor}')"></a>`
+
+      if (paliData[segment] !== undefined && transData[segment] !== undefined && varData[segment] !== undefined) {
+        html += `${openHtml}<span id="${anchor}">
             <span class="pli-lang " lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}
       <font class="variant">
 	  <br>
@@ -318,8 +348,8 @@ if (paliData[segment] !== undefined && transData[segment] !== undefined && varDa
             <span class="rus-lang" lang="ru">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}
       </span>
             </span>${closeHtml}\n\n`;
-      } else if (paliData[segment] !== undefined && transData[segment] !== undefined ) {
-              html += `${openHtml}<span id="${anchor}">
+      } else if (paliData[segment] !== undefined && transData[segment] !== undefined) {
+        html += `${openHtml}<span id="${anchor}">
             <span class="pli-lang " lang="pi">${linkToCopyStart}${paliData[segment].trim()}${linkToCopy}</span>
             <span class="rus-lang" lang="ru">${linkToCopyStart}${transData[segment].trim()}${linkToCopy}</span>
             </span>${closeHtml}\n\n`;
@@ -328,10 +358,7 @@ if (paliData[segment] !== undefined && transData[segment] !== undefined && varDa
       } else if (transData[segment] !== undefined) {
         html += openHtml + '<span id="' + anchor + '"><span class="rus-lang" lang="ru">' + linkToCopyStart + transData[segment].trim() + linkToCopy + '</span></span>' + closeHtml + '\n\n';
       }
-});
-
-//console.log('before ' + translator) ;
-
+    }
   if (slug.match(/bi-pm/)) {
      translator = "adelina";
   }
