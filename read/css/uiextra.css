@@ -1039,6 +1039,7 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
     display: flow-root;
 }
 
+
 /* Контейнер для умной кнопки */
 #smart-gear-container {
     position: fixed;
@@ -1049,33 +1050,37 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
+    
+    /* ВАЖНО: Контейнер прозрачен для кликов, чтобы не перекрывать сайт */
+    pointer-events: none;
 }
 
-/* Кнопка-триггер (шестеренка) - Стиль идентичный scrollToTop/Language */
+/* Кнопка-триггер (шестеренка) */
 #smart-gear-btn {
-    width: 30px;  /* Было 40px, стало 30px как у остальных */
+    width: 30px;
     height: 30px;
     border-radius: 50%;
     
-    /* Цвета как у Language button */
     background-color: rgb(221, 221, 221); 
-    border: 2px solid #5a5a5a; /* Толщина 2px, темно-серый цвет */
+    border: 2px solid #5a5a5a;
     
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: none; /* Убираем лишнюю тень, у оригиналов её нет */
+    box-shadow: none;
     padding: 0;
     
-    /* Анимация появления/исчезновения */
     opacity: 0;
     transform: translateY(-20px) scale(0.5);
     visibility: hidden;
     transition: transform 0.2s ease, opacity 0.2s ease, visibility 0.2s;
+
+    /* ВАЖНО: Кнопка ловит клики, но только когда станет visible */
+    pointer-events: auto; 
 }
 
-/* Размер иконки внутри уменьшенной кнопки */
+/* Размер иконки */
 #smart-gear-btn img {
     width: 16px;
     height: 16px;
@@ -1084,29 +1089,29 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
 
 /* Когда добавляем класс visible через JS */
 #smart-gear-btn.visible {
-    opacity: 0.8; /* Полупрозрачная, как Language Button */
+    opacity: 0.8;
     transform: translateY(0) scale(1);
     visibility: visible;
+    /* pointer-events: auto уже наследуется, а visibility: visible включает его */
 }
 
-/* Эффект при наведении (как у Language/ScrollToTop) */
+/* Эффект при наведении */
 #smart-gear-btn:hover {
     opacity: 1 !important;
-    transform: scale(1.15) !important; /* Легкое увеличение */
-    background-color: rgb(221, 221, 221); /* Фикс мигания фона */
+    transform: scale(1.15) !important;
+    background-color: rgb(221, 221, 221);
 }
 
-/* Темная тема - Идентично dynamic-tts-btn */
+/* Темная тема */
 .dark #smart-gear-btn {
     background-color: #42426a;
-    border-color: #5a5a5a; /* Серый бордюр, а не белый (#dddddd) */
+    border-color: #5a5a5a;
 }
-
 .dark #smart-gear-btn img {
     filter: invert(1);
 }
 
-/* Панель с кнопками (Стили без изменений) */
+/* Панель с кнопками */
 #smart-panel {
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
@@ -1122,12 +1127,18 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
     transform: scale(0.9);
     transform-origin: top right;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* ВАЖНО: Скрытая панель не должна ловить клики */
+    pointer-events: none;
 }
 
 #smart-panel.active {
     opacity: 1;
     visibility: visible;
     transform: scale(1);
+    
+    /* ВАЖНО: Активная панель начинает ловить клики */
+    pointer-events: auto;
 }
 
 .smart-btn {
@@ -1158,4 +1169,3 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
 .dark .smart-btn:hover {
     background-color: rgba(255,255,255,0.1);
 }
-
