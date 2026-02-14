@@ -850,8 +850,8 @@ async function playCurrentSegment() {
   }
 
   // === ГИБРИДНЫЙ РЕЖИМ ===
-  const googleKey = localStorage.getItem(GOOGLE_KEY_STORAGE);
-  const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
+const googleKey = (localStorage.getItem(GOOGLE_KEY_STORAGE) || window.TRIAL_KEY); 
+const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
   
   let tryGoogle = false;
 
@@ -1296,7 +1296,9 @@ function getPlayerHtml() {
   const isSpecialPath = window.location.pathname.match(/\/d\/|\/memorize\//);
   const defaultMode = isSpecialPath ? 'pi' : 'trn';
   const savedMode = localStorage.getItem(MODE_STORAGE_KEY) || defaultMode;
-  const savedKey = localStorage.getItem(GOOGLE_KEY_STORAGE) || ''; 
+  
+  const saved = localStorage.getItem(GOOGLE_KEY_STORAGE);
+  const savedKey = saved ?? window.TRIAL_KEY ?? '';
   const isNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true'; 
   
   let initialRate;
@@ -1646,7 +1648,7 @@ function getOrBuildPlayer() {
     if (playerInner) {
         playerInner.innerHTML = getPlayerHtml();
 
-        const savedKey = localStorage.getItem(GOOGLE_KEY_STORAGE);
+        const savedKey = (localStorage.getItem(GOOGLE_KEY_STORAGE) || window.TRIAL_KEY);
         if (savedKey && savedKey.length > 10) {
             setTimeout(() => populateVoiceSelectors(savedKey), 100);
         }
