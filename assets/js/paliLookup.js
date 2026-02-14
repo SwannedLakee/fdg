@@ -10,6 +10,18 @@ const isRussian = window.location.pathname.includes('/ru/') ||
                          window.location.pathname.includes('/ml/') ||
                          localStorage.getItem('siteLanguage') === 'ru';
 
+const currentHost = window.location.origin; 
+
+function getEffectiveTheme() {
+  //alert(localStorage.theme);
+  if (localStorage.theme === 'light' || localStorage.theme === 'dark') {
+    return localStorage.theme;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
 
 const newWindowWidth = 500;
 const newWindowHeight = 500;
@@ -140,7 +152,9 @@ function createDictSearchUrl(word) {
             : `goldendict://${encodeURIComponent(word)}`;
     }
     // This part remains the same
-      return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&q=${encodeURIComponent(word)}`;
+     const theme = getEffectiveTheme();   
+
+      return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&theme=${theme}&q=${encodeURIComponent(word)}`;
   //  return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?q=${encodeURIComponent(word)}`;
 }
 
@@ -175,6 +189,7 @@ dhammaGift += '/?q=';
 // Добавляем сюда логику для загрузки предпочтений поиска, сохраненных на главной.
 dgParams = '&p=-kn';
 
+ const theme = getEffectiveTheme();   
 
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
@@ -182,8 +197,7 @@ if (savedDict.includes("dpd")) {
   }
 
   if (savedDict.includes("full")) {
-    //    dictUrl += "/?silent&source=pwa&q=";
-  dictUrl += "/?silent&q=";
+  dictUrl += "/?silent&theme=${theme}&q=";
 //    dictUrl += "/?q=";
 
   } else if (savedDict.includes("compact")) {
@@ -199,10 +213,10 @@ if (savedDict.includes("dpd")) {
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dict.dhamma.gift/?silent&q=";
+ dictUrl = "https://dict.dhamma.gift/?silent&theme=${theme}&q=";
    //   dictUrl = "https://dict.dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/?silent&q=";
+  dictUrl = "https://dict.dhamma.gift/ru/?silent&theme=${theme}&q=";
   //dictUrl = "https://dict.dhamma.gift/ru/?q=";
 // before this line:
 }
@@ -303,19 +317,22 @@ if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
     // Создаем ссылку на слово с помощью глобальной функции и оборачиваем в strong
     const wordLink = `<strong>${createClickableLink(word)}</strong>`;
 
+
+const fallbackUrl = `${currentHost}${isRussian ? "/ru" : ""}/?q=${encodeURIComponent(word)}`;
+
     // Подставляем готовую ссылку в сообщение
 translation = isRussian ?
     `<div style="padding: 10px;">
         ${wordLink} не найдено во встроенном словаре.
         <br><br>
-        <a href="https://dhamma.gift/ru/?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на dhamma.gift</a>
+        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на Dhamma.gift</a>
         <br>
         <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать в интернете</a>
     </div>` :
     `<div style="padding: 10px;">
         ${wordLink} is not found in the built-in dictionary.
         <br><br>
-        <a href="https://dhamma.gift/?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on dhamma.gift</a>
+        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on Dhamma.gift</a>
         <br>
         <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on the internet</a>
     </div>`;
