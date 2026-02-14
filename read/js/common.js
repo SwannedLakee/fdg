@@ -150,3 +150,146 @@ function runWithTransition(stateChangeCallback) {
 
   }, 150);
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    let lastScrollTop = 0;
+    let gearTimer;
+    let ignoreScroll = false; // Блокировка скролла при кликах
+    
+    const gearBtn = document.getElementById('smart-gear-btn');
+    const smartPanel = document.getElementById('smart-panel');
+    const headerHeight = 150; 
+
+    // --- 1. СИНХРОНИЗАЦИЯ ИКОНОК ---
+    function syncSmartIcons() {
+        const smartButtons = document.querySelectorAll('.smart-btn');
+        smartButtons.forEach(btn => {
+            const targetSelector = btn.getAttribute('data-target');
+            const originalEl = document.querySelector(targetSelector);
+            const smartImg = btn.querySelector('img');
+
+            if (originalEl && smartImg) {
+                let sourceImg = originalEl.tagName === 'IMG' ? originalEl : originalEl.querySelector('img');
+                if (sourceImg) {
+                    smartImg.src = sourceImg.src;
+                    smartImg.className = sourceImg.className; 
+                    smartImg.style.width = '24px'; 
+                    smartImg.style.height = '24px';
+                    smartImg.style.margin = '0'; 
+                }
+            }
+        });
+    }
+
+    // --- 2. УДЕРЖАНИЕ КНОПКИ ---
+    function keepGearAlive() {
+        gearBtn.classList.add('visible');
+        clearTimeout(gearTimer);
+        gearTimer = setTimeout(() => {
+            if (!smartPanel.classList.contains('active')) {
+                gearBtn.classList.remove('visible');
+            }
+        }, 3000);
+    }
+
+    // --- 3. ЛОГИКА СКРОЛЛА ---
+    window.addEventListener('scroll', function() {
+        if (ignoreScroll) return; 
+
+        let st = window.pageYOffset || document.documentElement.scrollTop;
+        if (st < 0) return; 
+
+        if (st < headerHeight) {
+            gearBtn.classList.remove('visible');
+            smartPanel.classList.remove('active');
+            return;
+        }
+
+        if (st < lastScrollTop) {
+            keepGearAlive(); 
+        } else if (st > lastScrollTop) {
+            if (!smartPanel.classList.contains('active')) {
+                gearBtn.classList.remove('visible');
+            }
+        }
+        lastScrollTop = st <= 0 ? 0 : st;
+    });
+
+    // --- 4. КЛИК ПО ШЕСТЕРЕНКЕ ---
+    gearBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (!smartPanel.classList.contains('active')) syncSmartIcons();
+        
+        smartPanel.classList.toggle('active');
+        
+        if (smartPanel.classList.contains('active')) {
+            clearTimeout(gearTimer);
+        } else {
+            keepGearAlive();
+        }
+    });
+
+    // --- 5. УМНЫЙ ПРОКСИ (БЕЗ ДЕРГАНИЯ) ---
+    const proxyButtons = document.querySelectorAll('.smart-btn');
+    
+    proxyButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            // Предотвращаем любые дефолтные действия браузера при клике
+            e.preventDefault();
+            
+            const targetSelector = this.getAttribute('data-target');
+            const originalElement = document.querySelector(targetSelector);
+            
+            if (originalElement) {
+                // А. Блокируем реакцию на скролл
+                ignoreScroll = true;
+                setTimeout(() => { ignoreScroll = false; }, 1000);
+
+                // Б. Логика открытия (Модалка vs Обычная кнопка)
+                if (originalElement.getAttribute('data-bs-toggle') === 'modal') {
+                    
+                    const modalId = originalElement.getAttribute('data-bs-target') || originalElement.getAttribute('href');
+                    const modalEl = document.querySelector(modalId);
+                    
+                    if (modalEl && typeof bootstrap !== 'undefined') {
+                        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                        
+                        // 1. Открываем модалку
+                        modal.show(this);
+                        
+                        // 2. ХАК ОТ ДЕРГАНИЯ: Слушаем закрытие один раз
+                        const onHidden = () => {
+                            // Принудительно ставим фокус на шестеренку БЕЗ СКРОЛЛА
+                            if (gearBtn) {
+                                gearBtn.focus({ preventScroll: true });
+                            }
+                            modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                        };
+                        modalEl.addEventListener('hidden.bs.modal', onHidden);
+
+                    } else {
+                        originalElement.click(); 
+                    }
+                } else {
+                    // Обычный клик (Тема, Варианты и т.д.)
+                    originalElement.click();
+                }
+                
+                // В. Убираем меню, оставляем кнопку
+                smartPanel.classList.remove('active');
+                keepGearAlive();
+                setTimeout(syncSmartIcons, 50); 
+            }
+        });
+    });
+
+    // --- 6. КЛИК В ПУСТОТУ ---
+    document.addEventListener('click', function(e) {
+        if (!smartPanel.contains(e.target) && !gearBtn.contains(e.target)) {
+            smartPanel.classList.remove('active');
+            gearBtn.classList.remove('visible');
+        }
+    });
+});
+
