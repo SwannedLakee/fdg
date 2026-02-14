@@ -18,8 +18,8 @@ function getEffectiveTheme() {
     : 'light';
 }
 
-//const theme = 'dark';
-const theme = getEffectiveTheme();
+const theme = 'dark';
+//const theme = getEffectiveTheme();
 
 
 const isRussian = window.location.pathname.includes('/ru/') ||
