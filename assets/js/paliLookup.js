@@ -225,6 +225,7 @@ dictUrl += `/?silent&theme=${theme}&q=`;
 // before this line:
 }
 
+
 else if (savedDict === "standaloneru") {
   dictUrl = "standaloneru"; // Используем standalone-словарь
 } else if (savedDict === "standalone") {
