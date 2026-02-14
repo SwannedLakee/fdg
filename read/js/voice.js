@@ -134,8 +134,8 @@ function toggleSilence(enable) {
                 // Media Session Setup
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.metadata = new MediaMetadata({
-                        title: "Dhamma Vinaya",
-                        artist: "Dhamma.Gift Voice",
+                        title: "Dhamma.Gift Voice",
+                        artist: "Dhamma Vinaya",
                         artwork: [{ src: '/assets/img/albumart.png', sizes: '1024x1024', type: 'image/png' }]
                     });
 
@@ -1364,10 +1364,10 @@ function getPlayerHtml() {
         justify-content: center;
         gap: 10px;
     }
-
+  
     .tts-top-btn {
         position: static !important;
-        color: #999;
+        color: #555; /* Было #999. Сделали темнее для видимости на белом */
         font-size: 24px;
         text-decoration: none !important;
         line-height: 1;
@@ -1378,8 +1378,17 @@ function getPlayerHtml() {
     }
 
     .tts-top-btn:hover {
-        color: #fff;
+        color: #000; /* Было #fff. Теперь черный при наведении в светлой теме */
     }
+
+    /* Стили для темной темы (оставляем белую подсветку) */
+    .dark .tts-top-btn {
+        color: #bbb; 
+    }
+    .dark .tts-top-btn:hover {
+        color: #fff; 
+    }
+    
 
     .tts-icon {
         filter: invert(0.5);
@@ -1390,12 +1399,12 @@ function getPlayerHtml() {
     }
 
     #google-api-key-input {
-        width: 120px;
+        width: 100px;
         background: #eee;
         border: 1px solid #ccc;
         color: #333;
         border-radius: 4px;
-        padding: 2px 5px;
+        padding: 2px 4px;
         font-size: 11px;
         transition: background 0.3s, color 0.3s;
     }
@@ -1412,7 +1421,7 @@ function getPlayerHtml() {
         color: #999;
         cursor: pointer;
         font-size: 14px;
-        padding: 0 5px;
+        padding: 0 4px;
         transition: color 0.2s;
         display: inline-flex;
         align-items: center;
@@ -1427,7 +1436,7 @@ function getPlayerHtml() {
         color: #777;
         cursor: pointer;
         font-size: 14px;
-        padding: 0 5px;
+        padding: 0 4px;
         transition: color 0.2s;
         display: inline-flex;
         align-items: center;
