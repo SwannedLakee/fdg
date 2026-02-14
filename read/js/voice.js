@@ -1,3 +1,21 @@
+// --- КОНФИГУРАЦИЯ "БЕСПЛАТНОГО ПРОБНОГО ПЕРИОДА" ---
+window.TRIAL_KEY = ""; 
+
+(async function loadTrialKey() {
+    try {
+        const response = await fetch('/config/tts-config.json');
+        if (response.ok) {
+            const data = await response.json();
+            if (data.key) {
+                window.TRIAL_KEY = data.key;
+                console.log("🎁 Trial TTS Key Loaded");
+            }
+        }
+    } catch (e) { }
+})();
+
+
+
 /// --- Конфигурация путей ---
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
@@ -1196,11 +1214,38 @@ async function startPlayback(container, mode, slug, startIndex = 0) {
   
   setButtonIcon('pause');
   
+  // --- НОВОЕ: Показываем Hint при первом воспроизведении, если активен триал ---
+  // --- НОВОЕ: Показываем Hint при первом воспроизведении (с ссылкой) ---
+  if (window.TRIAL_KEY && !localStorage.getItem(GOOGLE_KEY_STORAGE)) {
+      if (!localStorage.getItem('tts_trial_play_hint_shown')) {
+          
+          const isRu = window.location.pathname.includes('/ru') || window.location.pathname.includes('/r/');
+          const title = isRu ? "Демо-режим:" : "Demo Mode:";
+          
+          // Ссылки на поиск Google
+          const searchUrlRu = "https://www.google.com/search?q=%D0%BA%D0%B0%D0%BA+%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C+%D0%B0%D0%BF%D0%B8+%D0%BA%D0%BB%D1%8E%D1%87+%D0%B3%D1%83%D0%B3%D0%BB+tts";
+          const searchUrlEn = "https://www.google.com/search?q=how+to+get+google+cloud+text+to+speech+api+key";
+          
+          // Стиль для ссылки (светло-голубой, чтобы видно на темном)
+          const linkStyle = "color: #4da6ff; text-decoration: underline; font-weight: bold;";
+
+          const message = isRu 
+              ? `Включены <b>голоса от Google</b>. Если понравится, вы можете <a href="${searchUrlRu}" target="_blank" style="${linkStyle}">получить свой ключ</a> бесплатно.` 
+              : `<b>Google voices</b> active. If you like it, you can <a href="${searchUrlEn}" target="_blank" style="${linkStyle}">get your own key</a> for free.`;
+
+          if (typeof showVoiceHint === 'function') {
+              showVoiceHint(title, message, 'tts_trial_play_hint_shown');
+          }
+      }
+  }
+  // -----------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------------
+  
   setTimeout(() => {
      playCurrentSegment();
   }, 100);
 }
-
 
 function showVoiceHint(title, message, storageKey) {
   if (localStorage.getItem(storageKey)) return;
