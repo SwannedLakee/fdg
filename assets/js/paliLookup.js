@@ -3,10 +3,13 @@ const isMobileLike = (
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
                         (window.innerWidth <= 768)
         );
-const isLocalhost = window.location.href.includes('kacchapa') || window.location.href.includes('kacchapa');
+const isLocalhost = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1');
 
+const isRussian = window.location.pathname.includes('/ru/') ||
+                         window.location.pathname.includes('/r/') ||
+                         window.location.pathname.includes('/ml/') ||
+                         localStorage.getItem('siteLanguage') === 'ru';
 
-// Определяем текущий домен динамически
 const currentHost = window.location.origin; 
 
 function getEffectiveTheme() {
@@ -18,12 +21,6 @@ function getEffectiveTheme() {
     ? 'dark'
     : 'light';
 }
-
-
-const isRussian = window.location.pathname.includes('/ru/') ||
-                         window.location.pathname.includes('/r/') ||
-                         window.location.pathname.includes('/ml/') ||
-                         localStorage.getItem('siteLanguage') === 'ru';
 
 
 const newWindowWidth = 500;
@@ -148,18 +145,19 @@ if (window.location.search.includes('script=devanagari') || window.location.path
  */
 function createDictSearchUrl(word) {
     if (isLocalhost || !navigator.onLine) {
+        // This logic is now consistent with your other functions
         const isAndroid = /Android/i.test(navigator.userAgent);
         return isAndroid
             ? `dttp://app.dicttango/WordLookup?word=${encodeURIComponent(word)}`
             : `goldendict://${encodeURIComponent(word)}`;
     }
+    // This part remains the same
+     const theme = getEffectiveTheme();   
 
-    // Динамически подставляем текущий хост, заменяя 'f.' или 'find.' на 'dict.' 
-    // Либо просто используем относительный путь, если словари лежат на том же домене
-    const dictBase = currentHost.replace(/(f|find|ru)\./, 'dict.');
- const theme = getEffectiveTheme();   
-    return `${dictBase}/${savedDict.includes("ru") ? "ru/" : ""}?silent&theme=${theme}&q=${encodeURIComponent(word)}`;
+      return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?silent&theme=${theme}&q=${encodeURIComponent(word)}`;
+  //  return `https://dict.dhamma.gift/${savedDict.includes("ru") ? "ru/" : ""}?q=${encodeURIComponent(word)}`;
 }
+
 
 // Устанавливаем правильный URL для словаря в зависимости от языка
 let dhammaGift;
@@ -173,14 +171,14 @@ dhammaGift = '';
 if (isLocalhost) {
    // dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
-  dictUrl = "https://dict.Dhamma.gift";
+  dictUrl = "https://dict.dhamma.gift";
 //dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
-    dictUrl = "https://dict.Dhamma.gift";
+    dictUrl = "https://dict.dhamma.gift";
     //dictUrl = "https://dpdict.net";
   }
   else {
-    dictUrl = "https://dict.Dhamma.gift";
+    dictUrl = "https://dict.dhamma.gift";
 }
 
 if (window.location.href.includes('/r/') || window.location.href.includes('/ru/') || window.location.href.includes('/ml/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
@@ -191,14 +189,15 @@ dhammaGift += '/?q=';
 // Добавляем сюда логику для загрузки предпочтений поиска, сохраненных на главной.
 dgParams = '&p=-kn';
 
-const theme = getEffectiveTheme();
+ const theme = getEffectiveTheme();   
+
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
     dictUrl += "/ru";
   }
 
   if (savedDict.includes("full")) {
-dictUrl += `/?silent&theme=${theme}&q=`; 
+  dictUrl += "/?silent&theme=${theme}&q=";
 //    dictUrl += "/?q=";
 
   } else if (savedDict.includes("compact")) {
@@ -214,15 +213,13 @@ dictUrl += `/?silent&theme=${theme}&q=`;
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dict.Dhamma.gift/?silent&theme=${theme}&q=";
-
-   //   dictUrl = "https://dict.Dhamma.gift/?q=";
+ dictUrl = "https://dict.dhamma.gift/?silent&theme=${theme}&q=";
+   //   dictUrl = "https://dict.dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.Dhamma.gift/ru/?silent&theme=${theme}&q=";
-  //dictUrl = "https://dict.Dhamma.gift/ru/?q=";
+  dictUrl = "https://dict.dhamma.gift/ru/?silent&theme=${theme}&q=";
+  //dictUrl = "https://dict.dhamma.gift/ru/?q=";
 // before this line:
 }
-
 
 else if (savedDict === "standaloneru") {
   dictUrl = "standaloneru"; // Используем standalone-словарь
@@ -320,21 +317,22 @@ if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
     // Создаем ссылку на слово с помощью глобальной функции и оборачиваем в strong
     const wordLink = `<strong>${createClickableLink(word)}</strong>`;
 
-    // Подставляем готовую ссылку в сообщение
- const fallbackUrl = `${currentHost}${isRussian ? "/ru" : ""}/?q=${encodeURIComponent(word)}`;
 
+const fallbackUrl = `${currentHost}${isRussian ? "/ru" : ""}/?q=${encodeURIComponent(word)}`;
+
+    // Подставляем готовую ссылку в сообщение
 translation = isRussian ?
     `<div style="padding: 10px;">
         ${wordLink} не найдено во встроенном словаре.
         <br><br>
-        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на Dhamma.gift</a>   
+        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать на Dhamma.gift</a>
         <br>
         <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Искать в интернете</a>
     </div>` :
     `<div style="padding: 10px;">
         ${wordLink} is not found in the built-in dictionary.
         <br><br>
-        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on dlDhamma.gift</a>
+        <a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on Dhamma.gift</a>
         <br>
         <a href="/cse.php?q=${word}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Search on the internet</a>
     </div>`;
@@ -786,7 +784,7 @@ function createPopup() {
     dictBtn.style.justifyContent = 'center';
     dictBtn.style.textDecoration = 'none';
     dictBtn.target = '_blank';
-    dictBtn.title = 'Open in dict.Dhamma.gift';
+    dictBtn.title = 'Open in dict.dhamma.gift';
     dictBtn.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
 
     const iframe = document.createElement('iframe');
