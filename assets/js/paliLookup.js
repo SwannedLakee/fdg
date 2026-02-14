@@ -175,14 +175,14 @@ dhammaGift = '';
 if (isLocalhost) {
    // dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
-  dictUrl = "https://dict.dhamma.gift";
+  dictUrl = "https://d.dhamma.gift";
 //dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
-    dictUrl = "https://dict.dhamma.gift";
+    dictUrl = "https://d.dhamma.gift";
     //dictUrl = "https://dpdict.net";
   }
   else {
-    dictUrl = "https://dict.dhamma.gift";
+    dictUrl = "https://d.dhamma.gift";
 }
 
 if (window.location.href.includes('/r/') || window.location.href.includes('/ru/') || window.location.href.includes('/ml/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
@@ -216,12 +216,12 @@ dictUrl += `/?silent&theme=${theme}&q=`;
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://dict.dhamma.gift/?silent&theme=${theme}&q=";
+ dictUrl = "https://d.dhamma.gift/?silent&theme=${theme}&q=";
 
-   //   dictUrl = "https://dict.dhamma.gift/?q=";
+   //   dictUrl = "https://d.dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://dict.dhamma.gift/ru/?silent&theme=${theme}&q=";
-  //dictUrl = "https://dict.dhamma.gift/ru/?q=";
+  dictUrl = "https://d.dhamma.gift/ru/?silent&theme=${theme}&q=";
+  //dictUrl = "https://d.dhamma.gift/ru/?q=";
 // before this line:
 }
 
@@ -788,7 +788,7 @@ function createPopup() {
     dictBtn.style.justifyContent = 'center';
     dictBtn.style.textDecoration = 'none';
     dictBtn.target = '_blank';
-    dictBtn.title = 'Open in dict.dhamma.gift';
+    dictBtn.title = 'Open in d.dhamma.gift';
     dictBtn.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
 
     const iframe = document.createElement('iframe');
