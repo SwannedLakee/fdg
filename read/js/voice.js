@@ -309,7 +309,11 @@ async function loadGoogleVoices(apiKey) {
         const response = await fetch(`https://texttospeech.googleapis.com/v1/voices?key=${apiKey}`);
         const data = await response.json();
         if (data.voices) {
-            googleVoicesList = data.voices;
+            // --- ФИЛЬТР БЕЗОПАСНОСТИ ---
+            // Убираем голоса Studio, так как они платные сразу (без Free Tier)
+            googleVoicesList = data.voices.filter(v => !v.name.includes('Studio'));
+            // ---------------------------
+            
             return googleVoicesList;
         } else if (data.error) {
              console.warn('Google API Error:', data.error);
@@ -320,6 +324,7 @@ async function loadGoogleVoices(apiKey) {
     }
     return [];
 }
+
 
 function setupVoiceSelectors(voices, langSelectId, voiceSelectId, storageKey, defaultConfig) {
     const langSelect = document.getElementById(langSelectId);
