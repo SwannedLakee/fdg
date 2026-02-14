@@ -260,6 +260,8 @@ function cleanTextForTTS(text) {
     .replace(/म[\.:, ]/g, 'मा ')
     .replace(/फस्स/g, 'प्हस्स')
     .replace(/फ/g, 'प्ह')
+  .replace(/,/g, '।.')
+  //  .replace(/।/g, '।.')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
     .replace(/\{.*?\}/g, '')
@@ -267,6 +269,55 @@ function cleanTextForTTS(text) {
     .replace(/[ \t]+/g, ' ')
     .replace(/_/g, '').trim();
 }
+
+/*
+function cleanTextForTTS(text) {
+  if (!text) return "";
+
+  // 1. Стандартная базовая очистка (мусор, теги, сокращения)
+  let clean = text
+    .replace(/[Пп]ер\./g, 'Перевод') 
+    .replace(/Англ,/g, 'английского,') 
+    .replace(/[Рр]ед\./g, 'отредактировано') 
+    .replace(/Trn:/g, 'Translated by') 
+    .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
+    .replace(/”/g, '')
+    .replace(/ पन[\.:, ]/g, 'पना ') 
+    .replace(/स्स[\.:, ]/g, 'स्सा ')
+    .replace(/स[\.:, ]/g, 'सा ')
+    .replace(/म्म[\.:, ]/g, 'म्मा ')
+    .replace(/म[\.:, ]/g, 'मा ')
+    .replace(/फस्स/g, 'प्हस्स')
+    .replace(/फ/g, 'प्ह')
+  .replace(/,/g, '।.')
+  //  .replace(/।/g, '।.')
+    .replace(/…पे…/g, '…पेय्याल…')
+    .replace(/’ति/g, 'ति')
+    .replace(/\{.*?\}/g, '')
+    .replace(/\(.*?\)/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/_/g, '').trim();
+
+  // --- УМНАЯ ЛОГИКА (SMART SPLIT) ---
+  
+  // Лимит "безопасности" для Google TTS без точек.
+  // Обычно 200 символов сплошного текста (без пауз) - это предел, где нейросеть начинает сбоить.
+  const SAFE_LENGTH_LIMIT = 200;
+
+  if (clean.length > SAFE_LENGTH_LIMIT) {
+      // Только если текст ДЛИННЫЙ, мы меняем структуру:
+      
+      // 1. Превращаем запятые и точки с запятой в "Данды" (полные остановки)
+      clean = clean.replace(/,/g, ' ।');
+      clean = clean.replace(/;/g, ' ।');
+
+      clean = clean.replace(/ होती /g, ' होती । ');
+  }
+
+  return clean;
+}
+
+*/
 
 function setButtonIcon(type) {
   const allImgs = document.querySelectorAll('.play-main-button img');
@@ -531,24 +582,13 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
       if (!targetConfig) targetConfig = DEFAULT_PALI_CONFIG;
 
       // === GOOGLE-SPECIFIC PALI PATCH (Schwa Deletion Fix) ===
-      // Современные голоса (Хинди, Каннада и т.д.) "глотают" короткие гласные в конце.
-      // Мы искусственно удлиняем их ТОЛЬКО для запроса в Google, чтобы вернуть полное звучание.
       if (text) {
-          // Диапазон согласных Деванагари (ka-ha + la)
           const C = '[\u0915-\u0939\u0933]'; 
-          // Границы слов: пробел, конец строки или знаки препинания
           const B = '(?=\\s|[।,:;.?!\"]|$)';
 
-          // 1. a -> ā (Добавляем матру 'aa' к согласной в конце слова)
-          // Было: Ayameva (अयमेव) -> Стало: Ayamevaa (अयमेवा)
+          // Модификации текста для Google
           text = text.replace(new RegExp(`(${C})${B}`, 'g'), '$1ा');
-
-          // 2. i -> ī (Заменяем матру 'i' на 'ii')
-          // Было: kacci (कच्चि) -> Стало: kaccī (कच्ची)
           text = text.replace(new RegExp(`(${C})ि${B}`, 'g'), '$1ी');
-
-          // 3. u -> ū (Заменяем матру 'u' на 'uu')
-          // Было: bhavatu (भवतु) -> Стало: bhavatū (भवतू)
           text = text.replace(new RegExp(`(${C})ु${B}`, 'g'), '$1ू');
       }
       // ========================================================
@@ -556,12 +596,10 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
   } else {
       // --- TRANSLATION (Dynamic) ---
       const context = getContextInfo(); 
-      
       const savedTrn = localStorage.getItem(context.storageKey);
       if (savedTrn) {
           try { targetConfig = JSON.parse(savedTrn); } catch (e) {}
       }
-      
       if (!targetConfig) targetConfig = context.defaultConfig;
   }
 
@@ -584,15 +622,29 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
     });
 
     const data = await response.json();
+
+    // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ---
     if (data.error) {
+        const errorMsg = JSON.stringify(data.error, null, 2);
+        alert(`⚠️ GOOGLE TTS ERROR!\n\nTEXT SENT:\n${text}\n\nERROR:\n${errorMsg}`);
         throw new Error(data.error.message);
     }
+    // -------------------------------------
+
     return data.audioContent; 
   } catch (e) {
+    // --- DEBUG ALERT: ЕСЛИ СЕТЕВОЙ СБОЙ ИЛИ ДРУГОЕ ---
+    // Показываем алерт, только если это не ошибка, которую мы уже показали выше
+    if (!e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
+         alert(`⚠️ CRITICAL FAIL:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
+    }
+    // ------------------------------------------------
+    
     console.warn('Google TTS Fetch Error:', e);
     return null;
   }
 }
+
 
 /*
 async function fetchGoogleAudio(text, lang, rate, apiKey) {
