@@ -243,7 +243,7 @@ function clearTtsStorage() {
   localStorage.removeItem(LAST_SLUG_KEY);
   localStorage.removeItem(LAST_INDEX_KEY);
 }
-
+/*
 function cleanTextForTTS(text) {
   if (!text) return "";
   return text
@@ -260,8 +260,8 @@ function cleanTextForTTS(text) {
     .replace(/म[\.:, ]/g, 'मा ')
     .replace(/फस्स/g, 'प्हस्स')
     .replace(/फ/g, 'प्ह')
-  .replace(/,/g, '।.')
-  //  .replace(/।/g, '।.')
+//  .replace(/,/g, ' ।')
+  //  .replace(/।/g, ' ।')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
     .replace(/\{.*?\}/g, '')
@@ -269,8 +269,8 @@ function cleanTextForTTS(text) {
     .replace(/[ \t]+/g, ' ')
     .replace(/_/g, '').trim();
 }
+*/
 
-/*
 function cleanTextForTTS(text) {
   if (!text) return "";
 
@@ -289,7 +289,7 @@ function cleanTextForTTS(text) {
     .replace(/म[\.:, ]/g, 'मा ')
     .replace(/फस्स/g, 'प्हस्स')
     .replace(/फ/g, 'प्ह')
-  .replace(/,/g, '।.')
+  .replace(/,/g, '.')
   //  .replace(/।/g, '।.')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
@@ -316,8 +316,6 @@ function cleanTextForTTS(text) {
 
   return clean;
 }
-
-*/
 
 function setButtonIcon(type) {
   const allImgs = document.querySelectorAll('.play-main-button img');
