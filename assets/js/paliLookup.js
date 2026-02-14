@@ -3,13 +3,14 @@ const isMobileLike = (
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||
                         (window.innerWidth <= 768)
         );
-const isLocalhost = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1');
+const isLocalhost = window.location.href.includes('kacchapa') || window.location.href.includes('kacchapa');
 
 
 // Определяем текущий домен динамически
 const currentHost = window.location.origin; 
 
 function getEffectiveTheme() {
+  //alert(localStorage.theme);
   if (localStorage.theme === 'light' || localStorage.theme === 'dark') {
     return localStorage.theme;
   }
@@ -17,9 +18,6 @@ function getEffectiveTheme() {
     ? 'dark'
     : 'light';
 }
-
-const theme = 'dark';
-//const theme = getEffectiveTheme();
 
 
 const isRussian = window.location.pathname.includes('/ru/') ||
@@ -159,7 +157,7 @@ function createDictSearchUrl(word) {
     // Динамически подставляем текущий хост, заменяя 'f.' или 'find.' на 'dict.' 
     // Либо просто используем относительный путь, если словари лежат на том же домене
     const dictBase = currentHost.replace(/(f|find|ru)\./, 'dict.');
-    
+ const theme = getEffectiveTheme();   
     return `${dictBase}/${savedDict.includes("ru") ? "ru/" : ""}?silent&theme=${theme}&q=${encodeURIComponent(word)}`;
 }
 
@@ -175,14 +173,14 @@ dhammaGift = '';
 if (isLocalhost) {
    // dhammaGift = '';
  //  dictUrl = "http://localhost:8880";
-  dictUrl = "https://d.dhamma.gift";
+  dictUrl = "https://dict.Dhamma.gift";
 //dictUrl = "https://dpdict.net";
 } else if (savedDict.includes("compact")) {
-    dictUrl = "https://d.dhamma.gift";
+    dictUrl = "https://dict.Dhamma.gift";
     //dictUrl = "https://dpdict.net";
   }
   else {
-    dictUrl = "https://d.dhamma.gift";
+    dictUrl = "https://dict.Dhamma.gift";
 }
 
 if (window.location.href.includes('/r/') || window.location.href.includes('/ru/') || window.location.href.includes('/ml/') || (localStorage.siteLanguage && localStorage.siteLanguage === 'ru')) {
@@ -193,7 +191,7 @@ dhammaGift += '/?q=';
 // Добавляем сюда логику для загрузки предпочтений поиска, сохраненных на главной.
 dgParams = '&p=-kn';
 
-
+const theme = getEffectiveTheme();
 if (savedDict.includes("dpd")) {
   if (savedDict.includes("ru")) {
     dictUrl += "/ru";
@@ -216,12 +214,12 @@ dictUrl += `/?silent&theme=${theme}&q=`;
     externalDict = true;
   dictUrl = "mdict://mdict.cn/search?text=";
 } else if (savedDict === "newwindow") {
- dictUrl = "https://d.dhamma.gift/?silent&theme=${theme}&q=";
+ dictUrl = "https://dict.Dhamma.gift/?silent&theme=${theme}&q=";
 
-   //   dictUrl = "https://d.dhamma.gift/?q=";
+   //   dictUrl = "https://dict.Dhamma.gift/?q=";
 } else if (savedDict === "newwindowru") {
-  dictUrl = "https://d.dhamma.gift/ru/?silent&theme=${theme}&q=";
-  //dictUrl = "https://d.dhamma.gift/ru/?q=";
+  dictUrl = "https://dict.Dhamma.gift/ru/?silent&theme=${theme}&q=";
+  //dictUrl = "https://dict.Dhamma.gift/ru/?q=";
 // before this line:
 }
 
@@ -788,7 +786,7 @@ function createPopup() {
     dictBtn.style.justifyContent = 'center';
     dictBtn.style.textDecoration = 'none';
     dictBtn.target = '_blank';
-    dictBtn.title = 'Open in d.dhamma.gift';
+    dictBtn.title = 'Open in dict.Dhamma.gift';
     dictBtn.innerHTML = `<img src="/assets/svg/dpd-logo-dark.svg" width="18" height="18">`;
 
     const iframe = document.createElement('iframe');
