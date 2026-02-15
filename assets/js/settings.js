@@ -761,6 +761,8 @@ if (applyButton) {
     
     localStorage.setItem("firstVisitShowSettingsClosed", "true");
     
+saveExactScrollPosition(); 
+  
     // Перезагружаем страницу для применения всех изменений
     location.reload();
   });
@@ -1620,3 +1622,44 @@ if (!document.getElementById("openQuickModalBtn")) {
   ≡
 </button>
 */
+
+
+// === ФУНКЦИЯ "УМНОГО" СОХРАНЕНИЯ ПОЗИЦИИ ===
+function saveExactScrollPosition() {
+    const suttaContainer = document.getElementById('sutta');
+    if (!suttaContainer) return;
+
+    // Ищем все сегменты с ID (абзацы, строфы)
+    const elements = suttaContainer.querySelectorAll('[id]');
+    if (elements.length === 0) return;
+
+    // "Линия глаз" - точка, куда обычно смотрит пользователь (например, 120px от верха)
+    // Это позволяет игнорировать шапку сайта
+    const eyeLevel = 120;
+    
+    let bestElement = null;
+    let minDistance = Infinity;
+
+    for (const el of elements) {
+        const rect = el.getBoundingClientRect();
+        
+        // Нам нужен элемент, который либо прямо на линии глаз, либо чуть выше/ниже
+        const distance = Math.abs(rect.top - eyeLevel);
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            bestElement = el;
+        }
+    }
+
+    if (bestElement) {
+        // ЗАПОМИНАЕМ:
+        // 1. ID элемента
+        // 2. offset: Где именно он находился относительно верха окна (например, "на 125-м пикселе")
+        const data = {
+            id: bestElement.id,
+            offset: bestElement.getBoundingClientRect().top
+        };
+        localStorage.setItem('exactScrollAnchor', JSON.stringify(data));
+    }
+}

@@ -228,3 +228,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+/**
+ * Восстанавливает точную визуальную позицию текста.
+ * Алгоритм:
+ * 1. Ждем появления элемента по ID.
+ * 2. Считаем его текущую абсолютную позицию в документе.
+ * 3. Отнимаем сохраненный offset (смещение от верха экрана).
+ * Результат: Элемент встает ровно на то же место экрана, где был.
+ */
+(function restoreExactPosition() {
+    const rawData = localStorage.getItem('exactScrollAnchor');
+    if (!rawData) return;
+
+    const anchor = JSON.parse(rawData);
+    // Сразу чистим, чтобы сработало 1 раз
+    localStorage.removeItem('exactScrollAnchor'); 
+
+    const maxWait = 7000; // 7 сек
+    const checkInterval = 50; // Проверяем часто (50мс) для плавности
+    let elapsed = 0;
+
+    const intervalId = setInterval(() => {
+        const element = document.getElementById(anchor.id);
+
+        if (element) {
+            clearInterval(intervalId);
+
+            // МАТЕМАТИКА ВОССТАНОВЛЕНИЯ:
+            // Абсолютная позиция эл-та в документе = (Текущий скролл + Положение эл-та в окне)
+            const absoluteY = window.scrollY + element.getBoundingClientRect().top;
+            
+            // Целевой скролл = Абсолютная позиция - Тот offset, который был у пользователя
+            const targetScrollY = absoluteY - anchor.offset;
+
+            window.scrollTo({
+                top: targetScrollY,
+                behavior: 'auto' // Мгновенно, без анимации
+            });
+            
+             // Подстраховка: иногда браузеру нужно время на перерисовку шрифтов
+             // Повторяем коррекцию через короткий миг
+             setTimeout(() => {
+                 const newAbsoluteY = window.scrollY + element.getBoundingClientRect().top;
+                 window.scrollTo(0, newAbsoluteY - anchor.offset);
+             }, 100);
+
+        }
+
+        elapsed += checkInterval;
+        if (elapsed >= maxWait) clearInterval(intervalId);
+    }, checkInterval);
+})();
