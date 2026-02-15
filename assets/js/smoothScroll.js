@@ -1,3 +1,61 @@
+(function restoreExactPositionJump() {
+    // 1. Жёстко отключаем браузерное восстановление
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    // 2. Принудительно отключаем smooth-scroll из CSS
+    const html = document.documentElement;
+    const prevScrollBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+
+    const rawData = localStorage.getItem('exactScrollAnchor');
+    if (!rawData) {
+        html.style.scrollBehavior = prevScrollBehavior;
+        return;
+    }
+
+    const anchor = JSON.parse(rawData);
+    localStorage.removeItem('exactScrollAnchor'); // одноразово
+
+    const maxWait = 7000;
+    const checkInterval = 50;
+    let elapsed = 0;
+
+    const intervalId = setInterval(() => {
+        const element = document.getElementById(anchor.id);
+
+        if (element) {
+            clearInterval(intervalId);
+
+            // Абсолютная позиция элемента в документе
+            const absoluteY =
+                window.pageYOffset + element.getBoundingClientRect().top;
+
+            const targetY = absoluteY - anchor.offset;
+
+            // 3. МГНОВЕННЫЙ ПРЫЖОК (самый надёжный вариант)
+            window.scrollTo(0, targetY);
+
+            // 4. Контрольный добив после layout-перерисовки
+            requestAnimationFrame(() => {
+                const correctedY =
+                    window.pageYOffset + element.getBoundingClientRect().top - anchor.offset;
+                window.scrollTo(0, correctedY);
+
+                // возвращаем scroll-behavior
+                html.style.scrollBehavior = prevScrollBehavior;
+            });
+        }
+
+        elapsed += checkInterval;
+        if (elapsed >= maxWait) {
+            clearInterval(intervalId);
+            html.style.scrollBehavior = prevScrollBehavior;
+        }
+    }, checkInterval);
+})();
+
 /**
  * Подсвечивает элемент по его ID.
  * Сначала активирует TTS, затем запускает анимацию.
@@ -151,9 +209,12 @@ function intelligentScrollToHash() {
         highlightMultipleById(ids); 
         
         const firstElement = document.getElementById(ids[0]);
-        if (firstElement) {
-             firstElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+if (firstElement) {
+    const yOffset = -window.innerHeight * 0.20; // Смещение на 1/4 экрана вверх
+    const y = firstElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
 
     // Сценарий 2: Одиночный ID (Красивая анимация)
     } else {
@@ -167,16 +228,17 @@ function intelligentScrollToHash() {
             const element = document.getElementById(elementId);
 
             // 1. Элемент найден
-            if (element) {
-                clearInterval(pollingInterval); 
-                
-                // Скроллим
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Активируем TTS и анимацию
-                highlightAllById(elementId); 
-                return;
-            }
+if (element) {
+    clearInterval(pollingInterval); 
+    
+    // Вместо element.scrollIntoView...
+    const yOffset = -window.innerHeight * 0.20; 
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    
+    highlightAllById(elementId); 
+    return;
+}
 
             // 2. Ждем дальше
             timeElapsed += checkInterval;
@@ -191,8 +253,10 @@ function intelligentScrollToHash() {
 }
 
 // Запуски
+if (!localStorage.getItem('exactScrollAnchor')) {
 window.addEventListener('DOMContentLoaded', intelligentScrollToHash);
 window.addEventListener('hashchange', intelligentScrollToHash);
+}
 
 // Кнопка "Наверх"
 document.addEventListener('DOMContentLoaded', function() {
@@ -229,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
 /**
  * Восстанавливает точную визуальную позицию текста.
  * Алгоритм:
@@ -238,46 +301,4 @@ document.addEventListener('DOMContentLoaded', function() {
  * 3. Отнимаем сохраненный offset (смещение от верха экрана).
  * Результат: Элемент встает ровно на то же место экрана, где был.
  */
-(function restoreExactPosition() {
-    const rawData = localStorage.getItem('exactScrollAnchor');
-    if (!rawData) return;
 
-    const anchor = JSON.parse(rawData);
-    // Сразу чистим, чтобы сработало 1 раз
-    localStorage.removeItem('exactScrollAnchor'); 
-
-    const maxWait = 7000; // 7 сек
-    const checkInterval = 50; // Проверяем часто (50мс) для плавности
-    let elapsed = 0;
-
-    const intervalId = setInterval(() => {
-        const element = document.getElementById(anchor.id);
-
-        if (element) {
-            clearInterval(intervalId);
-
-            // МАТЕМАТИКА ВОССТАНОВЛЕНИЯ:
-            // Абсолютная позиция эл-та в документе = (Текущий скролл + Положение эл-та в окне)
-            const absoluteY = window.scrollY + element.getBoundingClientRect().top;
-            
-            // Целевой скролл = Абсолютная позиция - Тот offset, который был у пользователя
-            const targetScrollY = absoluteY - anchor.offset;
-
-            window.scrollTo({
-                top: targetScrollY,
-                behavior: 'auto' // Мгновенно, без анимации
-            });
-            
-             // Подстраховка: иногда браузеру нужно время на перерисовку шрифтов
-             // Повторяем коррекцию через короткий миг
-             setTimeout(() => {
-                 const newAbsoluteY = window.scrollY + element.getBoundingClientRect().top;
-                 window.scrollTo(0, newAbsoluteY - anchor.offset);
-             }, 100);
-
-        }
-
-        elapsed += checkInterval;
-        if (elapsed >= maxWait) clearInterval(intervalId);
-    }, checkInterval);
-})();
