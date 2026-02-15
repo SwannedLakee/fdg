@@ -621,8 +621,9 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
 
     const data = await response.json();
 
-    // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ---
+    // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ОТ САМОГО GOOGLE (например, неверный ключ) ---
     if (data.error) {
+        // Тут мы оставляем алерт, так как если мы получили ответ от сервера, значит мы онлайн.
         const errorMsg = JSON.stringify(data.error, null, 2);
         alert(`⚠️ GOOGLE TTS ERROR!\n\nTEXT SENT:\n${text}\n\nERROR:\n${errorMsg}`);
         throw new Error(data.error.message);
@@ -631,18 +632,17 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
 
     return data.audioContent; 
   } catch (e) {
-    // --- DEBUG ALERT: ЕСЛИ СЕТЕВОЙ СБОЙ ИЛИ ДРУГОЕ ---
-    // Показываем алерт, только если это не ошибка, которую мы уже показали выше
-    if (!e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
+    // --- DEBUG ALERT: ТОЛЬКО ЕСЛИ МЫ ОНЛАЙН ---
+    // Добавлена проверка navigator.onLine
+    if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
          alert(`⚠️ CRITICAL FAIL:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
     }
     // ------------------------------------------------
     
     console.warn('Google TTS Fetch Error:', e);
-    return null;
+    return null; // Возвращаем null, чтобы сработал Native Fallback
   }
 }
-
 
 /*
 async function fetchGoogleAudio(text, lang, rate, apiKey) {
