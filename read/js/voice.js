@@ -1125,6 +1125,13 @@ async function handleSuttaClick(e) {
 
   if (playBtn && !e.target.classList.contains('voice-link')) {
     e.preventDefault();
+
+    // --- FIX START: Ищем актуальный Slug на текущей странице ---
+    // Плеер может помнить старый slug, поэтому мы проверяем, есть ли на странице свежая ссылка
+    const pageVoiceLink = document.querySelector('.voice-link[data-slug]');
+    const freshPageSlug = pageVoiceLink ? pageVoiceLink.dataset.slug : null;
+    // --- FIX END ---
+
     const activeWordElement = container.querySelector('.active-word');
     const activeId = activeWordElement ? getElementId(activeWordElement) : null;
     const currentItem = ttsState.playlist[ttsState.currentIndex];
@@ -1139,17 +1146,18 @@ async function handleSuttaClick(e) {
         const modeSelect = document.getElementById('tts-mode-select');
         if (modeSelect) modeSelect.value = mode;
       }
-      let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+      
+      // ИСПОЛЬЗУЕМ СВЕЖИЙ SLUG
+      let targetSlug = freshPageSlug || playBtn.dataset.slug || ttsState.currentSlug;
       startPlayback(container, mode, targetSlug, 0);
+
     } else {
       if (ttsState.speaking) {
         if (ttsState.paused) {
           // --- RESUME ---
           ttsState.paused = false;
           setButtonIcon('pause');
-          
           toggleSilence(true);
-
           if (ttsState.googleAudio) {
               ttsState.googleAudio.play();
           } else {
@@ -1165,13 +1173,17 @@ async function handleSuttaClick(e) {
           setButtonIcon('play');
         }
       } else {
+        // --- START FRESH ---
         const mode = document.getElementById('tts-mode-select')?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
-        let targetSlug = playBtn.dataset.slug || ttsState.currentSlug;
+        
+        // ИСПОЛЬЗУЕМ СВЕЖИЙ SLUG, ЕСЛИ НАЧИНАЕМ СНАЧАЛА
+        let targetSlug = freshPageSlug || playBtn.dataset.slug || ttsState.currentSlug;
         startPlayback(container, mode, targetSlug, 0);
       }
     }
     return;
   }
+
 
   if (e.target.closest('.close-tts-btn')) {
     e.preventDefault();
