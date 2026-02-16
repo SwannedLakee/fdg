@@ -293,6 +293,7 @@ function cleanTextForTTS(text) {
     .replace(/[Пп]ер\./g, 'Перевод') 
     .replace(/Англ,/g, 'английского,') 
     .replace(/[Рр]ед\./g, 'отредактировано') 
+
     .replace(/Trn:/g, 'Translated by') 
     .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/”/g, '')
@@ -2167,8 +2168,11 @@ function prepareLegacyData() {
         // Чистим текст для TTS
         const cleanText = text
             .replace(/\[\d+\]/g, '')      
+            .replace(/\(\d+\)/g, '')      
+            .replace(/\d+\)/g, '')      
             .replace(/^\d+\./, '')        
-            .replace(/\s+/g, ' ')         
+            .replace(/\s+/g, ' ')  
+            .replace(/\*/g, '')
             .replace(/^[\*\-•]\s*/, '')
             .trim();
 
