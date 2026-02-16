@@ -635,8 +635,8 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
   } catch (e) {
     // --- DEBUG ALERT: ТОЛЬКО ЕСЛИ МЫ ОНЛАЙН ---
     // Добавлена проверка navigator.onLine
-  //  if ( !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
-    if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
+    if ( !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
+  //  if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
          alert(`⚠️ ERROR:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
     }
     // ------------------------------------------------
