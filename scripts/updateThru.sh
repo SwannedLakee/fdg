@@ -36,7 +36,7 @@ grep -lri "&#1645;</span>" . | sort -V | while read -r i; do
     # 1. Убираем "./" в начале пути файла
     clean_path="${i#./}"
     # 2. Собираем полный URL
-    real_url="https://theravada.ru/Teaching/Canon/Suttanta/$clean_path"
+    real_url="https://theravada.ru/Teaching/Canon/$clean_path"
 
     echo "Processing: ($textindex) $i"
 
@@ -44,10 +44,14 @@ grep -lri "&#1645;</span>" . | sort -V | while read -r i; do
     # Исправлено: 
     # 1. real_url вставлен в href для Th.ru
     # 2. Убран разделитель \&nbsp;\| перед Voice
-    sed -i \
-        '/&#1645;<\/span>/s|<\/span>|<\/span> <a href="/ru/?q='"$textindex"'">DG<\/a> <a href="https://suttacentral.net/'"$textindex"'">SC<\/a> <a href="'"$real_url"'">Th.ru<\/a> <a href="javascript:void(0)" class="voice-link" data-slug="'"$textindex"'" title="Слушать">Voice 🔊<\/a>|' \
-        "$i"
+ #   sed -i \
+  #      '/&#1645;<\/span>/s|<\/span>|<\/span> <a href="/ru/?q='"$textindex"'">DG<\/a> <a href="https://suttacentral.net/'"$textindex"'">SC<\/a> <a href="'"$real_url"'">Th.ru<\/a> <a href="javascript:void(0)" class="voice-link" data-slug="'"$textindex"'" title="Слушать">Voice 🔊<\/a>|' \
+  #      "$i"
 
+sed -i \
+  '/&#1645;<\/span>/s|<\/span>|</span> <span class="ext-links"><a href="/ru/?q='"$textindex"'">DG</a> <a href="https://suttacentral.net/'"$textindex"'">SC</a> <a href="'"$real_url"'">Th.ru</a> <a href="javascript:void(0)" class="voice-link" data-slug="'"$textindex"'" title="Слушать">Voice 🔊</a></span>|' \
+  "$i"
+  
     # --- КОМАНДА 2: Подключение JS перед </body> ---
     if ! grep -q "voice.js" "$i"; then
         sed -i 's|</body>|<script src="/read/js/voice.js"></script></body>|' "$i"
@@ -61,3 +65,18 @@ grep -lri "&#1645;</span>" . | sort -V | while read -r i; do
 done
 
 echo "--- Готово! Ссылки исправлены, скрипты подключены. ---"
+
+
+exit 0
+
+
+добавмть в ui3xta css
+
+.ext-links {
+  font-size: 0.85em;      /* общий размер */
+  white-space: nowrap;   /* чтобы не ломалось в переносах */
+}
+
+.ext-links a {
+  margin-left: 0.3em;
+}
