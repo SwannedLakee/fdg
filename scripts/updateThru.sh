@@ -50,6 +50,7 @@ sed -i \
     sed -i 's|Учение Старцев </b>|Тхеравада.ру </b>|g' "$i"
     sed -i 's|Учение Старцев</b>|Тхеравада.ру</b>|g' "$i"
     sed -i 's|href="/index.htm"|href="/ru/"|g' "$i"
+    sed -i 's|</head>|<meta name="viewport" content="width=device-width, initial-scale=1">\n</head>|i' "$i"
 
     # --- КОМАНДА 4: Правка ширины таблицы (1000 -> 100%) ---
     sed -i 's/table width="1000"/table width="100%" style="max-width: 1000px;"/g' "$i"
@@ -65,9 +66,10 @@ sed -i \
 
 done
 
+find . -type f -exec sed -i 's|</head>|<meta name="viewport" content="width=device-width, initial-scale=1">\n</head>|i' {} +
+
 find . -type f -exec sed -i 's|../AN|../../AN|g' {} +
 find . -type f -exec sed -i 's|../SN|../../SN|g' {} +
-find . -type f -exec sed -i 's|Учение Старцев</b>|Тхеравада.ру</b>|g' {} +
 
 
 echo "--- Готово! Ссылки исправлены, скрипты подключены. ---"
