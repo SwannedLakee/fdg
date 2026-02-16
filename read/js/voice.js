@@ -283,13 +283,14 @@ function cleanTextForTTS(text) {
     .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
     .replace(/”/g, '')
     .replace(/ पन[\.:, ]/g, 'पना ') 
+    .replace(/ तेन[\.:, ]/g, 'तेना ') 
     .replace(/स्स[\.:, ]/g, 'स्सा ')
     .replace(/स[\.:, ]/g, 'सा ')
     .replace(/म्म[\.:, ]/g, 'म्मा ')
     .replace(/म[\.:, ]/g, 'मा ')
     .replace(/फस्स/g, 'प्हस्स')
     .replace(/फ/g, 'प्ह')
-  .replace(/,/g, '.')
+ // .replace(/,/g, '.')
   //  .replace(/।/g, '।.')
     .replace(/…पे…/g, '…पेय्याल…')
     .replace(/’ति/g, 'ति')
@@ -634,11 +635,12 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
   } catch (e) {
     // --- DEBUG ALERT: ТОЛЬКО ЕСЛИ МЫ ОНЛАЙН ---
     // Добавлена проверка navigator.onLine
+  //  if ( !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
     if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
-         alert(`⚠️ CRITICAL FAIL:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
+         alert(`⚠️ ERROR:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
     }
     // ------------------------------------------------
-    
+
     console.warn('Google TTS Fetch Error:', e);
     return null; // Возвращаем null, чтобы сработал Native Fallback
   }
