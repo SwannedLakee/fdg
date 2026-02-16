@@ -52,7 +52,7 @@ include './scripts/opentexts.php';
                     <input type="checkbox" class="form-check-input" id="darkSwitch">
                 </div>
        <a class="ms-1 btn-sm btn-secondary rounded-pill text-decoration-none " href="/pm.php?expand=true" >bu-pm</a>
-      <a class="ms-1 btn-sm btn-secondary rounded-pill text-decoration-none " href="/d/?q=bi-pm&script=devanagari" >bi-pm</a>
+      <a class="ms-1 btn-sm btn-secondary rounded-pill text-decoration-none " href="/?q=bi-pm" >bi-pm</a>
  
     <a class="ms-1 btn-sm btn-secondary rounded-pill text-decoration-none " href="/san/sarv.php" >sarv</a>
     <a class="ms-1 btn-sm btn-secondary rounded-pill text-decoration-none " href="/san/mg.php" >mg</a>
