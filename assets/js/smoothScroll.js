@@ -1,60 +1,3 @@
-(function restoreExactPositionJump() {
-    // 1. Жёстко отключаем браузерное восстановление
-    if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-    }
-
-    // 2. Принудительно отключаем smooth-scroll из CSS
-    const html = document.documentElement;
-    const prevScrollBehavior = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';
-
-    const rawData = localStorage.getItem('exactScrollAnchor');
-    if (!rawData) {
-        html.style.scrollBehavior = prevScrollBehavior;
-        return;
-    }
-
-    const anchor = JSON.parse(rawData);
-    localStorage.removeItem('exactScrollAnchor'); // одноразово
-
-    const maxWait = 7000;
-    const checkInterval = 50;
-    let elapsed = 0;
-
-    const intervalId = setInterval(() => {
-        const element = document.getElementById(anchor.id);
-
-        if (element) {
-            clearInterval(intervalId);
-
-            // Абсолютная позиция элемента в документе
-            const absoluteY =
-                window.pageYOffset + element.getBoundingClientRect().top;
-
-            const targetY = absoluteY - anchor.offset;
-
-            // 3. МГНОВЕННЫЙ ПРЫЖОК (самый надёжный вариант)
-            window.scrollTo(0, targetY);
-
-            // 4. Контрольный добив после layout-перерисовки
-            requestAnimationFrame(() => {
-                const correctedY =
-                    window.pageYOffset + element.getBoundingClientRect().top - anchor.offset;
-                window.scrollTo(0, correctedY);
-
-                // возвращаем scroll-behavior
-                html.style.scrollBehavior = prevScrollBehavior;
-            });
-        }
-
-        elapsed += checkInterval;
-        if (elapsed >= maxWait) {
-            clearInterval(intervalId);
-            html.style.scrollBehavior = prevScrollBehavior;
-        }
-    }, checkInterval);
-})();
 
 /**
  * Подсвечивает элемент по его ID.
@@ -302,3 +245,60 @@ document.addEventListener('DOMContentLoaded', function() {
  * Результат: Элемент встает ровно на то же место экрана, где был.
  */
 
+(function restoreExactPositionJump() {
+    // 1. Жёстко отключаем браузерное восстановление
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    // 2. Принудительно отключаем smooth-scroll из CSS
+    const html = document.documentElement;
+    const prevScrollBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+
+    const rawData = localStorage.getItem('exactScrollAnchor');
+    if (!rawData) {
+        html.style.scrollBehavior = prevScrollBehavior;
+        return;
+    }
+
+    const anchor = JSON.parse(rawData);
+    localStorage.removeItem('exactScrollAnchor'); // одноразово
+
+    const maxWait = 7000;
+    const checkInterval = 50;
+    let elapsed = 0;
+
+    const intervalId = setInterval(() => {
+        const element = document.getElementById(anchor.id);
+
+        if (element) {
+            clearInterval(intervalId);
+
+            // Абсолютная позиция элемента в документе
+            const absoluteY =
+                window.pageYOffset + element.getBoundingClientRect().top;
+
+            const targetY = absoluteY - anchor.offset;
+
+            // 3. МГНОВЕННЫЙ ПРЫЖОК (самый надёжный вариант)
+            window.scrollTo(0, targetY);
+
+            // 4. Контрольный добив после layout-перерисовки
+            requestAnimationFrame(() => {
+                const correctedY =
+                    window.pageYOffset + element.getBoundingClientRect().top - anchor.offset;
+                window.scrollTo(0, correctedY);
+
+                // возвращаем scroll-behavior
+                html.style.scrollBehavior = prevScrollBehavior;
+            });
+        }
+
+        elapsed += checkInterval;
+        if (elapsed >= maxWait) {
+            clearInterval(intervalId);
+            html.style.scrollBehavior = prevScrollBehavior;
+        }
+    }, checkInterval);
+})();

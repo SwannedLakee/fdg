@@ -1,7 +1,15 @@
 // --- КОНФИГУРАЦИЯ "БЕСПЛАТНОГО ПРОБНОГО ПЕРИОДА" ---
 window.TRIAL_KEY = ""; 
+const TRIAL_BLOCK_KEY = 'tts_block_trial_key'; // <--- Имя ключа блокировки
 
 (async function loadTrialKey() {
+    // 1. ПРОВЕРКА: Если пользователь нажал сброс, мы блокируем загрузку
+    if (localStorage.getItem(TRIAL_BLOCK_KEY)) {
+        console.log("🚫 Trial TTS Key is BLOCKED by user reset.");
+        return; // Выходим, оставляя window.TRIAL_KEY пустым
+    }
+
+    // 2. ЗАГРУЗКА: Если блокировки нет, грузим как обычно
     try {
         const response = await fetch('/config/tts-config.json');
         if (response.ok) {
@@ -13,8 +21,6 @@ window.TRIAL_KEY = "";
         }
     } catch (e) { }
 })();
-
-
 
 /// --- Конфигурация путей ---
 const makeJsonUrl = (slug) => {
@@ -623,12 +629,12 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
     const data = await response.json();
 
     // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ОТ САМОГО GOOGLE (например, неверный ключ) ---
- //   if (data.error) {
+    if (data.error) {
         // Тут мы оставляем алерт, так как если мы получили ответ от сервера, значит мы онлайн.
-   //     const errorMsg = JSON.stringify(data.error, null, 2);
+        const errorMsg = JSON.stringify(data.error, null, 2);
      //   alert(`⚠️ GOOGLE TTS ERROR!\n\nTEXT SENT:\n${text}\n\nERROR:\n${errorMsg}`);
-    //    throw new Error(data.error.message);
- //   }
+        throw new Error(data.error.message);
+    }
     // -------------------------------------
 
     return data.audioContent; 
@@ -636,9 +642,9 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
     // --- DEBUG ALERT: ТОЛЬКО ЕСЛИ МЫ ОНЛАЙН ---
     // Добавлена проверка navigator.onLine
 //    if ( !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
-  //  if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
-  //       alert(`⚠️ ERROR:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
-//    }
+    if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
+    //  alert(`⚠️ ERROR:\n\nTEXT:\n${text}\n\nEXCEPTION:\n${e.message}`);
+    }
     // ------------------------------------------------
 
     console.warn('Google TTS Fetch Error:', e);
@@ -1759,32 +1765,25 @@ async function handleTTSSettingChange(e) {
       return;
   }
   
-
   // 0. RESET BUTTON (Сброс всего)
   if (e.target.id === 'reset-tts-btn') {
       e.preventDefault();
-      // Нативное подтверждение
 
-const pathLang = location.pathname.split('/')[1];
-const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
+      const pathLang = location.pathname.split('/')[1];
+      const isRuLike = ['ru', 'r', 'ml'].includes(pathLang);
 
 const resetMessage = isRuLike
-  ? 'Сбросить все настройки TTS, удалить API-ключ и очистить кэш?'
-  : 'Reset all TTS settings, remove API key and clear cache?'; 
-     
-if (confirm(resetMessage)) {
-          
-          // Список всех ключей, которые мы используем
+  ? 'Сбросить настройки голоса: отключить Google TTS, удалить API-ключ и включить системные голоса?'
+  : 'Reset voice settings: disable Google TTS, remove the API key, and use system voices?';
+      if (confirm(resetMessage)) {
+          // 1. Список ключей для удаления (чистим старое)
           const keysToRemove = [
               GOOGLE_KEY_STORAGE, 
               GOOGLE_PALI_SETTINGS_KEY, 
-              // Старый ключ
               'tts_google_trn_custom_voice',
-              // Новые ключи
               GOOGLE_TRN_KEY_RU,
               GOOGLE_TRN_KEY_EN,
               GOOGLE_TRN_KEY_STUDY,
-              
               SCROLL_STORAGE_KEY, 
               MODE_STORAGE_KEY, 
               NATIVE_PALI_KEY,
@@ -1796,8 +1795,16 @@ if (confirm(resetMessage)) {
           ];
           
           keysToRemove.forEach(k => localStorage.removeItem(k));
+
+          // 2. ВАЖНО: Ставим блокировку, чтобы триал не вернулся при перезагрузке
+          localStorage.setItem(TRIAL_BLOCK_KEY, 'true'); 
+
+          // 3. Дебаг сообщение
+          const debugMsg = isRuLike 
+            ? "✅ Google TTS отключен.\nКлючи стерты. Включена блокировка триала.\nТеперь работают только нативные голоса."
+            : "✅ Google TTS disabled.\nKeys cleared. Trial blocked.\nNow using native voices only.";
+       //   alert(debugMsg);
           
-          // Перезагружаем страницу, чтобы применить изменения начисто
           window.location.reload();
       }
       return;
@@ -1826,6 +1833,10 @@ if (confirm(resetMessage)) {
   if (e.target.id === 'google-api-key-input') {
       const key = e.target.value.trim();
       localStorage.setItem(GOOGLE_KEY_STORAGE, key);
+      
+      // Если юзер ввел ключ руками — снимаем блокировку
+      localStorage.removeItem(TRIAL_BLOCK_KEY); 
+      
       return;
   }
 
