@@ -625,9 +625,9 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
     // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ОТ САМОГО GOOGLE (например, неверный ключ) ---
     if (data.error) {
         // Тут мы оставляем алерт, так как если мы получили ответ от сервера, значит мы онлайн.
-        const errorMsg = JSON.stringify(data.error, null, 2);
-        alert(`⚠️ GOOGLE TTS ERROR!\n\nTEXT SENT:\n${text}\n\nERROR:\n${errorMsg}`);
-        throw new Error(data.error.message);
+   //     const errorMsg = JSON.stringify(data.error, null, 2);
+     //   alert(`⚠️ GOOGLE TTS ERROR!\n\nTEXT SENT:\n${text}\n\nERROR:\n${errorMsg}`);
+    //    throw new Error(data.error.message);
     }
     // -------------------------------------
 
