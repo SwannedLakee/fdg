@@ -48,6 +48,7 @@ sed -i \
     sed -i 's|size="7">Тхеравада.ру|size="3"><a href="/ru/read.php">@Dhamma.gift</a>|g' "$i"
     sed -i 's|<b>Буддизм<br>|<b>Копия<br>|g' "$i"
     sed -i 's|Учение Старцев </b>|Тхеравада.ру </b>|g' "$i"
+    sed -i 's|Учение Старцев</b>|Тхеравада.ру</b>|g' "$i"
     sed -i 's|href="/index.htm"|href="/ru/"|g' "$i"
 
     # --- КОМАНДА 4: Правка ширины таблицы (1000 -> 100%) ---
@@ -63,8 +64,9 @@ sed -i \
 
 done
 
-find . -type f -exec sed -i 's|Texts/AN|AN|g' {} +
-find . -type f -exec sed -i 's|Texts/SN|SN|g' {} +
+find . -type f -exec sed -i 's|../AN|../../AN|g' {} +
+find . -type f -exec sed -i 's|../SN|../../SN|g' {} +
+find . -type f -exec sed -i 's|Учение Старцев</b>|Тхеравада.ру</b>|g' {} +
 
 
 echo "--- Готово! Ссылки исправлены, скрипты подключены. ---"
