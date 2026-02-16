@@ -38,7 +38,7 @@ grep -lri "&#1645;</span>" . | sort -V | while read -r i; do
     # 2. Собираем полный URL
     real_url="https://theravada.ru/Teaching/Canon/Suttanta/$clean_path"
 
-    echo "Processing: $i ($textindex)"
+    echo "Processing: ($textindex) $i"
 
     # --- КОМАНДА 1: Ссылки (DG, SC, Th.ru) и Кнопка Voice ---
     # Исправлено: 
