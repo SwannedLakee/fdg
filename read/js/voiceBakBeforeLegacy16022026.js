@@ -1,19 +1,12 @@
 // --- КОНФИГУРАЦИЯ "БЕСПЛАТНОГО ПРОБНОГО ПЕРИОДА" ---
 window.TRIAL_KEY = ""; 
-const TRIAL_BLOCK_KEY = 'tts_block_trial_key'; 
+const TRIAL_BLOCK_KEY = 'tts_block_trial_key'; // <--- Имя ключа блокировки
 
 (async function loadTrialKey() {
-    // 0. LEGACY CHECK: Если это старая страница, мы просто не грузим ключ.
-    // Функция isLegacyPage() "поднимется" (hoisting), поэтому её можно вызвать здесь.
-    if (typeof isLegacyPage === 'function' && isLegacyPage()) {
-        console.log("Legacy Mode: Trial Key disabled.");
-        return; // Выходим. window.TRIAL_KEY останется ""
-    }
-
     // 1. ПРОВЕРКА: Если пользователь нажал сброс, мы блокируем загрузку
     if (localStorage.getItem(TRIAL_BLOCK_KEY)) {
         console.log("🚫 Trial TTS Key is BLOCKED by user reset.");
-        return; 
+        return; // Выходим, оставляя window.TRIAL_KEY пустым
     }
 
     // 2. ЗАГРУЗКА: Если блокировки нет, грузим как обычно
@@ -28,7 +21,6 @@ const TRIAL_BLOCK_KEY = 'tts_block_trial_key';
         }
     } catch (e) { }
 })();
-
 
 /// --- Конфигурация путей ---
 const makeJsonUrl = (slug) => {
@@ -636,6 +628,7 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
 
     const data = await response.json();
 
+    // --- DEBUG ALERT: ЕСЛИ ЕСТЬ ОШИБКА ОТ САМОГО GOOGLE (например, неверный ключ) ---
     if (data.error) {
         // Тут мы оставляем алерт, так как если мы получили ответ от сервера, значит мы онлайн.
         const errorMsg = JSON.stringify(data.error, null, 2);
@@ -646,6 +639,7 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
 
     return data.audioContent; 
   } catch (e) {
+    // --- DEBUG ALERT: ТОЛЬКО ЕСЛИ МЫ ОНЛАЙН ---
     // Добавлена проверка navigator.onLine
 //    if ( !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
     if (navigator.onLine && !e.message.includes('Google API Error') && !e.message.includes('Synthesize failed')) {
@@ -712,24 +706,14 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
 }
 
 */
-
+// --- Подготовка данных ---
 async function prepareTextData(slug) {
-  // 1. ПРОВЕРКА: Если это старая страница, используем Адаптер
-  if (isLegacyPage()) {
-      return prepareLegacyData();
-  } else {
-      // Если это не Legacy, может быть контейнер не найден?
-      const container = document.querySelector('.sutta-container');
-  }
-
-  // --- ДАЛЕЕ ТВОЙ СТАРЫЙ КОД БЕЗ ИЗМЕНЕНИЙ ---
   const container = document.querySelector('.sutta-container') || document;
   
   const paliElements = container.querySelectorAll('.pli-lang');
   const translationElements = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
   
   const paliJsonData = await fetchSegmentsData(slug);
-  // ... (весь остальной код функции prepareTextData оставляем как был)
   const cleanJsonMap = {};
   const jsonKeys = []; 
 
@@ -1071,12 +1055,13 @@ function playBrowserTTS(text, langKey, rate, isPali) {
   }
 }
 
-
+// --- Обработчики событий ---
 async function handleSuttaClick(e) {
   if (e.target.closest('#tts-settings-toggle')) {
     e.preventDefault();
     const panel = document.getElementById('tts-settings-panel');
     const icon = document.getElementById('tts-settings-icon');
+    
     if (panel) {
         panel.classList.toggle('visible');
         if (panel.classList.contains('visible')) {
@@ -1093,13 +1078,10 @@ async function handleSuttaClick(e) {
   const playBtn = e.target.closest('.play-main-button');
   const navBtn = e.target.closest('.prev-main-button, .next-main-button');
 
-  // --- DEBUG: ПРОВЕРКА КЛИКА ПО ССЫЛКЕ ---
   if (voiceLink) {
     e.preventDefault();
-    
-    const targetSlug = voiceLink.dataset.slug;
-    
     const player = getOrBuildPlayer();
+    const targetSlug = voiceLink.dataset.slug;
     const internalPlayBtn = player.querySelector('.play-main-button');
     if (internalPlayBtn && targetSlug) {
         internalPlayBtn.dataset.slug = targetSlug;
@@ -1109,13 +1091,11 @@ async function handleSuttaClick(e) {
     if (!ttsState.speaking) {
       const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
-                   || 'trn'; // Для легаси по дефолту перевод
-      
+                   || (window.location.pathname.match(/\/d\/|\/memorize\//) ? 'pi' : 'trn');
       startPlayback(container, mode, targetSlug, 0);
     }
     return;
   }
-  // ----------------------------------------
 
   if (navBtn) {
     e.preventDefault();
@@ -2070,16 +2050,11 @@ function addTtsButton(containerElement, specificElement) {
         }
 
         let slug = ttsState.currentSlug;
-        
         if (!slug) {
             const mainPlayBtn = document.querySelector('a.voice-link[data-slug]');
             if (mainPlayBtn) {
                 slug = mainPlayBtn.dataset.slug;
             }
-        }
-        
-        if (!slug && isLegacyPage()) {
-             slug = window.location.pathname.split('/').pop() || 'legacy_page';
         }
         
         if (!slug) {
@@ -2096,147 +2071,4 @@ function addTtsButton(containerElement, specificElement) {
 
         btnContainer.remove();
     });
-}
-
-// --- АДАПТЕР ДЛЯ THERAVADA.RU (LEGACY HTML) ---
-// --- АДАПТЕР ДЛЯ THERAVADA.RU (LEGACY HTML) ---
-// --- АДАПТЕР ДЛЯ THERAVADA.RU (LEGACY HTML) ---
-
-function isLegacyPage() {
-    // Если есть хотя бы один блок с классом "a", считаем страницу старой
-    return document.querySelectorAll('.a').length > 0;
-}
-
-function prepareLegacyData() {
-    const textData = [];
-    let segmentCounter = 0;
-
-    // 1. Ищем главный контейнер с текстом
-    // Обычно это ячейка таблицы с выравниванием
-    let contentCell = document.querySelector('td[style*="justify"]');
-    
-    // Фолбэк для других страниц
-    if (!contentCell) {
-        // Если нет justify, ищем родителя первого div.a
-        const firstDivA = document.querySelector('.a');
-        if (firstDivA) contentCell = firstDivA.parentElement;
-    }
-
-    if (!contentCell) {
-        console.warn("Legacy Parser: Контейнер не найден.");
-        return [];
-    }
-
-    // Вспомогательная функция для создания сегмента
-    const pushSegment = (nodes, text) => {
-        if (!text || text.length < 2) return;
-        
-        // Фильтры мусора
-        if (text.includes('Тхеравада.ру') || text.includes('редакция перевода')) return;
-        if (text.includes('Содержание')) return;
-        
-        const segmentId = `legacy-seg-${segmentCounter++}`;
-        
-        // ВАЖНО: Если у нас несколько узлов (например, "Т" + "ак..."), 
-        // мы должны обернуть их в один SPAN, чтобы подсвечивать всё сразу.
-        let elementToHighlight;
-        
-        if (nodes.length === 1 && nodes[0].nodeType === 1 && nodes[0].id) {
-            // Если это один элемент и у него уже есть ID (например div.a), используем его
-            elementToHighlight = nodes[0];
-        } else {
-            // Иначе создаем обертку
-            const wrapper = document.createElement('span');
-            wrapper.className = 'rus-lang legacy-wrapper';
-            wrapper.id = segmentId;
-            
-            // Вставляем обертку перед первым узлом
-            const firstNode = nodes[0];
-            const parent = firstNode.parentNode;
-            if (parent) {
-                parent.insertBefore(wrapper, firstNode);
-                // Перемещаем все узлы внутрь обертки
-                nodes.forEach(node => wrapper.appendChild(node));
-                elementToHighlight = wrapper;
-            } else {
-                // Если узлы оторваны от DOM (редкий случай), просто вернем первый
-                elementToHighlight = firstNode;
-            }
-        }
-        
-        // Чистим текст для TTS
-        const cleanText = text
-            .replace(/\[\d+\]/g, '')      
-            .replace(/^\d+\./, '')        
-            .replace(/\s+/g, ' ')         
-            .replace(/^[\*\-•]\s*/, '')
-            .trim();
-
-        if (cleanText.length > 0) {
-            textData.push({
-                id: elementToHighlight.id || segmentId,
-                paliDev: "", 
-                translation: cleanText,
-                paliElement: null,
-                translationElement: elementToHighlight
-            });
-        }
-    };
-
-    // 2. ПРОХОД ПО УЗЛАМ (Группировка)
-    // Мы идем по детям контейнера. Если видим текст/font/b/i -> копим в буфер.
-    // Если видим DIV/P/BR/TABLE -> сбрасываем буфер в сегмент, а потом обрабатываем блок.
-    
-    const childNodes = Array.from(contentCell.childNodes);
-    let bufferNodes = [];
-    let bufferText = "";
-
-    const flushBuffer = () => {
-        if (bufferNodes.length > 0) {
-            pushSegment(bufferNodes, bufferText.trim());
-            bufferNodes = [];
-            bufferText = "";
-        }
-    };
-
-    const isInline = (node) => {
-        if (node.nodeType === 3) return true; // Текст
-        if (!node.tagName) return false;
-        // Теги, которые считаем частью строки
-        const inlineTags = ['FONT', 'B', 'I', 'SPAN', 'A', 'STRONG', 'EM', 'SUP', 'SUB'];
-        return inlineTags.includes(node.tagName);
-    };
-
-    childNodes.forEach((node) => {
-        // Игнорируем пустые текстовые узлы (пробелы между дивами)
-        if (node.nodeType === 3 && node.textContent.trim().length === 0) {
-            // Но если мы внутри предложения (буфер не пуст), пробел может быть важен?
-            // Обычно в HTML пробелы между тегами схлопываются. Добавим пробел в текст, но узел можно не сохранять, если он пустой.
-            if (bufferNodes.length > 0) bufferText += " ";
-            return;
-        }
-
-        if (isInline(node)) {
-            // Это часть текущего предложения
-            bufferNodes.push(node);
-            bufferText += node.textContent;
-        } else {
-            // Это блочный элемент (DIV, BR, TABLE и т.д.) -> Разрыв
-            flushBuffer();
-
-            // Если это BR, просто игнорируем (он сработал как разрыв)
-            if (node.tagName === 'BR') return;
-
-            // Если это DIV (например div.a с диалогом), обрабатываем его как отдельный сегмент
-            if (['DIV', 'P', 'H1', 'H2', 'H3', 'H4'].includes(node.tagName)) {
-                // Берем весь текст блока
-                pushSegment([node], node.textContent);
-            }
-        }
-    });
-
-    // Сбрасываем остатки буфера (если текст был в самом конце)
-    flushBuffer();
-
-    return textData;
 }

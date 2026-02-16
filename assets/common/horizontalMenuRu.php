@@ -145,15 +145,21 @@ echo '<!--
            <li>
          <div class="dropdown-item ">
 DG
-            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">Sutta</a>    
-      <a class="text-reset" target="" href="/ru/pm.php?expand=true">Bupm</a>        
-      <a class="text-reset" target="" href="/ru/bipm.php?expand=true">Bipm</a> 
+            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">Сутты</a>    
       <a class="text-reset" target="" 
     href="javascript:void(0)"   
  onclick="toggleQuickModal();"     
       >Ссылки</a> 
          </div>
          </li>
+             <li>
+         <div class="dropdown-item ">
+DG
+      <a class="text-reset" target="" href="/ru/pm.php?expand=true">Бхиккху Патимоккха</a>        
+      <a class="text-reset" target="" href="/ru/bipm.php?expand=true">Бхиккхуни</a> 
+         </div>
+         </li>
+         
   <!--      href="?rp=true&tts=true&sacca=true"-->     
 <li>
          <div class="dropdown-item ">DG
