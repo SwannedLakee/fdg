@@ -100,10 +100,7 @@ echo '<!--
 
           <i class="' . $iconimportant . '"></i>
 
-        The Buddha\'s Words</a></li>    
-   
-
-      <li><a class="dropdown-item" target="_blank" href="' . $linkmolds . '">Переводы Майкла Олдса</a></li>
+        The Buddha\'s Words</a></li>  
 	  
 	               <li>
          <div class="dropdown-item ">Patimokkha 
@@ -127,6 +124,10 @@ echo '<!--
     <a class="text-reset" href="/san/mu3.php" >mu3</a>
          </div>
          </li>
+
+      <li><a class="dropdown-item" target="_blank" href="https://ancient-buddhist-texts.net/index.htm">Ancient Buddhist Texts</a></li>
+	  
+      <li><a class="dropdown-item" target="_blank" href="' . $linkmolds . '">Переводы Майкла Олдса</a></li>
 
         <li><a class="dropdown-item" target="_blank" href="' . $linknoblasc . '">Статьи на Dhammadana.org</a></li>
 
