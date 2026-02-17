@@ -2,19 +2,22 @@
 
 # ===== ОБЩИЕ ПЕРЕМЕННЫЕ =====
 
-BASE_URL="https://f.dhamma.gift/memorize/?rp=true&q="
+BASE_URL="https://f.dhamma.gift/memorize/?rp=true&autoplay=1&mode=pi&q="
+BASE_URL="http://127.0.0.1:8080/memorize/?rp=true&autoplay=1&mode=pi&q="
 BASE_AUDIO="/storage/emulated/0/Download/Sutta Audio"
 
 # ===== НАБОР =====
 
 SET="DN22#13.0.2"
 SET="an4.199#3.2"
+SET="sn22.55#2.2"
 #SET="an5.55#3.3"
 # SET="MN9#14.4"
 
 AUDIO_FILE="dn22-4-1.mp3"
 AUDIO_FILE="an5.55.mp3"
 AUDIO_FILE="an4.199.mp3"
+AUDIO_FILE=
 # AUDIO_FILE="dn22-4-2.mp3"
 # AUDIO_FILE="mn91.mp3"
 
@@ -46,11 +49,13 @@ SLEEP_TIME=$((INTERVAL + AUDIO_LEN))
 # ===== ЗАПУСК =====
 
 n=1
-termux-open-url "$URL"
-
 while true; do
+termux-open "$URL"
   echo "Запуск #$n"
+ if [ -n "$AUDIO" ]; then
   termux-open "$AUDIO"
+fi
+  
   sleep "$SLEEP_TIME"
   ((n++))
 done
