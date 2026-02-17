@@ -44,6 +44,7 @@ let wakeLock = null;
 const SCROLL_STORAGE_KEY = 'tts_auto_scroll'; 
 const MODE_STORAGE_KEY = 'tts_preferred_mode';
 const NATIVE_PALI_KEY  = 'tts_native_pali_enabled'; 
+const NATIVE_TRN_KEY = 'tts_native_trn_enabled'; 
 
 const RATE_PALI_KEY = 'tts_rate_pali'; 
 const RATE_TRN_KEY = 'tts_rate_trn';
@@ -916,8 +917,9 @@ async function playCurrentSegment() {
   }
 
   // === ГИБРИДНЫЙ РЕЖИМ ===
-const googleKey = (localStorage.getItem(GOOGLE_KEY_STORAGE) || window.TRIAL_KEY); 
-const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
+  const googleKey = (localStorage.getItem(GOOGLE_KEY_STORAGE) || window.TRIAL_KEY); 
+  const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
+  const useNativeTrn  = localStorage.getItem(NATIVE_TRN_KEY) === 'true'; // <--- Читаем настройку
   
   let tryGoogle = false;
 
@@ -928,8 +930,10 @@ const useNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true';
               tryGoogle = true;
           }
       } else {
-          // Если Перевод, всегда пробуем Google
-          tryGoogle = true;
+          // Если Перевод: используем Google, ТОЛЬКО если Native выключен
+          if (!useNativeTrn) { // <--- Было безусловное true, теперь проверка
+              tryGoogle = true;
+          }
       }
   }
 
@@ -1382,7 +1386,7 @@ function getPlayerHtml() {
   const saved = localStorage.getItem(GOOGLE_KEY_STORAGE);
   const savedKey = saved ?? window.TRIAL_KEY ?? '';
   const isNativePali = localStorage.getItem(NATIVE_PALI_KEY) === 'true'; 
-  
+  const isNativeTrn = localStorage.getItem(NATIVE_TRN_KEY) === 'true'; 
   let initialRate;
   let currentRatesList; 
   
@@ -1671,7 +1675,7 @@ function getPlayerHtml() {
           <a href="${helpUrl}" target="_blank" class="tts-link" title="Help" style="text-decoration: none;">?</a>
 
           <button id="tts-advanced-toggle-btn" class="extra-settings-toggle">
-              🔧 Extra Settings
+              🔧 Google Voice Settings
           </button>
 
           <div id="tts-advanced-settings">
@@ -1687,7 +1691,7 @@ function getPlayerHtml() {
               <div id="google-voice-settings-container" style="display:none; margin-top: 8px;">
                   
                   <div class="google-voice-select-group">
-                           <div class="google-voice-label">Pāḷi Voice (Google): <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
+                           <div class="google-voice-label">Pāḷi Voice: <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
                               <input type="checkbox" id="native-pali-toggle" ${isNativePali ? 'checked' : ''}>
                               Native
                            </label></div>
@@ -1699,10 +1703,20 @@ function getPlayerHtml() {
                   </div>
 
                   <div class="google-voice-select-group">
-                      <div class="google-voice-label">Translation Voice (Google):</div>
-                      <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
-                      <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
-                  </div>
+                      <div class="google-voice-label">Trn Voice:
+                          <label class="tts-checkbox-custom" style="margin: 0; font-size: 10px;">
+                              <input type="checkbox" id="native-trn-toggle" ${isNativeTrn ? 'checked' : ''}>
+                              Native
+                          </label>
+                      </div>
+                      
+                      <div id="trn-google-dropdowns" style="display: ${isNativeTrn ? 'none' : 'block'};">
+                          <select id="google-lang-select-trn" class="google-voice-dropdown"></select>
+                          <select id="google-voice-select-trn" class="google-voice-dropdown"></select>
+                      </div>
+                      </div>
+
+
               </div>
           </div>
       </div>
@@ -1794,6 +1808,7 @@ const resetMessage = isRuLike
               SCROLL_STORAGE_KEY, 
               MODE_STORAGE_KEY, 
               NATIVE_PALI_KEY,
+              NATIVE_TRN_KEY,
               RATE_PALI_KEY, 
               RATE_TRN_KEY, 
               LAST_SLUG_KEY, 
@@ -1824,6 +1839,21 @@ const resetMessage = isRuLike
       togglePaliDropdownVisibility();
       return; 
   }
+
+  // 0. Toggle Native Translation
+  if (e.target.id === 'native-trn-toggle') {
+      const isChecked = e.target.checked;
+      localStorage.setItem(NATIVE_TRN_KEY, isChecked);
+      
+      // Скрываем/показываем выпадающие списки
+      const trnDropdowns = document.getElementById('trn-google-dropdowns');
+      if (trnDropdowns) {
+          trnDropdowns.style.display = isChecked ? 'none' : 'block';
+      }
+      return; 
+  }
+
+
 
   // 1. Refresh Button (Обработка клика по кнопке обновления)
   if (e.target.id === 'refresh-voices-btn') {
@@ -1974,7 +2004,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- AUTOPLAY LOGIC (Вставить перед закрывающей скобкой DOMContentLoaded) ---
   const urlParams = new URLSearchParams(window.location.search);
   
-  if (urlParams.has('autoplay')) {
+  if (urlParams.has('autoplay') || localStorage.getItem('ttsMode') === 'true') {
       setTimeout(() => {
           let slug = null;
           
