@@ -1663,3 +1663,40 @@ function saveExactScrollPosition() {
         localStorage.setItem('exactScrollAnchor', JSON.stringify(data));
     }
 }
+
+    // === ЛОГИКА КНОПОК МАСШТАБА ===
+    const btnDec = document.getElementById('fontDec');
+    const btnInc = document.getElementById('fontInc');
+    const valDisplay = document.getElementById('fontVal');
+
+    // Текущее значение
+    let currentScale = parseInt(localStorage.getItem('uiScale')) || 100;
+    
+    // Обновляем текст (чтобы в настройки писалось актуальное число)
+    if (valDisplay) valDisplay.textContent = currentScale + '%';
+
+    function updateScale(newScale) {
+        // Меняем размер шрифта у корня HTML. 
+        // В Bootstrap 1rem зависит от этого значения -> меняются отступы, кнопки, шрифт.
+        document.documentElement.style.fontSize = newScale + '%';
+        
+        // Сохраняем и обновляем текст
+        localStorage.setItem('uiScale', newScale);
+        if (valDisplay) valDisplay.textContent = newScale + '%';
+    }
+
+    if (btnDec && btnInc) {
+        btnDec.addEventListener('click', () => {
+            if (currentScale > 70) { // Минимум 70%
+                currentScale -= 5;
+                updateScale(currentScale);
+            }
+        });
+
+        btnInc.addEventListener('click', () => {
+            if (currentScale < 150) { // Максимум 150%
+                currentScale += 5;
+                updateScale(currentScale);
+            }
+        });
+    }
