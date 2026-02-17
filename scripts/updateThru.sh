@@ -56,7 +56,7 @@ sed -i \
     sed -i 's/table width="1000"/table width="100%" style="max-width: 1000px;"/g' "$i"
     sed -i 's/table width="1009"/table width="100%" style="max-width: 1000px;"/g' "$i"
     sed -i 's/height="2" width="36%"/height="2" width="86%"/g' "$i"
-    sed -i 's/height="2" width="44%"/height="2" width="24%"/g' "$i"
+    sed -i 's/height="2" width="44%"/height="2" width="4%"/g' "$i"
     
 
     # --- КОМАНДА 5: Правка логики шрифтов в старом скрипте ---
