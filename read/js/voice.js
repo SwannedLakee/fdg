@@ -257,33 +257,6 @@ function clearTtsStorage() {
   localStorage.removeItem(LAST_SLUG_KEY);
   localStorage.removeItem(LAST_INDEX_KEY);
 }
-/*
-function cleanTextForTTS(text) {
-  if (!text) return "";
-  return text
-    .replace(/[Пп]ер\./g, 'Перевод') 
-    .replace(/Англ,/g, 'английского,') 
-    .replace(/[Рр]ед\./g, 'отредактировано') 
-    .replace(/Trn:/g, 'Translated by') 
-    .replace(/Pāḷi MS/g, 'पालि महासङ्गीति')
-    .replace(/”/g, '')
-    .replace(/ पन[\.:, ]/g, 'पना ') 
-    .replace(/स्स[\.:, ]/g, 'स्सा ')
-    .replace(/स[\.:, ]/g, 'सा ')
-    .replace(/म्म[\.:, ]/g, 'म्मा ')
-    .replace(/म[\.:, ]/g, 'मा ')
-    .replace(/फस्स/g, 'प्हस्स')
-    .replace(/फ/g, 'प्ह')
-//  .replace(/,/g, ' ।')
-  //  .replace(/।/g, ' ।')
-    .replace(/…पे…/g, '…पेय्याल…')
-    .replace(/’ति/g, 'ति')
-    .replace(/\{.*?\}/g, '')
-    .replace(/\(.*?\)/g, '')
-    .replace(/[ \t]+/g, ' ')
-    .replace(/_/g, '').trim();
-}
-*/
 
 function cleanTextForTTS(text) {
   if (!text) return "";
@@ -604,6 +577,9 @@ async function fetchGoogleAudio(text, lang, rate, apiKey) {
           text = text.replace(new RegExp(`(${C})${B}`, 'g'), '$1ा');
           text = text.replace(new RegExp(`(${C})ि${B}`, 'g'), '$1ी');
           text = text.replace(new RegExp(`(${C})ु${B}`, 'g'), '$1ू');
+text = text.replace(/न(?![ािीुूेोृॄॢॣंःँ्])/g, 'ना');
+text = text.replace(/म(?![ािीुूेोृॄॢॣंःँ्])/g, 'मा');
+text = text.replace(/ो$/g, 'ोो');
       }
       // ========================================================
 
@@ -825,6 +801,14 @@ function createPlaylistFromData(textData, mode) {
 
 // --- Ядро TTS ---
 async function playCurrentSegment() {
+  
+   if (ttsState.googleAudio) {
+      ttsState.googleAudio.pause();       // 1. Остановить звук
+      ttsState.googleAudio.onended = null; // 2. Убить переключение на след. фразу
+      ttsState.googleAudio = null;         // 3. Удалить ссылку
+  }
+  window.speechSynthesis.cancel();         // 4. Сбросить нативный голос
+  
   if (ttsState.currentIndex < 0 || ttsState.currentIndex >= ttsState.playlist.length) {
     clearTtsStorage();
     stopPlayback();
