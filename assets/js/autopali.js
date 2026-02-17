@@ -105,20 +105,20 @@ document.addEventListener('DOMContentLoaded', function() {
         'щ': 'o', 'б': ',', 'ю': '.', ' ': ' '
     };
 
-    return term.trim()
-        // Преобразуем возможную русскую раскладку в английскую
-        .replace(/[а-яё]/g, char => ruToEn[char] || char)
-		.replace(/,/g, ".")    
-        // Нормализация форматов
-        .replace(/([a-zA-Z]+)\s+(\d+)\s+(\d+)/g, "$1$2.$3")    // an 3 70 → an3.70
-        .replace(/([a-zA-Z]+)(\d+)\s+(\d+)/g, "$1$2.$3")       // an3 70 → an3.70
-        .replace(/([a-zA-Z]+)\s+(\d+)\.(\d+)/g, "$1$2.$3")     // an 3.70 → an3.70
-        .replace(/([a-zA-Z]+)\s+(\d+)/g, "$1$2") 				// dn 1 → dn1
-		.replace(/(b[ui]) (pm)/gi, "$1-$2")
-		.replace(/(bu) ([a-zA-Z].*)/gi, "$1-$2")
-		.replace(/(bi) ([a-zA-Z].*)/gi, "$1-$2")
-		.replace(/ /g, ".")    
-;              
+
+// Список разделов: pj|ss|ay|np|pc|pd|sk|as|pm
+return term.trim()
+    .replace(/[а-яё]/g, char => ruToEn[char] || char)
+    .replace(/,/g, ".")
+    
+    // Заменяем пробел на дефис только для связок bu/bi + код раздела
+    .replace(/\b(bu|bi)\s+(pj|ss|ay|np|pc|pd|sk|as|pm)\b/gi, "$1-$2")
+
+    // Форматирование сутт (an 3 70 -> an3.70)
+    .replace(/([a-zA-Z]+)\s+(\d+)\s+(\d+)/g, "$1$2.$3")
+    .replace(/([a-zA-Z]+)(\d+)\s+(\d+)/g, "$1$2.$3")
+    .replace(/([a-zA-Z]+)\s+(\d+)\.(\d+)/g, "$1$2.$3")
+    .replace(/([a-zA-Z]+)\s+(\d+)/g, "$1$2");
 }
 
 var normalizedTerm = normalizeTerm(request.term);
