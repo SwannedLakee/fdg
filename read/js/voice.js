@@ -911,12 +911,14 @@ async function playCurrentSegment() {
   } else if (item.lang === 'pi-dev') {
     isPali = true;
     targetLang = 'pi-dev';
-    uiRate = getRateForLang('pi-dev');
+    // Проверяем, менял ли пользователь скорость вручную. Если нет — ставим 0.8
+    const savedPaliRate = localStorage.getItem(RATE_PALI_KEY);
+    uiRate = savedPaliRate !== null ? parseFloat(savedPaliRate) : 0.8;
     
     audioRateBrowser = uiRate * PALI_RATIO; 
     audioRateGoogle  = uiRate;              
   }
-  
+
   const rateSelect = document.getElementById('tts-rate-select');
   if (rateSelect) {
       updateRateOptions(isPali, uiRate);
@@ -1984,6 +1986,76 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: false });
 
   synth.getVoices();
+  
+  // --- AUTOPLAY LOGIC (Вставить перед закрывающей скобкой DOMContentLoaded) ---
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  if (urlParams.has('autoplay')) {
+      setTimeout(() => {
+          let slug = null;
+          
+          // 1. Ищем ID сутты
+          const voiceLink = document.querySelector('.voice-link[data-slug]');
+          if (voiceLink) {
+              slug = voiceLink.dataset.slug;
+          } else if (typeof isLegacyPage === 'function' && isLegacyPage()) {
+              slug = window.location.pathname.split('/').pop() || 'legacy_page';
+          }
+
+          if (slug) {
+              console.log("🚀 Autoplay: Starting logic for", slug);
+              
+              const player = getOrBuildPlayer();
+              player.classList.add('active'); 
+              const internalPlayBtn = player.querySelector('.play-main-button');
+              if (internalPlayBtn) internalPlayBtn.dataset.slug = slug;
+
+              // 2. ОПРЕДЕЛЕНИЕ РЕЖИМА (Приоритет: URL -> Память -> 'trn')
+              let mode = urlParams.get('mode');
+              const validModes = ['pi', 'trn', 'pi-trn', 'trn-pi'];
+
+              // Если в URL мусор или пусто, берем из памяти
+              if (!mode || !validModes.includes(mode)) {
+                  mode = localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
+              } else {
+                  // Если режим задан в URL, обновляем выпадающий список в плеере визуально
+                  const modeSelect = document.getElementById('tts-mode-select');
+                  if (modeSelect) modeSelect.value = mode;
+                  // И запоминаем на будущее (опционально, можно убрать если не хотите сбивать настройки)
+                  localStorage.setItem(MODE_STORAGE_KEY, mode);
+              }
+
+              // 3. ЗАПУСК
+              startPlayback(document, mode, slug, 0);
+
+              // 4. СТРАХОВКА ОТ БЛОКИРОВКИ (Firefox/Chrome)
+              const forceUnlock = () => {
+                  if (ttsState.speaking && ttsState.paused) {
+                      console.log("🔓 Audio Unlocked by User Action!");
+                      ttsState.paused = false;
+                      setButtonIcon('pause');
+                      toggleSilence(true); 
+
+                      if (ttsState.googleAudio) {
+                          ttsState.googleAudio.play().catch(e => console.warn(e));
+                      } else {
+                          playCurrentSegment();
+                      }
+                  }
+                  ['click', 'touchstart', 'scroll', 'keydown'].forEach(evt => 
+                      document.removeEventListener(evt, forceUnlock)
+                  );
+              };
+
+              ['click', 'touchstart', 'scroll', 'keydown'].forEach(evt => 
+                  document.addEventListener(evt, forceUnlock, { once: true, passive: true })
+              );
+          }
+      }, 1000); 
+  }
+  // --- END AUTOPLAY ---
+
+  
 });
 
 document.addEventListener('visibilitychange', async () => {
