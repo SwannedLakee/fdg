@@ -709,8 +709,29 @@ document.addEventListener("keydown", (event) => {
 
 openDictionaries(event);
   }
-});
 
+    // Если нажат Alt
+    if (event.altKey) {
+        
+        // Alt + Minus (на основной клавиатуре или на NumPad)
+        if (event.code === "Minus" || event.code === "NumpadSubtract") {
+            event.preventDefault(); // Отменяем стандартное действие браузера
+            const btnDec = document.getElementById('fontDec');
+            if (btnDec) btnDec.click(); // Имитируем клик по кнопке "-"
+        }
+
+        // Alt + Plus (Клавиша "равно" считается плюсом, или NumPad Plus)
+        // Мы используем "Equal", чтобы не требовать нажатия Shift
+        if (event.code === "Equal" || event.code === "NumpadAdd") {
+            event.preventDefault();
+            const btnInc = document.getElementById('fontInc');
+            if (btnInc) btnInc.click(); // Имитируем клик по кнопке "+"
+        }
+    }
+});
+ 
+  
+  
   
   //setup dictionary 
   
@@ -1663,3 +1684,54 @@ function saveExactScrollPosition() {
         localStorage.setItem('exactScrollAnchor', JSON.stringify(data));
     }
 }
+
+    // === ЛОГИКА МАСШТАБИРОВАНИЯ (С ЛОКАЛИЗАЦИЕЙ) ===
+    
+    const btnDec = document.getElementById('fontDec');
+    const btnInc = document.getElementById('fontInc');
+    const valDisplay = document.getElementById('fontVal');
+
+    // Текущий масштаб из памяти (или 100%)
+    let currentScale = parseInt(localStorage.getItem('uiScale')) || 100;
+    
+    // Обновляем цифру в меню настроек при открытии
+    if (valDisplay) valDisplay.textContent = currentScale + '%';
+
+    // Функция изменения масштаба
+    function changeScale(delta) {
+        const newScale = currentScale + delta;
+
+        // Ограничение от 70% до 150%
+        if (newScale >= 70 && newScale <= 150) {
+            currentScale = newScale;
+
+            // 1. Применяем размер
+            document.documentElement.style.fontSize = currentScale + '%';
+            localStorage.setItem('uiScale', currentScale);
+            
+            // 2. Обновляем цифру в модальном окне
+            if (valDisplay) valDisplay.textContent = currentScale + '%';
+
+            // 3. Определяем язык для уведомления
+            const path = window.location.pathname;
+            // Если путь содержит /ru/, /r/ или /ml/ — показываем по-русски
+            const isRu = path.includes('/ru/') || 
+                         path.includes('/r/') || 
+                         path.includes('/ml/');
+            
+            // Выбираем текст
+            const label = isRu ? 'Размер' : 'Font size';
+
+            // 4. Показываем Bubble-уведомление
+            if (typeof showBubbleNotification === 'function') {
+                showBubbleNotification(`${label}: ${currentScale}%`);
+            }
+        }
+    }
+
+    // Обработчики кликов (для меню настроек)
+    // Если вы вызываете .click() из своего блока горячих клавиш, это тоже сработает
+    if (btnDec && btnInc) {
+        btnDec.addEventListener('click', () => changeScale(-5)); // Уменьшить
+        btnInc.addEventListener('click', () => changeScale(5));  // Увеличить
+    }

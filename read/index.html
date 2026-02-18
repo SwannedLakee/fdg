@@ -466,7 +466,7 @@ More help
 
 <div class="mb-2">
 <!-- Дропдаун для выбора режима словаря -->
-<label for="dict-select"><h5 style="text-align: left;">Dictionary on click:</h5></label>
+<label for="dict-select"><h5 style="text-align: left;">Dictionary:</h5></label>
 <select class="dropdown droponmain rounded-pill text-black border-2 border-secondary text-center input-group-append" id="dict-select">
 <option value="standalone">DPD Built-in </option>
 <option value="dpdFull">DPD Online </option>
@@ -483,6 +483,25 @@ More help
 <option value="dpdCompactRu" style="display: none;">Ru DPD Online mini </option>
 
 </select> <a href="/assets/common/dictHelp.html">?</a>
+<label class="plain-label" for="dict-select">
+  <strong>Alt+A</strong> 
+</label>
+</div>
+
+<div class="mb-2 d-flex align-items-center">
+    <label class="h5 mb-0" style="text-align: left;"><h5>Font Size:</h5></label>
+    <div class="d-flex align-items-center">
+        <button type="button" class="btn-sm btn-secondary rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" 
+                id="fontDec" style="width: 32px; height: 32px; font-weight: bold;">−</button>
+        
+        <span class="mx-2 fw-bold" id="fontVal" style="min-width: 45px; text-align: center;">100%</span>
+        
+        <button type="button" class="btn-sm btn-secondary rounded-circle d-flex align-items-center justify-content-center p-0" 
+                id="fontInc" style="width: 32px; height: 32px; font-weight: bold;">+</button>
+    </div>
+   <label class="plain-label ms-2" for="fontVal">
+  <strong>Alt "+-"</strong> 
+</label> 
 </div>
 
 <div class="mb-2">

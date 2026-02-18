@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
   
+    // === НОВОЕ: Применяем масштаб сразу, пока страница скрыта ===
+    function applySavedScale() {
+        const savedScale = localStorage.getItem('uiScale') || 100;
+        // Устанавливаем размер шрифта корня. 
+        // Так как используется Bootstrap (rem), это масштабирует ВЕСЬ интерфейс.
+        document.documentElement.style.fontSize = savedScale + '%';
+    }
+    applySavedScale(); 
+    // ============================================================
+
     function getModeFromPath() {
         const path = window.location.pathname.split('/').filter(Boolean);
         return path[0] || "read";
@@ -55,40 +65,28 @@ document.addEventListener('DOMContentLoaded', function() {
             loadedJS = true;
         }
 
-        checkAndShowPage(); // На случай, если JS или CSS не нужны
+        checkAndShowPage(); 
     }
   
     const mode = getModeFromPath();
     loadAssets(mode);
 
-if (window.location.pathname.includes("/rev/") || window.location.pathname.includes("/frev/")) { 
-  
-  let div = document.getElementById("sutta"); 
-if (div) { 
-  div.classList.add("right-text"); 
- }
-
-    // Функция для скроллинга страницы
-    function scrollToBottom() {
-        const isLocalhost = window.location.hostname.match(/localhost|127\.0\.0\.1/);
-        const timeout = isLocalhost ? 1000 : 2500; 
-
-   //     console.log("Параметры в URL:", window.location.search);
-    //    console.log("Якорь:", window.location.hash);
-   //     console.log("Прокручиваем вниз через", timeout, "миллисекунд");
-
-        // Прокручиваем страницу на 500 пикселей вниз с задержкой
-        setTimeout(function() {
-            window.scrollBy({
-                top: document.body.scrollHeight,
-                behavior: 'smooth' // Добавляем плавный скроллинг
-            });
-        }, timeout);
+    // ... ваш старый код для rev/frev скроллинга ...
+    if (window.location.pathname.includes("/rev/") || window.location.pathname.includes("/frev/")) { 
+        let div = document.getElementById("sutta"); 
+        if (div) { 
+            div.classList.add("right-text"); 
+        }
+        function scrollToBottom() {
+            const isLocalhost = window.location.hostname.match(/localhost|127\.0\.0\.1/);
+            const timeout = isLocalhost ? 1000 : 2500; 
+            setTimeout(function() {
+                window.scrollBy({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, timeout);
+        }
+        scrollToBottom();
     }
-
-    // Вызываем функцию при загрузке страницы
-    scrollToBottom();
- 
-}
-
 });
