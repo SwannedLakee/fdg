@@ -1170,3 +1170,7 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
     background-color: rgba(255,255,255,0.1);
 }
 
+#dict-select {
+  width: 140px;
+  max-width: 180px;
+}

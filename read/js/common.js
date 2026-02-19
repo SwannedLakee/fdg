@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const gearBtn = document.getElementById('smart-gear-btn');
     const smartPanel = document.getElementById('smart-panel');
-    const headerHeight = 150; 
+    const headerHeight = 90; 
 
     // --- 1. СИНХРОНИЗАЦИЯ ИКОНОК ---
     function syncSmartIcons() {
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!smartPanel.classList.contains('active')) {
                 gearBtn.classList.remove('visible');
             }
-        }, 3000);
+        }, 2000);
     }
 
     // --- 3. ЛОГИКА СКРОЛЛА ---
