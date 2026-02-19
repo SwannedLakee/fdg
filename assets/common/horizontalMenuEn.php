@@ -391,9 +391,7 @@ echo '<!--
    ">Read+</a>
    
    
-           <a class="text-reset" target="Quick Links" 
- onclick="toggleQuickModal();"            
-           >sutta</a>  
+            <a class="text-reset" target="" href="/read.php#dhamma">Sutta</a>    
 	       <!--  
 	       target="Слушать в приложении t2s" 
            href="/ru/tts.php" onclick="return openWithQuery(event, \'/t2s.html?q={{q}}\')" 

@@ -1496,43 +1496,200 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 <!--  -->
 <script src="/assets/js/paliLookup.js"></script>
-
 <script defer>
-  window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
+
+    const menuRead = document.getElementById("MenuRead");
+    const searchForm = document.getElementById("searchForm"); 
+    const searchInput = document.getElementById("paliauto");
+    
+    let textInfoData = null;
+
+    // --- 0. Асинхронная подгрузка ---
+    fetch('/assets/js/textinfo.js')
+        .then(res => res.ok ? res.json() : null)
+        .then(data => textInfoData = data)
+        .catch(err => {});
+
+    // --- 1. Транслитерация ---
+    function cyrillicToLatin(str) {
+        const ru = {
+            "А":"a", "Б":"b", "В":"v", "Г":"g", "Д":"d", "Е":"e", "Ё":"yo", "Ж":"zh", "З":"z", "И":"i",
+            "Й":"j", "К":"k", "Л":"l", "М":"m", "Н":"n", "О":"o", "П":"p", "Р":"r", "С":"s", "Т":"t",
+            "У":"u", "Ф":"f", "Х":"kh", "Ц":"ts", "Ч":"ch", "Ш":"sh", "Щ":"sch", "Ъ":"", "Ы":"y", "Ь":"",
+            "Э":"e", "Ю":"yu", "Я":"ya", "а":"a", "б":"b", "в":"v", "г":"g", "д":"d", "е":"e", "ё":"yo",
+            "ж":"zh", "з":"z", "и":"i", "й":"j", "к":"k", "л":"l", "м":"m", "н":"n", "о":"o", "п":"p",
+            "р":"r", "с":"s", "т":"t", "у":"u", "ф":"f", "х":"kh", "ц":"ts", "ч":"ch", "ш":"sh", "щ":"sch",
+            "ъ":"", "ы":"y", "ь":"", "э":"e", "ю":"yu", "я":"ya", " ": " ", ".":".", ",":".", "/":"-",
+            ":":"", ";":"", "—":"", "–":"-"
+        };
+        return str.split('').map(char => ru[char] || char).join('');
+    }
+
+    // --- 2. Универсальная Нормализация (FIXED) ---
+    function normalizeQuery(rawQuery) {
+        let q = rawQuery.trim();
+        if (!q) return "";
+
+        // 1. Транслит и очистка
+        q = cyrillicToLatin(q).toLowerCase();
+        q = q.replace(/,/g, '.');
+        q = q.replace(/\s*\.\s*/g, '.');
+
+        // 2. Vinaya fix (bu pm -> bu-pm)
+        if (/^(bu|bi)\s+[a-z]/.test(q)) {
+             q = q.replace(/^(bu|bi)\s+([a-z]+)/, '$1-$2'); 
+        }
+
+        // 3. Склеиваем буквы и цифры (m 10 -> m10) для анализа
+        q = q.replace(/([a-z])\s+(\d)/g, '$1$2');
+
+        // 4. ГЛАВНАЯ ЛОГИКА ИСПРАВЛЕНИЯ ПРЕФИКСОВ
+        // Ищем паттерн: [Буквы][Цифры...]
+        const match = q.match(/^([a-z]+)(\d.*)$/);
+        
+        if (match) {
+            let letters = match[1]; // то что ввел юзер (mm, sj, am...)
+            let rest = match[2];    // цифры (1.4, 10...)
+
+            // Список того, что НЕЛЬЗЯ трогать (Исключения)
+            const keepAsIs = [
+                // Khuddaka & Others
+                'iti', 'snp', 'ud', 'thig', 'thag', 'dhp', 
+                // Vinaya Rules
+                'pj', 'ss', 'ay', 'np', 'pc', 'pd', 'sk', 'as', 
+                // Vinaya Vibhanga keys
+                'bu', 'bi' 
+            ];
+
+            // Если префикс есть в списке исключений - оставляем как есть
+            if (keepAsIs.includes(letters) || letters.startsWith('bu-') || letters.startsWith('bi-')) {
+                 q = letters + rest;
+            } 
+            else {
+                // Иначе применяем "Правило первой буквы"
+                const first = letters[0];
+
+                if (first === 'm') q = 'mn' + rest;      // mm10, mt10 -> mn10
+                else if (first === 'd') q = 'dn' + rest; // dm10, dk10 -> dn10
+                else if (first === 'a') q = 'an' + rest; // am10, az10 -> an10
+                else if (first === 's') q = 'sn' + rest; // sj10, sb10 -> sn10
+                
+                // Если буква другая (например k), оставляем как ввел юзер
+            }
+        }
+
+        // 5. Форматирование цифр (1 1 -> 1.1)
+        q = q.replace(/(\d+)\s+(\d+)/g, '$1.$2');
+        
+        return q;
+    }
+
+    // --- 3. Поиск диапазона ---
+    function findRangeForKey(normalizedQ) {
+        if (!textInfoData) return null;
+
+        // Точное совпадение
+        if (textInfoData[normalizedQ]) return { type: 'exact', key: normalizedQ }; 
+
+        // Поиск диапазона (an1.4 -> an1.1-10)
+        const match = normalizedQ.match(/^([a-z]+)(\d+)\.(\d+)$/);
+        if (match) {
+            const prefix = match[1];
+            const major = match[2];
+            const minor = parseInt(match[3], 10);
+            const searchPrefix = `${prefix}${major}.`; 
+            
+            for (const key in textInfoData) {
+                if (key.startsWith(searchPrefix)) {
+                    const r = key.match(/(\d+)-(\d+)$/);
+                    if (r) {
+                        if (minor >= parseInt(r[1]) && minor <= parseInt(r[2])) {
+                            return { type: 'range', key: key };
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // === СОБЫТИЯ ===
+
+    // 1. Кнопка Читать (MenuRead) -> Только Якорь
+    if (menuRead && searchInput) {
+        menuRead.addEventListener("click", function(e) {
+            const q = normalizeQuery(searchInput.value);
+            if (!q) return;
+
+            let baseUrl = this.href.split(/[?#]/)[0];
+            
+            // Роутинг
+            if (/^(bu|pm|bpm|bupm)$/.test(q)) { this.href = '/pm.php?expand=true'; return; }
+            if (/^(bi|bipm)$/.test(q)) { this.href = '/bipm.php?expand=true'; return; }
+            if (/^(pj|ss|ay|np|pc|pd|sk|as)/.test(q)) {
+                 let clean = q.replace('bu-', '').replace('bi-', '');
+                 let suffix = q.startsWith('bi-') ? 'CollapseBi' : 'CollapseBu';
+                 this.href = '/read.php#' + clean + suffix;
+                 return;
+            }
+
+            // Сутты
+            if (/\d/.test(q) && !q.includes('-')) {
+                const result = findRangeForKey(q);
+                // Если нашли диапазон (an1.1-10), якорь будет #an1.1-10. Если нет - #an1.4
+                const anchor = (result && result.type === 'range') ? result.key : q;
+                this.href = baseUrl + '#' + anchor;
+            } else {
+                 this.href = baseUrl + '#' + q;
+            }
+        });
+    }
+
+    // 2. Кнопка Поиска (Submit) -> ?q=Range#Sutta
+    if (searchForm && searchInput) {
+        searchForm.addEventListener("submit", function(e) {
+            const q = normalizeQuery(searchInput.value);
+            if (!q) return; 
+
+            if (/\d/.test(q) && !q.includes('-')) {
+                const result = findRangeForKey(q);
+                
+                if (result && result.type === 'range') {
+                    e.preventDefault();
+                    // ?q=an1.1-10 #an1.4
+                    window.location.href = '?q=' + result.key + '#' + q;
+                }
+            }
+        });
+    }
+
+    // --- Фоновая подгрузка ---
     setTimeout(function() {
-
-const isRuPath = /^\/(ru|r)\//.test(location.pathname);
-
-const commonResources = [
-    '/assets/js/standalone-dpd/dpd_i2h.js',
-    '/assets/js/standalone-dpd/dpd_deconstructor.js'
-];
-
-const langSpecific = isRuPath
-    ? '/assets/js/standalone-dpd/ru/dpd_ebts.js'
-    : '/assets/js/standalone-dpd/dpd_ebts.js';
-
-const resources = [...commonResources, langSpecific];
+        const isRuPath = /^\/(ru|r)\//.test(location.pathname);
+        const commonResources = [
+            '/assets/js/standalone-dpd/dpd_i2h.js',
+            '/assets/js/standalone-dpd/dpd_deconstructor.js'
+        ];
+        const langSpecific = isRuPath
+            ? '/assets/js/standalone-dpd/ru/dpd_ebts.js'
+            : '/assets/js/standalone-dpd/dpd_ebts.js';
+        const resources = [...commonResources, langSpecific];
 
         resources.forEach(url => {
-            // Вариант 1: Prefetch через Link header
             const link = document.createElement('link');
             link.rel = 'prefetch';
             link.href = url;
             link.as = 'script';
             document.head.appendChild(link);
 
-            // Вариант 2: Фоновый fetch (для старых браузеров)
-            fetch(url, {
-                method: 'GET',
-                credentials: 'same-origin',
-                cache: 'force-cache'
-            });
+            fetch(url, { method: 'GET', credentials: 'same-origin', cache: 'force-cache' });
         });
-    //    console.log('fetching dict');
     }, 5000);
 });
 </script>
+
+
 <script src="/read/js/urlForLbl.js" defer></script>
 
 <script src="/assets/js/settings.js"></script>

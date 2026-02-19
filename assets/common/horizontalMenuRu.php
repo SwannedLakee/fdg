@@ -146,7 +146,7 @@ echo '<!--
            <li>
          <div class="dropdown-item ">
 DG
-            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">Сутты</a>    
+            <a class="text-reset" target="" href="/ru/read.php#dhamma">Сутты</a>    
       <a class="text-reset" target="" 
     href="javascript:void(0)"   
  onclick="toggleQuickModal();"     
@@ -445,10 +445,9 @@ DG
        })(event)
    ">Read+</a>
 
-        <a class="text-reset" target="" target="Слушать в приложении t2s" href="/ru/tts.php" onclick="return openWithQuery(event, \'/t2s.html?q={{q}}\')" >sutta</a>  
        <!--  <a class="text-reset" target=""  href="/new/">new</a>                
 	   <a class="text-reset" target="" href="' . $readerPage . '"> индекс</a>   
-            <a class="text-reset" target="" href="/ru/assets/texts/sutta.php">sutta</a>     -->   
+  -->   
       <a class="text-reset" target="" href="/ru/pm.php?expand=true">bupm</a>        
       <a class="text-reset" target="" href="/ru/bipm.php?expand=true">bipm</a> 
 

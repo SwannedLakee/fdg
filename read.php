@@ -680,7 +680,7 @@ clearBtn.style.display = 'block';
  <div class="level1 d-flex align-items-center">
   <span class="toggle-button btn btn-primary btn-sm form-check-inline btn-fixed-width btn-rotate"
     data-bs-toggle="collapse" id="collapseAll">+</span>
-  <h2 style="level1">Dhamma</h2>
+  <h2 style="level1" id="dhamma">Dhamma</h2>
  </div>
  
  <div class="my-2">
@@ -21535,10 +21535,10 @@ echo '
 <div class="level1 d-flex align-items-center">
   <span class="toggle-button btn btn-primary btn-sm form-check-inline btn-fixed-width btn-rotate"
     data-bs-toggle="collapse" data-bs-target="#bupmCollapse">+</span>
-  <h2 class="level1" >Vinaya</h2>
+  <h2 class="level1" id="vinaya" >Vinaya</h2>
 </div>
      <span class="toggle-button form-check-inline"
-    data-bs-toggle="collapse" data-bs-target="#bupmCollapse">    <h2 class="my-2"><a class="setReader" target="_blank" href="<?php echo $readerPage;?>/?q=bu-pm#0.2">Bhikkhupātimokkha</a></h2></span>	
+    data-bs-toggle="collapse" data-bs-target="#bupmCollapse">    <h2 class="my-2"><a class="setReader" id="bu-pm" target="_blank" href="<?php echo $readerPage;?>/?q=bu-pm#0.2">Bhikkhupātimokkha</a></h2></span>	
 	
       <div class="collapse " id="bupmCollapse">
       ';
@@ -21550,7 +21550,7 @@ include $basedir . "/assets/texts/bupm.php";
 echo '
  
      <span class="toggle-button form-check-inline"
-    data-bs-toggle="collapse" data-bs-target="#bipmCollapse">    <h2 class="my-2"><a href="">Bhikkhunīpātimokkha</a></h2></span>	
+    data-bs-toggle="collapse" data-bs-target="#bipmCollapse">    <h2 class="my-2"><a href="" id="bi-pm" >Bhikkhunīpātimokkha</a></h2></span>	
 	
       <div class="collapse " id="bipmCollapse">
       ';
