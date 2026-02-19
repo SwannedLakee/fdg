@@ -166,9 +166,16 @@ function toggleSilence(enable) {
             playPromise.then(() => {
                 // Media Session Setup
                 if ('mediaSession' in navigator) {
+                  
+                    const slug = new URLSearchParams(location.search).get('q')?.toLowerCase() || ttsState.currentSlug || '';
+
+                    // 1. Ищем заголовок Пали
+                    const paliNode = document.querySelector('h1 .pli-lang, .pli-lang h1, h1[lang="pi"], [lang="pi"] h1');
+                    const paliH1 = paliNode ? paliNode.innerText.trim() : '';            
+                  
                     navigator.mediaSession.metadata = new MediaMetadata({
-                        title: "Dhamma.Gift Voice",
-                        artist: "Dhamma Vinaya",
+                        title: `${slug} ${paliH1}`.trim(), // <-- Исправлено здесь
+                        artist: "Dhamma.gift Voice",
                         artwork: [{ src: '/assets/img/albumart.png', sizes: '1024x1024', type: 'image/png' }]
                     });
 
