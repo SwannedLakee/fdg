@@ -972,6 +972,7 @@ async function playCurrentSegment() {
                           console.warn("Autoplay blocked or failed", e);
                           ttsState.paused = true; 
                           setButtonIcon('play');
+                          toggleSilence(false); 
                       });
                   }
               }
@@ -1049,8 +1050,10 @@ function playBrowserTTS(text, langKey, rate, isPali) {
     if (document.hidden || e.error === 'interrupted') {
       ttsState.paused = true;
       setButtonIcon('play');
+      toggleSilence(false); 
       return; 
     }
+
 
     if (ttsState.speaking && !ttsState.paused) {
       ttsState.currentIndex++;
@@ -1152,8 +1155,6 @@ async function handleSuttaClick(e) {
   if (playBtn && !e.target.classList.contains('voice-link')) {
     e.preventDefault();
 
-    // --- FIX START: Ищем актуальный Slug на текущей странице ---
-    // Плеер может помнить старый slug, поэтому мы проверяем, есть ли на странице свежая ссылка
     const pageVoiceLink = document.querySelector('.voice-link[data-slug]');
     const freshPageSlug = pageVoiceLink ? pageVoiceLink.dataset.slug : null;
     // --- FIX END ---
@@ -1197,7 +1198,9 @@ async function handleSuttaClick(e) {
               ttsState.googleAudio.pause();
           }
           setButtonIcon('play');
+          toggleSilence(false); 
         }
+
       } else {
         // --- START FRESH ---
         const mode = document.getElementById('tts-mode-select')?.value || localStorage.getItem(MODE_STORAGE_KEY) || 'trn';
