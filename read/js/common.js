@@ -293,6 +293,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+/*
 document.addEventListener('click', function(e) {
     const homeLink = e.target.closest('#home-button a');
     
@@ -324,3 +325,4 @@ document.addEventListener('click', function(e) {
         window.location.href = targetUrl;
     }
 });
+*/

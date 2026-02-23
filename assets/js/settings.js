@@ -1735,3 +1735,158 @@ function saveExactScrollPosition() {
         btnDec.addEventListener('click', () => changeScale(-5)); // Уменьшить
         btnInc.addEventListener('click', () => changeScale(5));  // Увеличить
     }
+
+
+
+// ==========================================
+// УМНЫЙ РОУТИНГ И ПАРСИНГ ЗАПРОСОВ (Dhamma.gift)
+// ==========================================
+
+let textInfoData = null;
+
+// 1. Асинхронная подгрузка карты диапазонов
+fetch('/assets/js/textinfo.js')
+    .then(res => res.ok ? res.json() : null)
+    .then(data => textInfoData = data)
+    .catch(err => console.error("Ошибка загрузки textinfo.js", err));
+
+// 2. Транслитерация
+function cyrillicToLatin(str) {
+    const ru = {
+        "А":"a", "Б":"b", "В":"v", "Г":"g", "Д":"d", "Е":"e", "Ё":"yo", "Ж":"zh", "З":"z", "И":"i",
+        "Й":"j", "К":"k", "Л":"l", "М":"m", "Н":"n", "О":"o", "П":"p", "Р":"r", "С":"s", "Т":"t",
+        "У":"u", "Ф":"f", "Х":"kh", "Ц":"ts", "Ч":"ch", "Ш":"sh", "Щ":"sch", "Ъ":"", "Ы":"y", "Ь":"",
+        "Э":"e", "Ю":"yu", "Я":"ya", "а":"a", "б":"b", "в":"v", "г":"g", "д":"d", "е":"e", "ё":"yo",
+        "ж":"zh", "з":"z", "и":"i", "й":"j", "к":"k", "л":"l", "м":"m", "н":"n", "о":"o", "п":"p",
+        "р":"r", "с":"s", "т":"t", "у":"u", "ф":"f", "х":"kh", "ц":"ts", "ч":"ch", "ш":"sh", "щ":"sch",
+        "ъ":"", "ы":"y", "ь":"", "э":"e", "ю":"yu", "я":"ya", " ": " ", ".":".", ",":".", "/":"-",
+        ":":"", ";":"", "—":"", "–":"-"
+    };
+    return str.split('').map(char => ru[char] || char).join('');
+}
+
+// 3. Универсальная Нормализация (опечатки, пробелы, префиксы)
+function normalizeQuery(rawQuery) {
+    let q = rawQuery.trim();
+    if (!q) return "";
+
+    q = cyrillicToLatin(q).toLowerCase();
+    q = q.replace(/,/g, '.').replace(/\s*\.\s*/g, '.');
+
+    if (/^(bu|bi)\s+[a-z]/.test(q)) {
+         q = q.replace(/^(bu|bi)\s+([a-z]+)/, '$1-$2'); 
+    }
+
+    q = q.replace(/([a-z])\s+(\d)/g, '$1$2');
+
+    const match = q.match(/^([a-z]+)(\d.*)$/);
+    if (match) {
+        let letters = match[1];
+        let rest = match[2];
+
+        const keepAsIs = ['iti', 'snp', 'ud', 'thig', 'thag', 'dhp', 'pj', 'ss', 'ay', 'np', 'pc', 'pd', 'sk', 'as', 'bu', 'bi'];
+
+        if (keepAsIs.includes(letters) || letters.startsWith('bu-') || letters.startsWith('bi-')) {
+             q = letters + rest;
+        } else {
+            const first = letters[0];
+            if (first === 'm') q = 'mn' + rest;
+            else if (first === 'd') q = 'dn' + rest;
+            else if (first === 'a') q = 'an' + rest;
+            else if (first === 's') q = 'sn' + rest;
+        }
+    }
+
+    q = q.replace(/(\d+)\s+(\d+)/g, '$1.$2');
+    return q;
+}
+
+// 4. Поиск диапазона
+function findRangeForKey(normalizedQ) {
+    if (!textInfoData) return null;
+    if (textInfoData[normalizedQ]) return { type: 'exact', key: normalizedQ }; 
+
+    const match = normalizedQ.match(/^([a-z]+)(\d+)\.(\d+)$/);
+    if (match) {
+        const prefix = match[1];
+        const major = match[2];
+        const minor = parseInt(match[3], 10);
+        const searchPrefix = `${prefix}${major}.`; 
+        
+        for (const key in textInfoData) {
+            if (key.startsWith(searchPrefix)) {
+                const r = key.match(/(\d+)-(\d+)$/);
+                if (r && minor >= parseInt(r[1]) && minor <= parseInt(r[2])) {
+                    return { type: 'range', key: key };
+                }
+            }
+        }
+    }
+    return null;
+}
+
+// 5. Единый слушатель кликов (MenuRead и home-button)
+document.addEventListener('click', function(e) {
+    // Ищем клик по любой из целевых кнопок
+    const targetLink = e.target.closest('#MenuRead, #home-button a');
+    
+    if (targetLink) {
+        e.preventDefault();
+        
+        const searchInput = document.getElementById('paliauto');
+        let rawQuery = searchInput ? searchInput.value : '';
+        
+        // Фоллбэк на URL-параметр q
+        if (!rawQuery.trim()) {
+            const urlParams = new URLSearchParams(window.location.search);
+            rawQuery = urlParams.get('q') || '';
+        }
+        
+        const q = normalizeQuery(rawQuery);
+        let baseUrl = targetLink.getAttribute('href').split(/[?#]/)[0];
+        
+        if (!q) {
+            window.location.href = baseUrl;
+            return;
+        }
+
+        // Роутинг специфичных страниц (Виная)
+        if (/^(bu|pm|bpm|bupm)$/.test(q)) { window.location.href = '/pm.php?expand=true'; return; }
+        if (/^(bi|bipm)$/.test(q)) { window.location.href = '/bipm.php?expand=true'; return; }
+        if (/^(pj|ss|ay|np|pc|pd|sk|as)/.test(q)) {
+             let clean = q.replace('bu-', '').replace('bi-', '');
+             let suffix = q.startsWith('bi-') ? 'CollapseBi' : 'CollapseBu';
+             window.location.href = baseUrl + '#' + clean + suffix;
+             return;
+        }
+
+        // Роутинг сутт с проверкой на диапазоны
+        if (/\d/.test(q) && !q.includes('-')) {
+            const result = findRangeForKey(q);
+            const anchor = (result && result.type === 'range') ? result.key : q;
+            window.location.href = baseUrl + '#' + anchor;
+        } else {
+             window.location.href = baseUrl + '#' + q;
+        }
+    }
+});
+
+// 6. Слушатель отправки формы поиска (для корректной подстановки диапазонов в URL)
+document.addEventListener('submit', function(e) {
+    if (e.target.id === 'searchForm') {
+        const searchInput = document.getElementById('paliauto');
+        if (!searchInput) return;
+
+        const q = normalizeQuery(searchInput.value);
+        if (!q) return;
+
+        if (/\d/.test(q) && !q.includes('-')) {
+            const result = findRangeForKey(q);
+            if (result && result.type === 'range') {
+                e.preventDefault();
+                // Делаем редирект с правильным параметром q и якорем
+                window.location.href = '?q=' + result.key + '#' + q;
+            }
+        }
+    }
+});
