@@ -293,3 +293,34 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+document.addEventListener('click', function(e) {
+    const homeLink = e.target.closest('#home-button a');
+    
+    if (homeLink) {
+        e.preventDefault(); 
+        
+        // 1. Сначала пытаемся взять значение из инпута
+        const searchInput = document.getElementById('paliauto');
+        let targetAnchor = searchInput ? searchInput.value.trim() : '';
+        
+        // 2. Если инпут пуст, фоллбэк на параметр q из URL
+        if (!targetAnchor) {
+            const urlParams = new URLSearchParams(window.location.search);
+            targetAnchor = urlParams.get('q') || '';
+        }
+        
+        // 3. Берем чистый URL из href (например, /ru/read.php или /read.php)
+        // split обрезает возможные старые параметры или якоря, если они вдруг там были
+        let targetUrl = homeLink.getAttribute('href').split('?')[0].split('#')[0];
+        
+        // 4. Если нашли значение для якоря, форматируем и приклеиваем
+        if (targetAnchor) {
+            // Приводим к нижнему регистру и удаляем пробелы (например, "An 3.70" -> "an3.70")
+            targetAnchor = targetAnchor.toLowerCase().replace(/\s+/g, '');
+            targetUrl += `#${targetAnchor}`;
+        }
+        
+        // 5. Выполняем переход
+        window.location.href = targetUrl;
+    }
+});
