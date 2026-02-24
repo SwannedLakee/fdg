@@ -1148,9 +1148,13 @@ document.addEventListener('click', function(event) {
     // Для выделенного текста
     if (pliElement && selectedText && isSelectionWithinElement(pliElement)) {
         if (event.target.closest('a, button, input, textarea, select')) return;
+        
+        // ЗАЩИТА ОТ ДУРАКА: Если включен мультиселект, игнорируем обычный клик по выделению
+        if (isMultiSelectMode) return; 
+        
         handleWordLookup(selectedText, event);
     }
-    // Для клика по слову
+    // Для клика по отдельному слову (продолжит работать всегда)
     else if (pliElement) {
         if (event.target.closest('a, button, input, textarea, select')) return;
         const clickedWord = getClickedWordWithHTML(event.target, event.clientX, event.clientY);
@@ -1158,8 +1162,7 @@ document.addEventListener('click', function(event) {
     }
 });
 
-
-// === РЕЖИМ МУЛЬТИВЫДЕЛЕНИЯ (MOBILE) ===
+// === РЕЖИМ МУЛЬТИВЫДЕЛЕНИЯ ===
 let isMultiSelectMode = localStorage.getItem('multiSelectMode') === 'true';
 let multiSelectTimer = null;
 
@@ -1213,7 +1216,10 @@ document.addEventListener('selectionchange', () => {
     clearTimeout(multiSelectTimer);
 
     if (selectedText.length > 0) {
+        // Таймер в 1000мс (1 секунда). Этого времени комфортно хватает, 
+        // чтобы успеть потянуть ползунки на телефоне без преждевременных срабатываний.
         multiSelectTimer = setTimeout(() => {
+            
             if (!selection.rangeCount) return;
             
             let targetNode = selection.anchorNode;
@@ -1236,19 +1242,17 @@ document.addEventListener('selectionchange', () => {
                     handleWordLookup(selectedText, mockEvent);
                 }
                 
-                // Снимаем выделение, чтобы предотвратить бесконечный цикл
+                // Снимаем выделение
                 setTimeout(() => {
                     if (window.getSelection) {
                         window.getSelection().removeAllRanges();
                     }
                 }, 50);
             }
-        }, 1500); // Ждем 600мс после того как пользователь перестал тянуть ползунки
+        }, 1500); 
     }
 });
 // === КОНЕЦ БЛОКА МУЛЬТИВЫДЕЛЕНИЯ ===
-
-
 
 function getClickedWordWithHTML(element, x, y) {
     let range;
