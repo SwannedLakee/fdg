@@ -164,6 +164,10 @@ function cleanPaliText(text) {
     <a alt="Onclick popup dictionary" title="Onclick popup dictionary (Alt+A)" class="common-size-icon4 toggle-dict-btn text-decoration-none text-black">
       <img src="/assets/svg/comment.svg" class="dictIcon">
     </a>
+    
+    <a alt="Multi-select Mode" title="Toggle Multi-select" id="toggle-multiselect" href="javascript:void(0);" class="toggle-icon text-decoration-none text-black">
+  <img src="/assets/svg/select-slash.svg" class="common-size-icon4" style="margin-top: 0px;">
+</a>
 
     <!-- Settings Button -->
     <a alt="Settings" title="Settings (Alt+S)" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings" href="javascript:void(0);" class="toggle-icon text-decoration-none text-muted">
@@ -718,7 +722,11 @@ alt="DPPN search icon"></a>
         <button class="smart-btn" data-target=".toggle-dict-btn img" title="Dictionary (Alt+A)">
              <img src="/assets/svg/comment.svg" alt="Dictionary">
         </button>
-
+  
+        <button class="smart-btn" data-target="#toggle-multiselect" title="Multiselect for dictionary">
+             <img src="/assets/svg/select-slash.svg" alt="Select">
+        </button>
+        
         <button class="smart-btn" data-target="#settingsButton" title="Settings (Alt+S)">
              <img src="/assets/svg/gear.svg" alt="Settings">
         </button>

@@ -46,7 +46,6 @@ const slugParts = slug.match(/^([a-z]+)(\d*)\.*(\d*)/);
 const book = slugParts ? slugParts[1] : slug;
 const firstNum = slugParts ? slugParts[2] : '';
 
-// Далее ваш существующий код...
   if (book === "dn" || book === "mn") {
     return `${book}/${slug}`;
   } else if (book === "sn" || book === "an") {
@@ -94,7 +93,6 @@ function findItiVagga(suttaNumber) {
   }
 }
 
-// Функция поиска элемента (та же, что мы утвердили)
 function getTopVisibleSegment() {
   const segments = document.querySelectorAll("#sutta span[id]"); 
   const targetLine = window.innerHeight * 0.3; 
@@ -110,22 +108,16 @@ function getTopVisibleSegment() {
   return null;
 }
 
-// УНИВЕРСАЛЬНАЯ ОБЕРТКА (Новая)
-// stateChangeCallback — это кусочек кода, который просто меняет язык
 function runWithTransition(stateChangeCallback) {
   const suttaContainer = document.getElementById("sutta");
   
-  // 1. Запоминаем место
   const anchorData = getTopVisibleSegment();
 
-  // 2. Исчезаем
   if (suttaContainer) suttaContainer.classList.add("text-hidden");
 
   setTimeout(() => {
-      // 3. Выполняем уникальную логику переключения (которую передали)
       stateChangeCallback();
 
-      // 4. Восстанавливаем позицию (Ядерный метод)
       if (anchorData && anchorData.element) {
            const currentRect = anchorData.element.getBoundingClientRect();
            const currentAbsoluteTop = window.scrollY + currentRect.top;
@@ -143,7 +135,6 @@ function runWithTransition(stateChangeCallback) {
            }, 50);
       }
 
-      // 5. Появляемся
       requestAnimationFrame(() => {
           if (suttaContainer) suttaContainer.classList.remove("text-hidden");
       });
@@ -151,38 +142,36 @@ function runWithTransition(stateChangeCallback) {
   }, 150);
 }
 
+// Делаем функцию доступной глобально, чтобы словарь мог её вызывать!
+window.syncSmartIcons = function() {
+    const smartButtons = document.querySelectorAll('.smart-btn');
+    smartButtons.forEach(btn => {
+        const targetSelector = btn.getAttribute('data-target');
+        if (!targetSelector) return;
+        
+        const originalEl = document.querySelector(targetSelector);
+        const smartImg = btn.querySelector('img');
+
+        if (originalEl && smartImg) {
+            let sourceImg = originalEl.tagName === 'IMG' ? originalEl : originalEl.querySelector('img');
+            if (sourceImg && sourceImg.src) {
+                // Копируем только путь картинки. Никаких классов и жестких размеров!
+                smartImg.src = sourceImg.src;
+            }
+        }
+    });
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     
     let lastScrollTop = 0;
     let gearTimer;
-    let ignoreScroll = false; // Блокировка скролла при кликах
+    let ignoreScroll = false; 
     
     const gearBtn = document.getElementById('smart-gear-btn');
     const smartPanel = document.getElementById('smart-panel');
     const headerHeight = 90; 
 
-    // --- 1. СИНХРОНИЗАЦИЯ ИКОНОК ---
-    function syncSmartIcons() {
-        const smartButtons = document.querySelectorAll('.smart-btn');
-        smartButtons.forEach(btn => {
-            const targetSelector = btn.getAttribute('data-target');
-            const originalEl = document.querySelector(targetSelector);
-            const smartImg = btn.querySelector('img');
-
-            if (originalEl && smartImg) {
-                let sourceImg = originalEl.tagName === 'IMG' ? originalEl : originalEl.querySelector('img');
-                if (sourceImg) {
-                    smartImg.src = sourceImg.src;
-                    smartImg.className = sourceImg.className; 
-                    smartImg.style.width = '24px'; 
-                    smartImg.style.height = '24px';
-                    smartImg.style.margin = '0'; 
-                }
-            }
-        });
-    }
-
-    // --- 2. УДЕРЖАНИЕ КНОПКИ ---
     function keepGearAlive() {
         gearBtn.classList.add('visible');
         clearTimeout(gearTimer);
@@ -193,7 +182,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 2000);
     }
 
-    // --- 3. ЛОГИКА СКРОЛЛА ---
     window.addEventListener('scroll', function() {
         if (ignoreScroll) return; 
 
@@ -216,10 +204,9 @@ document.addEventListener("DOMContentLoaded", function() {
         lastScrollTop = st <= 0 ? 0 : st;
     });
 
-    // --- 4. КЛИК ПО ШЕСТЕРЕНКЕ ---
     gearBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (!smartPanel.classList.contains('active')) syncSmartIcons();
+        if (!smartPanel.classList.contains('active')) window.syncSmartIcons();
         
         smartPanel.classList.toggle('active');
         
@@ -230,23 +217,19 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // --- 5. УМНЫЙ ПРОКСИ (БЕЗ ДЕРГАНИЯ) ---
     const proxyButtons = document.querySelectorAll('.smart-btn');
     
     proxyButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
-            // Предотвращаем любые дефолтные действия браузера при клике
             e.preventDefault();
             
             const targetSelector = this.getAttribute('data-target');
             const originalElement = document.querySelector(targetSelector);
             
             if (originalElement) {
-                // А. Блокируем реакцию на скролл
                 ignoreScroll = true;
                 setTimeout(() => { ignoreScroll = false; }, 1000);
 
-                // Б. Логика открытия (Модалка vs Обычная кнопка)
                 if (originalElement.getAttribute('data-bs-toggle') === 'modal') {
                     
                     const modalId = originalElement.getAttribute('data-bs-target') || originalElement.getAttribute('href');
@@ -254,13 +237,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     
                     if (modalEl && typeof bootstrap !== 'undefined') {
                         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                        
-                        // 1. Открываем модалку
                         modal.show(this);
                         
-                        // 2. ХАК ОТ ДЕРГАНИЯ: Слушаем закрытие один раз
                         const onHidden = () => {
-                            // Принудительно ставим фокус на шестеренку БЕЗ СКРОЛЛА
                             if (gearBtn) {
                                 gearBtn.focus({ preventScroll: true });
                             }
@@ -272,19 +251,17 @@ document.addEventListener("DOMContentLoaded", function() {
                         originalElement.click(); 
                     }
                 } else {
-                    // Обычный клик (Тема, Варианты и т.д.)
+                    // ПРОГРАММНЫЙ КЛИК ПО ГЛАВНОЙ КНОПКЕ
                     originalElement.click();
                 }
                 
-                // В. Убираем меню, оставляем кнопку
                 smartPanel.classList.remove('active');
                 keepGearAlive();
-                setTimeout(syncSmartIcons, 50); 
+                setTimeout(window.syncSmartIcons, 50); 
             }
         });
     });
 
-    // --- 6. КЛИК В ПУСТОТУ ---
     document.addEventListener('click', function(e) {
         if (!smartPanel.contains(e.target) && !gearBtn.contains(e.target)) {
             smartPanel.classList.remove('active');
@@ -292,37 +269,3 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
-
-/*
-document.addEventListener('click', function(e) {
-    const homeLink = e.target.closest('#home-button a');
-    
-    if (homeLink) {
-        e.preventDefault(); 
-        
-        // 1. Сначала пытаемся взять значение из инпута
-        const searchInput = document.getElementById('paliauto');
-        let targetAnchor = searchInput ? searchInput.value.trim() : '';
-        
-        // 2. Если инпут пуст, фоллбэк на параметр q из URL
-        if (!targetAnchor) {
-            const urlParams = new URLSearchParams(window.location.search);
-            targetAnchor = urlParams.get('q') || '';
-        }
-        
-        // 3. Берем чистый URL из href (например, /ru/read.php или /read.php)
-        // split обрезает возможные старые параметры или якоря, если они вдруг там были
-        let targetUrl = homeLink.getAttribute('href').split('?')[0].split('#')[0];
-        
-        // 4. Если нашли значение для якоря, форматируем и приклеиваем
-        if (targetAnchor) {
-            // Приводим к нижнему регистру и удаляем пробелы (например, "An 3.70" -> "an3.70")
-            targetAnchor = targetAnchor.toLowerCase().replace(/\s+/g, '');
-            targetUrl += `#${targetAnchor}`;
-        }
-        
-        // 5. Выполняем переход
-        window.location.href = targetUrl;
-    }
-});
-*/

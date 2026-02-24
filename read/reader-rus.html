@@ -157,6 +157,12 @@ function cleanPaliText(text) {
 </div>
 <!-- Словарь Onlick Popup -->
 <a title="Всплывающий по клику словарь (Alt+A)" class="common-size-icon4 toggle-dict-btn text-decoration-none text-black">  <img src="/assets/svg/comment.svg" alt="Всплывающий по клику словарь" class="dictIcon"></img></a>
+
+<a alt=" Режии Мульти-выбор" title="Вкл/Выкл Multi-select" id="toggle-multiselect" href="javascript:void(0);" class="toggle-icon text-decoration-none text-black">
+  <img src="/assets/svg/select-slash.svg" class="common-size-icon4" style="margin-top: 0px;">
+</a>
+
+
 <a title="Настройки (Alt+S)" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings" href="javascript:void(0);" class="toggle-icon text-decoration-none text-muted">
 <img id="gearRead" alt="Настройки" src="/assets/svg/gear.svg" class="common-size-icon4"></img>
 </a>
@@ -786,6 +792,10 @@ alt="DPPN search icon"></a>
 
         <button class="smart-btn" data-target=".toggle-dict-btn img" title="Словарь (Alt+A)">
              <img src="/assets/svg/comment.svg" alt="Dictionary">
+        </button>
+
+        <button class="smart-btn" data-target="#toggle-multiselect" title="Мультивыделение ддя словаря">
+             <img src="/assets/svg/select-slash.svg" alt="Select">
         </button>
 
         <button class="smart-btn" data-target="#settingsButton" title="Настройки (Alt+S)">

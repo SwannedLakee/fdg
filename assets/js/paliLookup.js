@@ -1159,6 +1159,97 @@ document.addEventListener('click', function(event) {
 });
 
 
+// === РЕЖИМ МУЛЬТИВЫДЕЛЕНИЯ (MOBILE) ===
+let isMultiSelectMode = localStorage.getItem('multiSelectMode') === 'true';
+let multiSelectTimer = null;
+
+// Ссылки на сохраненные файлы SVG
+const svgSelectActive = "/assets/svg/select.svg";
+const svgSelectSlashed = "/assets/svg/select-slash.svg";
+
+// 1. Обновление внешнего вида кнопок
+function updateMultiSelectUI() {
+    const toggleBtn = document.getElementById('toggle-multiselect');
+    if (toggleBtn) {
+        const img = toggleBtn.querySelector('img');
+        if (isMultiSelectMode) {
+            if (img) img.src = svgSelectActive;
+        } else {
+            if (img) img.src = svgSelectSlashed;
+        }
+    }
+    // Синхронизируем смарт-панель
+    if (typeof window.syncSmartIcons === 'function') window.syncSmartIcons();
+}
+
+// Применяем при загрузке страницы
+document.addEventListener('DOMContentLoaded', updateMultiSelectUI);
+
+// 2. Обработчик клика по кнопке
+document.addEventListener('click', (e) => {
+    // Слушаем только главную кнопку (смарт-панель нажимает её программно)
+    const msBtn = e.target.closest('#toggle-multiselect');
+    
+    if (msBtn) {
+        e.preventDefault();
+        isMultiSelectMode = !isMultiSelectMode;
+        localStorage.setItem('multiSelectMode', isMultiSelectMode);
+        
+        updateMultiSelectUI();
+        
+        if (typeof showBubbleNotification !== 'undefined') {
+            showBubbleNotification(isMultiSelectMode ? "Multi-select On" : "Multi-select Off");
+        }
+    }
+});
+
+// 3. Отслеживание системного выделения текста
+document.addEventListener('selectionchange', () => {
+    if (!isMultiSelectMode || (typeof dictionaryVisible !== 'undefined' && !dictionaryVisible)) return;
+    
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+
+    clearTimeout(multiSelectTimer);
+
+    if (selectedText.length > 0) {
+        multiSelectTimer = setTimeout(() => {
+            if (!selection.rangeCount) return;
+            
+            let targetNode = selection.anchorNode;
+            if (!targetNode) return;
+            if (targetNode.nodeType === 3) targetNode = targetNode.parentNode;
+            
+            const pliElement = targetNode.closest('.pli-lang, [lang="pi"]');
+            if (pliElement && !pliElement.classList.contains('dict-ignore')) {
+                if (targetNode.closest('a, button, input, textarea, select, .popup, .overlay')) return;
+                
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                const mockEvent = {
+                    clientX: rect.left + (rect.width / 2),
+                    clientY: rect.top + (rect.height / 2)
+                };
+                
+                // Передаем фразу в словарь
+                if (typeof handleWordLookup === 'function') {
+                    handleWordLookup(selectedText, mockEvent);
+                }
+                
+                // Снимаем выделение, чтобы предотвратить бесконечный цикл
+                setTimeout(() => {
+                    if (window.getSelection) {
+                        window.getSelection().removeAllRanges();
+                    }
+                }, 50);
+            }
+        }, 1000); // Ждем 600мс после того как пользователь перестал тянуть ползунки
+    }
+});
+// === КОНЕЦ БЛОКА МУЛЬТИВЫДЕЛЕНИЯ ===
+
+
+
 function getClickedWordWithHTML(element, x, y) {
     let range;
 
