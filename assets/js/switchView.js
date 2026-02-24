@@ -12,26 +12,28 @@ function toggleViewMode() {
   const suttaElement = document.querySelector('#sutta, .sutta');
   if (!suttaElement) return;
 
-  // 1. ЗАПОМИНАЕМ ТОЧНУЮ ПОЗИЦИЮ (ЯКОРЬ)
-  // Ищем первый видимый ID, который сейчас находится на экране
-  const segments = suttaElement.querySelectorAll('[id]');
+  // 1. ЗАПОМИНАЕМ ТОЧНУЮ ПОЗИЦИЮ
+  // Фильтруем: берем только те ID, которые НЕ являются кнопками или переключателями
+  // Можно уточнить селектор, например: 'p[id], span[id]' или '.segment[id]'
+  const segments = suttaElement.querySelectorAll('[id]:not(button):not(a):not(.menu-item)');
+  
   let anchorElement = null;
   let anchorOffset = 0;
 
   for (let seg of segments) {
     const rect = seg.getBoundingClientRect();
-    // Находим первый элемент, который виден пользователю (верхняя граница в пределах вьюпорта)
-    if (rect.top > -50 && rect.top < window.innerHeight) {
+    // Ищем элемент, который реально виден в верхней части контентной области
+    if (rect.top > -10 && rect.top < window.innerHeight / 2) {
       anchorElement = seg;
-      anchorOffset = rect.top; // Сохраняем расстояние от верха экрана до элемента
+      anchorOffset = rect.top; 
       break;
     }
   }
 
-  // 2. ПОДГОТОВКА К ПРЫЖКУ (Отключаем плавность)
+  // 2. ПОДГОТОВКА
   const html = document.documentElement;
   const prevScrollBehavior = html.style.scrollBehavior;
-  html.style.scrollBehavior = 'auto'; // Выключаем smooth scroll
+  html.style.scrollBehavior = 'auto';
 
   // 3. ПЕРЕКЛЮЧАЕМ РЕЖИМ
   showPaliEnglish();
@@ -39,23 +41,26 @@ function toggleViewMode() {
   localStorage.setItem('viewMode', isColumnView ? 'columns' : 'alternate');
   updateButtonText(isColumnView);
 
-  // 4. ВОССТАНАВЛИВАЕМ ПОЗИЦИЮ (МГНОВЕННО)
+  // 4. ВОССТАНАВЛИВАЕМ ПОЗИЦИЮ
   if (anchorElement) {
-    // Новая позиция = Текущий Y элемента в документе - сохраненный отступ от верха экрана
-    const targetY = (window.pageYOffset + anchorElement.getBoundingClientRect().top) - anchorOffset;
-    window.scrollTo(0, targetY);
-
-    // Контрольный прогон через кадр анимации (как в smoothScroll.js)
+    // Используем requestAnimationFrame для ожидания перерисовки
     requestAnimationFrame(() => {
-        const correctedY = (window.pageYOffset + anchorElement.getBoundingClientRect().top) - anchorOffset;
-        window.scrollTo(0, correctedY);
-        // Возвращаем настройки скролла
-        html.style.scrollBehavior = prevScrollBehavior;
+      const newRect = anchorElement.getBoundingClientRect();
+      // Новая позиция скролла: текущий скролл + разница в положении элемента
+      const scrollDiff = newRect.top - anchorOffset;
+      window.scrollBy(0, scrollDiff);
+
+      // ДЕБАГ: Результат перемещения
+      console.log(`Скорректировано на: ${scrollDiff}px`);
+      
+      html.style.scrollBehavior = prevScrollBehavior;
     });
   } else {
     html.style.scrollBehavior = prevScrollBehavior;
   }
 }
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
   const savedMode = localStorage.getItem('viewMode') || 'alternate';
