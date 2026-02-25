@@ -702,31 +702,17 @@ async function prepareTextData(slug) {
   // 1. ПРОВЕРКА: Если это старая страница, используем Адаптер
   if (isLegacyPage()) {
       return prepareLegacyData();
-  } else {
-      // Если это не Legacy, может быть контейнер не найден?
-      const container = document.querySelector('.sutta-container');
   }
 
-  // --- ДАЛЕЕ ТВОЙ СТАРЫЙ КОД БЕЗ ИЗМЕНЕНИЙ ---
   const container = document.querySelector('.sutta-container') || document;
   
   const paliElements = container.querySelectorAll('.pli-lang');
   const translationElements = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
   
   const paliJsonData = await fetchSegmentsData(slug);
-  // ... (весь остальной код функции prepareTextData оставляем как был)
-  const cleanJsonMap = {};
-  const jsonKeys = []; 
-
-  if (paliJsonData) {
-    Object.keys(paliJsonData).forEach(key => {
-      const cleanKey = key.split(':').pop();
-      const rawText = paliJsonData[key].replace(/<[^>]*>/g, '').trim(); 
-      cleanJsonMap[cleanKey] = cleanTextForTTS(rawText);
-      jsonKeys.push(cleanKey); 
-    });
-  }
-
+  
+  // --- НАЧАЛО ИЗМЕНЕНИЙ ---
+  // Сначала собираем все ID, которые фактически отрендерены на странице
   const allIds = new Set();
   const allNodesInOrder = container.querySelectorAll('.pli-lang, .rus-lang, .tha-lang, .eng-lang');
   
@@ -734,7 +720,33 @@ async function prepareTextData(slug) {
     const id = getElementId(el);
     if (id) allIds.add(id);
   });
-  
+
+  // Динамически определяем формат ID для текущей страницы:
+  // Если хотя бы в одном ID есть двоеточие (например, "an2.1:1.1"), 
+  // значит reader-rus оставил полный слаг (режим диапазона).
+  let useFullKey = false;
+  for (const id of allIds) {
+      if (id.includes(':')) {
+          useFullKey = true;
+          break;
+      }
+  }
+
+  const cleanJsonMap = {};
+  const jsonKeys = []; 
+
+  if (paliJsonData) {
+    Object.keys(paliJsonData).forEach(key => {
+      // Используем полный ключ, если это диапазон, иначе обрезаем до цифр
+      const cleanKey = useFullKey ? key : key.split(':').pop();
+      
+      const rawText = paliJsonData[key].replace(/<[^>]*>/g, '').trim(); 
+      cleanJsonMap[cleanKey] = cleanTextForTTS(rawText);
+      jsonKeys.push(cleanKey); 
+    });
+  }
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
   const textData = [];
   
   allIds.forEach(id => {
@@ -748,6 +760,7 @@ async function prepareTextData(slug) {
       paliDev = cleanJsonMap[id];
       const currentIndex = jsonKeys.indexOf(id);
       if (currentIndex !== -1) {
+        // Логика склеивания (lookahead) для слов на Пали
         let lookAheadIndex = currentIndex + 1;
         while (lookAheadIndex < jsonKeys.length) {
           const nextKey = jsonKeys[lookAheadIndex];
@@ -781,6 +794,7 @@ async function prepareTextData(slug) {
   
   return textData;
 }
+
 
 function createPlaylistFromData(textData, mode) {
   const playlist = [];
