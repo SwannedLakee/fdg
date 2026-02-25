@@ -318,7 +318,7 @@ if ((dictUrl === "standalone" || dictUrl === "standaloneru") && !translation) {
     const wordLink = `<strong>${createClickableLink(word)}</strong>`;
 
 
-const fallbackUrl = `${currentHost}${isRussian ? "/ru" : ""}/?q=${encodeURIComponent(word)}`;
+const fallbackUrl = `${currentHost}${isRussian ? "/ru" : ""}/?p=-kn&q=${encodeURIComponent(word)}`;
 
     // Подставляем готовую ссылку в сообщение
 translation = isRussian ?
