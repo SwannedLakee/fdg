@@ -1,29 +1,3 @@
-/**
- * Умный поиск элемента по ID.
- * Если точный ID не найден (например, 9.12 слился с 9.11), ищет предыдущий.
- */
-function findFallbackElement(baseId) {
-    let el = document.getElementById(baseId);
-    if (el) return el;
-
-    // Ищем префикс и последнюю цифру (например, "an1.1:" и "12" или "9." и "12")
-    const match = baseId.match(/(.*?)(\d+)$/);
-    if (!match) return null;
-
-    let prefix = match[1];
-    let num = parseInt(match[2], 10);
-
-    // Так как гатхи сливаются попарно, проверяем ровно на 1 шаг назад
-    if (num - 1 >= 0) {
-        let prevId = prefix + (num - 1);
-        el = document.getElementById(prevId);
-        if (el) {
-            return el;
-        }
-    }
-    
-    return null;
-}
 
 /**
  * Подсвечивает элемент по его ID.
@@ -32,9 +6,9 @@ function findFallbackElement(baseId) {
  * @param {string} elementId - ID элемента для подсветки
  */
 function highlightAllById(elementId) {
-    const element = findFallbackElement(elementId);
+    const element = document.getElementById(elementId);
     if (!element) {
-        console.log(`[Highlight] Элемент с ID "${elementId}" (или его сосед) не найден.`);
+        console.log(`[Highlight] Элемент с ID "${elementId}" не найден.`);
         return;
     }
 
@@ -114,7 +88,7 @@ function highlightAllById(elementId) {
 
 // Функция для выделения элемента по ID (упрощенная)
 function highlightById(elementId) {
-    const element = findFallbackElement(elementId);
+    const element = document.getElementById(elementId);
     if (!element) return;
 
     // --- 1. СНАЧАЛА TTS ---
@@ -177,12 +151,13 @@ function intelligentScrollToHash() {
         const ids = hashContent.split(','); 
         highlightMultipleById(ids); 
         
-        const firstElement = findFallbackElement(ids[0]);
-        if (firstElement) {
-            const yOffset = -window.innerHeight * 0.20; // Смещение на 1/4 экрана вверх
-            const y = firstElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-        }
+        const firstElement = document.getElementById(ids[0]);
+if (firstElement) {
+    const yOffset = -window.innerHeight * 0.20; // Смещение на 1/4 экрана вверх
+    const y = firstElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
 
     // Сценарий 2: Одиночный ID (Красивая анимация)
     } else {
@@ -193,20 +168,20 @@ function intelligentScrollToHash() {
         let timeElapsed = 0;
         
         const pollingInterval = setInterval(() => {
-            const element = findFallbackElement(elementId);
+            const element = document.getElementById(elementId);
 
             // 1. Элемент найден
-            if (element) {
-                clearInterval(pollingInterval); 
-                
-                // Вместо element.scrollIntoView...
-                const yOffset = -window.innerHeight * 0.20; 
-                const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
-                
-                highlightAllById(elementId); 
-                return;
-            }
+if (element) {
+    clearInterval(pollingInterval); 
+    
+    // Вместо element.scrollIntoView...
+    const yOffset = -window.innerHeight * 0.20; 
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    
+    highlightAllById(elementId); 
+    return;
+}
 
             // 2. Ждем дальше
             timeElapsed += checkInterval;
@@ -222,8 +197,8 @@ function intelligentScrollToHash() {
 
 // Запуски
 if (!localStorage.getItem('exactScrollAnchor')) {
-    window.addEventListener('DOMContentLoaded', intelligentScrollToHash);
-    window.addEventListener('hashchange', intelligentScrollToHash);
+window.addEventListener('DOMContentLoaded', intelligentScrollToHash);
+window.addEventListener('hashchange', intelligentScrollToHash);
 }
 
 // Кнопка "Наверх"
@@ -295,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let elapsed = 0;
 
     const intervalId = setInterval(() => {
-        const element = findFallbackElement(anchor.id);
+        const element = document.getElementById(anchor.id);
 
         if (element) {
             clearInterval(intervalId);
