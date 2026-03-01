@@ -1,3 +1,4 @@
+
 /**
  * Умный поиск элемента по ID.
  * Если точный ID не найден (например, 9.12 слился с 9.11), ищет предыдущий.
@@ -175,22 +176,51 @@ function intelligentScrollToHash() {
     if (!hash) return; 
 
     const hashContent = hash.substring(1);
+    
+    // Проверяем параметр из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isInstant = urlParams.get('scroll') === 'instant' || hashContent.includes('scroll=instant');
+
+    // Очищаем ID от параметров
+    const cleanId = hashContent.split('&')[0].split('?')[0];
+
+    // Функция для жесткого (мгновенного) прыжка, обходящая CSS
+    function executeScroll(y) {
+        if (isInstant) {
+            const html = document.documentElement;
+            const prevBehavior = html.style.scrollBehavior;
+            
+            // Жестко отключаем плавность в CSS
+            html.style.scrollBehavior = 'auto'; 
+            
+            // Делаем мгновенный прыжок
+            window.scrollTo({ top: y, behavior: 'auto' });
+            
+            // Возвращаем настройки CSS как было (через requestAnimationFrame, чтобы браузер успел отрисовать прыжок)
+            requestAnimationFrame(() => {
+                html.style.scrollBehavior = prevBehavior;
+            });
+        } else {
+            // Обычный плавный скролл
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    }
 
     // Сценарий 1: Список ID (запятая)
-    if (hashContent.includes(',')) {
-        const ids = hashContent.split(','); 
+    if (cleanId.includes(',')) {
+        const ids = cleanId.split(','); 
         highlightMultipleById(ids); 
         
         const firstElement = findFallbackElement(ids[0]);
         if (firstElement) {
-            const yOffset = -window.innerHeight * 0.20; // Смещение на 1/4 экрана вверх
+            const yOffset = -window.innerHeight * 0.20; 
             const y = firstElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
+            executeScroll(y);
         }
 
-    // Сценарий 2: Одиночный ID (Красивая анимация)
+    // Сценарий 2: Одиночный ID
     } else {
-        const elementId = hashContent;
+        const elementId = cleanId;
         
         const checkInterval = 250; 
         const totalWaitTime = 10000; 
@@ -203,10 +233,11 @@ function intelligentScrollToHash() {
             if (element) {
                 clearInterval(pollingInterval); 
                 
-                // Вместо element.scrollIntoView...
                 const yOffset = -window.innerHeight * 0.20; 
                 const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
+                
+                // Вызываем нашу бронебойную функцию скролла
+                executeScroll(y);
                 
                 highlightAllById(elementId); 
                 return;
@@ -223,6 +254,7 @@ function intelligentScrollToHash() {
         }, checkInterval);
     }
 }
+
 
 // Запуски
 if (!localStorage.getItem('exactScrollAnchor')) {

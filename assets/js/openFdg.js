@@ -324,14 +324,27 @@ document.addEventListener('click', function(event) {
     if (link && link.closest('.quote')) {
         event.preventDefault();
         event.stopPropagation();
-        const url = link.href;
+        
+        // 1. Берем оригинальную ссылку (без параметров) для полного окна
+        const originalUrl = link.href;
+        
+        // 2. Создаем отдельную ссылку с параметром для резкого прыжка в попапе
+        const urlObj = new URL(originalUrl);
+        urlObj.searchParams.set('scroll', 'instant');
+        const instantUrl = urlObj.toString();
+
         if (fdgIframe && fdgPopup) {
-            fdgIframe.src = url;
-            fdgOpenNewWindowBtn.href = url;
+            // Попапу отдаем ссылку для резкого прыжка
+            fdgIframe.src = instantUrl;               
+            
+            // А кнопке "открыть в новом окне" отдаем чистую ссылку для плавной прокрутки
+            fdgOpenNewWindowBtn.href = originalUrl;   
+            
             fdgPopup.style.display = 'block';
         }
     }
 }, true);
+
 
 if (localStorage.defaultReader === 'rv') {
     var elements = document.querySelectorAll('.right-text-hide.reverse-order-hide');
