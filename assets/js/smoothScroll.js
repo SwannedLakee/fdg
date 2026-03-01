@@ -3,27 +3,31 @@
  * Если точный ID не найден (например, 9.12 слился с 9.11), ищет предыдущий.
  */
 function findFallbackElement(baseId) {
-    let el = document.getElementById(baseId);
+    // 1. ЖЕЛЕЗНАЯ ЗАЩИТА: Если ID пустой или некорректный, тихо выходим
+    if (!baseId) return null;
+
+    // 2. Превращаем в строку (защита от краша при вызове .match)
+    const idStr = String(baseId);
+
+    // 3. Сначала ищем точное совпадение
+    let el = document.getElementById(idStr);
     if (el) return el;
 
-    // Ищем префикс и последнюю цифру (например, "an1.1:" и "12" или "9." и "12")
-    const match = baseId.match(/(.*?)(\d+)$/);
+    // 4. Если не нашли, отрезаем цифры с конца
+    const match = idStr.match(/(.*?)(\d+)$/);
     if (!match) return null;
 
     let prefix = match[1];
     let num = parseInt(match[2], 10);
 
-    // Так как гатхи сливаются попарно, проверяем ровно на 1 шаг назад
+    // 5. Проверяем предыдущий ID (шаг назад)
     if (num - 1 >= 0) {
-        let prevId = prefix + (num - 1);
-        el = document.getElementById(prevId);
-        if (el) {
-            return el;
-        }
+        return document.getElementById(prefix + (num - 1));
     }
     
     return null;
 }
+
 
 /**
  * Подсвечивает элемент по его ID.
