@@ -29,6 +29,7 @@ const TRIAL_BLOCK_KEY = 'tts_block_trial_key';
     } catch (e) { }
 })();
 
+
 /// --- Конфигурация путей ---
 const makeJsonUrl = (slug) => {
   const basePath = '/assets/texts/devanagari/root/pli/ms/';
@@ -334,34 +335,12 @@ async function fetchSegmentsData(slug) {
   }
 }
 
-/*
 function detectTranslationLang() {
   const path = window.location.pathname;
   if (path.includes('/th/') || path.includes('/thml/')) return 'th';
   if (path.includes('/en/') || path.includes('/b/') || path.includes('/read/')) return 'en';
   return 'ru';
 }
-*/
-
-function detectTranslationLang() {
-  // ---> НОВОЕ: Исключение ТОЛЬКО для новых статей (нет пали И это не Легаси) <---
-  const hasPali = document.querySelectorAll('.pli-lang').length > 0;
-  
-  if (!hasPali && !isLegacyPage()) {
-      const htmlLang = document.documentElement.lang ? document.documentElement.lang.toLowerCase() : '';
-      if (htmlLang.startsWith('en')) return 'en';
-      if (htmlLang.startsWith('th')) return 'th';
-      if (htmlLang.startsWith('ru')) return 'ru';
-  }
-
-  // ---> СТАРАЯ ЛОГИКА (для сутт и Легаси работает как раньше) <---
-  const path = window.location.pathname;
-  if (path.includes('/th/') || path.includes('/thml/')) return 'th';
-  if (path.includes('/en/') || path.includes('/b/') || path.includes('/read/')) return 'en';
-  
-  return 'ru';
-}
-
 
 function getElementId(el) {
   return el.id || el.closest('[id]')?.id;
@@ -730,10 +709,6 @@ async function prepareTextData(slug) {
   const paliElements = container.querySelectorAll('.pli-lang');
   const translationElements = container.querySelectorAll('.rus-lang, .tha-lang, .eng-lang');
   
-  // ---> НОВОЕ: Если стандартных блоков перевода нет, запускаем парсер статей <---
-  if (paliElements.length === 0 && translationElements.length === 0) {
-      return prepareGeneralArticleData();
-  }
   const paliJsonData = await fetchSegmentsData(slug);
   
   // --- НАЧАЛО ИЗМЕНЕНИЙ ---
@@ -1134,11 +1109,7 @@ async function handleSuttaClick(e) {
   if (voiceLink) {
     e.preventDefault();
     
-    // ---> НОВОЕ: Если slug не указан явно, используем URL страницы <---
-    let targetSlug = voiceLink.dataset.slug;
-    if (!targetSlug) {
-        targetSlug = window.location.pathname.replace(/[^a-zA-Z0-9]/g, '_');
-    }
+    const targetSlug = voiceLink.dataset.slug;
     
     const player = getOrBuildPlayer();
     const internalPlayBtn = player.querySelector('.play-main-button');
@@ -1150,12 +1121,13 @@ async function handleSuttaClick(e) {
     if (!ttsState.speaking) {
       const mode = player.querySelector('#tts-mode-select')?.value 
                    || localStorage.getItem(MODE_STORAGE_KEY) 
-                   || 'trn'; // Для статей по дефолту перевод
+                   || 'trn'; // Для легаси по дефолту перевод
       
       startPlayback(container, mode, targetSlug, 0);
     }
     return;
   }
+  // ----------------------------------------
 
   if (navBtn) {
     e.preventDefault();
@@ -2235,6 +2207,8 @@ function addTtsButton(containerElement, specificElement) {
 }
 
 // --- АДАПТЕР ДЛЯ THERAVADA.RU (LEGACY HTML) ---
+// --- АДАПТЕР ДЛЯ THERAVADA.RU (LEGACY HTML) ---
+// --- АДАПТЕР ДЛЯ THERAVADA.RU (LEGACY HTML) ---
 
 function isLegacyPage() {
     // Если есть хотя бы один блок с классом "a", считаем страницу старой
@@ -2374,43 +2348,6 @@ function prepareLegacyData() {
 
     // Сбрасываем остатки буфера (если текст был в самом конце)
     flushBuffer();
-
-    return textData;
-}
-
-
-function prepareGeneralArticleData() {
-    const textData = [];
-    let segmentCounter = 0;
-
-    // Ищем все потенциально текстовые элементы на странице
-    const elements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, blockquote');
-
-    elements.forEach(el => {
-        // Пропускаем элементы навигации, футера или скрытые блоки (чтобы не читать меню)
-        if (el.closest('.input-group') || el.closest('footer') || el.closest('nav') || el.closest('.tts-ignore')) {
-            return;
-        }
-
-        const text = el.textContent.trim();
-        
-        // Берем только элементы, где есть хотя бы немного текста
-        if (text.length > 2) {
-            // Генерируем уникальный ID для элемента, если его нет (нужно для подсветки и автоскролла)
-            if (!el.id) {
-                el.id = `gen-seg-${segmentCounter}`;
-            }
-            segmentCounter++;
-
-            textData.push({
-                id: el.id,
-                paliDev: "", // В обычных статьях пали не разделен, читаем всё как перевод
-                translation: cleanTextForTTS(text),
-                paliElement: null,
-                translationElement: el
-            });
-        }
-    });
 
     return textData;
 }

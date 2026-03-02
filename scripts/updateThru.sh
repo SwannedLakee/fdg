@@ -41,8 +41,8 @@ sed -i \
     fi
 
     # --- КОМАНДА 3: Подключение CSS перед </head> ---
-    if ! grep -q "uiextra.css" "$i"; then
-        sed -i 's|</head>|<link rel="stylesheet" href="/read/css/uiextra.css"></head>|' "$i"
+    if ! grep -q "voice.css" "$i"; then
+        sed -i 's|</head>|<link rel="stylesheet" href="/read/css/voice.css"></head>|' "$i"
     fi
     
     sed -i 's|size="7">Тхеравада.ру|size="3"><a href="/ru/read.php">@Dhamma.gift</a>|g' "$i"
