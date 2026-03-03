@@ -692,6 +692,21 @@ $defaults = '
 </select> <a href="/assets/common/dictHelpRu.html">?</a>
 </div>
 
+<div class="mb-2 d-flex align-items-center">
+    <label class="h5 mb-0" style="text-align: left;"><h5>Размер:</h5></label>
+    <div class="d-flex align-items-center">
+        <button type="button" class="btn-sm btn-secondary rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" 
+                id="fontDec" style="width: 32px; height: 32px; font-weight: bold;">−</button>
+        
+        <span class="mx-2 fw-bold" id="fontVal" style="min-width: 45px; text-align: center;">100%</span>
+        
+        <button type="button" class="btn-sm btn-secondary rounded-circle d-flex align-items-center justify-content-center p-0" 
+                id="fontInc" style="width: 32px; height: 32px; font-weight: bold;">+</button>
+    </div>
+   <label class="plain-label ms-2" for="fontVal">
+  <strong>Alt "+-"</strong> 
+</label> 
+</div>
 
 <div class="mb-2">
 <div class="d-flex">
@@ -699,7 +714,10 @@ $defaults = '
 <h5 class="mb-0">Убрать пунктуацию из Пали</h5>
 </label>
 <input class="form-check-input setting-checkbox" type="checkbox" id="removePunctCheckbox" data-key="removePunct">
-&nbsp;  <strong>Alt+.</strong>
+&nbsp;  
+<label class="plain-label" for="removePunctCheckbox">
+  <strong>Alt+M</strong> 
+</label>
 
 </div>
 
@@ -1388,12 +1406,32 @@ $defaults = '<!-- Dictionary OnClick Popup -->
 </select> <a href="/assets/common/dictHelp.html">?</a>
 </div>
 
+<div class="mb-2 d-flex align-items-center">
+    <label class="h5 mb-0" style="text-align: left;"><h5>Font Size:</h5></label>
+    <div class="d-flex align-items-center">
+        <button type="button" class="btn-sm btn-secondary rounded-circle d-flex align-items-center justify-content-center p-0 ms-2" 
+                id="fontDec" style="width: 32px; height: 32px; font-weight: bold;">−</button>
+        
+        <span class="mx-2 fw-bold" id="fontVal" style="min-width: 45px; text-align: center;">100%</span>
+        
+        <button type="button" class="btn-sm btn-secondary rounded-circle d-flex align-items-center justify-content-center p-0" 
+                id="fontInc" style="width: 32px; height: 32px; font-weight: bold;">+</button>
+    </div>
+   <label class="plain-label ms-2" for="fontVal">
+  <strong>Alt "+-"</strong> 
+</label> 
+</div>
+
 <div class="mb-2">
 <div class="d-flex">
 <label class="form-check-label me-2" for="removePunctCheckbox">
-<h5 class="mb-0">Remove punctuation from Pali </h5>
+<h5 class="mb-0">Remove Pali punctuation</h5>
 </label>
-<input class="form-check-input setting-checkbox" type="checkbox" id="removePunctCheckbox" data-key="removePunct">&nbsp; <strong>Alt+.</strong>
+<input class="form-check-input setting-checkbox" type="checkbox" id="removePunctCheckbox" data-key="removePunct">&nbsp; 
+
+<label class="plain-label" for="removePunctCheckbox">
+  <strong>Alt+M</strong> 
+</label>
 </div>
 
 </div>
