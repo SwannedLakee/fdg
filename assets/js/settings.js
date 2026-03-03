@@ -815,7 +815,7 @@ function applySavedDict(dict) {
 
 if (resetButton) {
   resetButton.addEventListener('click', function () {
-    // Определяем текущий язык
+    // Определяем язык только для того, чтобы показать диалог на нужном языке
     const path = window.location.pathname;
     const language =
       localStorage.getItem('siteLanguage') ||
@@ -837,32 +837,16 @@ if (resetButton) {
 
     const notificationText = messages[language].success;
 
-    // Удаляем значения из localStorage для всех чекбоксов
-    document.querySelectorAll('.setting-checkbox').forEach(checkbox => {
-      const key = checkbox.dataset.key;
-      if (key) localStorage.removeItem(key);
-    });
-
-    // Проверяем, существует ли функция clearFdgPopupParams()
+    // Проверяем, существует ли внешняя функция очистки
     if (typeof clearFdgPopupParams === 'function') {
       clearFdgPopupParams();
     }
 
-    // Ключи для удаления
-    const keysToRemove = [
-      'selectedScript', 'selectedDict', 'defaultReader', 'paliToggleRu',
-      'viewMode', 'quotePopupEnabled', 'localSearchHistory', 'lightMode',
-      'dark', 'pli-rus', 'popupHeight', 'popupLeft', 'popupTop', 'popupWidth',
-      'removePunct', 'theme', 'themeButtonAction', 'visitCount',
-      'windowHeight', 'windowWidth', 'isFirstDrag'
-    ];
-
+    // Тотальная очистка ВСЕГО хранилища
     localStorage.clear();
     sessionStorage.clear();
 
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-
-    // Установка значений по умолчанию
+    // Минимально необходимые параметры для работы интерфейса после перезагрузки
     localStorage.setItem('variantVisibility', 'hidden');
 
     // Удаляем параметр 'script' из URL
@@ -876,9 +860,8 @@ if (resetButton) {
       alert(notificationText); // fallback
     }
 
-    // Перезагрузка с задержкой
+    // Перезагрузка страницы
     setTimeout(() => {
-      // Если URL изменился — идём по нему, иначе принудительно перезагружаем
       if (url.toString() !== window.location.href) {
         window.location.href = url.toString();
       } else {
@@ -887,8 +870,6 @@ if (resetButton) {
     }, 1000);
   });
 }
- 
-
 
 // Получаем все радиокнопки
 var readerRadios = document.querySelectorAll('input[name="reader"]');
