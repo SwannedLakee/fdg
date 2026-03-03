@@ -39,6 +39,20 @@ function copyToClipboard(text = "") {
         : 'https://dhamma.gift' + text.substring(text.indexOf('/', 8));
   }
 
+  // ИЗМЕНЕНИЕ: Парсим URL и приводим параметр q и хеш к нижнему регистру
+  try {
+    const parsedUrl = new URL(text);
+    if (parsedUrl.searchParams.has('q')) {
+      parsedUrl.searchParams.set('q', parsedUrl.searchParams.get('q').toLowerCase());
+    }
+    if (parsedUrl.hash) {
+      parsedUrl.hash = parsedUrl.hash.toLowerCase();
+    }
+    text = parsedUrl.href;
+  } catch (e) {
+    console.error('Ошибка при обработке URL: ', e);
+  }
+
   // Получаем элемент, на котором кликнули
   const clickedElement = event?.target;
   if (!clickedElement || !clickedElement.classList.contains('copyLink')) {
@@ -52,13 +66,12 @@ function copyToClipboard(text = "") {
 
   // Определяем язык кликнутого элемента
   const clickedLang = clickedElement.closest('[lang]')?.getAttribute('lang');
-  const suttaId = new URL(text).searchParams.get('q') || '';
+  const suttaId = new URL(text).searchParams.get('q') || ''; // Уже в нижнем регистре
 
   let textParts = [];
 
   // 1. Всегда добавляем текст пали (с видимыми вариантами)
   // ИЗМЕНЕНИЕ: Ищем все блоки с lang="pi", чтобы захватить и мнемонику, и полный текст (для memorize.js)
-  // Ранее было: const piElement = parentSpan.querySelector('.pli-lang');
   const piElements = parentSpan.querySelectorAll('[lang="pi"]');
 
   piElements.forEach(piElement => {
@@ -113,7 +126,7 @@ let textToCopy = textParts.join('\n\n')
 
   if (text.includes('localhost') || text.includes('127.0.0.1')) {
     text = text.replace(/http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/g, 'https://dhamma.gift');
-    }
+  }
 
   textToCopy += `\n${text}`;
 
@@ -164,34 +177,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Универсальная функция-обработчик, которая находит и копирует ссылку
   const handleLineLinkCopy = (event) => {
-    // ---- КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ----
     // Ищем ближайший элемент .copyLink к месту клика/нажатия.
     const copyLinkTarget = event.target.closest('.copyLink');
 
     // Если клик был НЕ на элементе .copyLink, ничего не делаем и выходим.
-    // Это позволяет стандартному меню работать везде, кроме этих ссылок.
     if (!copyLinkTarget) {
       return;
     }
 
-    // Если мы здесь, значит, цель найдена. Отменяем стандартное меню.
+    // Отменяем стандартное меню.
     event.preventDefault();
 
-    // Теперь, когда цель определена, находим её родителя с ID.
+    // Находим родителя с ID.
     const anchorElement = copyLinkTarget.closest('[id]');
-    if (!anchorElement) return; // На всякий случай
+    if (!anchorElement) return;
 
-    const copyLinkElem = copyLinkTarget; // Наша цель и есть элемент со ссылкой
+    const copyLinkElem = copyLinkTarget; 
 
-    // Используем ID найденного родителя как хеш для ссылки.
-    const hash = anchorElement.id;
+    // ИЗМЕНЕНИЕ: Используем ID найденного родителя как хеш и приводим к нижнему регистру
+    const hash = anchorElement.id.toLowerCase();
 
-    // --- Дальнейшая логика для сборки URL и копирования остается прежней ---
     const onclickAttr = copyLinkElem.getAttribute('onclick');
     const urlMatch = onclickAttr.match(/copyToClipboard\('([^']*)'\)/);
     if (!urlMatch || !urlMatch[1]) return;
 
     const baseUrl = new URL(urlMatch[1]);
+    
+    // ИЗМЕНЕНИЕ: Приводим параметр q к нижнему регистру перед копированием ссылки
+    if (baseUrl.searchParams.has('q')) {
+      baseUrl.searchParams.set('q', baseUrl.searchParams.get('q').toLowerCase());
+    }
+    
     baseUrl.hash = hash;
     let finalUrl = baseUrl.href;
 
@@ -218,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 2. Обработчики для долгого нажатия на сенсорных устройствах
   document.addEventListener('touchstart', (event) => {
-    // Запускаем таймер, только если нажатие было на самой ссылке .copyLink
     if (event.target.closest('.copyLink')) {
       pressTimer = window.setTimeout(() => {
         handleLineLinkCopy(event);
