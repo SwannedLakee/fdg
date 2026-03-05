@@ -17,6 +17,7 @@
   }
 }
 
+
 .tts-mini-button {
   width: 17px; 
   height: 17px; 
@@ -414,4 +415,3 @@ body[data-theme="dark"] #sutta span[id]:has(.tts-active) {
 .column-view #sutta span[id]:has(.tts-active) {
     display: flow-root;
 }
-
