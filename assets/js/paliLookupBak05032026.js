@@ -108,13 +108,11 @@ function isSelectionWithinElement(element) {
 
 
 function savePopupState() {
-    if (!popupElements) return; // Защита
-    localStorage.setItem('popupWidth', popupElements.popup.style.width);
-    localStorage.setItem('popupHeight', popupElements.popup.style.height);
-    localStorage.setItem('popupTop', popupElements.popup.style.top);
-    localStorage.setItem('popupLeft', popupElements.popup.style.left);
+    localStorage.setItem('popupWidth', popup.style.width);
+    localStorage.setItem('popupHeight', popup.style.height);
+    localStorage.setItem('popupTop', popup.style.top);
+    localStorage.setItem('popupLeft', popup.style.left);
 }
-
 
 if (savedDict) {
     savedDict = savedDict.toLowerCase();
@@ -248,8 +246,6 @@ const requestIdleCallback = window.requestIdleCallback ||
 function handleWordLookup(word, event) {
 
      if (!dictionaryVisible) return;
-
-const { popup, overlay, iframe } = getPopup();
 
     let cleanedWord = cleanWord(word);
     //console.log('Обрабатываем:', cleanedWord);
@@ -1010,38 +1006,56 @@ function createPopup() {
     return { overlay, popup, closeBtn, iframe };
 }
 
-// Глобальная переменная для хранения элементов попапа
-let popupElements = null;
+// Вставка popup на страницу
+const { overlay, popup, closeBtn, iframe } = createPopup();
 
-// Функция ленивой инициализации
-function getPopup() {
-    // Если попап уже создан — просто отдаем его
-    if (popupElements) return popupElements;
+iframe.addEventListener('mouseover', () => {
+    window.focus();
+})
 
-    // Если нет — создаем первый раз
-    popupElements = createPopup();
+/* заменить если хочеся без оверлея closeBtn.addEventListener и overlay.addEventListener
++ убрать оверлей из css 
 
-    popupElements.iframe.addEventListener('mouseover', () => {
-        window.focus();
-    });
+// Закрытие по кнопке (оставляем)
+closeBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    closeDictionary();
+});
 
-    popupElements.closeBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        popupElements.popup.style.display = 'none';
-        popupElements.overlay.style.display = 'none';
-        popupElements.iframe.src = '';
-    });
+// Глобальный обработчик клика "мимо" окна
+document.addEventListener('mousedown', (event) => {
+    // Если попап открыт
+    if (popup.style.display === 'block') {
+        // Проверяем, что клик НЕ внутри попапа и НЕ по кнопке переключения
+        if (!popup.contains(event.target) && !event.target.closest('.toggle-dict-btn')) {
+            // Если кликнули по другому слову пали, словарь закроется здесь,
+            // а основной слушатель 'click' тут же откроет его с новым словом.
+            closeDictionary();
+        }
+    }
+});
 
-    popupElements.overlay.addEventListener('click', (event) => {
-        event.stopPropagation();
-        popupElements.popup.style.display = 'none';
-        popupElements.overlay.style.display = 'none';
-        popupElements.iframe.src = '';
-    });
 
-    return popupElements;
-}
+*/
 
+
+// Закрытие popup при нажатии на кнопку или на overlay
+closeBtn.addEventListener('click', () => {
+      event.stopPropagation(); // Останавливаем всплытие события
+
+  popup.style.display = 'none';
+  overlay.style.display = 'none';
+  iframe.src = ''; // Очищаем iframe
+//  resizeObserver.disconnect();
+});
+
+overlay.addEventListener('click', () => {
+      event.stopPropagation(); // Останавливаем всплытие события
+
+  popup.style.display = 'none';
+  overlay.style.display = 'none';
+  iframe.src = ''; // Очищаем iframe
+});
 
 // console.log('lookup dict ', dictUrl, ' siteLanguage ', siteLanguage);
 
